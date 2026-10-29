@@ -1,0 +1,31 @@
+-- Chapter 40 (Year 3): through the vault door and the ashtray room to Domino's reunion (cutscene:
+-- Manny wakes in the foreman's office), the angelitos Pugsy and Bibi are talked into throwing
+-- their hammer away, and Manny takes it. Checkpoint in slot 56.
+
+ar_load(39)
+AR_NEW = TRUE
+ar_log("start in " .. ar_set_name())
+ar_wait_for_control()
+ar_go(ea.fh_door, fh)
+ar_go(fh.vd_door, vd)
+ar_go(vd.ar_door, ar)
+ar_wait_for_control()
+ar_go(ar.dr_door, fo)
+ar_wait_for(function() return dr.reunited and not find_script(cut_scene.reunion) and cutSceneLevel == 0 end, 900000)
+ar_wait_for_control()
+ar_state("in the foreman's office")
+ar_do("use", fo.pugsy_obj)
+ar_wait_for(function() return an1 and system.buttonHandler == an1 end, 120000)
+ar_check(an1 and system.buttonHandler == an1, "the angelitos talk")
+ar_pick(an1, 160)
+ar_pick(an1, 180)
+ar_pick(an1, 210)
+ar_wait_for(function() return fo.hammer.touchable end, 60000)
+ar_pick_exit(an1)
+ar_wait_for_control()
+ar_do("pickUp", fo.hammer)
+ar_wait_for(function() return fo.hammer.owner == manny end, 60000)
+ar_wait_for_control()
+ar_check(fo.hammer.owner == manny, "Manny has the hammer")
+ar_state("end of chapter 40")
+ar_checkpoint(40)

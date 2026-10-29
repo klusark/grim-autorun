@@ -1,0 +1,34 @@
+PROBE 1 clk 0 ft 17 main after clock start
+PROBE 2 clk 0 ft 17 main before starting child1
+PROBE 3 clk 0 ft 17 main after starting child1
+PROBE 4 clk 0 ft 17 child1 first line
+PROBE 5 clk 0 ft 17 child1 after starting child2
+PROBE 6 clk 0 ft 17 child2 first line
+PROBE 7 clk 1 ft 17 main after one break_here
+PROBE 8 clk 1 ft 17 order c 0
+PROBE 9 clk 1 ft 17 order b 0
+PROBE 10 clk 1 ft 17 order a 0
+PROBE 11 clk 1 ft 17 child1 after one break_here
+PROBE 12 clk 1 ft 17 child2 after one break_here
+PROBE 13 clk 2 ft 17 order c 1
+PROBE 14 clk 2 ft 17 order b 1
+PROBE 15 clk 2 ft 17 order a 1
+PROBE 16 clk 3 ft 17 order c 2
+PROBE 17 clk 3 ft 17 order b 2
+PROBE 18 clk 3 ft 17 order a 2
+PROBE 19 clk 7 ft 17 main after sleep_for(100)
+PROBE 20 clk 8 ft 17 slept 16 ms in 1 clocks
+PROBE 21 clk 8 ft 17 slept 1 ms in 1 clocks
+PROBE 22 clk 8 ft 17 slept 0 ms in 1 clocks
+PROBE 23 clk 9 ft 17 slept 33 ms in 2 clocks
+PROBE 24 clk 9 ft 17 slept 18 ms in 2 clocks
+PROBE 25 clk 9 ft 17 slept 17 ms in 2 clocks
+PROBE 26 clk 10 ft 17 slept 34 ms in 3 clocks
+PROBE 27 clk 13 ft 17 slept 100 ms in 6 clocks
+PROBE 28 clk 66 ft 17 slept 1000 ms in 59 clocks
+PROBE 29 clk 96 ft 17 found right after the start: 1
+PROBE 30 clk 98 ft 17 short done
+PROBE 31 clk 99 ft 17 after wait_for_script
+PROBE 32 clk 99 ft 17 found after the end: nil
+PROBE 33 clk 101 ft 17 forever found after stop_script and a frame: nil
+PROBE 34 clk 101 ft 17 END

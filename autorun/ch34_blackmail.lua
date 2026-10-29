@@ -1,0 +1,32 @@
+-- Chapter 34: the winning ticket and the photo finish go through the track's photo window and come
+-- back as the incriminating photo of Nick; Nick, back at his desk, is blackmailed over the dock
+-- workers' foreman (the strike is on). Checkpoint in slot 50.
+
+ar_load(33)
+AR_NEW = TRUE
+ar_log("start in " .. ar_set_name())
+ar_wait_for_control()
+ar_go(si.ladder, se)
+ar_go(se.sd_door, xb)
+ar_bridge_west()
+ar_go(xb.tx_door, tx)
+ar_go(tx.ts_door, ts)
+ar_go(ts.tb_door, tb)
+ar_wait_for_control()
+ar_do("use", tb.photo_window, cn.ticket)
+ar_wait_for(function() return tb.blackmail_photo.owner == manny end, 300000)
+ar_wait_for_control()
+ar_check(tb.blackmail_photo.owner == manny, "Manny has the incriminating photo")
+ar_state("with the photo")
+ar_go(tb.hh_door, hh, -0.3, 0.0, 0)
+ar_wait_for_control()
+ar_hh_elevator()
+ar_go(hh.hl_door, hl)
+ar_wait_for_control()
+ar_describe()
+ar_do("use", hl.virago_obj, tb.blackmail_photo)
+ar_wait_for(function() return dd.strike_on end, 600000)
+ar_wait_for_control()
+ar_check(dd.strike_on, "the strike is on")
+ar_state("end of chapter 34")
+ar_checkpoint(34)

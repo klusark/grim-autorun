@@ -1,0 +1,28 @@
+ar_drunk_fell = function() return glob.drunk_fell end
+-- EMI chapter 2: Melee, the SCUMM Bar: pop the balloon with the darts, the drunk falls, take the pretzel bowl
+ar_log("=== EMI ch02 SCUMM bar ===")
+ar_wait_for_control()
+-- (the end of the walk is the edge of the door's box: whether the box is entered by it depends on the last hair of the floor test)
+ar_walk_to(52, 0, -46)
+ar_wait_for_control()
+if system.currentSet == gme then
+	ar_do("use", gme.mem_door)
+	ar_wait_for_control()
+end
+ar_do("use", mem.mel_door)
+ar_wait_for_control()
+ar_check(ar_set_name() == "melee town", "in Melee town")
+ar_do("use", mel.lua_door)
+ar_wait_for_control()
+ar_check(ar_set_name() == "SCUMM Bar", "in the SCUMM bar")
+ar_do("lookAt", scu.balloon_obj)
+-- (the conversation starts as the walk ends: the verb is only sent and the dialog is followed, whether the cutscene level is up yet or not)
+ar_approach(scu.george_obj)
+ar_send_verb("use", scu.george_obj, "the dart player")
+ar_say("dart1", 60)
+ar_say("dart1", 230)
+ar_wait_for(ar_drunk_fell, 40000, "the drunk falls")
+ar_say_exit("dart1")
+ar_dlg_done("dart1")
+ar_do("pickUp", scu.pretzbowl)
+ar_check(props.pretzbowl.state == PROP_INV, "the pretzel bowl is Guybrush's")

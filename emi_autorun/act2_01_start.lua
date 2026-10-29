@@ -1,0 +1,13 @@
+-- Act 2 chapter 1: new game, jump to act 2 (the game's own milestone "act2"), Elaine's plan in the mansion
+ar_log("=== ACT2 ch01 start ===")
+ar_wait_for_control()
+ar_state("game started")
+dofile("_jumpscripts.lua")
+start_script(jump_script, "200")
+ar_dlg("el15")
+sleep_for(2000)
+ar_exhaust("el15", nil, 20)
+ar_dlg_done("el15")
+ar_state("after Elaine")
+ar_survey()
+ar_checkpoint(201)

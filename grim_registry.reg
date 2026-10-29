@@ -1,0 +1,6 @@
+Windows Registry Editor Version 5.00
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\WOW6432Node\LucasArts Entertainment Company LLC\Grim Fandango\v1.0]
+"Version"="1.0"
+"GrimDataDir"="C:\\GOG Games\\GRIMDATA\\"
+"good_times"="TRUE"

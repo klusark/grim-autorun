@@ -1,0 +1,125 @@
+diff --git a/engines/grim/set.cpp b/engines/grim/set.cpp
+index a73df13e6e0..4155c5f2f49 100644
+--- a/engines/grim/set.cpp
++++ b/engines/grim/set.cpp
+@@ -489,8 +489,8 @@ bool Set::Setup::restoreState(SaveGame *savedState) {
+ 
+ Light::Light() : _falloffNear(0.0f), _falloffFar(0.0f), _enabled(false), _id(0) {
+ 	setIntensity(0.0f);
+-	setUmbra(0.0f);
+-	setPenumbra(0.0f);
++	setUmbraDegrees(0.0f);
++	setPenumbraDegrees(0.0f);
+ }
+ 
+ void Set::Setup::getRotation(float *x, float *y, float *z) {
+@@ -541,16 +541,26 @@ void Set::Setup::setRoll(Math::Angle roll) {
+ 	}
+ }
+ 
+-void Light::setUmbra(float angle) {
++void Light::setUmbraDegrees(float angle) {
+ 	_umbraangle = angle;
+ 	_cosumbraangle = cosf(angle * (float)M_PI / 180.0f);
+ }
+ 
+-void Light::setPenumbra(float angle) {
++void Light::setUmbraRadians(float angle) {
++	_umbraangle = angle;
++	_cosumbraangle = cosf(angle);
++}
++
++void Light::setPenumbraDegrees(float angle) {
+ 	_penumbraangle = angle;
+ 	_cospenumbraangle = cosf(angle * (float)M_PI / 180.0f);
+ }
+ 
++void Light::setPenumbraRadians(float angle) {
++	_penumbraangle = angle;
++	_cospenumbraangle = cosf(angle);
++}
++
+ void Light::setIntensity(float intensity) {
+ 	_intensity = intensity;
+ 	if (g_grim->getGameType() == GType_MONKEY4) {
+@@ -590,9 +600,9 @@ void Light::load(TextSplitter &ts) {
+ 	ts.scanString(" intensity %f", 1, &tmp);
+ 	setIntensity(tmp);
+ 	ts.scanString(" umbraangle %f", 1, &tmp);
+-	setUmbra(tmp);
++	setUmbraDegrees(tmp);
+ 	ts.scanString(" penumbraangle %f", 1, &tmp);
+-	setPenumbra(tmp);
++	setPenumbraDegrees(tmp);
+ 
+ 	int r, g, b;
+ 	ts.scanString(" color %d %d %d", 3, &r, &g, &b);
+@@ -634,8 +644,9 @@ void Light::loadBinary(Common::SeekableReadStream *data) {
+ 
+ 	_falloffNear = data->readFloatLE();
+ 	_falloffFar = data->readFloatLE();
+-	setUmbra(data->readFloatLE());
+-	setPenumbra(data->readFloatLE());
++	// the cone angles of the binary sets are in radians
++	setUmbraRadians(data->readFloatLE());
++	setPenumbraRadians(data->readFloatLE());
+ 
+ 	_enabled = true;
+ }
+@@ -696,8 +707,14 @@ bool Light::restoreState(SaveGame *savedState) {
+ 	_color         = savedState->readColor();
+ 
+ 	setIntensity(    savedState->readFloat());
+-	setUmbra(        savedState->readFloat());
+-	setPenumbra(     savedState->readFloat());
++	// the angles are saved as they are stored: in radians for EMI, in degrees for Grim
++	if (g_grim->getGameType() == GType_MONKEY4) {
++		setUmbraRadians(savedState->readFloat());
++		setPenumbraRadians(savedState->readFloat());
++	} else {
++		setUmbraDegrees(savedState->readFloat());
++		setPenumbraDegrees(savedState->readFloat());
++	}
+ 
+ 	if (savedState->saveMinorVersion() >= 20) {
+ 		_falloffNear = savedState->readFloat();
+diff --git a/engines/grim/set.h b/engines/grim/set.h
+index 547be6bbfdf..c9afb005a58 100644
+--- a/engines/grim/set.h
++++ b/engines/grim/set.h
+@@ -188,8 +188,10 @@ struct Light {
+ 	void saveState(SaveGame *savedState) const;
+ 	bool restoreState(SaveGame *savedState);
+ 	void setIntensity(float intensity);
+-	void setUmbra(float angle);
+-	void setPenumbra(float angle);
++	void setUmbraDegrees(float angle);
++	void setUmbraRadians(float angle);
++	void setPenumbraDegrees(float angle);
++	void setPenumbraRadians(float angle);
+ 
+ 	enum LightType {
+ 		Omni = 1,
+diff --git a/engines/grim/shaders/emi_actorlights.vertex b/engines/grim/shaders/emi_actorlights.vertex
+index 156c7f261c8..f30101f5343 100644
+--- a/engines/grim/shaders/emi_actorlights.vertex
++++ b/engines/grim/shaders/emi_actorlights.vertex
+@@ -83,13 +83,16 @@ void main() {
+ 				vertexToLight = lightsPosition[i].xyz - pos.xyz;
+ 				float dist = length(vertexToLight);
+ 				if (falloffFar == falloffNear) {
+-					intensity = 0.0;
++					// no falloff range: full intensity within the distance, none beyond (as in the software lighting)
++					if (dist > falloffFar)
++						intensity = 0.0;
+ 				} else {
+ 					intensity *= clamp(1.0 - (dist - falloffNear) / (falloffFar - falloffNear), 0.0, 1.0);
+ 				}
+ 				if (lightsDirection[i].w > -1.0) { // Spotlight
+ 					// See DirectX spotlight documentation
+-					float cosAngle = -dot(normalize(vertexToLight), normalize(lightsDirection[i].xyz)); // rho
++					// EMI stores the spot direction pointing back towards the light
++					float cosAngle = dot(normalize(vertexToLight), normalize(lightsDirection[i].xyz)); // rho
+ 					float cosPenumbra = clamp(lightsParams[i].w, 0.0, 1.0); // cos(theta / 2)
+ 					float cosUmbra = clamp(lightsParams[i].z, 0.0, cosPenumbra); // cos(phi / 2)
+ 					if (cosAngle <= cosPenumbra) {

@@ -1,0 +1,11 @@
+-- Act 3 chapter 14: into the head, the Gubernatorial Symbol in the slot: the end of Act 3
+ar_log("=== ACT3 ch14 symbol ===")
+ar_wait_for_control()
+a3_goto("monkey head")
+ar_do("use", moh.hei_door)
+ar_wait_for_control()
+ar_state("in the head")
+ar_do("use", hei.symbol_slot, props.gubernatorial_symbol)
+ar_wait_for(function() return ar_set_name() == "ozzie's big-ass insult amplifier" or glob.final_act_hack end, 300000, "the end of Act 3")
+ar_state("end of act 3")
+ar_checkpoint(314)

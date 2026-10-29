@@ -1,0 +1,33 @@
+# Generated per-run ScummVM configs
+generated/
+
+# Logs, run output, temp files
+logs/
+*.out
+*.tmp
+*.log
+
+# Saves and recordings
+saves/
+saves_new/
+videos/
+
+# Screenshots
+shot.png
+
+# Generated data files
+DATAUSR*.LAB
+
+# Remote-run runtime files
+remote/cmd.out
+remote/game.log
+remote/pid
+remote/scummvm.ini
+
+# Binaries
+*.exe
+*.dll
+*.html
+*.png
+*.gsv
+*.htm

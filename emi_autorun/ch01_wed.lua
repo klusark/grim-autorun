@@ -1,0 +1,10 @@
+ar_in_mdo = function() return ar_set_name() ~= "wedding ship" and cutSceneLevel == 0 end
+ar_log("=== EMI ch01 wedding ship ===")
+ar_wait_for_control()
+ar_do("use", wed.brazier)
+ar_state("after brazier")
+ar_do("pickUp", wed.coalpile)
+ar_state("after coal")
+ar_do("use", wed.cannon, props.hotcoal)
+ar_wait_for(ar_in_mdo, 60000, "set mdo")
+ar_state("end")

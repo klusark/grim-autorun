@@ -1,0 +1,8 @@
+start_script(function()
+	RenderModeUser(TRUE)
+	sleep_for(300)
+	Save("t9.gsv")
+	sleep_for(1500)
+	RenderModeUser(nil)
+	PrintDebug("ORL saved t9")
+end)

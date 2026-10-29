@@ -1,0 +1,13 @@
+-- EMI chapter 4: the inner tube from the harbor
+ar_log("=== EMI ch04 inner tube ===")
+ar_wait_for_control()
+ar_do("use", scu.mel_door)
+ar_wait_for_control()
+ar_mel_patio_down()
+ar_do("use", mel.mem_rdoor)
+ar_wait_for_control()
+ar_do("use", mem.shi_door)
+ar_wait_for_control()
+ar_check(ar_set_name() == "shipyards", "in the shipyards")
+ar_do("pickUp", props.innertube)
+ar_check(props.innertube.state == PROP_INV, "the inner tube is Guybrush's")

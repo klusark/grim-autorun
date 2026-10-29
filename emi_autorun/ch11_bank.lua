@@ -1,0 +1,10 @@
+-- EMI chapter 11: the bank
+ar_load(10)
+ar_log("=== EMI ch11 bank ===")
+ar_wait_for_control()
+ar_do("use", law.luc_door)
+ar_wait_for_control()
+ar_do("use", luc.ban_door)
+ar_wait_for_control()
+ar_state("bank")
+ar_checkpoint(11)

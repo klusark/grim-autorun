@@ -1,0 +1,13 @@
+-- Act 3 chapter 13: the Giant Monkey Head: the banana picker in the nose (the mouth opens), the bronze hat on the head
+ar_log("=== ACT3 ch13 head ===")
+ar_wait_for_control()
+a3_goto("monkey head")
+ar_do("use", moh.monkeynose, props.banana_picker)
+ar_do("use", moh.monkeyhead, props.jojo_hat)
+ar_wait_for_control()
+ar_state("hat and picker")
+ar_check(props.jojo_hat.state == PROP_FINAL, "the hat is on the head")
+ar_check(glob.monkey_mouth_open, "the mouth is open")
+-- (the passage into the head is offered once the set is entered again)
+a3_to_map()
+ar_checkpoint(313)

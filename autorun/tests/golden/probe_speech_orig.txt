@@ -1,0 +1,5 @@
+PROBE /moma025/ frames 224
+PROBE /momc026/ frames 185
+PROBE /moma027/ frames 143
+PROBE /moma028/ frames 87
+PROBE /moma025/ frames 224

@@ -1,0 +1,12 @@
+-- Act 3 chapter 5: the milk bottle on Herman's head
+ar_log("=== ACT3 ch05 milk ===")
+ar_wait_for_control()
+a3_goto("toothrot camp")
+a3_quick_dialog("ht3")
+ar_do("use", toc.herman_obj, props.milk_bottle)
+ar_wait_for(function() return glob.herman_talk_status >= 3 end, 60000, "the milk bottle bonk")
+a3_dlg_done("ht3")
+ar_wait_for_control()
+ar_state("milk bonked")
+ar_check(glob.herman_talk_status == 3, "Herman bonked twice")
+ar_checkpoint(305)

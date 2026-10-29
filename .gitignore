@@ -1,0 +1,59 @@
+# Python
+__pycache__/
+*.pyc
+
+# Build outputs and binaries (patched/copyrighted game exes, compiled tools)
+*.exe
+*.dll
+*.dll.*
+*.orig
+*.prev
+
+# Game data and text extracted from it
+*.LAB
+*.lab
+grim_text.txt
+
+# Logs, saves, captures, scratch output
+*.log
+*.out
+*.tmp
+*.gsv
+*.setb
+*.times
+*.focus
+*.png
+*.mp4
+*.mkv
+*.raw
+*.htm
+*.html
+_scummvm_*.ini
+
+# Generated / run-output directories (autorun and emi_autorun)
+**/generated/
+**/logs/
+**/saves*/
+**/gr_saves/
+**/shots/
+**/frames/
+**/videos/
+**/recordings/
+**/coverage/
+**/remote/
+**/scratch/
+**/tmp_*/
+**/luadis/
+**/luax/
+**/old/
+**/*_old/
+**/act4_standalone/
+**/setx/
+
+# Superseded snapshots
+backups/
+oldrun/
+gfupd/
+
+# Backup copies
+*.bak*
