@@ -2668,6 +2668,40 @@ ar_nav_door_hot = function(nav, door)
 	return found and list
 end
 
+-- is a sector of the way through the door (its passage) on?
+ar_nav_passage_on = function(door)
+	local k, name = next(door.passage, nil)
+	while name do
+		if ar_sector_on(name) then
+			return TRUE
+		end
+		k, name = next(door.passage, k)
+	end
+	return nil
+end
+
+-- The trigger that opens a door whose way through is off, by the name the game's scripts give it (ga.ha_door, ga.ha_door_trigger): its
+-- table, or nil where the way is on already, the door is locked or there is no active trigger sector.
+ar_nav_door_trigger = function(door)
+	if not door.passage or not ar_sector_on or not ar_try_wait or ar_nav_passage_on(door) or (door.is_locked and door:is_locked()) then
+		return nil
+	end
+	local set = system.currentSet
+	local key, v = next(set, nil)
+	while key do
+		if v == door and type(key) == "string" then
+			local trig = set[key .. "_trigger"]
+			if type(trig) == "table" and trig ~= door then
+				if ar_nav_door_hot(ar_nav_of(set), trig) then
+					return trig
+				end
+			end
+		end
+		key, v = next(set, key)
+	end
+	return nil
+end
+
 -- Walks Manny into the sector of the door (the game takes him through from there). Returns nil if the door has none.
 ar_nav_enter_door = function(door, stop_when)
 	if not system.currentSet then
@@ -2681,6 +2715,16 @@ ar_nav_enter_door = function(door, stop_when)
 	local list = ar_nav_door_hot(nav, door)
 	if not list then
 		return nil
+	end
+	-- (a door whose way through is off until a trigger in front of it has opened it, an elevator: the trigger first, so that the way is there to plan)
+	local trig = ar_nav_door_trigger(door)
+	if trig then
+		ar_log("nav: its way through is off, into the trigger of " .. tostring(door.name) .. " first")
+		ar_nav_enter_door(trig, stop_when)
+		-- (the sentence of the trigger runs a moment later and opens the door, which brings its way through on)
+		AR_TRIG_DOOR = door
+		ar_try_wait(function() return ar_nav_passage_on(AR_TRIG_DOOR) end, 3000)
+		ar_log("nav: the way through is " .. (ar_nav_passage_on(door) and "on" or "still off"))
 	end
 	ar_log("nav: into the sector of " .. tostring(door.name))
 	AR_GOAL_REGION = TRUE
