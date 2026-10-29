@@ -77,6 +77,9 @@ end
 -- (the size of the box of an actor is not known to the scripts: the middle third of a man's box is round about this)
 AR_OBST_DEFAULT = 0.45
 AR_CS = 0.08
+-- (weighted A*: the straight line to the goal is scaled by this in the estimate. A step costs 1.6 to 3.4 times its length beside a wall, so the
+-- plain estimate leaves most of the floor to be searched; the way found costs at most this much more than the best)
+AR_HW = 1.8
 
 -- the number of elements of a list (the game has no getn)
 ar_nav_len = function(t)
@@ -1237,7 +1240,7 @@ ar_w_relax = function(nav, w, k, k2c, d, extra, link, thin)
 		AR_PPART[k2] = part2
 		local hx = x2 - AR_HX
 		local hy = y2 - AR_HY
-		ar_heap_push(AR_HEAP, k2, t + sqrt(hx * hx + hy * hy))
+		ar_heap_push(AR_HEAP, k2, t + AR_HW * sqrt(hx * hx + hy * hy))
 	end
 end
 
