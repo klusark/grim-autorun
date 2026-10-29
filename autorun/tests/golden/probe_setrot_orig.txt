@@ -1,0 +1,14 @@
+PROBE key 0 right after setrot: 0.0000 159.7811 0.0000
+PROBE key 0 1 frame after: 159.7811
+PROBE key 0 2 frames after: 159.7811
+PROBE key 0 step 1 -6.802561 26.394365 11.8372 yaw 159.7811
+PROBE key 0 step 2 -6.805121 26.388731 11.8344 yaw 159.7811
+PROBE key 0 step 3 -6.807682 26.383097 11.8315 yaw 159.7811
+PROBE key 0 step 4 -6.810243 26.377462 11.8287 yaw 159.7811
+PROBE key -1 right after setrot: 0.0000 159.7811 0.0000
+PROBE key -1 1 frame after: 159.7811
+PROBE key -1 2 frames after: 159.7811
+PROBE key -1 step 1 -6.802401 26.394310 11.8372 yaw 161.4653
+PROBE key -1 step 2 -6.804959 26.388674 11.8343 yaw 160.0076
+PROBE key -1 step 3 -6.807673 26.383097 11.8315 yaw 158.5997
+PROBE key -1 step 4 -6.810541 26.377583 11.8288 yaw 157.2956

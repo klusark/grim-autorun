@@ -1,0 +1,30 @@
+-- EMI chapter 30: the skin over the manhole, the bounce into the bank, the chain turns the light on, the funny shadow is Pegnose's nose
+ar_load(29)
+ar_log("=== EMI ch30 nose ===")
+ar_wait_for_control()
+ar_do("use", pop.luc_door)
+ar_wait_for_control()
+ar_do("use", luc.manhole, props.prosthetic_skin)
+ar_wait_for_control()
+AR_NO_SKIP = TRUE
+ar_do("use", luc.manhole)
+ar_wait_for(function() return ar_set_name() == "bank" or ar_set_name() == "lucre bank" end, 30000, "the bounce into the bank")
+AR_NO_SKIP = nil
+ar_wait_for_control()
+ar_state("bank")
+AR_NO_SKIP = TRUE
+ar_do("use", ban.ladder_down)
+ar_wait_for_control()
+ar_state("downstairs")
+ar_do("use", ban.chain)
+ar_wait_for_control()
+ar_log("light on " .. tostring(glob.ban_light_on))
+ar_do("use", ban.ladder_up)
+ar_wait_for_control()
+ar_state("upstairs")
+ar_do("lookAt", ban.puz_light)
+ar_wait_for(function() return glob.found_evidence end, 60000, "the nose")
+ar_wait_for_control()
+AR_NO_SKIP = nil
+ar_log("found_evidence=" .. tostring(glob.found_evidence) .. " nose=" .. tostring(props.pegnosenose.state))
+ar_checkpoint(30)

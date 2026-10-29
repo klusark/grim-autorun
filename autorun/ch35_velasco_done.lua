@@ -1,0 +1,25 @@
+-- Chapter 35: Velasco is told the vacancy, the union card and the strike are done.
+-- Checkpoint in slot 51.
+
+ar_load(34)
+AR_NEW = TRUE
+ar_log("start in " .. ar_set_name())
+ar_wait_for_control()
+ar_go(pc.ev_door, ev)
+ar_go(ev.be_door, bw)
+ar_go(bw.hb_door, hb)
+ar_go(hb.lm_door, lm)
+sleep_for(3000)
+ar_wait_for_control()
+ar_wait_for(function() return not find_script(lm.check_status) end, 300000)
+ar_wait_for_control()
+ar_state("in Limbo")
+ar_do("use", lm.velasco_obj)
+ar_wait_for(function() return ve2 and system.buttonHandler == ve2 end, 120000)
+ar_pick_if(ve2, 90)
+ar_pick_if(ve2, 100)
+ar_pick_exit(ve2)
+ar_wait_for_control()
+ar_log("talked_readiness=" .. tostring(lm.talked_readiness))
+ar_state("end of chapter 35")
+ar_checkpoint(35)

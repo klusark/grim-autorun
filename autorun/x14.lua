@@ -1,0 +1,10 @@
+ar_load(60)
+AR_NEW = TRUE
+ar_wait_for_control()
+ar_go(dr.ar_door, ar)
+ar_wait_for_control()
+ar_describe()
+ar_go(ar.vd_door, vd)
+ar_wait_for_control()
+ar_describe()
+exit()

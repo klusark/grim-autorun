@@ -1,0 +1,20 @@
+ar_has_pegnose_name = function() return glob.gbpegnose_name end
+-- EMI chapter 21: Deadeye Dave: the perfume tells him whose smell it is (Pegnose's customer name), the dials of the file system are set to the
+-- combination of that name, the file ("directions" through the swamp) is retrieved
+ar_load(20)
+ar_log("=== EMI ch21 files ===")
+ar_wait_for_control()
+ar_do("use", mot.lum_door)
+ar_wait_for_control()
+ar_do("use", lum.luc_door)
+ar_wait_for_control()
+ar_do("use", luc.pop_door)
+ar_wait_for_control()
+ar_check(ar_set_name() == "place o prosthetics", "in the Palace o' Prostheses")
+ar_do("use", pop.deadeye_obj, props.hanky)
+ar_wait_for_control()
+ar_do("use", pop.deadeye_obj, props.spritzer)
+ar_wait_for(ar_has_pegnose_name, 60000, "Deadeye to name the smell")
+ar_wait_for_control()
+ar_log("the name: " .. tostring(glob.gbpegnose_name) .. " know_mysts=" .. tostring(glob.know_mysts))
+ar_checkpoint(21)

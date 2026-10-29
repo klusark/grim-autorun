@@ -1,0 +1,7 @@
+ar_load(54)
+ar_wait_for_control()
+lb:switch_to_set()
+manny:put_in_set(lb)
+sleep_for(500)
+DumpSectors()
+exit()

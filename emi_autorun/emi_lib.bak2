@@ -1,0 +1,1302 @@
+-- EMI layer over ar_lib.lua (loaded after it, nothing in the library is changed). A function is redefined here only where
+-- EMI differs; where the change is small it keeps the name and signature of the Grim one so the two can be merged later.
+
+-- EMI has no vlist: the objects the player is offered are in `hotlist` (object -> angle), made by Build_Hotlist.
+ar_offer_list = function()
+	return vlist or hotlist
+end
+
+ar_gaze_at = function(obj)
+	local list = ar_offer_list()
+	if not obj.interest_actor or not list or not list[obj] then
+		return nil
+	end
+	hot_object = obj
+	hot_object_locked = TRUE
+	manny:head_look_at(obj.interest_actor)
+	sleep_for(100)
+	return hot_object == obj
+end
+
+ar_offered = function()
+	local list = ar_offer_list()
+	return list and AR_OBJ and list[AR_OBJ]
+end
+
+ar_why_not_offered = function(obj)
+	local list = ar_offer_list()
+	local p = manny:getpos()
+	local o = obj.interest_actor and obj.interest_actor:getpos()
+	return format("touchable=%s range=%s in the list=%s manny=%.2f %.2f %.2f object=%s", tostring(obj.touchable), tostring(obj.range),
+		tostring(list and list[obj]), p.x, p.y, p.z, o and format("%.2f %.2f %.2f", o.x, o.y, o.z) or "?")
+end
+
+-- EMI: an object in the hotlist is already close enough; Grim's walk (sectors, use points) is only tried when it is not.
+-- Not yet written for EMI: a walk to an object that is not offered fails with the reason.
+ar_obj_offered = function()
+	local l = ar_offer_list()
+	return l and AR_OBJ and l[AR_OBJ]
+end
+
+AR_TELEPORT_FIRST = { }
+AR_TELEPORT_FIRST["Lucre Island Town"] = TRUE
+
+ar_approach = function(obj)
+	AR_OBJ = obj
+	-- (the list is rebuilt every few frames, and not at all in a cutscene)
+	ar_try_wait(ar_obj_offered, 600)
+	if ar_obj_offered() then
+		return TRUE
+	end
+	-- a map (Melee, Lucre, ...): the destination is chosen with the arrow keys, which move the pointer from place to place
+	if system.currentSet.pointer_buttonHandler then
+		-- (the pointer's place is the destination; the game offers it only within the range of Guybrush, who is not on the map: the
+		-- game's own forced_hotlist is how a place is offered regardless)
+		local n = 0
+		while system.currentSet.objs[system.currentSet.pointer_spot] ~= obj and n < 8 do
+			-- (in this game the map's handler is not the button handler of the system, the keys go to it directly)
+			system.currentSet.pointer_buttonHandler(UPKEY, TRUE, nil)
+			sleep_for(200)
+			n = n + 1
+		end
+		if system.currentSet.objs[system.currentSet.pointer_spot] ~= obj then
+			return ar_fail("the pointer of the map never came to " .. tostring(obj.name))
+		end
+		forced_hotlist[obj] = 0
+		ar_try_wait(ar_obj_offered, 1500)
+		if ar_obj_offered() then
+			return TRUE
+		end
+		return ar_fail("the map place " .. tostring(obj.name) .. " is not offered: " .. ar_why_not_offered(obj))
+	end
+	-- hub sets whose floors the planner cannot join (Lucre town): straight to a floor point in the range of the object
+	if AR_TELEPORT_FIRST[ar_set_name()] and not AR_NO_TELEPORT then
+		AR_ANY_LEVEL = TRUE
+		local tpts, tn = ar_stand_points(obj)
+		AR_ANY_LEVEL = nil
+		if tn > 0 then
+			ar_log(format("NAV teleport (hub) to %.2f %.2f %.2f for %s", tpts[1][1], tpts[1][2], tpts[1][3], tostring(obj.name)))
+			manny:stop_moving()
+			manny:setpos(tpts[1][1], tpts[1][2], tpts[1][3])
+			sleep_for(300)
+			if system.currentSet ~= AR_START_SET then
+				-- (the floor point was in the door's own sector: the game took Guybrush through it)
+				return TRUE
+			end
+			ar_face(obj)
+			ar_try_wait(ar_obj_offered, 2000)
+			if ar_obj_offered() then
+				return TRUE
+			end
+		end
+	end
+	-- not offered: walk toward it (its use point, or itself): the way planned on the sectors ends at the nearest floor, and a
+	-- trigger on the way (a step up, a door) does its part. Then points of the floor inside its range, the nearest first.
+	local tx, ty, tz
+	if obj.use_pnt_x then
+		tx, ty, tz = obj.use_pnt_x, obj.use_pnt_y, obj.use_pnt_z
+	else
+		local o = ar_obj_pos(obj)
+		tx, ty, tz = o.x, o.y, o.z
+	end
+	AR_WALK_KEYS = TRUE
+	ar_walk_to(tx, ty, tz, ar_obj_offered)
+	AR_WALK_KEYS = nil
+	ar_try_wait(ar_obj_offered, 800)
+	local pts, np = ar_stand_points(obj)
+	local k = 1
+	while k <= np and k <= 6 and not ar_obj_offered() do
+		ar_walk_to(pts[k][1], pts[k][2], pts[k][3], ar_obj_offered)
+		ar_try_wait(ar_obj_offered, 800)
+		k = k + 1
+		-- (the next point only when this one was not reached, not when the object just needs facing)
+		if ar_floor_dist(pts[k - 1][1], pts[k - 1][3]) < 0.8 then
+			k = 99
+		end
+	end
+	-- the way there is not found (a level of a hub that the planner cannot join): as a last resort Guybrush is put on the floor
+	-- inside the range of the object, at its level (logged as NAV teleport; AR_NO_TELEPORT = TRUE turns it off)
+	if not ar_obj_offered() and not AR_NO_TELEPORT then
+		AR_ANY_LEVEL = TRUE
+		pts, np = ar_stand_points(obj)
+		AR_ANY_LEVEL = nil
+		ar_log("stand points at any level: " .. tostring(np))
+	end
+	if not ar_obj_offered() and not AR_NO_TELEPORT and np > 0 then
+		ar_log(format("NAV teleport to %.2f %.2f %.2f for %s", pts[1][1], pts[1][2], pts[1][3], tostring(obj.name)))
+		manny:stop_moving()
+		manny:setpos(pts[1][1], pts[1][2], pts[1][3])
+		sleep_for(300)
+	end
+	-- (not in front of Guybrush: the game only sees what he faces)
+	ar_face(obj)
+	ar_try_wait(ar_obj_offered, 3000)
+	if ar_obj_offered() then
+		return TRUE
+	end
+	return ar_fail(tostring(obj.name) .. " is not offered after walking up to it: " .. ar_why_not_offered(obj))
+end
+
+-- Copy of the Grim ar_skipper, skipping a cutscene after one 100 ms look instead of six (AR_SKIP_AFTER)
+if AR_SKIP_TASK then
+	stop_script(AR_SKIP_TASK)
+end
+-- The overrides of a door's walk and of a walk up to a door only clean up after themselves and stop the script that goes on to switch
+-- the set: skipping those leaves Guybrush standing in the old room. They are left to run (a few seconds).
+ar_override_is_door = function()
+	local f = system.override.override_func
+	return f == Object.skip_door or f == Object.skip_door_approach or f == Actor.stop_moving
+end
+
+AR_ESC_TRIES = 0
+ar_skipper = function()
+	local seen = 0
+	while TRUE do
+		-- a movie: the game's own loop (RunFullscreenMovie) ends it when the OVERRIDE control reads as held, so Escape is held down the
+		-- way a player holds it, and let go when the movie is over; EscapeMovie (EMI's name for Grim's StopMovie) when that did not end it
+		if IsMoviePlaying() and not AR_NO_SKIP and not AR_REAL then
+			AR_MOVIE_LOOKS = (AR_MOVIE_LOOKS or 0) + 1
+			if AR_MOVIE_LOOKS == 1 then
+				ar_log("skipping a movie")
+				ar_key_down("OVERRIDE")
+			elseif AR_MOVIE_LOOKS == 4 then
+				EscapeMovie()
+			end
+		else
+			if AR_MOVIE_LOOKS and AR_MOVIE_LOOKS > 0 then
+				ar_key_up("OVERRIDE")
+			end
+			AR_MOVIE_LOOKS = 0
+		end
+		if system.override and system.override.is_active and not AR_NO_SKIP and not AR_REAL and not ar_override_is_door() then
+			seen = seen + 1
+			if seen > (AR_SKIP_AFTER or 1) then
+				ar_log("skipping a cutscene (Escape try " .. tostring(AR_ESC_TRIES or 0) .. ")")
+				-- the movie is stopped first, as the overrides do not always stop it and the
+				-- next scene must not load with its sound still playing
+				-- the player's way first: the Escape key (control OVERRIDE) through the button handler, with its key up; the game's
+				-- own override call only when that did not end it a few looks later
+				if (AR_ESC_TRIES or 0) < 5 then
+					AR_ESC_TRIES = AR_ESC_TRIES + 1
+					ar_press_key(ar_real_key("OVERRIDE"))
+					ar_release_key(ar_real_key("OVERRIDE"))
+				else
+					AR_ESC_TRIES = (AR_ESC_TRIES or 0) + 1
+					if IsMoviePlaying() then
+						EscapeMovie()
+					end
+					call_override()
+					AR_ESC_TRIES = 0
+				end
+				seen = 0
+			end
+		else
+			seen = 0
+			AR_ESC_TRIES = 0
+		end
+		-- "press any key" (the termite circus, some credits): a player presses one
+		if system.press_any_key and system.buttonHandler == system.anykeyButtonHandler then
+			ar_log("pressing a key for press_any_key")
+			ar_press_key(ar_real_key("USE"))
+		end
+		-- TrackGuybrush (the hotlist, the doors' Doorman) dies of an error of the game in some sets; the player's game has it
+		-- running, so it is started again
+		if cutSceneLevel == 0 and not find_script(TrackGuybrush) and system.currentSet and ar_set_name() ~= "cdt" and ar_set_name() ~= "Monkey Island Act cards" then
+			AR_TG_DEAD = (AR_TG_DEAD or 0) + 1
+			if AR_TG_DEAD > 3 then
+				ar_log("TrackGuybrush was dead, started again")
+				single_start_script(TrackGuybrush)
+				AR_TG_DEAD = 0
+			end
+		else
+			AR_TG_DEAD = 0
+		end
+		-- a line that never ends (a voice that does not finish) is skipped like a player does, with the
+		-- key that expires the text
+		if IsMessageGoing() then
+			AR_MSG_TIME = (AR_MSG_TIME or 0) + 100
+			if AR_MSG_TIME > (AR_REAL and 180000 or 15000) then
+				ar_log("skipping a line that does not end")
+				ar_press_key(ar_real_key("EXPIRE_TEXT"))
+				AR_MSG_TIME = 0
+			end
+		else
+			AR_MSG_TIME = 0
+		end
+		-- Manny's idle animation (scratching, smoking) runs until the player touches a key
+		if manny.is_idling then
+			manny.stop_idle = TRUE
+		end
+		-- Manny runs, as a player holding the run key does. Every walk to an object turns
+		-- running off again, so it is switched on whenever he is walking.
+		if not AR_WALK and not AR_NEAR_SLOW and not manny.is_running and not manny.is_backward and manny:is_moving() then
+			manny:set_run(TRUE)
+		end
+		AR_NOW = (AR_NOW or 0) + 100
+		sleep_for(100)
+	end
+end
+AR_SKIP_TASK = start_script(ar_skipper)
+
+-- Copy of the Grim ar_do: the only change is how the code of "use X with Y" is named (EMI: system_name)
+ar_do = function(verb, noun1, noun2)
+	local code
+	local item = noun2
+	local label = verb .. " " .. tostring(noun1.name)
+	if noun2 then
+		label = label .. " with " .. tostring(noun2.name)
+	end
+	ar_wait_for_control()
+	if ar_walk_blocked() and not AR_KEEP_GOING then
+		return ar_fail("the keys of the verbs are off (Manny hangs on the chain, floats): " .. label)
+	end
+	AR_START_SET = system.currentSet
+	ar_log("do: " .. label .. format(" (Manny at %.2f %.2f)", manny:getpos().x, manny:getpos().y))
+	if noun2 then
+		code = noun1[gsub(verb .. "_" .. trim_header(noun2.system_name or noun2.string_name), " ", "_")]  -- EMI: system_name, spaces to _
+		if not code then
+			code = noun2["default_response"]
+		end
+	elseif verb == "use" and noun1.walkOut then
+		code = noun1.walkOut
+	else
+		code = noun1[verb]
+	end
+	if not code then
+		return ar_fail("nothing happens for " .. label)
+	end
+	AR_CODE = code
+	if not noun2 and noun1.owner == manny then
+		-- an inventory item on its own
+		item = noun1
+	end
+	-- (an item used on an object is taken after walking up to it: the inventory does not open while
+	-- Manny stands in a door's sector)
+	if item and (item == noun1 or not AR_NEW) then
+		if not ar_hold(item) then
+			return ar_fail("could not take " .. tostring(item.name) .. " in hand")
+		end
+	end
+	if item == noun1 then
+		-- used on its own, with nothing in front of Manny to use it on
+		hot_object = nil
+		hot_object_locked = FALSE
+		ar_press("use")
+		AR_KEYS_USED = AR_KEYS_USED + 1
+	else
+		if manny.is_holding and manny.is_holding ~= item and verb ~= "lookAt" and not ar_put_away() then
+			return ar_fail("could not put away what Manny holds, for " .. label)
+		end
+		AR_APPROACH_ITEM = noun2
+		ar_approach(noun1)
+		AR_APPROACH_ITEM = nil
+		if ar_set_changed() then
+			-- walking up to a door went through it
+			ar_log("walked through " .. tostring(noun1.name))
+			ar_wait_for_control()
+			return TRUE
+		end
+		if not ar_offered() and (find_script(Sentence) or find_script(AR_CODE) or cutSceneLevel > 0) then
+			-- the game is already taking Manny through it by itself (the door's walk out)
+			ar_log("the game is walking out through " .. tostring(noun1.name))
+			ar_wait_for(function() return ar_set_changed() or (not find_script(Sentence) and not find_script(AR_CODE) and cutSceneLevel == 0) end, 120000, "the game's walk out through " .. tostring(noun1.name))
+			ar_wait_for_control()
+			return TRUE
+		end
+		-- a cutscene on the way (a rail slide, a stair) can put the item away again
+		if item and manny.is_holding ~= item then
+			if not ar_hold(item) then
+				return ar_fail("could not take " .. tostring(item.name) .. " in hand again")
+			end
+		end
+		if not ar_send_verb(verb, noun1, label) then
+			return nil
+		end
+		AR_KEYS_USED = AR_KEYS_USED + 1
+	end
+	sleep_for(300)
+	-- EMI: a door's walk out runs inside the Sentence script, not as a script of its own
+	while find_script(code) or find_script(Sentence) do
+		sleep_for(100)
+	end
+	ar_wait_for_control()
+	wait_for_message()
+	return TRUE
+end
+
+-- Note: the game starts in TombRaider control (MarioControl is nil), the same turn-and-walk keys as Grim, so the library's ar_steer
+-- and ar_face work unchanged (the direction-key control of MarioStyleControl is only used when the player turns it on).
+
+AR_TURN_SIGN = -1
+-- The heading toward a floor point in the frame of getrot().y: yaw 0 walks +z, yaw 90 walks +x (measured: yaw 270 walked -x).
+-- GetActorYawToPoint of the engine gives atan2(-dx, dz) for EMI, the mirror of that, so it cannot be mixed with getrot().y.
+-- (to check against the original in Ghidra: is this the engine's mistake or EMI's own convention?)
+ar_want_yaw = function(x, z)
+	local p = manny:getpos()
+	return -GetActorYawToPoint(manny.hActor, x, p.y, z)  -- (Lua 3.1 here has no atan2)
+end
+-- Copy of the Grim ar_steer, the sign of the turn made a variable
+ar_steer = function(x, y, z, thr)
+	local yaw = manny:getrot().y
+	if AR_STEER_TURNED and AR_STEER_TURNED2 and AR_STEER_YAW then
+		-- (only while the key was pressed in the frames before: and not the jumps of a wall that turns him along itself)
+		local dy = yaw - AR_STEER_YAW
+		dy = abs(dy - 360 * floor(dy / 360 + 0.5))
+		if dy > 0.05 and dy < 2.5 * AR_TURN_STEP then
+			AR_TURN_STEP = 0.9 * AR_TURN_STEP + 0.1 * dy
+		end
+	end
+	AR_STEER_TURNED2 = AR_STEER_TURNED
+	AR_STEER_YAW = yaw
+	local d = ar_want_yaw(x, z) - yaw  -- EMI: see ar_want_yaw
+	d = d - 360 * floor(d / 360 + 0.5)
+	AR_STEER_D = d
+	local lim = 1.6 * AR_TURN_STEP
+	if lim < 6 then
+		lim = 6
+	end
+	if abs(d) > lim then
+		-- The original moves no actor while a movie plays, though the cutscene flag is down (the movie after a puzzle,
+		-- with the control already back): the keys do nothing for a player either, who waits for the movie or skips it.
+		-- Turns that do not turn, with a movie going: wait for it.
+		if AR_TURN_YAW and abs(yaw - AR_TURN_YAW) < 0.05 then
+			AR_TURN_STALL = (AR_TURN_STALL or 0) + 1
+		else
+			AR_TURN_STALL = 0
+		end
+		AR_TURN_YAW = yaw
+		if AR_TURN_STALL > ar_fr(45) and IsMoviePlaying and IsMoviePlaying() then
+			AR_TURN_STALL = 0
+			ar_log("steer: Manny does not turn while a movie plays, waiting for the movie")
+			ar_try_wait(function() return not IsMoviePlaying() end, 180000)
+			ar_wait_for_control()
+			AR_STEER_TURNED = nil
+			return TRUE
+		end
+		-- EMI: TurnActor(+1) lowers the yaw (AR_TURN_SIGN = -1); in Grim it raises it (nil / 1)
+		if (d > 0) == ((AR_TURN_SIGN or 1) > 0) then
+			TurnActor(manny.hActor, 1)
+		else
+			TurnActor(manny.hActor, -1)
+		end
+		AR_STEER_TURNED = TRUE
+		return TRUE
+	end
+	AR_STEER_TURNED = nil
+	return nil
+end
+
+-- Same as the Grim ar_face, but the object's point is its real 3D position: in EMI y is up and the floor is x/z (Grim's obj_x/obj_y
+-- are the floor plane)
+ar_face = function(obj)
+	local o = ar_obj_pos(obj)
+	if not o.x then
+		return ar_fail("no position for " .. tostring(obj.name))
+	end
+	local t = 0
+	while ar_steer(o.x, o.y, o.z, 3) and t < 8000 do
+		break_here()
+		t = t + system.frameTime
+	end
+	if t >= 8000 then
+		return ar_fail("the turn toward " .. tostring(obj.name) .. " did not end in 8 seconds")
+	end
+end
+
+-- Survey of the current set for planning a route: every object of the set with its place, range, whether it can be touched,
+-- the verbs it has of its own and the doors (walkOut). EMI-only tool.
+ar_survey = function()
+	local s = system.currentSet
+	local p = manny:getpos()
+	ar_log(format("SURVEY set %s guybrush (%.2f %.2f %.2f) yaw %.0f setup %s", ar_set_name(), p.x, p.y, p.z, manny:getrot().y, tostring(s:current_setup())))
+	local k, v = next(s, nil)
+	while k do
+		if type(v) == "table" and v.interest_actor and v.name then
+			local o = v.interest_actor:getpos()
+			local verbs = ""
+			if v.walkOut then verbs = verbs .. " DOOR" end
+			if v.use ~= Object.use and v.use then verbs = verbs .. " use" end
+			if v.pickUp ~= Object.pickUp and v.pickUp then verbs = verbs .. " pickUp" end
+			if v.talkTo then verbs = verbs .. " talkTo" end
+			-- (Lua 3.1's format drops the last character of a %s argument: the strings are joined instead)
+			ar_log("SURVEY obj " .. tostring(k) .. " = " .. tostring(v.name) .. format(" (%.2f %.2f %.2f) range ", o.x, o.y, o.z) .. tostring(v.range) .. " touch " .. tostring(v.touchable) .. verbs)
+		end
+		k, v = next(s, k)
+	end
+	local inv = ar_inventory()
+	ar_log("SURVEY inventory: " .. inv)
+end
+
+-- EMI walking: the floor is x/z (y is up). Same name and meaning as Grim's ar_walk_to(x, y, z, stop_when, max_ms) with the point in
+-- EMI's own axes. The steering is the game's turn key and walk_forward, as for Grim; the planner of ar_nav.lua is for Grim's
+-- sectors and is not used.
+ar_floor_dist = function(x, z)
+	local p = manny:getpos()
+	return sqrt((p.x - x) * (p.x - x) + (p.z - z) * (p.z - z))
+end
+
+ar_walk_direct = function(x, y, z, stop_when, max_ms)
+	local budget = max_ms or AR_WALK_MAX or (8000 + 1000 * ar_floor_dist(x, z))
+	local waited = 0
+	local stuck = 0
+	local last = manny:getpos()
+	local startset = system.currentSet
+	ar_wait_for_control()
+	manny:set_run(TRUE)
+	while ar_floor_dist(x, z) > (AR_WALK_TOL or 0.3) and waited < budget and system.currentSet == startset and not (stop_when and stop_when()) and stuck < 120 do
+		if cutSceneLevel > 0 then
+			ar_wait_for_control()
+		end
+		local turning = ar_steer(x, last.y, z, 8)
+		if not turning then
+			manny:walk_forward()
+		end
+		break_here()
+		waited = waited + system.frameTime
+		local p = manny:getpos()
+		if abs(p.x - last.x) + abs(p.z - last.z) < 0.0005 and not turning then
+			stuck = stuck + 1
+		else
+			stuck = 0
+		end
+		last = p
+	end
+	AR_STEER_TURNED = nil
+	if ar_floor_dist(x, z) > (AR_WALK_TOL or 0.3) and system.currentSet == startset and not (stop_when and stop_when()) then
+		local p = manny:getpos()
+		ar_log(format("walk stopped at %.2f %.2f after %d ms (stuck %d) toward %.2f %.2f", p.x, p.z, waited, stuck, x, z))
+		return nil
+	end
+	return TRUE
+end
+
+-- EMI map of the walkable floor (x across, z down the page, 'M' Guybrush, '.' not walkable): for planning routes by eye
+ar_map = function(x0, x1, z0, z1, step)
+	local p = manny:getpos()
+	local z = z1
+	ar_log(format("MAP set %s y=%.2f x %.0f..%.0f step %.1f", ar_set_name(), p.y, x0, x1, step))
+	while z >= z0 do
+		local row = ""
+		local x = x0
+		while x <= x1 do
+			local c = "."
+			local id = GetPointSector(x, p.y, z)
+			if id then
+				c = strsub("abcdefghijklmnopqrstuvwxyz0123456789", mod(id, 36) + 1, mod(id, 36) + 1)
+			end
+			if abs(x - p.x) < step / 2 and abs(z - p.z) < step / 2 then
+				c = "M"
+			end
+			row = row .. c
+			x = x + step
+		end
+		ar_log(format("MAP %6.1f ", z) .. row)
+		z = z - step
+	end
+end
+
+-- EMI route planning on the walk sectors: a grid breadth-first search where a cell is walkable when GetPointSector finds a
+-- sector there (tried at a few heights: ramps and steps lie above y=0), then the corners cut by straight lines that stay on walkable
+-- cells. Returns a list of { x, z } or nil. (Grim's ar_nav.lua reads the set files; this asks the engine.)
+AR_GRID = 0.5
+AR_YOFF = { 0, 0.2, -0.2, 0.4, -0.4, 0.1, -0.1, 0.6, -0.6, 1, -1 }
+-- the height at which a cell is floor, found near y (the floor of a stair or a slope is at another height than its neighbour's), or nil
+ar_cell_y = function(x, z, y)
+	-- memoized per set and quarter-unit cell and height band (a walk asks about the same cells again and again)
+	local set = ar_set_name()
+	if AR_CELL_SET ~= set then
+		AR_CELL_SET = set
+		AR_CELLC = { }
+	end
+	local key = (floor(x * 4 + 0.5) + 2000) * 100000 + (floor(z * 4 + 0.5) + 2000) * 40 + floor(y * 2 + 0.5) + 20
+	local c = AR_CELLC[key]
+	if c then
+		if c == -999 then
+			return nil
+		end
+		if c >= 1000 then
+			return c - 2000, TRUE
+		end
+		return c
+	end
+	local i = 1
+	while AR_YOFF[i] do
+		if GetPointSector(x, y + AR_YOFF[i], z) then
+			AR_CELLC[key] = y + AR_YOFF[i]
+			return y + AR_YOFF[i]
+		end
+		i = i + 1
+	end
+	-- the cheat boxes of a set (HOT sectors named ...cheatbox, the way up a stair or onto a ledge) are walked into on purpose: the game
+	-- moves Guybrush to the other level; the walk is planned again from there
+	local id, name = GetPointSector(x, y, z, HOT)
+	if id and name and strfind(name, "cheat", 1, TRUE) then
+		AR_CELLC[key] = y + 2000
+		return y, TRUE
+	end
+	AR_CELLC[key] = -999
+	return nil
+end
+
+ar_line_ok = function(x1, z1, x2, z2, y1, y2)
+	local d = sqrt((x2 - x1) * (x2 - x1) + (z2 - z1) * (z2 - z1))
+	local n = floor(d / 0.4) + 1
+	local i = 1
+	local y = y1
+	while i <= n do
+		y = ar_cell_y(x1 + (x2 - x1) * i / n, z1 + (z2 - z1) * i / n, y)
+		if not y then
+			return nil
+		end
+		i = i + 1
+	end
+	return TRUE
+end
+
+ar_cellkey = function(cx, cz)
+	return (cx + 500) * 1000 + (cz + 500)
+end
+
+ar_grid_path = function(tx, tz)
+	local p = manny:getpos()
+	local g = AR_GRID
+	local sx = floor(p.x / g + 0.5)
+	local sz = floor(p.z / g + 0.5)
+	local gx = floor(tx / g + 0.5)
+	local gz = floor(tz / g + 0.5)
+	local S = { prev = { }, px = { }, pz = { }, py = { }, queue = { } }
+	local head = 1
+	local tail = 1
+	local skey = ar_cellkey(sx, sz)
+	S.queue[1] = { sx, sz }
+	S.prev[skey] = skey
+	S.px[skey] = sx
+	S.pz[skey] = sz
+	S.py[skey] = p.y
+	local found = nil
+	local bestd = nil
+	local bestkey = nil
+	local termd = nil
+	local termkey = nil
+	local nodes = 0
+	-- (the goal may lie just outside the sectors, a door's point: a cell within 1.5 cells of it ends the search)
+	while head <= tail and not found and nodes < 40000 do
+		local c = S.queue[head]
+		head = head + 1
+		nodes = nodes + 1
+		local cx = c[1]
+		local cz = c[2]
+		local ck = ar_cellkey(cx, cz)
+		local dgoal = (cx - gx) * (cx - gx) + (cz - gz) * (cz - gz)
+		if not bestd or dgoal < bestd then
+			bestd = dgoal
+			bestkey = ck
+		end
+		if abs(cx - gx) <= 1.5 and abs(cz - gz) <= 1.5 then
+			found = ck
+		else
+			local dx = -1
+			while dx <= 1 do
+				local dz = -1
+				while dz <= 1 do
+					local nx = cx + dx
+					local nz = cz + dz
+					local nk = ar_cellkey(nx, nz)
+					if (dx ~= 0 or dz ~= 0) and not S.prev[nk] then
+						local ny, cheat = ar_cell_y(nx * g, nz * g, S.py[ck])
+						if ny then
+							-- (a diagonal step must not cut a corner of a wall)
+							if dx == 0 or dz == 0 or (ar_cell_y((cx + dx) * g, cz * g, S.py[ck]) and ar_cell_y(cx * g, (cz + dz) * g, S.py[ck])) then
+								S.prev[nk] = ck
+								S.px[nk] = nx
+								S.pz[nk] = nz
+								S.py[nk] = ny
+								if cheat then
+									-- (a cheat box moves Guybrush on contact: stepped into, not walked through, and a way's end if it leads nearer)
+									local dterm = (nx - gx) * (nx - gx) + (nz - gz) * (nz - gz)
+									if not termd or dterm < termd then
+										termd = dterm
+										termkey = nk
+									end
+								else
+									tail = tail + 1
+									S.queue[tail] = { nx, nz }
+								end
+							end
+						end
+					end
+					dz = dz + 1
+				end
+				dx = dx + 1
+			end
+		end
+	end
+	if not found and termkey and (not bestd or termd < bestd) and head > tail then
+		found = termkey
+		ar_log("grid path: through a cheat box toward " .. format("%.1f %.1f", tx, tz))
+	end
+	if not found and bestkey and head > tail then
+		found = bestkey
+		ar_log(format("grid path: goal %.1f %.1f is off the reachable floor, going to the nearest cell (%.1f cells away)", tx, tz, sqrt(bestd) * g))
+	end
+	if not found then
+		ar_log(format("grid path: no way from %.1f %.1f to %.1f %.1f (%d cells)", p.x, p.z, tx, tz, nodes))
+		return nil
+	end
+	local rev = { }
+	local n = 0
+	local k = found
+	while k ~= skey do
+		n = n + 1
+		rev[n] = k
+		k = S.prev[k]
+	end
+	local pts = { }
+	local m = 0
+	local i = n
+	while i >= 1 do
+		m = m + 1
+		pts[m] = { S.px[rev[i]] * g, S.pz[rev[i]] * g, S.py[rev[i]] }
+		i = i - 1
+	end
+	local out = { }
+	local o = 0
+	local ax = p.x
+	local az = p.z
+	local ay = p.y
+	local j = 1
+	while j <= m do
+		local far = j
+		local t = j
+		while t <= m and t <= j + 25 do
+			if ar_line_ok(ax, az, pts[t][1], pts[t][2], ay, pts[t][3]) then
+				far = t
+			end
+			t = t + 1
+		end
+		o = o + 1
+		out[o] = pts[far]
+		ax = pts[far][1]
+		az = pts[far][2]
+		ay = pts[far][3]
+		j = far + 1
+	end
+	return out, o
+end
+
+-- The walk of the EMI layer: the planned way (ar_grid_path) when the straight line leaves the sectors, then the last leg direct.
+ar_walk_planned = function(x, y, z, stop_when, max_ms)
+	local ok = TRUE
+	AR_WALK_SET = system.currentSet
+	local round = 1
+	local again = TRUE
+	-- (replanned after a hop: the cheat boxes of a set move Guybrush to another level, which the plan cannot see past)
+	while again and round <= 6 and system.currentSet == AR_WALK_SET and not (stop_when and stop_when()) do
+		again = nil
+		local p = manny:getpos()
+		if not AR_NO_GRID and not ar_line_ok(p.x, p.z, x, z, p.y, p.y) then
+			local pts, n = ar_grid_path(x, z)
+			if pts then
+				local i = 1
+				ar_log("walk: planned way of " .. tostring(n) .. " legs (round " .. tostring(round) .. ")")
+				while i <= n and ok and system.currentSet == AR_WALK_SET and not (stop_when and stop_when()) and not again do
+					-- (a leg ends within 15 cm: the way runs along edges of the floor, a corner passed wide is a wall)
+					AR_WALK_TOL = 0.15
+					local before = manny:getpos().y
+					ok = ar_walk_direct(pts[i][1], pts[i][3], pts[i][2], stop_when, max_ms)
+					AR_WALK_TOL = nil
+					if abs(manny:getpos().y - before) > 0.8 then
+						-- hopped to another level: plan again from here
+						again = TRUE
+						ok = TRUE
+					end
+					i = i + 1
+				end
+				-- (the last leg went into a cheat box, whose hop came a moment later)
+				if not again and ok and i > n then
+					sleep_for(300)
+					if abs(manny:getpos().y - p.y) > 0.8 then
+						again = TRUE
+					end
+				end
+			end
+		end
+		round = round + 1
+	end
+	if not (stop_when and stop_when()) and system.currentSet == AR_WALK_SET then
+		return ar_walk_direct(x, y, z, stop_when, max_ms)
+	end
+	return ok
+end
+
+-- Every movie of the game is played by RunFullscreenMovie (_cut_scenes.lua). In a simulated run a movie plays at the game's own
+-- length (a minute of game time) while the scripts, the skipper among them, do not run, so Escape cannot reach it: it is not
+-- started at all (a real run, AR_REAL, plays it). What the original function leaves behind is kept: the flag the game reads for
+-- "this movie was seen", and the music state.
+if not AR_OLD_RFM then
+	AR_OLD_RFM = RunFullscreenMovie
+	RunFullscreenMovie = function(name, mode)
+		if AR_REAL then
+			return AR_OLD_RFM(name, mode)
+		end
+		ar_log("movie skipped, not started: " .. tostring(name))
+		music_state:set_state(STATE_NULL, TRUE)
+		glob["_cs_" .. strlower(name)] = TRUE
+		return TRUE
+	end
+end
+
+-- The game's own pathfinder first, as the Grim library does (its walk to a point is the game's walk; the keys are the fallback): it
+-- goes up the steps and through the sector joins that the keys cannot. The keys walk with the planned way only if the game's walk
+-- ended away from the point.
+ar_walk_to = function(x, y, z, stop_when, max_ms)
+	if not AR_NO_HOPS then
+		ar_level_hop(y)
+	end
+	local budget = max_ms or AR_WALK_MAX or (10000 + 1000 * ar_floor_dist(x, z))
+	local waited = 0
+	local startset = system.currentSet
+	ar_wait_for_control()
+	if AR_WALK_KEYS then
+		return ar_walk_planned(x, y, z, stop_when, max_ms)
+	end
+	manny:walkto(x, y, z, nil, nil, nil, nil, TRUE)
+	break_here()
+	while (manny:is_moving() or manny:is_turning()) and waited < budget and system.currentSet == startset and not (stop_when and stop_when()) do
+		if cutSceneLevel > 0 then
+			ar_wait_for_control()
+		end
+		break_here()
+		waited = waited + system.frameTime
+	end
+	if system.currentSet ~= startset or (stop_when and stop_when()) then
+		return TRUE
+	end
+	if manny:is_moving() then
+		manny:stop_moving()
+	end
+	manny:set_run(FALSE)
+	if ar_floor_dist(x, z) > (AR_WALK_TOL or 0.5) then
+		ar_log(format("walk: the game's walk ended %.2f from the point, trying the keys", ar_floor_dist(x, z)))
+		return ar_walk_planned(x, y, z, stop_when, max_ms)
+	end
+	return TRUE
+end
+
+-- The map places are offered through forced_hotlist (ar_approach); an entry left there makes TrackGuybrush die with an error in
+-- build_sentence_lines in the next set (no sentence line for a place of another set), and with it the hotlist and the Doorman.
+-- So it is cleared as soon as the verb is done.
+AR_DO_EMI = ar_do
+ar_not_switching = function()
+	return not set_switching and cutSceneLevel == 0 and system.currentSet and find_script(TrackGuybrush)
+end
+
+-- The new set is entered when the sets, the cutscene and TrackGuybrush are all ready (the objects of a set only get their actors then)
+ar_settled = function()
+	ar_try_wait(ar_not_switching, 15000)
+	sleep_for(300)
+	ar_wait_for_control()
+end
+
+ar_door_left = function()
+	return system.currentSet ~= AR_DOOR_SET
+end
+
+ar_do = function(verb, noun1, noun2)
+	AR_DOOR_SET = system.currentSet
+	local r = AR_DO_EMI(verb, noun1, noun2)
+	forced_hotlist = { }
+	-- a door: the walk through it, the door's animation and the new set take a while after the verb's script is done
+	if r and verb == "use" and noun1.walkOut and system.currentSet == AR_DOOR_SET then
+		ar_try_wait(ar_door_left, 20000)
+		ar_settled()
+	end
+	-- (TrackGuybrush has the loop of the game: if an error killed it, it is started again)
+	if not find_script(TrackGuybrush) then
+		ar_log("TrackGuybrush was dead, started again")
+		single_start_script(TrackGuybrush)
+	end
+	return r
+end
+
+-- Where to stand for an object to be offered: the game offers an object within its range of Guybrush (a 3D distance from the
+-- object's actor), so a point of the floor near the object that is inside the range, the nearest to Guybrush first. The floor height is
+-- found by asking the sectors at heights from -1 to 5.
+-- where an object is: its actor's position (what the survey prints)
+ar_obj_pos = function(obj)
+	if obj.interest_actor then
+		local p = obj.interest_actor:getpos()
+		if p and p.x then
+			return p
+		end
+	end
+	if obj.obj_x then
+		return { x = obj.obj_x, y = obj.obj_y, z = obj.obj_z }
+	end
+	if obj.use_pnt_x then
+		return { x = obj.use_pnt_x, y = obj.use_pnt_y, z = obj.use_pnt_z }
+	end
+	return { }
+end
+
+-- The heights of the floors of the current set: the sectors of some sets are exact planes (tolerance a centimetre), so a scan in steps
+-- misses them. The designers put the use points and out points of the objects on the floor, so those heights (and Guybrush's) are
+-- the levels. Cached per set; ar_level_note(y) adds one.
+ar_levels = function()
+	local set = ar_set_name()
+	if AR_LEVELS_SET ~= set then
+		AR_LEVELS_SET = set
+		AR_LEVELS = { }
+		AR_LEVELS_N = 0
+		local s = system.currentSet
+		local k, v = next(s, nil)
+		while k do
+			if type(v) == "table" and v.interest_actor then
+				if v.use_pnt_y then ar_level_note(v.use_pnt_y) end
+				if v.out_pnt_y then ar_level_note(v.out_pnt_y) end
+			end
+			k, v = next(s, k)
+		end
+	end
+	ar_level_note(manny:getpos().y)
+	return AR_LEVELS, AR_LEVELS_N
+end
+
+ar_level_note = function(y)
+	if not AR_LEVELS then
+		return
+	end
+	local i = 1
+	while i <= AR_LEVELS_N do
+		if abs(AR_LEVELS[i] - y) < 0.02 then
+			return
+		end
+		i = i + 1
+	end
+	AR_LEVELS_N = AR_LEVELS_N + 1
+	AR_LEVELS[AR_LEVELS_N] = y
+end
+
+ar_floor_ys = function(x, z)
+	local ys = { }
+	local n = 0
+	local lv, ln = ar_levels()
+	local i = 1
+	while i <= ln do
+		if GetPointSector(x, lv[i], z) then
+			n = n + 1
+			ys[n] = lv[i]
+		end
+		i = i + 1
+	end
+	-- (and a scan for the sets whose floors are sloped, which the level heights do not name)
+	local y = -1
+	while y <= 6 do
+		if GetPointSector(x, y, z) then
+			local known = nil
+			local j = 1
+			while j <= n do
+				if abs(ys[j] - y) < 0.35 then
+					known = TRUE
+				end
+				j = j + 1
+			end
+			if not known then
+				n = n + 1
+				ys[n] = y
+			end
+		end
+		y = y + 0.1
+	end
+	return ys, n
+end
+
+-- the candidates, best first: { x, y, z, d } (d the distance from Guybrush)
+ar_stand_points = function(obj)
+	local o = ar_obj_pos(obj)
+	local p = manny:getpos()
+	if not o or not o.x or not o.y or not o.z then
+		return { }, 0
+	end
+	local r = (tonumber(obj.range) or 3) - 0.2
+	if r < 0.5 then
+		r = 0.5
+	end
+	local best = { }
+	local nb = 0
+	local dx = -r
+	while dx <= r do
+		local dz = -r
+		while dz <= r do
+			local x = o.x + dx
+			local z = o.z + dz
+			if dx * dx + dz * dz <= r * r then
+				local ys, n = ar_floor_ys(x, z)
+				local i = 1
+				while i <= n do
+					local dy = o.y - ys[i]
+					if dx * dx + dz * dz + dy * dy <= r * r and (AR_ANY_LEVEL or abs(ys[i] - p.y) < 2.5) then
+						nb = nb + 1
+						best[nb] = { x, ys[i], z, sqrt((x - p.x) * (x - p.x) + (z - p.z) * (z - p.z)) + 3 * abs(ys[i] - p.y) }
+					end
+					i = i + 1
+				end
+			end
+			dz = dz + 0.5
+		end
+		dx = dx + 0.5
+	end
+	-- insertion sort by d (a few hundred entries at most)
+	local i = 2
+	while i <= nb do
+		local v = best[i]
+		local j = i - 1
+		while j >= 1 and best[j][4] > v[4] do
+			best[j + 1] = best[j]
+			j = j - 1
+		end
+		best[j + 1] = v
+		i = i + 1
+	end
+	return best, nb
+end
+
+-- Lists the sectors of the current set of one type (WALK, HOT, ...) with the area and heights where each was found, for planning:
+-- every name once, x/z from the scan (step) and the heights that answered.
+ar_sectors = function(sectype, x0, x1, z0, z1, step)
+	local seen = { }
+	local order = { }
+	local n = 0
+	local x = x0
+	while x <= x1 do
+		local z = z0
+		while z <= z1 do
+			local y = -1
+			while y <= 5 do
+				local id, name = GetPointSector(x, y, z, sectype)
+				if id then
+					local e = seen[name]
+					if not e then
+						e = { x0 = x, x1 = x, z0 = z, z1 = z, y0 = y, y1 = y }
+						seen[name] = e
+						n = n + 1
+						order[n] = name
+					end
+					if x < e.x0 then e.x0 = x end
+					if x > e.x1 then e.x1 = x end
+					if z < e.z0 then e.z0 = z end
+					if z > e.z1 then e.z1 = z end
+					if y < e.y0 then e.y0 = y end
+					if y > e.y1 then e.y1 = y end
+				end
+				y = y + 0.1
+			end
+			z = z + step
+		end
+		x = x + step
+	end
+	local i = 1
+	while i <= n do
+		local e = seen[order[i]]
+		ar_log(format("SECTORS %s: x %.1f..%.1f z %.1f..%.1f y %.2f..%.2f", tostring(order[i]), e.x0, e.x1, e.z0, e.z1, e.y0, e.y1))
+		i = i + 1
+	end
+end
+
+-- Dialogs: the table of a dialog (dart1, nv1 ...) only exists once Dialog:run has loaded its file, so lines are named by the global's
+-- name. Same ar_pick of the library underneath.
+ar_dlg = function(name)
+	local waited = 0
+	while not getglobal(name) and waited < 20000 do
+		sleep_for(100)
+		waited = waited + 100
+	end
+	return getglobal(name)
+end
+
+ar_say = function(name, line)
+	local d = ar_dlg(name)
+	if not d then
+		return ar_fail("the dialog " .. name .. " never started")
+	end
+	return ar_pick(d, line)
+end
+
+ar_say_exit = function(name)
+	local d = ar_dlg(name)
+	if not d then
+		return ar_fail("the dialog " .. name .. " never started")
+	end
+	return ar_pick_exit(d)
+end
+
+-- waits until the dialog has ended (the game has the normal controls back)
+ar_dlg_ended = function()
+	local d = getglobal(AR_DLG_NAME)
+	return not d or not d.running
+end
+
+ar_dlg_done = function(name)
+	AR_DLG_NAME = name
+	ar_wait_for(ar_dlg_ended, 60000, "the dialog " .. name .. " to end")
+	ar_wait_for_control()
+end
+
+-- The lines a dialog offers now: numbers and texts (for planning a conversation)
+ar_lines = function(name)
+	local d = getglobal(name)
+	if not d then
+		ar_log("LINES " .. name .. ": no such dialog")
+		return
+	end
+	local s = ""
+	local k, v = next(d, nil)
+	while k do
+		if type(k) == "number" and type(v) == "table" and v.text and v[d.node] and not v.off then
+			s = s .. tostring(k) .. "=" .. strsub(tostring(v.text), 1, 60) .. " | "
+		end
+		k, v = next(d, k)
+	end
+	ar_log("LINES " .. name .. " node=" .. tostring(d.node) .. ": " .. s)
+end
+
+-- The first line of a dialog that is offered now and is not an exit line (nil when none), and whether line n is offered
+ar_first_line = function(name)
+	local d = getglobal(name)
+	local best = nil
+	local k, v = next(d, nil)
+	while k do
+		if type(k) == "number" and type(v) == "table" and v.text and v[d.node] and not v.off and (not best or k < best) then
+			best = k
+		end
+		k, v = next(d, k)
+	end
+	return best
+end
+
+ar_offered_line = function(name, n)
+	local d = getglobal(name)
+	return d and d[n] and d[n][d.node] and not d[n].off
+end
+
+-- Hops that the game does with a trigger strip (HOT sector) and the walk planner cannot see. Melee town: the patio of the SCUMM bar is
+-- 0.5 higher than the plaza; walking into the strip at its edge (x 13.5) hops down (or up, from the plaza side).
+ar_mel_patio_down = function()
+	if ar_set_name() == "melee town" and manny:getpos().y > 0.3 then
+		AR_WALK_KEYS = TRUE
+		ar_walk_to(13.1, 0.5, 2.4)
+		AR_WALK_KEYS = nil
+		ar_settled()
+	end
+end
+
+-- EMI: the number keys are bound to items by glob.item_bindings[KEYn - KEY1] (the game binds an item when it is picked up; the player
+-- rebinds with shift + key). Grim's keys are the places of the inventory.
+ar_hold_done = function()
+	return manny.is_holding == AR_HOLD_ITEM
+end
+
+ar_hold = function(item)
+	if manny.is_holding == item then
+		return TRUE
+	end
+	local slot = nil
+	local free = nil
+	local i = 0
+	while i < 10 do
+		if glob.item_bindings[i] == item then
+			slot = i
+		end
+		-- (a binding of an item that is gone from the inventory is free: the game does not clear it)
+		if (not glob.item_bindings[i] or glob.item_bindings[i].owner ~= manny) and not free then
+			free = i
+		end
+		i = i + 1
+	end
+	if not slot then
+		if not free then
+			ar_log("no key free for " .. tostring(item.name))
+			return nil
+		end
+		glob.item_bindings[free] = item
+		slot = free
+	end
+	AR_HOLD_ITEM = item
+	ar_press_key(KEY1 + slot)
+	ar_wait_for(ar_hold_done, 30000, "the item in hand")
+	ar_wait_for_control()
+	return manny.is_holding == item
+end
+
+-- The game's third key, DEFAULT_ACT ("Talk to", "Look at" ... whatever the object calls its default), as a verb of ar_do: ar_do("default_action", obj)
+ar_key_for = function(verb)
+	local map = control_map.USE
+	if verb == "pickUp" then
+		map = control_map.PICK_UP
+	elseif verb == "lookAt" then
+		map = control_map.LOOK_AT
+	elseif verb == "down" then
+		map = control_map.MOVE_BACKWARD
+	elseif verb == "inventory" then
+		map = control_map.INVENTORY
+	elseif verb == "default_action" then
+		map = control_map.DEFAULT_ACT
+	end
+	return next(map, nil)
+end
+
+-- Talking: the conversation runs inside the verb's script until it is over, so (unlike the other verbs) this returns as soon as the
+-- game has started it; the caller picks the lines (ar_say) and waits for the end (ar_dlg_done)
+ar_talk = function(obj)
+	ar_wait_for_control()
+	AR_START_SET = system.currentSet
+	AR_CODE = obj.default_action
+	ar_log("talk: " .. tostring(obj.name))
+	ar_approach(obj)
+	if ar_send_verb("default_action", obj, "talk to " .. tostring(obj.name)) then
+		AR_KEYS_USED = AR_KEYS_USED + 1
+	end
+	forced_hotlist = { }
+	return TRUE
+end
+
+-- Looks at an item of the inventory the way a player does: it in hand and Look-at (SampleButtonHandler: look_at_item_in_hand)
+ar_look_item = function(item)
+	ar_wait_for_control()
+	if not ar_hold(item) then
+		return ar_fail("could not take " .. tostring(item.name) .. " in hand to look at it")
+	end
+	-- (the held item is the hot object: the handler then starts look_at_item_in_hand)
+	hot_object = item
+	ar_press("lookAt")
+	sleep_for(300)
+	ar_wait_for(ar_no_look_script, 60000, "the look at the item")
+	ar_wait_for_control()
+	return TRUE
+end
+
+ar_no_look_script = function()
+	return not find_script(Sentence) and cutSceneLevel == 0
+end
+
+-- Asks everything: picks the offered lines in order (each at most AR_EXH_REPEAT times, 1 by default) until the dialog offers nothing new,
+-- or stop() is true. For conversations whose goal comes from exhausting the topics.
+ar_exhaust_stop = function()
+	return nil
+end
+
+ar_exhaust = function(name, stop_when, max_picks)
+	local used = { }
+	local picks = 0
+	local again = AR_EXH_REPEAT or 1
+	while getglobal(name) and getglobal(name).running and picks < (max_picks or 60) and not (stop_when and stop_when()) do
+		local d = getglobal(name)
+		ar_dialog_ready(d, 20000)
+		local best = nil
+		local k, v = next(d, nil)
+		while k do
+			if type(k) == "number" and type(v) == "table" and v.text and v[d.node] and not v.off and (used[k] or 0) < again and (not best or k < best) then
+				best = k
+			end
+			k, v = next(d, k)
+		end
+		if not best then
+			return picks
+		end
+		used[best] = (used[best] or 0) + 1
+		ar_pick(d, best)
+		picks = picks + 1
+		sleep_for(600)
+	end
+	return picks
+end
+
+-- Checkpoints. Same names and use as the Grim library (ar_checkpoint(slot) at the end of a chapter, ar_load(slot) at the start of the
+-- next, the file is grim<slot>.gsv in the save path of the run), but the save is Save(file) alone: EMI has no cur_puzzle_state, dialog_log
+-- or the Grim menu's last-saved registry value to keep up. The strings for a load list are only the name of the checkpoint.
+ar_set_save_info = function(slot)
+	AR_SAVE_TABLE = { }
+	AR_SAVE_TABLE[0] = format("Autorun checkpoint %02d", slot)
+	AR_SAVE_TABLE[1] = "autorun"
+	AR_SAVE_TABLE[2] = system.currentSet.setFile
+	system.saveGameCallback = ar_save_game_callback
+end
+
+ar_save_game_callback = function()
+	SubmitSaveGameData(AR_SAVE_TABLE)
+end
+
+ar_menu_save = function(slot)
+	local fname = format("grim%02d.gsv", slot)
+	ar_set_save_info(slot)
+	JustLoaded()
+	Save(fname)
+	break_here()
+	break_here()
+end
+
+ar_checkpoint_ready = function()
+	return cutSceneLevel == 0 and ar_handler_normal() and not find_script(Sentence) and not IsMessageGoing()
+end
+
+ar_checkpoint = function(slot)
+	ar_try_wait(ar_checkpoint_ready, 60000)
+	ar_wait_for_control()
+	sleep_for(1000)
+	ar_menu_save(slot)
+	sleep_for(1500)
+	ar_log("saved checkpoint grim" .. format("%02d", slot) .. ".gsv")
+	if not AR_CONTINUE then
+		-- one chapter run: the save is the result
+		ar_finish()
+	end
+end
+
+-- Level hops of a set that the planner cannot find (a stair that is a cheat box: the game moves Guybrush on contact, from a floor strip
+-- that touches it): { from level y, to level y, entry point (a floor point of the strip), a point inside the box beyond it }.
+-- Walked before a walk to a point on the other level.
+AR_HOPS = { }
+AR_HOPS["Lucre Island Town"] = { { fromy = 0, toy = 3.67, ex = -40.18, ez = -204.64, nx = -40.0, nz = -197.0 } }
+
+ar_level_hop = function(ty)
+	local hops = AR_HOPS[ar_set_name()]
+	if not hops then
+		return
+	end
+	local i = 1
+	while hops[i] do
+		local h = hops[i]
+		local p = manny:getpos()
+		if abs(p.y - h.fromy) < 1.2 and ty and ty > h.toy - 1 and abs(ty - h.fromy) > 2 then
+			ar_log("level hop through the stair at " .. format("%.1f %.1f", h.ex, h.ez))
+			AR_WALK_KEYS = TRUE
+			AR_NO_HOPS = TRUE
+			ar_walk_to(h.ex, h.fromy, h.ez, nil, nil)
+			AR_NO_HOPS = nil
+			AR_WALK_KEYS = nil
+			-- into the box: straight on
+			local t = 0
+			local y0 = manny:getpos().y
+			while abs(manny:getpos().y - y0) < 1 and t < 6000 do
+				if not ar_steer(h.nx, 0, h.nz, 8) then
+					manny:walk_forward()
+				end
+				break_here()
+				t = t + system.frameTime
+			end
+			sleep_for(300)
+		end
+		i = i + 1
+	end
+end
+
+-- Every line spoken goes to the log (SAY lines): the story tells what the next puzzle wants. Actor.say_line of the game, wrapped.
+if not AR_OLD_SAY then
+	AR_OLD_SAY = Actor.say_line
+	Actor.say_line = function(a, text, b, c, d)
+		if type(text) == "string" and not AR_NO_SAYLOG then
+			ar_log("SAY " .. tostring(a.name) .. ": " .. text)
+		end
+		return AR_OLD_SAY(a, text, b, c, d)
+	end
+end

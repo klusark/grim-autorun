@@ -1,0 +1,15 @@
+collisionS_box_0_0_35
+collisionS_box_0_180_35
+collisionS_box_0_270_35
+collisionS_box_0_90_35
+collisionS_box_45_135_35
+collisionS_box_45_225_35
+collisionS_box_45_315_35
+collisionS_box_45_45_35
+collisionS_box_90_0_35
+collisionS_box_90_180_35
+collisionS_box_90_180_50
+collisionS_box_90_270_35
+collisionS_box_90_90_35
+collision_box_0_180_35
+collision_box_0_180_50

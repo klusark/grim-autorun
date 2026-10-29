@@ -1,0 +1,49 @@
+section: colormaps
+	numcolormaps	1
+	colormap	yr1_pal1.cmp
+
+
+#section: objectstates
+#	tot_objects 0
+
+section: setups
+	numsetups	1
+
+	setup		test_0
+	background	testroom.0.bm
+	zbuffer		testroom.0.zbm
+	position	0.001756	-1.943699	0.600093
+	interest	-0.096604	0.021865	0.191580
+	roll		0.000000
+	fov		42.534630
+	nclip		0.010000
+	fclip		20.000000
+
+
+section: lights
+	numlights	1
+
+	light		light1
+	type		omni
+	position		0.737363	-1.034878	1.508645
+	direction	0.000000	0.000000	0.000000
+	intensity	1.000000
+	umbraangle		0.000000
+	penumbraangle	0.000000
+	color				15 15 15
+
+
+section: sectors
+
+	sector		floor
+	ID		0
+	type		walk	
+	default visibility		visible	
+	height		   0.00
+	numvertices	4
+	vertices:		-2.000000	-2.000000	 0.0000
+	         		2.000000	-2.000000	 0.0000
+	         		2.000000	2.000000	 0.0000
+	         		-2.000000	2.000000	 0.0000
+
+

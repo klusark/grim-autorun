@@ -1,0 +1,8 @@
+-- EMI chapter 9: Lucre Island: the law offices (letter from the arrival)
+ar_load(8)
+ar_log("=== EMI ch09 law offices ===")
+ar_wait_for_control()
+ar_do("use", luc.law_door)
+ar_wait_for_control()
+ar_check(ar_set_name() == "law firm interior", "in the law offices")
+ar_checkpoint(9)

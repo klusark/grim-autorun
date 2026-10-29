@@ -1,0 +1,3 @@
+manny = guybrush
+AR_IDLE_MAX = 30000
+AR_CONTROL_TIMEOUT = 120000
