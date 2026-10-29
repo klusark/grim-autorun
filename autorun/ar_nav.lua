@@ -1243,7 +1243,27 @@ end
 
 -- A* from the cell sk (at the height sz) to the goal (AR_GOAL_K, or a cell of a hot sector of AR_GOAL_HOT; AR_HX, AR_HY is where
 -- it is, for the estimate). Returns the goal cell that was reached, or nil.
+-- the wall clock in ms, where the engine's Lua has clock() (nil where not)
+ar_nav_ms = function()
+	if clock then
+		return clock() * 1000
+	end
+	return nil
+end
+
+-- the cost of the search just done, for the log: cells, frames it was spread over, and ms since t0 (where there is a clock)
+ar_nav_cost = function(t0)
+	local s = AR_SEARCH_STEPS .. " cells, " .. AR_SEARCH_SLICES .. " frames"
+	local t1 = ar_nav_ms()
+	if t0 and t1 then
+		s = s .. ", " .. format("%.0f", t1 - t0) .. " ms"
+	end
+	return s
+end
+
 ar_w_search = function(nav, w, sk, sz)
+	AR_SEARCH_STEPS = 0
+	AR_SEARCH_SLICES = 0
 	AR_G = { }
 	AR_PARENT = { }
 	AR_VIA = { }
@@ -1277,6 +1297,7 @@ ar_w_search = function(nav, w, sk, sz)
 			steps = steps + 1
 			-- (a big search is spread over frames in the game, not done in one)
 			if AR_SLICE and mod(steps, 300) == 0 then
+				AR_SEARCH_SLICES = AR_SEARCH_SLICES + 1
 				break_here()
 			end
 			if ar_w_is_goal(nav, w, k, AR_SZ[k]) then
@@ -1583,11 +1604,25 @@ ar_w_plan1 = function(nav, w, x, y, z)
 	end
 	AR_HX = gx
 	AR_HY = gy
+	local mode = (AR_PARTIAL_MODE and "partial") or (AR_OPTIMISTIC and "with sectors that are off") or "sectors that are on"
+	local t0 = ar_nav_ms()
 	local found = ar_w_search(nav, w, sk, sz)
+	ar_log("nav: search (" .. mode .. "): " .. ((found and "found") or "none") .. ", " .. ar_nav_cost(t0))
 	if not found and AR_GOAL_REGION and not AR_PARTIAL_MODE then
 		-- (the sector of the door lies over a stair: along the stair)
+		t0 = ar_nav_ms()
 		ar_w_region_links(nav, w)
+		local nl = 0
+		local lk = next(AR_GOAL_LINKS, nil)
+		while lk do
+			nl = nl + 1
+			lk = next(AR_GOAL_LINKS, lk)
+		end
+		local t1 = ar_nav_ms()
+		ar_log("nav: region links: " .. nl .. " stairs into the sector" .. ((t0 and t1 and (", " .. format("%.0f", t1 - t0) .. " ms")) or ""))
+		t0 = ar_nav_ms()
 		found = ar_w_search(nav, w, sk, sz)
+		ar_log("nav: search along stairs (" .. mode .. "): " .. ((found and "found") or "none") .. ", " .. ar_nav_cost(t0))
 	end
 	AR_GOAL_LINKS = nil
 	if not found and AR_PARTIAL_MODE then
@@ -1696,8 +1731,11 @@ end
 -- Manny gets near (a gate, a passage that a trigger opens), and if it does not the walk is held up and ends like any other.
 ar_w_plan = function(nav, w, x, y, z)
 	AR_OPTIMISTIC = nil
+	local t0 = ar_nav_ms()
 	local path = ar_w_plan1(nav, w, x, y, z)
 	if not path then
+		local t1 = ar_nav_ms()
+		ar_log("nav: no way over sectors that are on" .. ((t0 and t1 and (", " .. format("%.0f", t1 - t0) .. " ms")) or "") .. ", trying sectors that are off")
 		AR_OPTIMISTIC = TRUE
 		path = ar_w_plan1(nav, w, x, y, z)
 		AR_OPTIMISTIC = nil

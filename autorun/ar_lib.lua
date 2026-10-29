@@ -2103,6 +2103,53 @@ ar_override_clock = function()
 end
 AR_OV_CLOCK_TASK = start_script(ar_override_clock)
 
+-- F10 cancels the run and hands the game to the player: the script of the run and the helper tasks are stopped, the keys it holds are let go,
+-- cutscenes are no longer skipped, and the progress text goes. The game keeps running (ar_finish would end it).
+ar_cancel = function()
+	ar_log("CANCELLED by F10, where the walk was: " .. tostring(AR_WHERE))
+	-- (the watchdog first: it would take the end of the script for a death and finish the run)
+	stop_script(ar_watchdog)
+	if __autorun__ then
+		stop_script(__autorun__)
+	end
+	stop_script(ar_skipper)
+	stop_script(ar_override_clock)
+	stop_script(ar_skip_timer)
+	stop_script(ar_save_task)
+	if AR_FRAME_TASK then
+		stop_script(AR_FRAME_TASK)
+	end
+	local key = next(AR_HELD, nil)
+	while key do
+		AR_HELD[key] = nil
+		ar_release_key(key)
+		key = next(AR_HELD, nil)
+	end
+	local name = next(AR_AXE_KEYS, nil)
+	while name do
+		ar_axe_key(name, nil)
+		name = next(AR_AXE_KEYS, nil)
+	end
+	AR_NO_SKIP = TRUE
+	set_override = AR_SETOV_OLD
+	ar_screen_clear()
+	ar_shown_count = 0
+	AR_NOSCREEN = TRUE
+end
+ar_cancel_watch = function()
+	local gcs = AR_OLD_GCS or GetControlState
+	while not gcs(F10KEY) do
+		break_here()
+	end
+	ar_cancel()
+end
+if AR_CANCEL_TASK then
+	stop_script(AR_CANCEL_TASK)
+end
+if F10KEY then
+	AR_CANCEL_TASK = start_script(ar_cancel_watch)
+end
+
 -- Frames for the comparison of the engines (tools/framediff.py): with AR_FRAMES = <milliseconds> a frame is taken that often, counted from the start of
 -- the chapter (ar_frame_chapter): ScummVM writes the file itself (DumpFrame, dump_frames_dir in its config), for the original the log gets a line that
 -- tools/framecap.py answers by copying the window.
