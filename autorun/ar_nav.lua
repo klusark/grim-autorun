@@ -2471,7 +2471,7 @@ ar_w_obst_load = function(w)
 	local setfile = system.currentSet and system.currentSet.setFile
 	local h, mode = next(AR_COLL, nil)
 	while h do
-		if h ~= manny.hActor and AR_ACT_SET[h] == setfile then
+		if h ~= manny.hActor and h ~= AR_DOOR_ACTOR and AR_ACT_SET[h] == setfile then
 			local x, y, z = GetActorPos(h)
 			local r = AR_OBST_DEFAULT
 			if AR_OBST[h] and AR_OBST[h].r > r then
@@ -2479,7 +2479,7 @@ ar_w_obst_load = function(w)
 			end
 			n = n + 1
 			w.obst[n] = { x = x, y = y, r = r }
-			if AR_NT_DEBUG then ar_log("nav: obstacle " .. format("%.2f %.2f r %.2f", x, y, r) .. " handle " .. tostring(h)) end
+			if AR_NT_DEBUG or AR_DOOR_ACTOR_SEEN then ar_log("nav: obstacle " .. format("%.2f %.2f r %.2f", x, y, r) .. " handle " .. tostring(h)) end
 		end
 		h, mode = next(AR_COLL, h)
 	end
@@ -2491,7 +2491,7 @@ ar_w_obst_learn = function(w, q)
 	local learned = nil
 	local h, mode = next(AR_COLL, nil)
 	while h do
-		if h ~= manny.hActor then
+		if h ~= manny.hActor and h ~= AR_DOOR_ACTOR then
 			local x, y, z = GetActorPos(h)
 			if x then
 				local d = sqrt((x - q.x) * (x - q.x) + (y - q.y) * (y - q.y))
@@ -2763,9 +2763,17 @@ ar_nav_enter_door = function(door, stop_when)
 	-- (where the search heads for: the middle of one of its sectors)
 	local cx, cy = ar_nav_centre(ar_nav_hotnav(nav), next(list, nil))
 	-- (no way all the way: as far as the floor goes, the game may carry Manny on from there, a drop onto a platform, a ride)
+	-- (the actor of a door that is open is no obstacle: Manny goes through it)
+	AR_DOOR_ACTOR = nil
+	if door.interest_actor and door.is_open and door:is_open() then
+		AR_DOOR_ACTOR = door.interest_actor.hActor
+		AR_DOOR_ACTOR_SEEN = TRUE
+	end
 	AR_ALLOW_PARTIAL = TRUE
 	AR_PATH_DONE = ar_nav_go(nav, cx, cy, door.obj_z or manny:getpos().z, stop_when)
 	AR_ALLOW_PARTIAL = nil
+	AR_DOOR_ACTOR = nil
+	AR_DOOR_ACTOR_SEEN = nil
 	AR_GOAL_REGION = nil
 	AR_GOAL_HOT = { }
 	return TRUE
