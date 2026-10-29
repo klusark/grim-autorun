@@ -2718,13 +2718,16 @@ ar_nav_enter_door = function(door, stop_when)
 	end
 	-- (a door whose way through is off until a trigger in front of it has opened it, an elevator: the trigger first, so that the way is there to plan)
 	local trig = ar_nav_door_trigger(door)
-	if trig then
-		ar_log("nav: its way through is off, into the trigger of " .. tostring(door.name) .. " first")
+	local tries = 0
+	-- (a door left open by an earlier visit does not open again, and its way through stays off: out of the trigger closes it, and in again opens it)
+	while trig and tries < 3 and not ar_nav_passage_on(door) and not (stop_when and stop_when()) do
+		ar_log("nav: its way through is off, into the trigger of " .. tostring(door.name) .. " first" .. ((tries > 0 and " (again)") or ""))
 		ar_nav_enter_door(trig, stop_when)
 		-- (the sentence of the trigger runs a moment later and opens the door, which brings its way through on)
 		AR_TRIG_DOOR = door
-		ar_try_wait(function() return ar_nav_passage_on(AR_TRIG_DOOR) end, 3000)
+		ar_try_wait(function() return ar_nav_passage_on(AR_TRIG_DOOR) end, 4000)
 		ar_log("nav: the way through is " .. (ar_nav_passage_on(door) and "on" or "still off"))
+		tries = tries + 1
 	end
 	ar_log("nav: into the sector of " .. tostring(door.name))
 	AR_GOAL_REGION = TRUE
