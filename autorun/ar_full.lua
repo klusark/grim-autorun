@@ -26,8 +26,21 @@ ar_extra_run = function(tag, f)
 	AR_FAILED = nil
 	AR_KEEP_GOING = TRUE
 	ar_wait_for_control()
+	-- (the extras walk about: Manny is put back where he stood, so that the story goes on from there)
+	local back = manny:getpos()
+	AR_EX_SET = system.currentSet
+	AR_EX_X, AR_EX_Y, AR_EX_Z = back.x, back.y, back.z
 	f()
 	ar_wait_for_control()
+	if system.currentSet == AR_EX_SET then
+		local now = manny:getpos()
+		-- (not onto a spot that is no floor now, such as the sector of a door that Manny came through: the game would take him out through it)
+		local nav = ar_nav_of(AR_EX_SET)
+		if abs(now.x - AR_EX_X) + abs(now.y - AR_EX_Y) > 0.3 and nav and ar_nav_find(nav, AR_EX_X, AR_EX_Y, AR_EX_Z) then
+			ar_walk_to(AR_EX_X, AR_EX_Y, AR_EX_Z)
+			ar_wait_for_control()
+		end
+	end
 	if AR_FAILED then
 		AR_EXTRA_MISS = AR_EXTRA_MISS + 1
 		ar_log("extra: " .. tag .. " did not all work")
@@ -119,7 +132,8 @@ ar_look_all = function(set)
 	local i = 1
 	while i <= n and system.currentSet == set do
 		local o = list[i]
-		if o.touchable and not o.owner and o.range and o.range > 0 and ar_has_verb(o, "lookAt") then
+		-- (a door is not looked at here: standing at it is standing in its door sector, and the game walks Manny out)
+		if o.touchable and not o.owner and o.range and o.range > 0 and not o.walkOut and not o.climbOut and ar_has_verb(o, "lookAt") then
 			ar_do("lookAt", o)
 		end
 		i = i + 1
@@ -186,15 +200,23 @@ ar_visit_setups = function(set)
 		local c = nav.camera[i]
 		AR_SETUP_SET = set
 		AR_SETUP_BEFORE = set:current_setup()
-		ar_walk_to(c.x, c.y, c.z, ar_setup_changed, 30000)
+		-- (only a middle that is on the walk floor: a walk to one that is not goes as near as the floor goes, and can end in a pocket of it)
+		if ar_nav_find_any(nav, c.x, c.y, c.z) then
+			ar_walk_to(c.x, c.y, c.z, ar_setup_changed, 30000)
+		else
+			ar_log("setups: the middle of " .. tostring(c.name) .. " is off the floor, not visited")
+		end
 		ar_log("COV setup | " .. tostring(set.name) .. " | " .. tostring(set:current_setup()))
 		i = i + 1
 	end
 end
 
--- The first time the run is in a set (a door walked through, a set expected), the 100% modes look at everything in it and walk into its camera sectors.
--- Objects and setups only: nothing that uses or takes, since that moves the story on and belongs to the extras of the chapter.
+-- The sets that a 100% run looks over the first time it is in them (a door walked through, a set expected): AR_SWEEP["set name"] = TRUE, switched on by
+-- the extras files once the sweep has been tried in that set. It is not on for every set: where Manny arrives on floor that only the sectors that are off
+-- give a way over (the garage, at the elevator), or the objects move the floor (the hallway elevators), the look at everything strands him or takes him
+-- out through a door. Objects and setups only: nothing that uses or takes.
 AR_VISITED = AR_VISITED or { }
+AR_SWEEP = AR_SWEEP or { }
 ar_visit_set = function()
 	ar_look_all(AR_VISIT_SET)
 	ar_visit_setups(AR_VISIT_SET)
@@ -207,6 +229,9 @@ ar_arrived = function()
 		return
 	end
 	AR_VISITED[system.currentSet.name] = TRUE
+	if not AR_SWEEP[system.currentSet.name] then
+		return
+	end
 	AR_VISIT_SET = system.currentSet
 	ar_extra_run("visit " .. tostring(system.currentSet.name), ar_visit_set)
 end

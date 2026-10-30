@@ -20,9 +20,10 @@ if system.currentSet ~= ga then
 	ar_finish()
 end
 
-ar_extra("ch01 garage")
 ar_log("step: fountain")
 ar_walk_to(ga.fountain.use_pnt_x, ga.fountain.use_pnt_y, ga.fountain.use_pnt_z, function() return system.buttonHandler == gl1 end)
+-- (after the walk: Manny arrives on the elevator spot, where the floor is no way to anywhere until he has stepped off it)
+ar_extra("ch01 garage")
 if system.buttonHandler ~= gl1 then
 	ar_do("use", ga.fountain)
 end
