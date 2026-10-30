@@ -253,3 +253,77 @@ if AR_FULL and not AR_GO_OLD then
 	end
 end
 
+
+-- Dialogs: before the line that a chapter picks, a 100% run says the other lines the dialog offers (ar_pick below), except the ones in AR_NO_AUTO (ex02_dialogs.lua,
+-- made from the scripts: their response ends the dialog or starts a cutscene) and the dialogs in AR_NO_TALK (ex00_sweep.lua: found by running, one that broke a chapter).
+AR_DIALOG_NAMES = { "ai1", "an1", "be1", "bo1", "br1", "ca2", "ca1", "ce1", "ce2", "ch1", "cp1", "cp2", "cl1", "do2", "do1", "ev1", "ev2", "gl2", "gl3", "gl1", "gk1", "lu1", "mx1", "mm1", "me1", "me2", "mb1", "mi1", "ol1", "sa2", "sa1", "ve2", "ve1", "vi1", "tb1" }
+AR_SAID = AR_SAID or { }
+AR_NO_AUTO = AR_NO_AUTO or { }
+AR_NO_TALK = AR_NO_TALK or { }
+
+ar_dialog_name = function(dlg)
+	local i = 1
+	while AR_DIALOG_NAMES[i] do
+		if getglobal(AR_DIALOG_NAMES[i]) == dlg then
+			return AR_DIALOG_NAMES[i]
+		end
+		i = i + 1
+	end
+	return "?"
+end
+
+ar_line_number = function(dlg, line)
+	local k, v = next(dlg, nil)
+	while k do
+		if v == line and type(k) == "number" then
+			return k
+		end
+		k, v = next(dlg, k)
+	end
+	return nil
+end
+
+ar_talk_before = function(dlg, target)
+	local name = ar_dialog_name(dlg)
+	if AR_NO_TALK[name] or not dlg.current_choices then
+		return
+	end
+	local failed = AR_FAILED
+	local keep = AR_KEEP_GOING
+	AR_KEEP_GOING = TRUE
+	local said = 0
+	local rounds = 0
+	local picked = TRUE
+	while picked and rounds < 60 and system.buttonHandler == dlg do
+		picked = nil
+		local i = 1
+		while dlg.current_choices and dlg.current_choices[i] and not picked do
+			local c = dlg.current_choices[i]
+			local n = ar_line_number(dlg, c)
+			if c ~= target and c ~= dlg.exit_lines[dlg.node] and not AR_SAID[c] and n and not (AR_NO_AUTO[name] and AR_NO_AUTO[name][n]) then
+				AR_SAID[c] = TRUE
+				ar_log("extra: talk " .. name .. " " .. tostring(n))
+				AR_PICK_OLD(dlg, c)
+				ar_log("extra: done talk " .. name .. " " .. tostring(n))
+				said = said + 1
+				picked = TRUE
+			end
+			i = i + 1
+		end
+		rounds = rounds + 1
+	end
+	AR_KEEP_GOING = keep
+	AR_FAILED = failed
+end
+
+if AR_FULL and not AR_PICK_OLD then
+	AR_PICK_OLD = ar_pick
+	ar_pick = function(dlg, line)
+		local target = line
+		if type(line) == "number" then
+			target = dlg[line]
+		end
+		ar_talk_before(dlg, target)
+		return AR_PICK_OLD(dlg, line)
+	end
+end

@@ -1,5 +1,6 @@
 #!/bin/sh
-# Runs the whole game in speed100 over and over; each time a sweep breaks a chapter, the set goes into ex00_sweep.lua (AR_NO_SWEEP) and the run starts again.
+# Runs the whole game in speed100 over and over (the live game is what counts: a chapter can pass from its save and fail in the run). Each time a sweep
+# or the lines said of a dialog break a chapter, the set (AR_NO_SWEEP) or the dialog (AR_NO_TALK) goes into ex00_sweep.lua and the run starts again.
 #   sweep_fix.sh [rounds]
 AR=/c/Users/Joel/grim_tools/autorun
 cd "$AR" || exit 1
@@ -10,9 +11,14 @@ while [ $n -lt "${1:-12}" ]; do
 	r=$(python tools/sweep_blame.py logs/w_100.log)
 	echo "round $n: $r"
 	[ "$r" = "PASSED" ] && break
-	set_name=${r%%|*}
-	why=${r#*|}
-	[ "$set_name" = "?" ] && break
-	grep -q "AR_NO_SWEEP\[\"$set_name\"\]" ex00_sweep.lua && { echo "already listed: $set_name"; break; }
-	printf 'AR_NO_SWEEP["%s"] = "a chapter failed after the sweep: %s"\n' "$set_name" "$(echo "$why" | tr -d '"')" >> ex00_sweep.lua
+	who=${r%%|*}; why=${r#*|}; kind=${who%%:*}; name=${who#*:}
+	[ "$who" = "?" ] && break
+	why=$(echo "$why" | tr -d '"')
+	if [ "$kind" = "talk" ]; then
+		grep -q "AR_NO_TALK\[\"$name\"\]" ex00_sweep.lua && { echo "already listed: $name"; break; }
+		printf 'AR_NO_TALK["%s"] = "a chapter failed after lines of it were said: %s"\n' "$name" "$why" >> ex00_sweep.lua
+	else
+		grep -q "AR_NO_SWEEP\[\"$name\"\]" ex00_sweep.lua && { echo "already listed: $name"; break; }
+		printf 'AR_NO_SWEEP["%s"] = "a chapter failed after the sweep: %s"\n' "$name" "$why" >> ex00_sweep.lua
+	fi
 done
