@@ -216,3 +216,18 @@ runs: the same normalised log (`[0-9A-F]{16}` and `task: N` replaced, FPS lines 
 Measured with a cycle counter around the call (600,000 calls in a full run, about 980 actors in the pool per call, about 10 of them in the set of the observer): 4.4% of the run. Working out the head of the observer once per call instead of once per actor of the set took it to 3.3% (30.1 to 21.3 thousand million cycles); the log of the run is the same line for line. What is left is the walk over the pool, not the matrices: a cache of the actors of a set would have to follow every change of set and of the pool, for at most 2% of the run, so it is not done. A wall or cpu time of the whole run cannot show a gain this size (the same code took 3:21 and 3:35 of cpu time), count cycles in the call instead.
 
 The original does not walk the actors of the game at all: `Lua_GetVisibleThings` (0049b9e0) walks the list of the set of the observer, kept by `Actor_PutInSet` (004a5f60), newest first. The port keeps the same list now (`Actor::getActorsInSet`): 4.5 thousand million cycles for the 600,000 calls, 0.5% of the run (21.3 before, 30.1 at the start), the log of the run the same line for line. Whole-run cpu times of that day, 3:21 to 3:54 for the same work, were the machine being used by other programs.
+
+### Where the script time goes (2026-10-30)
+`UPTO=6 sh run_all.sh` plays the first act (chapters 1 to 6) in 23 s. The time of the scripts (`runtasks`) was measured with the cycles of the thread (`QueryThreadCycleTime`, only
+what the thread ran): three runs of the same build are within 1%, a timer of the clock (rdtsc) was off by 4% with other programs running. The log of the act is compared with
+the first 9060 lines of the whole game after the normalising, and has to be the same.
+* In the first act 58% of the script time is the autorun (the navigation: `ar_nav_inside`, `ar_w_code`, ...), the rest the game's own tasks. Counting the instructions
+  of each function (a temporary counter in `luaV_execute`) showed that a third of all the instructions were `system.IndexFB` of `_system.lua` (line 2303), the "index" fallback
+  that looks in the "parent" table, called for every key a table does not have (the autorun's `if cache[key] then` as well). It is done in `luaV_gettable` now, while it is
+  that function and the one behind it returns nil.
+* The sectors that may hold a point are looked up in a grid of 1 m cells (`ar_nav_cand`, the same sectors in the same order), and the test of the polygon works on arrays of the
+  coordinates of the vertices: the same results, fewer instructions.
+* What did not help (measured, so left out): `-O3` for the interpreter (35.55 against 35.11), the profile of the program for the interpreter (33.70, 4% better, needs a
+  profile run in the build), `luaT_efectivetag` and the comparison of numbers in the loop (36.04, 2.6% worse).
+* The time of the scripts in the first act, in thousands of millions of cycles: 35.11 before the free list of the tasks and the table lookups were changed, 32.81 with the grid, 24.8 with
+  the index fallback, 23.7 with the polygon. The whole game: 3:21 of cpu time before, 2:12 now (with the same log, line for line).
