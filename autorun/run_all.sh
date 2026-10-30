@@ -9,6 +9,9 @@
 # The log goes to ./logs/all.log.
 
 AR=/c/Users/Joel/grim_tools/autorun
+# A small window and a frame drawn in 64 (not the whole window, a frame in 8): the same run, 12% less cpu time and a third less wall time. Not where frames are
+# captured (FRAMES) or the run is real (REAL), which want what a player sees; WIN= and RENDEREVERY= give the values.
+[ -z "$FRAMES" ] && [ -z "$REAL" ] && { : "${WIN:=640x480}"; : "${RENDEREVERY:=64}"; }
 limit="${1:-1800}"
 [ $# -ge 1 ] && shift
 mkdir -p "$AR/logs" "$AR/saves_new" "${SAVES:-$AR/saves}"
@@ -50,6 +53,7 @@ else
 	sed -i '/^\[grim-win\]/a subtitles=true' "$AR/generated/_scummvm_$$.ini"
 fi
 [ -n "$SIMMS" ] && sed -i "/^\[grim-win\]/a sim_frame_ms=$SIMMS" "$AR/generated/_scummvm_$$.ini"
+[ -n "$RENDEREVERY" ] && sed -i "/^\[grim-win\]/a sim_render_every=$RENDEREVERY" "$AR/generated/_scummvm_$$.ini"
 [ -n "$DUMPDIR" ] && sed -i "/^\[grim-win\]/a dump_frames_dir=$DUMPDIR" "$AR/generated/_scummvm_$$.ini"
 [ -n "$NOPATCHR" ] && sed -i '/^\[grim-win\]/a no_patchr=true' "$AR/generated/_scummvm_$$.ini"
 [ -n "$DUMPPATCHR" ] && sed -i '/^\[grim-win\]/a dump_patchr=true' "$AR/generated/_scummvm_$$.ini"

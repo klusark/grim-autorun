@@ -10,6 +10,9 @@
 # Run it from an MSYS2 UCRT64 shell, scummvm is the one built in ~/scummvm/build.
 
 AR=/c/Users/Joel/grim_tools/autorun
+# A small window and a frame drawn in 64 (not the whole window, a frame in 8): the same run, 12% less cpu time and a third less wall time. Not where frames are
+# captured (FRAMES) or the run is real (REAL), which want what a player sees; WIN= and RENDEREVERY= give the values.
+[ -z "$FRAMES" ] && [ -z "$REAL" ] && { : "${WIN:=640x480}"; : "${RENDEREVERY:=64}"; }
 chapter="$1"; limit="${2:-900}"
 [ $# -ge 2 ] && shift 2 || shift $#
 name=$(basename "$chapter" .lua)$LOGTAG
