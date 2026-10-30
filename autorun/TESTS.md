@@ -200,3 +200,14 @@ Lua 3.1 allows 32 locals in a function: the tier is split in functions (`ar_nt_t
 `run_all.sh` stamps every AUTORUN line with the wall clock (`logs/<name>.ts`, `tools/logts.py`); `python tools/gaps.py logs/<name>.ts [seconds]` lists the
 stretches without one, longest first, with the lines on both sides and the chapter. `STALL=<seconds>` (default 90) kills a run that logs nothing for that
 long (`stall_watch.sh`, with a report of the scripts that are running, `stall_diag.lua`).
+
+## Speed of a full run (2026-10-30)
+
+`run_all.sh` and `run_chapter.sh` use a 640x480 window and draw one frame in 64 (`WIN=`, `RENDEREVERY=`; not with `FRAMES` or `REAL`): the whole game passes in
+about 260 s of wall time and 3:50 of cpu time, from 527-670 s and 7:19, with logs that are the same line for line. The wall time of a run depends on what else
+the machine does (it varied by 100 s for one build); `logs/<name>.cpu` (the cpu time of the game, sampled by `stall_watch.sh`) does not. To compare two
+runs: the same normalised log (`[0-9A-F]{16}` and `task: N` replaced, FPS lines dropped) and the cpu time. Do not run anything else while a run is timed.
+
+`sh tools/sample_prof.sh <out>` while a run goes (gdb attaches every few seconds and writes the stack of the main thread), then
+`python tools/prof_report.py <out>`: where the game spends its time. The planner's cost is measured offline by `synth/bench.lua`. What is left by 1 s gaps
+(`tools/gaps.py`): the first load of a set from the archives (1-3 s, input and output), the movies of cutscenes, and the lines that the skipper waits out.
