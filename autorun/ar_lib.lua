@@ -1493,8 +1493,9 @@ ar_checkpoint = function(slot)
 		-- normal state loads into a game whose actors never move: the menu saves from its render mode, so do the same.
 		ar_try_wait(function() return cutSceneLevel == 0 and ar_handler_normal() end, 60000)
 		ar_wait_for_control()
-		-- (no movie in the save: the skipper that the save brings back would take it for one that never ended)
-		ar_try_wait(function() return not (IsMoviePlaying and IsMoviePlaying()) end, 120000)
+		-- (no cutscene movie in the save: the skipper that the save brings back would take it for one that never ended. A movie of the set that loops, a lighthouse or a
+	-- chimney, never ends, and waiting for it was the whole timeout of the wait)
+		ar_try_wait(function() return not (cutSceneLevel > 0 and IsMoviePlaying and IsMoviePlaying()) end, 120000)
 		AR_MOVIE_START = nil
 		sleep_for(1000)
 		AR_SAVING = TRUE

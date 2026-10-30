@@ -1,0 +1,31 @@
+section: sectors
+
+sector ramp
+	id 0
+	type walk
+	default visibility visible
+	numvertices 4
+	vertices: 0 0 0
+	          0 4 2
+	          1 4 2
+	          1 0 0
+
+sector landing_s
+	id 1
+	type walk
+	default visibility visible
+	numvertices 4
+	vertices: 0 0 0
+	          1 0 0
+	          1 -0.6 0
+	          -0.06 -0.6 0
+
+sector landing_w
+	id 2
+	type walk
+	default visibility visible
+	numvertices 4
+	vertices: 0 0 0
+	          -0.06 -0.6 0
+	          -3 -0.7 0
+	          -3 -0.3 0

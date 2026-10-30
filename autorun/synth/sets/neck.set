@@ -1,0 +1,31 @@
+section: sectors
+
+sector hall_a
+	id 0
+	type walk
+	default visibility visible
+	numvertices 4
+	vertices: 0 0 0
+	          0 3 0
+	          3 3 0
+	          3 0 0
+
+sector neck
+	id 1
+	type walk
+	default visibility visible
+	numvertices 4
+	vertices: 3 1.44 0
+	          3 1.56 0
+	          3.5 1.56 0
+	          3.5 1.44 0
+
+sector hall_b
+	id 2
+	type walk
+	default visibility visible
+	numvertices 4
+	vertices: 3.5 0 0
+	          3.5 3 0
+	          6.5 3 0
+	          6.5 0 0
