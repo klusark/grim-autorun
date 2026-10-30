@@ -595,6 +595,9 @@ ar_nt_turn_more = function(h, rate)
 	SetActorRot(h, 10, 0, 5)
 	break_here()
 	break_here()
+	-- (at the origin: the cases before leave him a few centimetres off it, which turns the yaw to the point by several degrees)
+	PutActorAt(h, AR_NT_O.x, AR_NT_O.y, AR_NT_O.z)
+	break_here()
 	PointActorAt(h, AR_NT_O.x + 1, AR_NT_O.y, AR_NT_O.z)
 	k = 0
 	while k < 3 do
@@ -609,6 +612,8 @@ ar_nt_turn_more = function(h, rate)
 end
 ar_nt_turn_vector = function(h, rate)
 	local p, y, r, k
+	-- (the rate now, not the one the tier started with: the cases before can leave Manny running, 140 instead of 85)
+	rate = GetActorTurnRate(h)
 	local s = rate * system.frameTime / 1000
 	local cam = GetCameraActor()
 	-- WalkActorVector: which way the camera's forward vector is in this set (the heading Manny ends up walking in)
@@ -691,7 +696,7 @@ AR_NT_SLIDES = {
 	{ id = "slide_wall_left", set = "bs", from = { -6.80, 26.40, 11.85 }, yaw = 160, key = 1, frames = 40 },
 	{ id = "slide_stairwall_right", set = "ts", from = { 0.092, -0.189, 0.4033 }, yaw = 317, key = -1, frames = 120, trace = TRUE },
 	{ id = "slide_stairwall_none", set = "ts", from = { 0.092, -0.189, 0.4033 }, yaw = 317, key = 0, frames = 120, trace = TRUE },
-	{ id = "slide_stairwall_left", set = "ts", from = { 0.092, -0.189, 0.4033 }, yaw = 317, key = 1, frames = 120, trace = TRUE },
+	{ id = "slide_stairwall_left", set = "ts", from = { 0.092, -0.189, 0.4033 }, yaw = 317, key = 1, frames = 120, trace = TRUE, door = TRUE },  -- (ends inside the door trigger to tw: its scene sets the scale of Manny, which is a leak only for a case that does not go through a door)
 }
 ar_nt_slide = function(case)
 	ar_nt_place(case)
