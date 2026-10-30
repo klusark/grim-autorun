@@ -1324,6 +1324,15 @@ ar_wait_line_done = function(dlg)
 	sleep_for(100)
 end
 
+-- A frame a little after a line of a dialog was chosen, when its text is on the screen (AR_FRAMES): the same moment in both engines
+ar_say_mark = function()
+	sleep_for(700)
+	local p = manny:getpos()
+	local r = manny:getrot()
+	ar_log(format("saymark %d set %s manny pos %.4f %.4f %.4f rot %.3f %.3f %.3f", AR_SAY_N or 0, tostring(system.currentSet.name), p.x, p.y, p.z, r.x, r.y, r.z))
+	ar_frame(format("say_%02d", AR_SAY_N or 0))
+end
+
 -- Says one of the lines of a dialog, which is a table entry such as gl1[60], or the exit
 -- line of the current node, and waits for the answer to end
 ar_pick = function(dlg, line)
@@ -1339,6 +1348,10 @@ ar_pick = function(dlg, line)
 		line = dlg[line]
 	end
 	ar_log("say: " .. tostring(line.text))
+	if AR_FRAMES then
+		AR_SAY_N = (AR_SAY_N or 0) + 1
+		start_script(ar_say_mark)
+	end
 	ar_choose_line(dlg, line)
 	return TRUE
 end
