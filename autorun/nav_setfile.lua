@@ -153,6 +153,18 @@ ar_nav_of = function(set)
 					local c = ar_nav_len(nav.hn) + 1
 					nav.hn[c] = sf.n[i]
 					nav.hp[c] = sf.p[i]
+				elseif AR_FULL and sf.t[i] == "camera" then
+					-- (the 100% modes walk into every camera sector, to see every setup: the middle of it)
+					nav.camera = nav.camera or { }
+					local p = sf.p[i]
+					local m = ar_nav_len(p) / 3
+					local sx, sy, k = 0, 0, 0
+					while k < m do
+						sx = sx + p[k * 3 + 1]
+						sy = sy + p[k * 3 + 2]
+						k = k + 1
+					end
+					nav.camera[ar_nav_len(nav.camera) + 1] = { x = sx / m, y = sy / m, z = 0, name = sf.n[i] }
 				end
 				if (walk or hot) and not sf.on[i] then
 					nav.off[ar_nav_len(nav.off) + 1] = sf.n[i]

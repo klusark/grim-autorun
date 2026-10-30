@@ -28,6 +28,10 @@ end
 if AR_WATCH_TASK then
 	stop_script(AR_WATCH_TASK)
 end
+if AR_LINE_TASK then
+	stop_script(AR_LINE_TASK)
+	AR_LINE_TASK = nil
+end
 
 AR_FAILED = FALSE
 
@@ -100,6 +104,11 @@ ar_log = function(msg)
 	if not AR_NOSCREEN and not AR_SAVING and not strfind(msg, "^camera") and not strfind(msg, "^running=") and not strfind(msg, "^walk %(") and not strfind(msg, "^Starting wait") and not strfind(msg, "^Waited") then
 		ar_screen_add(msg)
 	end
+end
+
+-- What a run did, for the coverage report (tools/cov100.py): COV lines, in every mode, not shown on the screen
+ar_cov = function(msg)
+	PrintDebug("AUTORUN COV " .. msg .. "\n")
 end
 
 ar_check = function(cond, msg)
@@ -1210,6 +1219,7 @@ ar_do = function(verb, noun1, noun2)
 	end
 	AR_START_SET = system.currentSet
 	ar_log("do: " .. label .. format(" (Manny at %.2f %.2f)", manny:getpos().x, manny:getpos().y))
+	ar_cov("do | " .. verb .. " | " .. tostring(noun1.string_name or noun1.name) .. " | " .. (noun2 and tostring(noun2.string_name or noun2.name) or "") .. " | " .. ar_set_name())
 	if noun2 then
 		code = noun1[verb .. "_" .. trim_header(noun2.string_name)]
 		if not code then
@@ -1386,6 +1396,7 @@ ar_choose_line = function(dlg, line)
 			stop = TRUE
 		elseif not at then
 			ar_log("choose: " .. tostring(line.text) .. " is not shown yet, saying " .. tostring(dlg.current_choices[first].text) .. " first")
+			ar_cov("say | " .. tostring(dlg.current_choices[first].text))
 			local presses = 0
 			while dlg.selected_line ~= first and presses < 40 do
 				ar_press_key(ar_real_key("DIALOG_DOWN"))
@@ -1403,6 +1414,7 @@ ar_choose_line = function(dlg, line)
 		end
 	end
 	if at then
+		ar_cov("say | " .. tostring(line.text))
 		local presses = 0
 		while dlg.selected_line ~= at and presses < 40 do
 			ar_press_key(ar_real_key("DIALOG_DOWN"))
@@ -2094,6 +2106,19 @@ ar_map = function(x0, x1, y0, y1, step)
 end
 
 AR_WATCH_TASK = start_script(ar_watchdog)
+-- AR_SKIPLINES (modes speed, speed100): every line that is spoken is ended with the key that expires the text, in the frame it starts, as a player holding
+-- the skip key does. Every frame, not at the beats of a timer, so that the frame of the press is the same in both engines.
+ar_line_skipper = function()
+	while TRUE do
+		if IsMessageGoing() and not AR_SAYING then
+			ar_press_key(ar_real_key("EXPIRE_TEXT"))
+		end
+		break_here()
+	end
+end
+if AR_SKIPLINES and not AR_REAL and not AR_FRAMES then
+	AR_LINE_TASK = start_script(ar_line_skipper)
+end
 AR_SKIP_TASK = start_script(ar_skipper)
 -- A cutscene is skipped 500 ms of game time after its override was set. The timer is started by set_override itself, in the pass of the script that
 -- sets the override, so the frame of the skip does not depend on where this library's tasks stand in the list of tasks (they stand differently in

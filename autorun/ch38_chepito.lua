@@ -41,6 +41,8 @@ ar_check(done, "Manny stopped Chepito")
 ar_wait_for(function() return cp1 and system.buttonHandler == cp1 end, 60000)
 ar_check(cp1 and system.buttonHandler == cp1, "Chepito talks")
 ar_pick_exit(cp1)
+-- the lines Chepito says while he is held are the time the player has to give him to Glottis: they are not skipped (AR_SAYING keeps the line skipper off)
+AR_SAYING = TRUE
 
 -- the bait
 done = nil
@@ -60,6 +62,7 @@ ar_key_down("TURN_RIGHT")
 sleep_for(150)
 ar_key_up("TURN_RIGHT")
 ar_wait_for(function() return system.currentSet == ps end, 600000)
+AR_SAYING = nil
 ar_wait_for(function() return ps.octo_here and not find_script(cut_scene.thepearl) end, 900000)
 ar_wait_for_control()
 local pp = manny:getpos()
