@@ -211,3 +211,6 @@ runs: the same normalised log (`[0-9A-F]{16}` and `task: N` replaced, FPS lines 
 `sh tools/sample_prof.sh <out>` while a run goes (gdb attaches every few seconds and writes the stack of the main thread), then
 `python tools/prof_report.py <out>`: where the game spends its time. The planner's cost is measured offline by `synth/bench.lua`. What is left by 1 s gaps
 (`tools/gaps.py`): the first load of a set from the archives (1-3 s, input and output), the movies of cutscenes, and the lines that the skipper waits out.
+
+### `GetVisibleThings` (2026-10-30)
+Measured with a cycle counter around the call (600,000 calls in a full run, about 980 actors in the pool per call, about 10 of them in the set of the observer): 4.4% of the run. Working out the head of the observer once per call instead of once per actor of the set took it to 3.3% (30.1 to 21.3 thousand million cycles); the log of the run is the same line for line. What is left is the walk over the pool, not the matrices: a cache of the actors of a set would have to follow every change of set and of the pool, for at most 2% of the run, so it is not done. A wall or cpu time of the whole run cannot show a gain this size (the same code took 3:21 and 3:35 of cpu time), count cycles in the call instead.
