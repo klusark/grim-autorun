@@ -1,0 +1,3 @@
+-- Run by stall_watch.sh through the remote Lua of the engine (SCUMMVM_LUA_REMOTE) when a run has stalled: what the scripts are doing
+print_scripts()
+R = "cut scene level " .. tostring(cutSceneLevel) .. ", movie " .. tostring(IsMoviePlaying and IsMoviePlaying()) .. ", message " .. tostring(IsMessageGoing and IsMessageGoing()) .. ", autorun task " .. tostring(find_script(__autorun__)) .. ", handler " .. tostring(system.buttonHandler) .. ", set " .. tostring(system.currentSet and system.currentSet.name) .. ", AR_WHERE " .. tostring(AR_WHERE) .. ", wait " .. tostring(AR_WAIT_STATE) .. ", follow " .. tostring(AR_FOLLOW_I) .. " spent " .. tostring(AR_FOLLOW_SPENT) .. ", AR_NOW " .. tostring(AR_NOW) .. ", override " .. tostring(system.override and system.override.is_active)
