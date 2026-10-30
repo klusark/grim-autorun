@@ -627,6 +627,30 @@ ar_w_hot_at = function(nav, x, y)
 	return list
 end
 
+-- Whether a sector is on, asked again and again by the search for the same sectors: within one plan or one frame of the follower (AR_ACT_C is a table then)
+-- it is asked of the game once. Outside of them every time.
+ar_nav_act_c = function(nav, i)
+	local c = AR_ACT_C
+	if not c then
+		return ar_nav_active(nav, i)
+	end
+	local t = c[nav]
+	if not t then
+		t = { }
+		c[nav] = t
+	end
+	local v = t[i]
+	if v == nil then
+		if ar_nav_active(nav, i) then
+			v = 1
+		else
+			v = 2
+		end
+		t[i] = v
+	end
+	return v == 1
+end
+
 -- What the cell k is to Manny at about the height zref: nil when no floor (on) is there at that height, else its kind and height: 1
 -- floor, 2 constrained (stairs, curbs), 3 a cheat box, 4 a door or trigger. The floor it is (an entry of ar_w_geo) is AR_W_E then, its
 -- point AR_W_X, AR_W_Y, and AR_W_HOT the hot sector of a cheat box or door. A cheat box or door that is off does nothing.
@@ -635,6 +659,31 @@ ar_w_code = function(nav, w, k, zref)
 	if not g then
 		return nil
 	end
+	-- (the most cells: one floor, no hot sector, not a stair)
+	local e1 = g.e[1]
+	if not g.e[2] and not e1.h[1] and not w.cons[e1.si] then
+		if not ar_nav_act_c(nav, e1.si) then
+			return nil
+		end
+		local z1 = e1.z
+		if not z1 then
+			z1 = ar_nav_z(nav, e1.si, e1.x, e1.y)
+			e1.z = z1
+		end
+		local d1 = abs(z1 - zref)
+		if e1.part then
+			d1 = d1 + 0.01
+		end
+		if d1 >= 0.35 then
+			return nil
+		end
+		AR_W_E = e1
+		AR_W_LVL = 1
+		AR_W_X = e1.x
+		AR_W_Y = e1.y
+		AR_W_HOT = nil
+		return 1, z1
+	end
 	local best = nil
 	local bestlvl = 1
 	local bestd = 0.35
@@ -642,8 +691,13 @@ ar_w_code = function(nav, w, k, zref)
 	local i = 1
 	while g.e[i] do
 		local e = g.e[i]
-		if ar_nav_active(nav, e.si) then
-			local z = ar_nav_z(nav, e.si, e.x, e.y)
+		if ar_nav_act_c(nav, e.si) then
+			-- (the height of the floor at the point of the cell does not change)
+			local z = e.z
+			if not z then
+				z = ar_nav_z(nav, e.si, e.x, e.y)
+				e.z = z
+			end
 			local d = abs(z - zref)
 			-- (the centre rather than a point at the edge, of two floors at the same height)
 			if e.part then
@@ -674,7 +728,7 @@ ar_w_code = function(nav, w, k, zref)
 	i = 1
 	while best.h[i] do
 		local h = best.h[i]
-		if ar_nav_active(hot, h) then
+		if ar_nav_act_c(hot, h) then
 			if w.hcons[h] then
 				return 2, bz
 			elseif w.cheat[h] then
@@ -1394,11 +1448,11 @@ ar_w_los = function(nav, w, x1, y1, z1, x2, y2, maxpen)
 	local dx = x2 - x1
 	local dy = y2 - y1
 	local len = sqrt(dx * dx + dy * dy)
-	-- (every 1.5 cm: a sliver of void between two sectors, at the corner at the foot of a ramp, is a few millimetres wide and 7 cm long, and a sample every 4 cm
-	-- steps over it)
-	local steps = floor(len / 0.015) + 1
+	local steps = floor(len / 0.04) + 1
 	local z = z1
 	local s = 1
+	local px = x1
+	local py = y1
 	while s <= steps do
 		local x = x1 + dx * s / steps
 		local y = y1 + dy * s / steps
@@ -1410,13 +1464,13 @@ ar_w_los = function(nav, w, x1, y1, z1, x2, y2, maxpen)
 		if not (c == 1 or (c == 4 and AR_GOAL_HOT[AR_W_HOT])) or w.tmp[k] then
 			return nil
 		end
-		if w.obst and w.obst[1] and s > 8 and s < steps - 5 and ar_w_obst_cost(w, k) > 8 then
+		if w.obst and w.obst[1] and s > 3 and s < steps - 2 and ar_w_obst_cost(w, k) > 8 then
 			-- (through the box of an actor: not a line of sight, the way goes round)
 			return nil
 		end
 		local part = AR_W_E.part
 		local pen = ar_w_pen(nav, w, k, cz)
-		if pen > maxpen and s > 8 and s < steps - 5 then
+		if pen > maxpen and s > 3 and s < steps - 2 then
 			return nil
 		end
 		if pen > 2 then
@@ -1428,9 +1482,16 @@ ar_w_los = function(nav, w, x1, y1, z1, x2, y2, maxpen)
 			if not si then
 				return nil
 			end
+			-- (and the places between this sample and the one before, every 1.3 cm: a sliver of void between two sectors, at the corner at the foot of a ramp, is a few
+			-- millimetres wide and 7 cm long, and a sample every 4 cm steps over it. Not on open floor, where there is none)
+			if not ar_nav_find_z(nav, (px * 2 + x) / 3, (py * 2 + y) / 3, cz, 0.35) or not ar_nav_find_z(nav, (px + x * 2) / 3, (py + y * 2) / 3, cz, 0.35) then
+				return nil
+			end
 			cz = ar_nav_z(nav, si, x, y)
 		end
 		z = cz
+		px = x
+		py = y
 		s = s + 1
 	end
 	return TRUE
@@ -1734,14 +1795,16 @@ end
 
 -- The way, over the floors that are on; when there is none, once more over every walk sector: a sector that is off may come on when
 -- Manny gets near (a gate, a passage that a trigger opens), and if it does not the walk is held up and ends like any other.
-ar_w_plan = function(nav, w, x, y, z)
+ar_w_plan0 = function(nav, w, x, y, z)
 	AR_OPTIMISTIC = nil
 	local t0 = ar_nav_ms()
+	AR_ACT_C = { }
 	local path = ar_w_plan1(nav, w, x, y, z)
 	if not path then
 		local t1 = ar_nav_ms()
 		ar_log("nav: no way over sectors that are on" .. ((t0 and t1 and (", " .. format("%.0f", t1 - t0) .. " ms")) or "") .. ", trying sectors that are off")
 		AR_OPTIMISTIC = TRUE
+		AR_ACT_C = { }
 		path = ar_w_plan1(nav, w, x, y, z)
 		AR_OPTIMISTIC = nil
 		if path then
@@ -1750,9 +1813,18 @@ ar_w_plan = function(nav, w, x, y, z)
 	end
 	if not path and AR_ALLOW_PARTIAL then
 		AR_PARTIAL_MODE = TRUE
+		AR_ACT_C = { }
 		path = ar_w_plan1(nav, w, x, y, z)
 		AR_PARTIAL_MODE = nil
 	end
+	return path
+end
+
+-- (the plan with the answers about the sectors that are on kept for its length)
+ar_w_plan = function(nav, w, x, y, z)
+	AR_ACT_C = { }
+	local path = ar_w_plan0(nav, w, x, y, z)
+	AR_ACT_C = nil
 	return path
 end
 
@@ -2077,7 +2149,7 @@ ar_follow = function(nav, w, path, stop_when, budget)
 end
 
 -- one frame of the walk: on past the points that are behind, then the keys
-ar_follow_frame = function(nav, w, path, n, cum, i)
+ar_follow_frame0 = function(nav, w, path, n, cum, i)
 	local p = manny:getpos()
 	local adv = TRUE
 	while adv and i <= n do
@@ -2201,6 +2273,13 @@ ar_follow_frame = function(nav, w, path, n, cum, i)
 	if AR_TRACE then
 		ar_log("  follow at " .. format("%.2f %.2f %.2f", p.x, p.y, p.z) .. " point " .. tostring(i) .. "/" .. tostring(n) .. " " .. kind .. " aim " .. format("%.2f %.2f", tx, ty) .. " off " .. format("%.0f", off))
 	end
+end
+
+ar_follow_frame = function(nav, w, path, n, cum, i)
+	AR_ACT_C = { }
+	local r = ar_follow_frame0(nav, w, path, n, cum, i)
+	AR_ACT_C = nil
+	return r
 end
 
 -- is (x, y) itself in a sector of the door that is the goal
@@ -2521,6 +2600,8 @@ ar_w_obst_learn = function(w, q)
 end
 
 ar_nav_go = function(nav, x, y, z, stop_when)
+	-- (a plan or a frame that was cut short by an error leaves its answers about the sectors behind)
+	AR_ACT_C = nil
 	local w = ar_w(nav)
 	w.tmp = { }
 	w.obst = { }

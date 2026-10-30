@@ -44,10 +44,15 @@ manny.walk_forward = function(self)
 	local yaw = math.rad(self.rot.y)
 	local nx = self.pos.x - math.sin(yaw) * STEP
 	local ny = self.pos.y + math.cos(yaw) * STEP
-	local si = sector_at(nav_now, nx, ny)
-	if si then
-		self.pos = { x = nx, y = ny, z = ar_nav_z(nav_now, si, nx, ny) }
-		self.moved = true
+	-- (a wall stops the part of the step that goes into it, and he slides along it with the rest, as the walker of the game does along an edge)
+	local tries = { { nx, ny }, { nx, self.pos.y }, { self.pos.x, ny } }
+	for _, t in ipairs(tries) do
+		local si = sector_at(nav_now, t[1], t[2])
+		if si then
+			self.pos = { x = t[1], y = t[2], z = ar_nav_z(nav_now, si, t[1], t[2]) }
+			self.moved = true
+			return
+		end
 	end
 end
 
@@ -72,6 +77,9 @@ function follow(name, x1, y1, x2, y2, yaw, given)
 		local before = manny.pos.x * 1000 + manny.pos.y
 		local turning = ar_follow_frame(nav, w, path, n, cum, i)
 		i = AR_FOLLOW_I or i
+		if FOLLOW_TRACE and frames % FOLLOW_TRACE == 0 then
+			print(string.format("  frame %d pos %.3f %.3f yaw %.0f point %d off %.0f", frames, manny.pos.x, manny.pos.y, manny.rot.y, i, AR_STEER_D or 0))
+		end
 		if math.sqrt((manny.pos.x - x2) ^ 2 + (manny.pos.y - y2) ^ 2) < 0.15 then
 			return "arrived", frames
 		end
