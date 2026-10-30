@@ -60,9 +60,17 @@ if [ -n "$WIN" ]; then
 fi
 
 cd /home/Joel/scummvm/${SVM_BUILD:-build-opt}
+# STALL=<seconds>: a run that logs nothing of the autorun for that long is killed (default 90; 0 = never)
+export SCUMMVM_LUA_REMOTE="$AR/generated/remote_$$"
+mkdir -p "$SCUMMVM_LUA_REMOTE"
+: > "$AR/logs/${LOG:-all}.log"
+sh "$AR/stall_watch.sh" "$AR/logs/${LOG:-all}.log" "${STALL:-90}" $$ &
+stallpid=$!
 start=$(date +%s)
 timeout "$limit" ./scummvm.exe --config="$(cygpath -w "$AR/generated/_scummvm_$$.ini")" --savepath="$(cygpath -w "${SAVES:-$AR/saves}")" \
 	--autorun="$(cygpath -w "$AR/generated/all_$$.lua")" --debugflags="${DEBUGFLAGS:-scripts}" \
 	$([ -z "$REALTIME" ] && echo "--engine-speed=${ES:-0} --sim-fps=${SIMFPS:-60}") $([ -z "$NOFPS" ] && echo --show-fps) "$@" grim-win 2>&1 	| awk -v out="$AR/logs/${LOG:-all}.log" -v times="$AR/logs/${LOG:-all}_times.txt" -v t0="$start" '{ print > out; if (/=== chapter/) { n = systime() - t0; print n, $0 > times; fflush(times) } fflush(out) }'
-echo "scummvm exit: $? after $(( $(date +%s) - start )) s" >> "$AR/logs/${LOG:-all}.log"
+code=$?
+kill $stallpid 2>/dev/null
+echo "scummvm exit: $code after $(( $(date +%s) - start )) s" >> "$AR/logs/${LOG:-all}.log"
 grep -E 'AUTORUN|Autorun|rror|scummvm exit' "$AR/logs/${LOG:-all}.log" | grep -v '__autorun__\|ar_watchdog'

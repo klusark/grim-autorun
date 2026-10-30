@@ -361,6 +361,7 @@ ar_try_wait = function(cond, timeout)
 		if not (cutSceneLevel > 0 and IsMoviePlaying and IsMoviePlaying()) then
 			waited = waited + 100
 		end
+		AR_WAIT_STATE = "ar_try_wait " .. tostring(cond) .. " waited " .. tostring(waited) .. " of " .. tostring(timeout)
 		-- a set the game passes through while the wait goes on (a cutscene takes Manny through the room that the walk
 		-- was going to and out again) is a set that was reached
 		if AR_TARGET then
@@ -407,6 +408,7 @@ ar_wait_active = function(cond, timeout)
 		if not (cutSceneLevel > 0 and IsMoviePlaying and IsMoviePlaying()) then
 			waited = waited + 100
 		end
+		AR_WAIT_STATE = "ar_wait_active " .. tostring(cond) .. " waited " .. tostring(waited) .. " of " .. tostring(timeout) .. " idle " .. tostring(idle)
 		if AR_TARGET then
 			ar_target_reached()
 		end
@@ -1262,8 +1264,22 @@ ar_do = function(verb, noun1, noun2)
 		AR_KEYS_USED = AR_KEYS_USED + 1
 	end
 	sleep_for(300)
-	while find_script(code) do
+	-- (the game's code for the verb: it can be a script that never ends, a flight that does not arrive; the time of a movie of a cutscene, which plays in
+	-- real time, is not counted)
+	local ran = 0
+	while find_script(code) and ran < (AR_CODE_TIMEOUT or 300000) do
 		sleep_for(100)
+		if not (cutSceneLevel > 0 and IsMoviePlaying and IsMoviePlaying()) then
+			ran = ran + 100
+		end
+		AR_WAIT_STATE = "ar_do code " .. tostring(code) .. " ran " .. tostring(ran)
+	end
+	if find_script(code) then
+		ar_log("the code of the game for " .. tostring(verb) .. " " .. tostring(noun1 and noun1.name) .. " has not ended after " .. tostring(ran) .. " ms, cut scene level " .. tostring(cutSceneLevel))
+		if print_scripts then
+			print_scripts()
+		end
+		return ar_fail("the code of the game for " .. tostring(verb) .. " " .. tostring(noun1 and noun1.name) .. " does not end")
 	end
 	ar_wait_for_control()
 	wait_for_message()

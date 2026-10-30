@@ -39,9 +39,17 @@ for r in $GRIMON; do sed -i "/^\[grim-win\]/a $r=true" "$AR/generated/_scummvm_$
 [ -n "$DUMPPATCHR" ] && sed -i '/^\[grim-win\]/a dump_patchr=true' "$AR/generated/_scummvm_$$.ini"
 
 cd /home/Joel/scummvm/${SVM_BUILD:-build-opt}
+# STALL=<seconds>: a run that logs nothing of the autorun for that long is killed (default 90; 0 = never)
+export SCUMMVM_LUA_REMOTE="$AR/generated/remote_$$"
+mkdir -p "$SCUMMVM_LUA_REMOTE"
+: > "$AR/logs/$name.log"
+sh "$AR/stall_watch.sh" "$AR/logs/$name.log" "${STALL:-90}" $$ &
+stallpid=$!
 start=$(date +%s)
 timeout "$limit" ./scummvm.exe --config="$(cygpath -w "$AR/generated/_scummvm_$$.ini")" --savepath="$(cygpath -w "$AR/saves")" \
 	--autorun="$(cygpath -w "$AR/generated/chapter_$$.lua")" --debugflags="${DEBUGFLAGS:-scripts}" \
 	--engine-speed="${ES:-0}" --sim-fps="${SIMFPS:-60}" --show-fps "$@" grim-win > "$AR/logs/$name.log" 2>&1
-echo "scummvm exit: $? after $(( $(date +%s) - start )) s" >> "$AR/logs/$name.log"
+code=$?
+kill $stallpid 2>/dev/null
+echo "scummvm exit: $code after $(( $(date +%s) - start )) s" >> "$AR/logs/$name.log"
 grep -E 'AUTORUN|Autorun|rror|scummvm exit' "$AR/logs/$name.log" | grep -v '__autorun__\|ar_watchdog'
