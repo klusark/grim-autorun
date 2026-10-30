@@ -1,0 +1,262 @@
+section: sectors
+
+sector room0
+	id 0
+	type walk
+	default visibility visible
+	numvertices 4
+	vertices: 0 0 0
+	0 3.29754 0
+	3.00279 3.29754 0
+	3.00279 0 0
+
+sector room1
+	id 1
+	type walk
+	default visibility visible
+	numvertices 4
+	vertices: 0 3.29754 0
+	0 6.49405 0
+	3.00279 6.49405 0
+	3.00279 3.29754 0
+
+sector room2
+	id 2
+	type walk
+	default visibility visible
+	numvertices 4
+	vertices: 0 6.49405 0
+	0 9.31632 0
+	3.00279 9.31632 0
+	3.00279 6.49405 0
+
+sector room3
+	id 3
+	type walk
+	default visibility visible
+	numvertices 4
+	vertices: 0 9.31632 0
+	0 12.5268 0
+	3.00279 12.5268 0
+	3.00279 9.31632 0
+
+sector room4
+	id 4
+	type walk
+	default visibility visible
+	numvertices 4
+	vertices: 3.00279 0 0
+	3.00279 3.88029 0
+	6.30108 3.88029 0
+	6.30108 0 0
+
+sector room7
+	id 7
+	type walk
+	default visibility visible
+	numvertices 4
+	vertices: 3.00279 10.6895 0
+	3.00279 14.1208 0
+	6.30108 14.1208 0
+	6.30108 10.6895 0
+
+sector room8
+	id 8
+	type walk
+	default visibility visible
+	numvertices 4
+	vertices: 6.30108 0 0
+	6.30108 3.8005 0
+	9.52164 3.8005 0
+	9.52164 0 0
+
+sector room9
+	id 9
+	type walk
+	default visibility visible
+	numvertices 4
+	vertices: 6.30108 3.8005 0
+	6.30108 7.44687 0
+	9.52164 7.44687 0
+	9.52164 3.8005 0
+
+sector room10
+	id 10
+	type walk
+	default visibility visible
+	numvertices 4
+	vertices: 6.30108 7.44687 0
+	6.30108 10.7618 0
+	9.52164 10.7618 0
+	9.52164 7.44687 0
+
+sector room11
+	id 11
+	type walk
+	default visibility visible
+	numvertices 4
+	vertices: 6.30108 10.7618 0
+	6.30108 13.813 0
+	9.52164 13.813 0
+	9.52164 10.7618 0
+
+sector room12
+	id 12
+	type walk
+	default visibility visible
+	numvertices 4
+	vertices: 9.52164 0 0
+	9.52164 2.50288 0
+	12.8061 2.50288 0
+	12.8061 0 0
+
+sector room15
+	id 15
+	type walk
+	default visibility visible
+	numvertices 4
+	vertices: 9.52164 9.33404 0
+	9.52164 12.5441 0
+	12.8061 12.5441 0
+	12.8061 9.33404 0
+
+sector room16
+	id 16
+	type walk
+	default visibility visible
+	numvertices 4
+	vertices: 12.8061 0 0
+	12.8061 2.92047 0
+	15.9243 2.92047 0
+	15.9243 0 0
+
+sector room17
+	id 17
+	type walk
+	default visibility visible
+	numvertices 4
+	vertices: 12.8061 2.92047 0
+	12.8061 6.72308 0
+	15.9243 6.72308 0
+	15.9243 2.92047 0
+
+sector room18
+	id 18
+	type walk
+	default visibility visible
+	numvertices 4
+	vertices: 12.8061 6.72308 0
+	12.8061 9.65668 0
+	15.9243 9.65668 0
+	15.9243 6.72308 0
+
+sector room19
+	id 19
+	type walk
+	default visibility visible
+	numvertices 4
+	vertices: 12.8061 9.65668 0
+	12.8061 13.1809 0
+	15.9243 13.1809 0
+	15.9243 9.65668 0
+
+sector room20
+	id 20
+	type walk
+	default visibility visible
+	numvertices 4
+	vertices: 15.9243 0 0
+	15.9243 3.15009 0
+	19.5284 3.15009 0
+	19.5284 0 0
+
+sector room23
+	id 23
+	type walk
+	default visibility visible
+	numvertices 4
+	vertices: 15.9243 9.67934 0
+	15.9243 12.689 0
+	19.5284 12.689 0
+	19.5284 9.67934 0
+
+sector room24
+	id 24
+	type walk
+	default visibility visible
+	numvertices 4
+	vertices: 19.5284 0 0
+	19.5284 3.29997 0
+	23.6021 3.29997 0
+	23.6021 0 0
+
+sector room25
+	id 25
+	type walk
+	default visibility visible
+	numvertices 4
+	vertices: 19.5284 3.29997 0
+	19.5284 5.80244 0
+	23.6021 5.80244 0
+	23.6021 3.29997 0
+
+sector room26
+	id 26
+	type walk
+	default visibility visible
+	numvertices 4
+	vertices: 19.5284 5.80244 0
+	19.5284 8.39459 0
+	23.6021 8.39459 0
+	23.6021 5.80244 0
+
+sector room27
+	id 27
+	type walk
+	default visibility visible
+	numvertices 4
+	vertices: 19.5284 8.39459 0
+	19.5284 11.3498 0
+	23.6021 11.3498 0
+	23.6021 8.39459 0
+
+sector room28
+	id 28
+	type walk
+	default visibility visible
+	numvertices 4
+	vertices: 23.6021 0 0
+	23.6021 2.7396 0
+	27.1498 2.7396 0
+	27.1498 0 0
+
+sector room29
+	id 29
+	type walk
+	default visibility visible
+	numvertices 4
+	vertices: 23.6021 2.7396 0
+	23.6021 5.70113 0
+	27.1498 5.70113 0
+	27.1498 2.7396 0
+
+sector room30
+	id 30
+	type walk
+	default visibility visible
+	numvertices 4
+	vertices: 23.6021 5.70113 0
+	23.6021 8.73861 0
+	27.1498 8.73861 0
+	27.1498 5.70113 0
+
+sector room31
+	id 31
+	type walk
+	default visibility visible
+	numvertices 4
+	vertices: 23.6021 8.73861 0
+	23.6021 12.6709 0
+	27.1498 12.6709 0
+	27.1498 8.73861 0
+

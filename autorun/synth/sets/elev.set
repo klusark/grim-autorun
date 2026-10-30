@@ -1,0 +1,51 @@
+section: sectors
+
+sector hall
+	id 0
+	type walk
+	default visibility visible
+	numvertices 4
+	vertices: 0 0 0
+	          0 4 0
+	          4 4 0
+	          4 0 0
+
+sector psg
+	id 1
+	type walk
+	default visibility hidden
+	numvertices 4
+	vertices: 4 1.5 0
+	          4 2.5 0
+	          5 2.5 0
+	          5 1.5 0
+
+sector cab
+	id 2
+	type walk
+	default visibility visible
+	numvertices 4
+	vertices: 5 1 0
+	          5 3 0
+	          7 3 0
+	          7 1 0
+
+sector door_trigger
+	id 3
+	type chernobyl
+	default visibility visible
+	numvertices 4
+	vertices: 3 1.5 0
+	          3 2.5 0
+	          3.8 2.5 0
+	          3.8 1.5 0
+
+sector door_box
+	id 4
+	type chernobyl
+	default visibility visible
+	numvertices 4
+	vertices: 5.5 1.5 0
+	          5.5 2.5 0
+	          6.5 2.5 0
+	          6.5 1.5 0

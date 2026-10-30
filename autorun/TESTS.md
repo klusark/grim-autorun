@@ -178,3 +178,25 @@ TurnActorTo steps rate * frame time without the time scale, true while a whole s
 0.022 degrees short a step (its sine table), so `turnto_step_size` / `turnto_true_count` accept both 0.9847 and 1.0 of rate * frame time.
 The cases take their points from `AR_NT_O` (the start of Manny), so the same functions run on a plain save through a debugLua hook.
 Lua 3.1 allows 32 locals in a function: the tier is split in functions (`ar_nt_turn_*`).
+
+## Tests without game data (2026-10-30): `synth/`
+
+`sh synth/all.sh` (under a minute, needs only Lua 5.1: `pacman -S mingw-w64-ucrt-x86_64-lua51`, and Python): the planner and the follower of
+`ar_nav.lua` on small sets made for the purpose (`synth/sets/*.set`, the text format of the game's set files), with the Lua 3.1 of the game replaced by
+`synth/compat.lua`. No archive, no ScummVM, no game.
+
+* `synth/run.lua` (`sh synth/run.sh [part of a name]`): the checks of `test_planner.lua` (rooms, islands, a gate that is off, a 12 cm neck, a ramp),
+  `test_follow.lua` (a simulated Manny that turns, steps 2.5 cm and slides along walls follows the way; the rule that a turn is not cut over the void
+  at the foot of a ramp) and `test_door.lua` (the trigger of a door whose way through is off).
+* `synth/fuzz.lua [seed [count]]` (`sh synth/fuzz.sh`): random sets of rooms that touch along parts of their edges, random pairs of points, every way
+  checked to stay on the floor (1 cm tolerance) and followed to the end. A failure prints the seed; `FUZZ_TRACE=1 FUZZ_PAIR=<n> FOLLOW_TRACE=<frames>`
+  shows the rooms, the way and the walk.
+* `synth/bench.lua`: the time of a plan on a large world and where it goes (a sampling profile).
+* `synth/test_tools.py`: `tools/logts.py` and `tools/gaps.py`.
+* A check for a fix should fail on the code before it: `AR_NAV_FILE=/tmp/old.lua sh synth/run.sh` runs the same checks on another copy of `ar_nav.lua`.
+
+## Where a run waits (2026-10-30)
+
+`run_all.sh` stamps every AUTORUN line with the wall clock (`logs/<name>.ts`, `tools/logts.py`); `python tools/gaps.py logs/<name>.ts [seconds]` lists the
+stretches without one, longest first, with the lines on both sides and the chapter. `STALL=<seconds>` (default 90) kills a run that logs nothing for that
+long (`stall_watch.sh`, with a report of the scripts that are running, `stall_diag.lua`).

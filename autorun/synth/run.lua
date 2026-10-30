@@ -11,6 +11,14 @@ dofile("nav_setfile.lua")
 break_here = function() end
 sleep_for = function() end
 
+-- (IsPointInSector is native code in the game, quick; the synthetic sets have names that differ, so the answer is whether that sector is on)
+IsPointInSector = function(x, y, z, name)
+	if AR_OFF[name] then
+		return nil
+	end
+	return 1, name, 0
+end
+
 AR_SETS = { }
 local function defset(name, file)
 	AR_SETS[name] = { file = file, global = name, cheat = { }, door = { } }
@@ -20,6 +28,9 @@ defset("ramp", "ramp.set")
 defset("neck", "neck.set")
 defset("islands", "islands.set")
 defset("gate", "gate.set")
+defset("elev", "elev.set")
+-- the hot sectors are the objects of the set: door_trigger is a trigger (a table with walkOut), door_box the sector of the door
+AR_SETS["elev"].door = { door_trigger = { }, door_box = { "door" } }
 
 local only = arg and arg[1]
 local passed, failed = 0, 0
@@ -88,8 +99,11 @@ end
 
 dofile("synth/test_planner.lua")
 dofile("synth/test_follow.lua")
+dofile("synth/test_door.lua")
 
-print(string.format("SYNTH SUMMARY %d passed, %d failed", passed, failed))
+if not SYNTH_NOEXIT then
+	print(string.format("SYNTH SUMMARY %d passed, %d failed", passed, failed))
+end
 if not SYNTH_NOEXIT then
 	os.exit(failed == 0 and 0 or 1)
 end
