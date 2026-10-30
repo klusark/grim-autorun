@@ -30,6 +30,11 @@ mkdir -p "$AR/logs" "$AR/saves_new" "${SAVES:-$AR/saves}"
 	cur=""
 	for c in "$AR"/ch*.lua; do
 		name=$(basename "$c" .lua)
+		# UPTO=<n>: only the chapters up to number n (UPTO=6 is act 1, Year 1), for a quicker run
+		if [ -n "$UPTO" ]; then
+			num=${name#ch}; num=${num%%[!0-9]*}
+			[ -n "$num" ] && [ $((10#$num)) -gt "$UPTO" ] && break
+		fi
 		lib=ar_lib.lua
 		if [ "$lib" != "$cur" ]; then
 			# (the extra library comes first, as it does in build_original.sh: the order of the tasks of a frame is the order they were started in)

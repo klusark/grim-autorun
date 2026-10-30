@@ -93,6 +93,8 @@ end
 -- the count of the corners and the box round each sector, kept with the sectors
 ar_nav_prep = function(nav)
 	local pn = { }
+	local ex = { }
+	local ey = { }
 	local minx = { }
 	local maxx = { }
 	local miny = { }
@@ -108,9 +110,15 @@ ar_nav_prep = function(nav)
 		local y0 = p[2]
 		local x1 = x0
 		local y1 = y0
+		local xs = { }
+		local ys = { }
+		ex[i] = xs
+		ey[i] = ys
 		while k <= n do
 			local x = p[(k - 1) * 3 + 1]
 			local y = p[(k - 1) * 3 + 2]
+			xs[k] = x
+			ys[k] = y
 			if x < x0 then x0 = x end
 			if x > x1 then x1 = x end
 			if y < y0 then y0 = y end
@@ -123,12 +131,70 @@ ar_nav_prep = function(nav)
 		maxy[i] = y1
 		i = i + 1
 	end
+	-- a grid of cells of 1 m that lists the sectors whose box touches the cell, in the order of the sectors: a point is looked for in those only
+	local all = { }
+	local gl = { }
+	local gn = { }
+	local nogrid = nil
+	i = 1
+	while i <= count do
+		all[i] = i
+		local fx0 = floor(minx[i])
+		local fx1 = floor(maxx[i])
+		local fy0 = floor(miny[i])
+		local fy1 = floor(maxy[i])
+		if fx0 < -500 or fx1 > 500 or fy0 < -500 or fy1 > 500 then
+			nogrid = TRUE
+		else
+			local a = fx0
+			while a <= fx1 do
+				local b = fy0
+				while b <= fy1 do
+					local key = (a + 512) * 1024 + (b + 512)
+					local n = (gn[key] or 0) + 1
+					if not gl[key] then
+						gl[key] = { }
+					end
+					gl[key][n] = i
+					gn[key] = n
+					b = b + 1
+				end
+				a = a + 1
+			end
+		end
+		i = i + 1
+	end
 	nav.cnt = count
 	nav.pn = pn
+	nav.ex = ex
+	nav.ey = ey
 	nav.minx = minx
 	nav.maxx = maxx
 	nav.miny = miny
 	nav.maxy = maxy
+	nav.all = all
+	nav.gl = gl
+	nav.gn = gn
+	nav.nogrid = nogrid
+end
+
+-- The sectors that may hold (x, y), as a list and its length: those whose box touches the cell of the point, in the order of the sectors
+AR_NO_CAND = { }
+ar_nav_cand = function(nav, x, y)
+	if not nav.cnt then
+		ar_nav_prep(nav)
+	end
+	local fx = floor(x)
+	local fy = floor(y)
+	if nav.nogrid or fx < -500 or fx > 500 or fy < -500 or fy > 500 then
+		return nav.all, nav.cnt
+	end
+	local key = (fx + 512) * 1024 + (fy + 512)
+	local c = nav.gl[key]
+	if c then
+		return c, nav.gn[key]
+	end
+	return AR_NO_CAND, 0
 end
 
 ar_nav_count = function(nav)
@@ -158,16 +224,16 @@ ar_nav_inside = function(nav, i, x, y)
 	if x < nav.minx[i] or x > nav.maxx[i] or y < nav.miny[i] or y > nav.maxy[i] then
 		return nil
 	end
-	local p = nav.p[i]
+	local xs = nav.ex[i]
+	local ys = nav.ey[i]
 	local n = nav.pn[i]
 	local inside = nil
+	local xj = xs[n]
+	local yj = ys[n]
 	local k = 1
-	local j = n
 	while k <= n do
-		local xk = p[(k - 1) * 3 + 1]
-		local yk = p[(k - 1) * 3 + 2]
-		local xj = p[(j - 1) * 3 + 1]
-		local yj = p[(j - 1) * 3 + 2]
+		local xk = xs[k]
+		local yk = ys[k]
 		if (yk > y) ~= (yj > y) and x < (xj - xk) * (y - yk) / (yj - yk) + xk then
 			if inside then
 				inside = nil
@@ -175,7 +241,8 @@ ar_nav_inside = function(nav, i, x, y)
 				inside = TRUE
 			end
 		end
-		j = k
+		xj = xk
+		yj = yk
 		k = k + 1
 	end
 	return inside
@@ -296,9 +363,10 @@ end
 ar_nav_find = function(nav, x, y, z)
 	local best = nil
 	local bestd = 1000000
-	local count = ar_nav_count(nav)
-	local i = 1
-	while i <= count do
+	local cand, count = ar_nav_cand(nav, x, y)
+	local k = 1
+	while k <= count do
+		local i = cand[k]
 		if ar_nav_inside(nav, i, x, y) and ar_nav_active(nav, i) then
 			local d = abs(ar_nav_z(nav, i, x, y) - z)
 			if d < bestd then
@@ -306,20 +374,21 @@ ar_nav_find = function(nav, x, y, z)
 				best = i
 			end
 		end
-		i = i + 1
+		k = k + 1
 	end
 	return best
 end
 
 -- a sector (on or off) that holds (x, y) at about the height z
 ar_nav_find_any = function(nav, x, y, z)
-	local count = ar_nav_count(nav)
-	local i = 1
-	while i <= count do
+	local cand, count = ar_nav_cand(nav, x, y)
+	local k = 1
+	while k <= count do
+		local i = cand[k]
 		if ar_nav_inside(nav, i, x, y) and abs(ar_nav_z(nav, i, x, y) - z) < 0.3 then
 			return i
 		end
-		i = i + 1
+		k = k + 1
 	end
 	return nil
 end
@@ -327,29 +396,31 @@ end
 -- a sector (on) that holds (x, y) within tol of the height z, or nil
 -- The height of the floor at (x, y) that is nearest to z (the level Manny is on), nil where there is no floor
 ar_nav_floor_z = function(nav, x, y, z)
-	local count = ar_nav_count(nav)
+	local cand, count = ar_nav_cand(nav, x, y)
 	local best = nil
-	local i = 1
-	while i <= count do
+	local k = 1
+	while k <= count do
+		local i = cand[k]
 		if ar_nav_inside(nav, i, x, y) and ar_nav_active(nav, i) then
 			local fz = ar_nav_z(nav, i, x, y)
 			if not best or abs(fz - z) < abs(best - z) then
 				best = fz
 			end
 		end
-		i = i + 1
+		k = k + 1
 	end
 	return best
 end
 
 ar_nav_find_z = function(nav, x, y, z, tol)
-	local count = ar_nav_count(nav)
-	local i = 1
-	while i <= count do
+	local cand, count = ar_nav_cand(nav, x, y)
+	local k = 1
+	while k <= count do
+		local i = cand[k]
 		if ar_nav_inside(nav, i, x, y) and abs(ar_nav_z(nav, i, x, y) - z) < tol and ar_nav_active(nav, i) then
 			return i
 		end
-		i = i + 1
+		k = k + 1
 	end
 	return nil
 end
@@ -746,22 +817,24 @@ end
 
 -- is (x, y) in a constrained sector (on), walk or hot
 ar_w_in_cons = function(nav, w, x, y)
-	local count = ar_nav_count(nav)
-	local i = 1
-	while i <= count do
+	local cand, count = ar_nav_cand(nav, x, y)
+	local k = 1
+	while k <= count do
+		local i = cand[k]
 		if w.cons[i] and ar_nav_inside(nav, i, x, y) and ar_nav_active(nav, i) then
 			return nav, i
 		end
-		i = i + 1
+		k = k + 1
 	end
 	local hot = ar_nav_hotnav(nav)
-	local hc = ar_nav_hcount(nav)
-	i = 1
-	while i <= hc do
+	local hcand, hc = ar_nav_cand(hot, x, y)
+	k = 1
+	while k <= hc do
+		local i = hcand[k]
 		if w.hcons[i] and ar_nav_inside(hot, i, x, y) and ar_nav_active(hot, i) then
 			return hot, i
 		end
-		i = i + 1
+		k = k + 1
 	end
 	return nil
 end
@@ -862,13 +935,14 @@ ar_w_floor_at = function(nav, w, x, y, z)
 	local code, cz = ar_w_code(nav, w, k, z)
 	if code == 2 then
 		-- (the cell is the end of a stair and a sliver of the floor beyond it: the floor is there if the point itself is on it)
-		local count = ar_nav_count(nav)
-		local i = 1
-		while i <= count do
+		local cand, count = ar_nav_cand(nav, x, y)
+		local ci = 1
+		while ci <= count do
+			local i = cand[ci]
 			if not w.cons[i] and ar_nav_inside(nav, i, x, y) and abs(ar_nav_z(nav, i, x, y) - cz) < 0.35 and ar_nav_active(nav, i) then
 				return k, cz
 			end
-			i = i + 1
+			ci = ci + 1
 		end
 		return nil
 	end
