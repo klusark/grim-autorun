@@ -12,7 +12,7 @@ since=$(date +%s)
 while sleep 5; do
 	[ -n "$parent" ] && ! kill -0 "$parent" 2>/dev/null && exit 0
 	# (the cpu time of the game so far, the last sample kept: the wall time of a run depends on what else the machine does, the cpu time does not)
-	cpu=$(tasklist //fi "imagename eq scummvm.exe" //v //fo csv //nh 2>/dev/null | head -1 | grep -o '"[0-9]*:[0-9][0-9]:[0-9][0-9]"' | tr -d '"')
+	cpu=$(sh "$(dirname "$0")/tools/svm_ps.sh" cpu)
 	[ -n "$cpu" ] && echo "$cpu" > "${log%.log}.cpu"
 	n=$(grep -c "AUTORUN" "$log" 2>/dev/null)
 	if [ "$n" != "$last" ]; then

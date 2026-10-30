@@ -10,7 +10,7 @@ n=0
 seen=0
 gone=0
 while :; do
-	pid=$(tasklist //fi "imagename eq scummvm.exe" //fo csv //nh 2>/dev/null | head -1 | cut -d, -f2 | tr -d '"')
+	pid=$(sh "$(dirname "$0")/svm_ps.sh" pid)
 	case "$pid" in
 		''|*[!0-9]*)
 			if [ $seen -eq 1 ]; then
