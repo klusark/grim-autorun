@@ -14,7 +14,9 @@ for ln in open(sys.argv[1], errors="replace"):
         else:
             inside = True
             if t.startswith("visit "):
-                last = t[6:]
+                last = "visit:" + t[6:]
+            elif t.startswith("talk "):
+                last = "talk:" + t.split()[1]
     elif "AUTORUN FAIL" in ln and not inside:
         print((last or "?") + "|" + ln.split("AUTORUN FAIL", 1)[1].strip()[:110])
         sys.exit(0)

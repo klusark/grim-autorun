@@ -5,15 +5,4 @@ AR_EXTRAS["ch01 garage"] = function()
 	ar_look_all(ga)
 end
 
--- the first node of the talk, before the line that starts the story
-AR_EXTRAS["ch01 glottis first"] = function()
-	ar_pick_if(gl1, 50)
-end
-
--- the begging node, before the line that makes Glottis help (it ends the talk)
-AR_EXTRAS["ch01 glottis beg"] = function()
-	ar_pick_if(gl1, 200)
-	ar_pick_if(gl1, 210)
-	ar_pick_if(gl1, 230)
-	ar_pick_if(gl1, 240)
-end
+-- (the lines of the talk with Glottis are said by the dialog hook of ar_full.lua, ar_talk_before)

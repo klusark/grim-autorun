@@ -18,11 +18,20 @@ for c in ch*.lua; do
 		r=$(python tools/sweep_blame.py "logs/${name}_s100.log")
 		echo "$name try $tries: $r"
 		[ "$r" = "PASSED" ] && break
-		set_name=${r%%|*}; why=${r#*|}
-		if [ "$set_name" = "?" ] || [ $tries -ge 3 ] || grep -q "AR_NO_SWEEP\[\"$set_name\"\]" ex00_sweep.lua; then
+		who=${r%%|*}; why=${r#*|}; kind=${who%%:*}; set_name=${who#*:}
+		if [ "$who" = "?" ] || [ $tries -ge 3 ]; then
 			echo "stopped at $name"; exit 1
 		fi
-		printf 'AR_NO_SWEEP["%s"] = "a chapter failed after the sweep: %s"\n' "$set_name" "$(echo "$why" | tr -d '"')" >> ex00_sweep.lua
+		why=$(echo "$why" | tr -d '"')
+		if [ "$kind" = "talk" ]; then
+			grep -q "AR_NO_TALK\[\"$set_name\"\]" ex00_sweep.lua && { echo "stopped at $name"; exit 1; }
+			printf 'AR_NO_TALK["%s"] = "a chapter failed after lines of it were said: %s"
+' "$set_name" "$why" >> ex00_sweep.lua
+		else
+			grep -q "AR_NO_SWEEP\[\"$set_name\"\]" ex00_sweep.lua && { echo "stopped at $name"; exit 1; }
+			printf 'AR_NO_SWEEP["%s"] = "a chapter failed after the sweep: %s"
+' "$set_name" "$why" >> ex00_sweep.lua
+		fi
 	done
 	case "$name" in "$last"*) break ;; esac
 done
