@@ -47,6 +47,7 @@ ar_extra_run = function(tag, f)
 	end
 	AR_KEEP_GOING = keep
 	AR_FAILED = failed
+	ar_log("extra: done " .. tag)
 end
 
 -- Every line a dialog that is waiting for a choice offers, then its exit line. A line that the dialog does not offer again is not said twice (a line
@@ -123,6 +124,9 @@ ar_has_verb = function(obj, verb)
 	return rawgettable(obj, verb) ~= nil
 end
 
+-- Objects that the look at everything leaves alone: AR_NO_LOOK["object name"] = "why" (looking at them changes the story, or takes Manny somewhere)
+AR_NO_LOOK = AR_NO_LOOK or { }
+
 -- Looks at every object of the set that is there to be looked at (touchable, in the room, with a lookAt of its own)
 ar_look_all = function(set)
 	if system.currentSet ~= set then
@@ -133,7 +137,7 @@ ar_look_all = function(set)
 	while i <= n and system.currentSet == set do
 		local o = list[i]
 		-- (a door is not looked at here: standing at it is standing in its door sector, and the game walks Manny out)
-		if o.touchable and not o.owner and o.range and o.range > 0 and not o.walkOut and not o.climbOut and ar_has_verb(o, "lookAt") then
+		if o.touchable and not o.owner and o.range and o.range > 0 and not o.walkOut and not o.climbOut and not AR_NO_LOOK[o.string_name] and ar_has_verb(o, "lookAt") then
 			ar_do("lookAt", o)
 		end
 		i = i + 1
@@ -211,41 +215,41 @@ ar_visit_setups = function(set)
 	end
 end
 
--- The sets that a 100% run looks over the first time it is in them (a door walked through, a set expected): AR_SWEEP["set name"] = TRUE, switched on by
--- the extras files once the sweep has been tried in that set. It is not on for every set: where Manny arrives on floor that only the sectors that are off
--- give a way over (the garage, at the elevator), or the objects move the floor (the hallway elevators), the look at everything strands him or takes him
--- out through a door. Objects and setups only: nothing that uses or takes.
+-- A 100% run looks over each set once, before it leaves it (a door taken with ar_go) or ends the chapter in it (the checkpoint): Manny has walked
+-- on the floor of the story by then, which he has not on arrival (he can stand where the floor is no way anywhere until he steps off, in the garage). Objects and
+-- setups only: nothing that uses or takes. AR_NO_SWEEP["set name"] = "why" keeps a set out: where the objects move the floor or take Manny through a door.
 AR_VISITED = AR_VISITED or { }
-AR_SWEEP = AR_SWEEP or { }
+AR_NO_SWEEP = AR_NO_SWEEP or { }
 ar_visit_set = function()
 	ar_look_all(AR_VISIT_SET)
 	ar_visit_setups(AR_VISIT_SET)
 end
-ar_arrived = function()
+ar_sweep = function()
 	if not AR_FULL or not system.currentSet or cutSceneLevel > 0 then
 		return
 	end
-	if AR_VISITED[system.currentSet.name] then
+	local name = system.currentSet.name
+	if AR_VISITED[name] then
 		return
 	end
-	AR_VISITED[system.currentSet.name] = TRUE
-	if not AR_SWEEP[system.currentSet.name] then
+	AR_VISITED[name] = TRUE
+	if AR_NO_SWEEP[name] then
+		ar_log("extra: no sweep of " .. tostring(name) .. " (" .. AR_NO_SWEEP[name] .. ")")
 		return
 	end
 	AR_VISIT_SET = system.currentSet
-	ar_extra_run("visit " .. tostring(system.currentSet.name), ar_visit_set)
+	ar_extra_run("visit " .. tostring(name), ar_visit_set)
 end
 if AR_FULL and not AR_GO_OLD then
 	AR_GO_OLD = ar_go
-	AR_EXPECT_OLD = ar_expect_set
+	AR_CP_OLD = ar_checkpoint
 	ar_go = function(door, target, vx, vy, vz)
-		local r = AR_GO_OLD(door, target, vx, vy, vz)
-		ar_arrived()
-		return r
+		ar_sweep()
+		return AR_GO_OLD(door, target, vx, vy, vz)
 	end
-	ar_expect_set = function(target, label)
-		local r = AR_EXPECT_OLD(target, label)
-		ar_arrived()
-		return r
+	ar_checkpoint = function(slot)
+		ar_sweep()
+		return AR_CP_OLD(slot)
 	end
 end
+

@@ -50,7 +50,7 @@ mkdir -p "$SCUMMVM_LUA_REMOTE"
 sh "$AR/stall_watch.sh" "$AR/logs/$name.log" "${STALL:-90}" $$ &
 stallpid=$!
 start=$(date +%s)
-timeout "$limit" ./scummvm.exe --config="$(cygpath -w "$AR/generated/_scummvm_$$.ini")" --savepath="$(cygpath -w "$AR/saves")" \
+timeout "$limit" ./scummvm.exe --config="$(cygpath -w "$AR/generated/_scummvm_$$.ini")" --savepath="$(cygpath -w "${SAVES:-$AR/saves}")" \
 	--autorun="$(cygpath -w "$AR/generated/chapter_$$.lua")" --debugflags="${DEBUGFLAGS:-scripts}" \
 	--engine-speed="${ES:-0}" --sim-fps="${SIMFPS:-60}" --show-fps "$@" grim-win > "$AR/logs/$name.log" 2>&1
 code=$?
