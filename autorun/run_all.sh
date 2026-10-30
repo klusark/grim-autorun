@@ -1,6 +1,6 @@
 #!/bin/sh
-# Plays every chapter in one run, from a new game. At the end of each chapter it writes the
-# checkpoint save (grim01.gsv ...) into ./saves and goes on playing.
+# Plays every chapter in one run, from a new game. With SAVE=1 it writes the checkpoint save (grim01.gsv ...) into ./saves at the end of each
+# chapter and goes on playing (to play a chapter by itself with run_chapter.sh); by default it does not save.
 #
 #   run_all.sh [timeout seconds] [extra scummvm options]
 #
@@ -21,6 +21,8 @@ mkdir -p "$AR/logs" "$AR/saves_new" "${SAVES:-$AR/saves}"
 	echo 'AR_CHAPTER = "all"'
 	echo 'IsSectorActive = nil DumpSectors = nil '
 	echo 'AR_CONTINUE = TRUE'
+	# SAVE=1: the checkpoints grim01.gsv ... are saved at the end of each chapter (to play a chapter by itself with run_chapter.sh); a run does not save by default
+	[ -z "$SAVE" ] && echo 'AR_NOSAVE = TRUE'
 	# REAL=1: nothing is skipped and the voices are on; FRAMES=<ms>: ScummVM writes a frame that often (to DUMPDIR)
 	[ -n "$REAL" ] && echo 'AR_REAL = TRUE'
 	[ -n "$FRAMES" ] && echo "AR_FRAMES = $FRAMES"

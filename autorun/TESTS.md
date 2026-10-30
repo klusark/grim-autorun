@@ -231,3 +231,13 @@ the first 9060 lines of the whole game after the normalising, and has to be the 
   profile run in the build), `luaT_efectivetag` and the comparison of numbers in the loop (36.04, 2.6% worse).
 * The time of the scripts in the first act, in thousands of millions of cycles: 35.11 before the free list of the tasks and the table lookups were changed, 32.81 with the grid, 24.8 with
   the index fallback, 23.7 with the polygon. The whole game: 3:21 of cpu time before, 2:12 now (with the same log, line for line).
+
+### What a run does and does not do by default (2026-10-30)
+* `run_all.sh` does not save the checkpoints any more (`AR_NOSAVE`): `SAVE=1 sh run_all.sh` writes grim01.gsv ... for playing a chapter by itself with `run_chapter.sh`. The time
+  that the save takes (6.8 s of the game's clock) still goes by, because the next chapter starts in a scene that has to settle (chapter 65 failed without it). A run
+  without the saves is not the same line for line as one with them (the menu and the save are not there), it is the same from one run to the next.
+* The game's dialog log (`dialog_log`, `grimdialog.htm`) is off in the autorun unless `REAL=1`: every line of speech read and wrote the whole file through the save manager.
+* The engine does not run the Lua collection that it starts every 10 s of the game's clock when the clock is simulated (the ones that the memory asks for go on).
+* At most 60 pictures a second are drawn, by the clock of the run (the simulated one when there is one; checked with `--sim-fps=240`: 60 in any second, 16 or 17 ms apart).
+  A loop with a speed limit is held to 17 ms a loop (58 a second), not 16 ms (62).
+* The whole game: 1:56 of cpu time and 128 s, was 2:12 and 144 s; with `SAVE=1` 2:06. Two runs without saves are the same line for line.

@@ -83,6 +83,12 @@ ar_screen_add = function(msg)
 	ar_screen_draw()
 end
 
+-- The game's log of the dialog appends every line to a file that is read and written whole (and compressed) each time: it is not for a run that no person plays
+if dialog_log and not AR_REAL then
+	dialog_log.bActive = nil
+	dialog_log.on = function(self) end
+end
+
 ar_log = function(msg)
 	PrintDebug("AUTORUN " .. msg .. "\n")
 	-- (FRAMES=0: a frame at every step that passed, the same point of the script in both engines, whatever their speed)
@@ -1510,6 +1516,13 @@ ar_checkpoint = function(slot)
 	-- chimney, never ends, and waiting for it was the whole timeout of the wait)
 		ar_try_wait(function() return not (cutSceneLevel > 0 and IsMoviePlaying and IsMoviePlaying()) end, 120000)
 		AR_MOVIE_START = nil
+		-- (a run of the whole game does not save unless asked to, SAVE=1 in run_all.sh: the saves are for playing a chapter by itself)
+		if AR_NOSAVE then
+			-- (the time that the save takes goes by all the same: the next chapter starts in a scene that has settled)
+			sleep_for(1000 + 300 + 1500 + 4000)
+			ar_log("checkpoint " .. slot .. " not saved")
+			return
+		end
 		sleep_for(1000)
 		AR_SAVING = TRUE
 		ar_screen_clear()
