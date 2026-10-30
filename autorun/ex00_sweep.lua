@@ -18,3 +18,4 @@ AR_NO_SWEEP["Scrimshaw Interior"] = "a chapter failed after the sweep: the walk 
 AR_NO_SWEEP["scrimshaw exterior"] = "a chapter failed after the sweep: the walk used its whole time budget of 6344 ms, stopped at -0.03 -0.53 toward -0.06 -0.50"
 AR_NO_SWEEP["Blue Casket kitchen"] = "a chapter failed after the sweep: the walk used its whole time budget of 6344 ms, stopped at -0.03 -0.53 toward -0.06 -0.50"
 AR_NO_TALK["vi1"] = "a chapter failed after lines of it were said: the dialog is not waiting for a choice"
+AR_NO_TALK["ev1"] = "a chapter failed after lines of it were said: use /gatx105/water fountain is not offered to the player: touchable=1 range=0.6 proximity=0.430401 seen[;/gatx"

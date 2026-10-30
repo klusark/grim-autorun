@@ -1,0 +1,27 @@
+-- made by tools/gen_talkers.py from the scripts (the use of an object that starts a dialog): AR_TALKERS[set global] = { object, ... }; the 100% run uses
+-- them and talks, see ar_talk_people in ar_full.lua
+AR_TALKERS = AR_TALKERS or { }
+AR_TALKERS["ar"] = { "meche_obj" }
+AR_TALKERS["bi"] = { "mic", "olivia_obj" }
+AR_TALKERS["cc"] = { "lupe_obj" }
+AR_TALKERS["ci"] = { "glottis_obj" }
+AR_TALKERS["cn"] = { "charlie_obj" }
+AR_TALKERS["dd"] = { "barrel_bees" }
+AR_TALKERS["dom"] = { "domino_obj" }
+AR_TALKERS["dr"] = { "domino_obj" }
+AR_TALKERS["fo"] = { "pugsy_obj" }
+AR_TALKERS["ha"] = { "eva_obj" }
+AR_TALKERS["he"] = { "button", "aitor_obj" }
+AR_TALKERS["hf"] = { "couple" }
+AR_TALKERS["hl"] = { "virago_obj" }
+AR_TALKERS["hq"] = { "salvador_obj", "eva_obj" }
+AR_TALKERS["lm"] = { "velasco_obj" }
+AR_TALKERS["ly"] = { "brennis_obj" }
+AR_TALKERS["mg"] = { "membrillo_obj" }
+AR_TALKERS["mn"] = { "chepito_obj" }
+AR_TALKERS["mx"] = { "max_obj" }
+AR_TALKERS["my"] = { "glottis_obj", "mechanic" }
+AR_TALKERS["re"] = { "velasco_obj" }
+AR_TALKERS["ri"] = { "celso_obj" }
+AR_TALKERS["sl"] = { "carla_obj" }
+AR_TALKERS["tg"] = { "keeper_obj" }

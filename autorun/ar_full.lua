@@ -338,3 +338,49 @@ if AR_FULL and not AR_PICK_EXIT_OLD then
 		return AR_PICK_EXIT_OLD(dlg)
 	end
 end
+
+-- The people of a set (AR_TALKERS in ex03_talkers.lua: the objects whose use starts a dialog) are used, and the dialog they open is talked through, before the
+-- set is left or the chapter ends in it. AR_NO_PEOPLE["set name"] = "why" keeps a set out (ex00_sweep.lua).
+AR_NO_PEOPLE = AR_NO_PEOPLE or { }
+AR_TALKERS = AR_TALKERS or { }
+ar_talk_one = function()
+	local obj = AR_TALK_OBJ
+	ar_do("use", obj)
+	local dlg = system.buttonHandler
+	if type(dlg) == "table" and ar_dialog_name(dlg) ~= "?" then
+		ar_talk_before(dlg, nil)
+		if system.buttonHandler == dlg then
+			ar_pick_exit(dlg)
+		end
+	end
+	ar_wait_for_control()
+end
+ar_talk_people = function()
+	local set = system.currentSet
+	-- (the global of a set is the name of its set file: ha.set is ha)
+	local global = set.setFile and strsub(set.setFile, 1, strlen(set.setFile) - 4)
+	if not global or not AR_TALKERS[global] or AR_NO_PEOPLE[set.name] then
+		return
+	end
+	local list = AR_TALKERS[global]
+	local i = 1
+	while list[i] and system.currentSet == set do
+		local obj = set[list[i]]
+		if type(obj) == "table" and obj.touchable and not obj.owner then
+			AR_TALK_OBJ = obj
+			ar_extra_run("people " .. tostring(set.name) .. " " .. list[i], ar_talk_one)
+		end
+		i = i + 1
+	end
+end
+AR_PEOPLE_DONE = AR_PEOPLE_DONE or { }
+if AR_FULL and not AR_SWEEP_OLD then
+	AR_SWEEP_OLD = ar_sweep
+	ar_sweep = function()
+		if AR_FULL and system.currentSet and cutSceneLevel == 0 and not AR_PEOPLE_DONE[system.currentSet.name] then
+			AR_PEOPLE_DONE[system.currentSet.name] = TRUE
+			ar_talk_people()
+		end
+		return AR_SWEEP_OLD()
+	end
+end
