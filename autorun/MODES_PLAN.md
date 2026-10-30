@@ -114,3 +114,35 @@ in the Celso, Charlie and Salvador dialogs, the same response for both), 8 lines
 and 40 lines in 14 dialogs that the intro switches off by the puzzle state (the hook has to come before the story step), so the target is 488
 of 491 lines, and the report lists the three left out. Today's default run (text on, lines not skipped) is what the engine comparisons
 (`FRAMES`, `saymark`) were built on; it stays reachable as `MODE=text`, which is `speed` without the line skipper, so those tools keep working.
+
+---------------------------------------------------------------------------------------------------------------
+
+## Status (2026-10-30)
+
+Done and checked:
+
+* `MODE=speed|text|full|speed100|full100` (`mode.sh`, in `run_all.sh`, `run_chapter.sh`, `build_original.sh`). Logs go to `logs/<mode>.log`; the real and 100% modes
+  keep their saves in `saves_<mode>`; the real modes save their checkpoints by default (mode `full` fails in chapter 64 without the save: Manny is held up in the
+  meadow, the menu mode of the save changes how much game time passes between chapters; not investigated further).
+* Mode `speed`: every line is ended with the skip key (a task that presses it in every frame in which a message is going; only the key, never a direct call).
+  The whole game passes, twice, with the same log (54,456 lines), in 113 s (text mode: 128 s). Chapter 38 needed the skipper off for the lines Chepito says while
+  held: they are the player's time to give him to Glottis (`AR_SAYING = TRUE`). More such places can show in other runs of the speed mode; they are findings.
+* Mode `text` is the old default; act 1 matches the baseline line for line.
+* Mode `full` (= `REAL=1`): the whole game passes with the saves (274 s).
+* Coverage: `COV` lines in every mode (`ar_cov`), `tools/catalog.py` (writes `catalog.json`), `tools/cov100.py catalog.json <log>...` (also reads the `camera:` notes
+  for sets and setups). The catalogue counts differ from the first estimate above (466 dialog lines, 798 objects with a static name, 1487 verbs, 252 item combos,
+  363 setups): this one is read from the script source; the estimate counted every `:create(` and the inline lines.
+* `ar_full.lua`: `ar_extra`, `ar_talk_all`, `ar_set_objects`, `ar_look_all`, `ar_use_all`, `ar_items_on`, `ar_visit_setups`, `ar_arrived`. `nav_setfile.lua` keeps the
+  camera sectors in 100% modes. `ex01_work_order.lua` is the first extras file; the whole game passes in `speed100` with it.
+
+Coverage of the whole game, speed and speed100 (only chapter 1 has extras): dialog lines 64 and 69 of 466, objects 145 and 152 of 681, sets entered 97 of 120, setups 157
+and 159 of 363, item combinations 52 of 252.
+
+Not done:
+
+* Extras for chapters 2-65 (step 9). A generic sweep of every set the first time the run is in it (`AR_SWEEP["set name"] = TRUE`) is there but off for every set: in the
+  garage and the hallway it strands Manny or takes him out through a door (he arrives on floor that only the sectors that are off give a way over; the elevators change
+  the floor when looked at). A sweep has to be tried set by set, from a point where Manny stands on the floor. Doors are left out of the look sweep.
+* Mode `full100` has not been run (it is `full` plus the same extras).
+* `ar_use_all` and `ar_items_on` have not been tried in a run. The 8 order-dependent dialog lines and the three either/or pairs are not handled yet.
+* The original (`build_original.sh MODE=`) was not run with the modes.

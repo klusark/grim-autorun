@@ -23,9 +23,12 @@ AR_REAL = TRUE"
 AR_FULL = TRUE"
 [ -z "$NOSKIPLINES" ] && MODE_LUA="$MODE_LUA
 AR_SKIPLINES = TRUE"
-# the 100% modes keep their own saves and logs (their checkpoints hold a different game)
+# the 100% modes keep their own saves and logs (their checkpoints hold a different game). The real modes (full, full100) save their checkpoints by default: a
+# run of hours has to be able to replay the chapter that failed alone (SAVE= with nothing turns it off, but chapter 64 of mode full is held up in the
+# meadow without the save: the menu mode of the save changes how much game time passes between the chapters)
 if [ -n "$MODE" ]; then
 	: "${LOG:=$MODE}"
-	[ -n "$FULL" ] && : "${SAVES:=$AR/saves_$MODE}"
+	[ -n "$FULL" ] || [ -n "$REAL" ] && : "${SAVES:=$AR/saves_$MODE}"
 fi
+[ -n "$REAL" ] && : "${SAVE:=1}"
 true
