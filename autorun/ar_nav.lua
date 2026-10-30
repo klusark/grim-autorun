@@ -1551,15 +1551,26 @@ ar_w_way = function(nav, w, sk, gk, sx, sy, sz, gx, gy, gz)
 			-- (the line may go no nearer to the walls than the way itself does between the two points, and at least a cell away; only
 			-- its two ends, where the points are, may be nearer: the goal is often at a wall)
 			local maxpen = 1
+			local pm = { }
+			local bmax = a
 			local b = a + 1
 			while b <= m and raw[b - 1][4] ~= "c" and raw[b - 1][4] ~= "s" and (b == a + 1 or raw[b - 1][4] == "p") do
 				if b > a + 1 and raw[b - 1][5] > maxpen then
 					maxpen = raw[b - 1][5]
 				end
-				if b == a + 1 or ar_w_los(nav, w, raw[a][1], raw[a][2], raw[a][3], raw[b][1], raw[b][2], maxpen) then
-					j = b
-				end
+				pm[b] = maxpen
+				bmax = b
 				b = b + 1
+			end
+			-- (the farthest point that the floor reaches: from the far end, the first that does, not every one from the near end up to it)
+			b = bmax
+			while b > a + 1 do
+				if ar_w_los(nav, w, raw[a][1], raw[a][2], raw[a][3], raw[b][1], raw[b][2], pm[b]) then
+					j = b
+					b = a
+				else
+					b = b - 1
+				end
 			end
 		end
 		o = o + 1
