@@ -1012,7 +1012,9 @@ ar_approach = function(obj)
 		sleep_for(100)
 		ar_wait_turn()
 		ar_try_wait(ar_offered, 1200)
-	elseif obj.obj_x and not ar_offered() then
+	end
+	-- (not offered from there, within 30 cm of the use point: the heading of the use point is for standing on it. A player turns to the object itself)
+	if obj.obj_x and not ar_offered() then
 		ar_face(obj)
 		sleep_for(100)
 		ar_wait_turn()
