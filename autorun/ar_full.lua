@@ -327,3 +327,14 @@ if AR_FULL and not AR_PICK_OLD then
 		return AR_PICK_OLD(dlg, line)
 	end
 end
+
+-- A chapter that ends a conversation with ar_pick_exit gets the other lines said first as well
+if AR_FULL and not AR_PICK_EXIT_OLD then
+	AR_PICK_EXIT_OLD = ar_pick_exit
+	ar_pick_exit = function(dlg)
+		if dlg.exit_lines and dlg.exit_lines[dlg.node] then
+			ar_talk_before(dlg, dlg.exit_lines[dlg.node])
+		end
+		return AR_PICK_EXIT_OLD(dlg)
+	end
+end
