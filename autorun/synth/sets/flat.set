@@ -1,0 +1,21 @@
+section: sectors
+
+sector room_a
+	id 0
+	type walk
+	default visibility visible
+	numvertices 4
+	vertices: 0 0 0
+	          0 2 0
+	          4 2 0
+	          4 0 0
+
+sector room_b
+	id 1
+	type walk
+	default visibility visible
+	numvertices 4
+	vertices: 4 0 0
+	          4 2 0
+	          8 2 0
+	          8 0 0

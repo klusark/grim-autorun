@@ -69,7 +69,7 @@ stallpid=$!
 start=$(date +%s)
 timeout "$limit" ./scummvm.exe --config="$(cygpath -w "$AR/generated/_scummvm_$$.ini")" --savepath="$(cygpath -w "${SAVES:-$AR/saves}")" \
 	--autorun="$(cygpath -w "$AR/generated/all_$$.lua")" --debugflags="${DEBUGFLAGS:-scripts}" \
-	$([ -z "$REALTIME" ] && echo "--engine-speed=${ES:-0} --sim-fps=${SIMFPS:-60}") $([ -z "$NOFPS" ] && echo --show-fps) "$@" grim-win 2>&1 	| awk -v out="$AR/logs/${LOG:-all}.log" -v times="$AR/logs/${LOG:-all}_times.txt" -v t0="$start" '{ print > out; if (/=== chapter/) { n = systime() - t0; print n, $0 > times; fflush(times) } fflush(out) }'
+	$([ -z "$REALTIME" ] && echo "--engine-speed=${ES:-0} --sim-fps=${SIMFPS:-60}") $([ -z "$NOFPS" ] && echo --show-fps) "$@" grim-win 2>&1 	| python "$AR/tools/logts.py" "$AR/logs/${LOG:-all}.ts" | awk -v out="$AR/logs/${LOG:-all}.log" -v times="$AR/logs/${LOG:-all}_times.txt" -v t0="$start" '{ print > out; if (/=== chapter/) { n = systime() - t0; print n, $0 > times; fflush(times) } fflush(out) }'
 code=$?
 kill $stallpid 2>/dev/null
 echo "scummvm exit: $code after $(( $(date +%s) - start )) s" >> "$AR/logs/${LOG:-all}.log"
