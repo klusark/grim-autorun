@@ -1,0 +1,9 @@
+{"dialogs":{"d1":{"file":"dlg_x.lua","lines":[
+ {"n":10,"text":"/aa001/","exit":false,"initially_off":false,"exclusive_with":null},
+ {"n":20,"text":"/aa002/","exit":false,"initially_off":true,"exclusive_with":"d1[30]"},
+ {"n":30,"text":"/aa003/","exit":true,"initially_off":false,"exclusive_with":null}]}},
+"objects":{"xx.door":{"set":"xx","set_name":"test room","name":"door","verbs":["lookAt","use"],"combos":["key","saw"],"item":false},
+ "xx.box":{"set":"xx","set_name":"test room","name":"box","verbs":["lookAt"],"combos":[],"item":false}},
+"items":{"xx.key":{"set":"xx","set_name":"test room","name":"brass key","verbs":["pickUp"],"combos":[],"item":true},
+ "xx.saw":{"set":"xx","set_name":"test room","name":"saw","verbs":[],"combos":[],"item":true}},
+"sets":{"test room":{"file":"xx.set","global":"xx","setups":{"a":0,"b":1,"c":2}},"other":{"file":"yy.set","global":"yy","setups":{}}}}

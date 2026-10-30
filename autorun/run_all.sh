@@ -9,6 +9,7 @@
 # The log goes to ./logs/all.log.
 
 AR=/c/Users/Joel/grim_tools/autorun
+. "$AR/mode.sh" || exit 1
 # A small window and a frame drawn in 64 (not the whole window, a frame in 8): the same run, 12% less cpu time and a third less wall time. Not where frames are
 # captured (FRAMES) or the run is real (REAL), which want what a player sees; WIN= and RENDEREVERY= give the values.
 [ -z "$FRAMES" ] && [ -z "$REAL" ] && { : "${WIN:=640x480}"; : "${RENDEREVERY:=64}"; }
@@ -24,7 +25,7 @@ mkdir -p "$AR/logs" "$AR/saves_new" "${SAVES:-$AR/saves}"
 	# SAVE=1: the checkpoints grim01.gsv ... are saved at the end of each chapter (to play a chapter by itself with run_chapter.sh); a run does not save by default
 	[ -z "$SAVE" ] && echo 'AR_NOSAVE = TRUE'
 	# REAL=1: nothing is skipped and the voices are on; FRAMES=<ms>: ScummVM writes a frame that often (to DUMPDIR)
-	[ -n "$REAL" ] && echo 'AR_REAL = TRUE'
+	echo "$MODE_LUA"
 	[ -n "$FRAMES" ] && echo "AR_FRAMES = $FRAMES"
 	echo 'AR_TIMEOUT = 36000000'
 	# NOSCREEN=1: no progress text drawn on the screen (for a video)
@@ -42,7 +43,8 @@ mkdir -p "$AR/logs" "$AR/saves_new" "${SAVES:-$AR/saves}"
 			# (the extra library comes first, as it does in build_original.sh: the order of the tasks of a frame is the order they were started in)
 			[ -n "$EXTRALIB" ] && cat "$AR/$EXTRALIB"
 			cat "$AR/$lib" "$AR/ar_nav.lua" "$AR/nav_setfile.lua"
-			cat "$AR/ar_helpers.lua"
+			cat "$AR/ar_helpers.lua" "$AR/ar_full.lua"
+			[ -n "$FULL" ] && cat "$AR"/ex*.lua
 			cur="$lib"
 		fi
 		echo "ar_log(\"=== chapter $name ===\")"

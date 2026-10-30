@@ -20,6 +20,7 @@ if system.currentSet ~= ga then
 	ar_finish()
 end
 
+ar_extra("ch01 garage")
 ar_log("step: fountain")
 ar_walk_to(ga.fountain.use_pnt_x, ga.fountain.use_pnt_y, ga.fountain.use_pnt_z, function() return system.buttonHandler == gl1 end)
 if system.buttonHandler ~= gl1 then
@@ -27,10 +28,12 @@ if system.buttonHandler ~= gl1 then
 end
 
 ar_log("step: talk to Glottis")
+ar_extra("ch01 glottis first")
 ar_pick(gl1, 60)
 ar_pick(gl1, 70)
 ar_pick(gl1, 80)
 ar_pick(gl1, 90)
+ar_extra("ch01 glottis beg")
 ar_pick(gl1, 220)
 ar_wait_for(function() return ar_has(ga.work_order) end, 120000)
 ar_check(ar_has(ga.work_order), "Manny has the work order")
