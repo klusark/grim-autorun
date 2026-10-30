@@ -14,7 +14,11 @@ while [ $n -lt "${1:-12}" ]; do
 	who=${r%%|*}; why=${r#*|}; kind=${who%%:*}; name=${who#*:}
 	[ "$who" = "?" ] && break
 	why=$(echo "$why" | tr -d '"')
-	if [ "$kind" = "talk" ]; then
+	if [ "$kind" = "people" ]; then
+		grep -q "AR_NO_PEOPLE\[\"$name\"\]" ex00_sweep.lua && { echo "already listed: $name"; break; }
+		printf 'AR_NO_PEOPLE["%s"] = "a chapter failed after the people of it were talked to: %s"
+' "$name" "$why" >> ex00_sweep.lua
+	elif [ "$kind" = "talk" ]; then
 		grep -q "AR_NO_TALK\[\"$name\"\]" ex00_sweep.lua && { echo "already listed: $name"; break; }
 		printf 'AR_NO_TALK["%s"] = "a chapter failed after lines of it were said: %s"\n' "$name" "$why" >> ex00_sweep.lua
 	else
