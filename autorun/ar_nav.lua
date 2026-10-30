@@ -1394,7 +1394,9 @@ ar_w_los = function(nav, w, x1, y1, z1, x2, y2, maxpen)
 	local dx = x2 - x1
 	local dy = y2 - y1
 	local len = sqrt(dx * dx + dy * dy)
-	local steps = floor(len / 0.04) + 1
+	-- (every 1.5 cm: a sliver of void between two sectors, at the corner at the foot of a ramp, is a few millimetres wide and 7 cm long, and a sample every 4 cm
+	-- steps over it)
+	local steps = floor(len / 0.015) + 1
 	local z = z1
 	local s = 1
 	while s <= steps do
@@ -1408,13 +1410,13 @@ ar_w_los = function(nav, w, x1, y1, z1, x2, y2, maxpen)
 		if not (c == 1 or (c == 4 and AR_GOAL_HOT[AR_W_HOT])) or w.tmp[k] then
 			return nil
 		end
-		if w.obst and w.obst[1] and s > 3 and s < steps - 2 and ar_w_obst_cost(w, k) > 8 then
+		if w.obst and w.obst[1] and s > 8 and s < steps - 5 and ar_w_obst_cost(w, k) > 8 then
 			-- (through the box of an actor: not a line of sight, the way goes round)
 			return nil
 		end
 		local part = AR_W_E.part
 		local pen = ar_w_pen(nav, w, k, cz)
-		if pen > maxpen and s > 3 and s < steps - 2 then
+		if pen > maxpen and s > 8 and s < steps - 5 then
 			return nil
 		end
 		if pen > 2 then
@@ -2091,6 +2093,11 @@ ar_follow_frame = function(nav, w, path, n, cum, i)
 			local l2 = (wp[1] - ax) * (wp[1] - ax) + (wp[2] - ay) * (wp[2] - ay)
 			if d < 0.06 or t >= l2 then
 				adv = TRUE
+				-- (the turn is cut only where the line on to the next point is floor all along: at the foot of a ramp the line from a point 6 cm short of the corner
+				-- runs out over the void beside the ramp, and Manny is held at its edge, where no sector joins; on to the point itself, then)
+				if d >= 0.02 and t < l2 and w.x0 and not ar_w_los(nav, w, p.x, p.y, p.z, path[i + 1][1], path[i + 1][2], 2) then
+					adv = nil
+				end
 			end
 		elseif kind == "x" then
 			if d < 0.05 then
