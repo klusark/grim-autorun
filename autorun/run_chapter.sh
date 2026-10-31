@@ -26,6 +26,8 @@ mkdir -p "$AR/logs"
 cp "$APPDATA/ScummVM/scummvm.ini" "$AR/generated/_scummvm_$$.ini"
 [ -z "$NOMUTE" ] && [ -z "$REAL" ] && sed -i '/^\[grim-win\]/a speech_mute=true\nsubtitles=true\ntalkspeed=179' "$AR/generated/_scummvm_$$.ini"
 [ -n "$REAL" ] && sed -i '/^\[grim-win\]/a subtitles=true' "$AR/generated/_scummvm_$$.ini"
+[ "${PRELOAD:-1}" != 0 ] && sed -i '/^\[grim-win\]/a preload_data=true' "$AR/generated/_scummvm_$$.ini"
+[ -z "$LOOSE" ] && sed -i '/^\[grim-win\]/a loose_files=false' "$AR/generated/_scummvm_$$.ini"
 [ -n "$SIMMS" ] && sed -i "/^\[grim-win\]/a sim_frame_ms=$SIMMS" "$AR/generated/_scummvm_$$.ini"
 [ -n "$DUMPDIR" ] && sed -i "/^\[grim-win\]/a dump_frames_dir=$DUMPDIR" "$AR/generated/_scummvm_$$.ini"
 # TESTSETS=1: the hand-made sets of tests/sets (tools/mk_set.py) are read from there as datausr.lab
@@ -47,7 +49,7 @@ cd /home/Joel/scummvm/${SVM_BUILD:-build-opt}
 export SCUMMVM_LUA_REMOTE="$AR/generated/remote_$$"
 mkdir -p "$SCUMMVM_LUA_REMOTE"
 : > "$AR/logs/$name.log"
-sh "$AR/stall_watch.sh" "$AR/logs/$name.log" "${STALL:-90}" $$ &
+sh "$AR/stall_watch.sh" "$AR/logs/$name.log" "${STALL:-$([ -n "$REALTIME" ] && echo 0 || ([ -n "$REAL" ] && echo 90 || echo 15))}" $$ &
 stallpid=$!
 start=$(date +%s)
 timeout "$limit" ./scummvm.exe --config="$(cygpath -w "$AR/generated/_scummvm_$$.ini")" --savepath="$(cygpath -w "${SAVES:-$AR/saves}")" \

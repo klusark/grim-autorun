@@ -158,9 +158,11 @@ ar_use_all = function(set, except)
 		if o.touchable and not o.owner and o.range and o.range > 0 and not except[o] and not o.walkOut and not o.climbOut then
 			if ar_has_verb(o, "pickUp") then
 				ar_do("pickUp", o)
+				ar_settle()
 			end
 			if system.currentSet == set and ar_has_verb(o, "use") and not except[o] then
 				ar_do("use", o)
+				ar_settle()
 			end
 		end
 		i = i + 1
@@ -184,6 +186,44 @@ ar_items_on = function(obj)
 			ar_do("use", obj, item)
 		end
 		i = i + 1
+	end
+end
+
+-- A dialog that a verb opened is talked through (the lines of the hook, then the exit line), a cutscene waited out
+ar_settle = function()
+	local dlg = system.buttonHandler
+	if type(dlg) == "table" and ar_dialog_name(dlg) ~= "?" then
+		ar_talk_before(dlg, nil)
+		if system.buttonHandler == dlg then
+			ar_pick_exit(dlg)
+		end
+	end
+	ar_wait_for_control()
+end
+
+-- Every item that Manny carries tried on every object of the set that has an answer for it
+ar_items_all = function(set)
+	local list, n = ar_set_objects(set)
+	local i = 1
+	while i <= n and system.currentSet == set do
+		local o = list[i]
+		if o.touchable and not o.owner and o.range and o.range > 0 and not o.walkOut and not o.climbOut and not AR_NO_ITEMS[o.string_name] then
+			ar_items_on(o)
+			ar_settle()
+		end
+		i = i + 1
+	end
+end
+
+AR_NO_ITEMS = AR_NO_ITEMS or { }
+AR_NO_HEAVY = AR_NO_HEAVY or { }
+ar_heavy_set = function()
+	local set = AR_VISIT_SET
+	if system.currentSet == set then
+		ar_use_all(set)
+	end
+	if system.currentSet == set then
+		ar_items_all(set)
 	end
 end
 
@@ -239,6 +279,10 @@ ar_sweep = function()
 	end
 	AR_VISIT_SET = system.currentSet
 	ar_extra_run("visit " .. tostring(name), ar_visit_set)
+	-- (use, pick up and the items: as a step of its own, so that a set where it breaks the story loses only this)
+	if system.currentSet == AR_VISIT_SET and not AR_NO_HEAVY[name] then
+		ar_extra_run("heavy " .. tostring(name), ar_heavy_set)
+	end
 end
 if AR_FULL and not AR_GO_OLD then
 	AR_GO_OLD = ar_go

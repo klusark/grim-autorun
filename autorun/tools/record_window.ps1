@@ -4,7 +4,7 @@
 # recorded at 60 frames a second with the hardware encoder at a very high quality (constant quantizer 10, H.264, 4:2:0), until ScummVM ends.
 # (The window of an OpenGL game cannot be taken by its title with gdigrab: it comes out black; the desktop region is what is on the screen.)
 # The audio is not here: ScummVM is run with SDL_AUDIODRIVER=disk, which writes what it plays to a file; tools/record_mux.sh puts the two together.
-param([string]$Out, [int]$X = 1000, [int]$Y = 100)
+param([string]$Out, [int]$X = 1000, [int]$Y = 100, [int]$Qp = 10, [string]$Audio = "")
 
 Add-Type -TypeDefinition @"
 using System; using System.Runtime.InteropServices;
@@ -43,11 +43,15 @@ $p = New-Object WinRec+P
 $w = $c.Rr; $hh = $c.B
 Write-Output "recording the client area $w x $hh at $($p.X),$($p.Y) to $Out"
 
-$ff = Start-Process -FilePath ffmpeg -PassThru -WindowStyle Hidden -ArgumentList @(
-    '-hide_banner', '-y', '-f', 'gdigrab', '-framerate', '60', '-draw_mouse', '0', '-offset_x', "$($p.X)", '-offset_y', "$($p.Y)",
-    '-video_size', "${w}x${hh}", '-i', 'desktop',
-    '-c:v', 'h264_nvenc', '-preset', 'p7', '-tune', 'hq', '-rc', 'constqp', '-qp', '10', '-profile:v', 'high', '-pix_fmt', 'yuv420p',
-    $Out) -RedirectStandardError "$Out.log"
+# (with -Audio "<dshow device>" the sound is recorded by the same ffmpeg, in the same clock as the picture: they cannot drift apart. The device that plays what the
+# sound card plays is "Stereo Mix (...)"; ScummVM then plays out loud as usual.)
+$ffargs = @('-hide_banner', '-y')
+if ($Audio) { $ffargs += @('-f', 'dshow', '-use_wallclock_as_timestamps', '1', '-audio_buffer_size', '50', '-i', "audio=`"$Audio`"") }
+$ffargs += @('-f', 'gdigrab', '-use_wallclock_as_timestamps', '1', '-framerate', '60', '-draw_mouse', '0', '-offset_x', "$($p.X)", '-offset_y', "$($p.Y)", '-video_size', "${w}x${hh}", '-i', 'desktop')
+$ffargs += @('-c:v', 'h264_nvenc', '-preset', 'p7', '-tune', 'hq', '-rc', 'constqp', '-qp', "$Qp", '-profile:v', 'high', '-pix_fmt', 'yuv420p')
+if ($Audio) { $ffargs += @('-c:a', 'aac', '-b:a', '256k', '-af', 'aresample=async=1') }
+$ffargs += $Out
+$ff = Start-Process -FilePath ffmpeg -PassThru -WindowStyle Hidden -ArgumentList $ffargs -RedirectStandardError "$Out.log"
 $started = [DateTimeOffset]::UtcNow.ToUnixTimeMilliseconds()
 Set-Content -Path "$Out.start" -Value $started
 Write-Output "ffmpeg started at $started"

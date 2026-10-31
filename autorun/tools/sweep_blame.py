@@ -15,10 +15,15 @@ for ln in open(sys.argv[1], errors="replace"):
             inside = True
             if t.startswith("visit "):
                 last = "visit:" + t[6:]
+            elif t.startswith("heavy "):
+                last = "heavy:" + t[6:]
             elif t.startswith("talk "):
                 last = "talk:" + t.split()[1]
             elif t.startswith("people "):
                 last = "people:" + t[7:].rsplit(" ", 1)[0]
+    elif "AUTORUN STALL:" in ln:
+        print((last or "?") + "|stalled: no output for 90 s")
+        sys.exit(0)
     elif "AUTORUN FAIL" in ln and not inside:
         print((last or "?") + "|" + ln.split("AUTORUN FAIL", 1)[1].strip()[:110])
         sys.exit(0)
