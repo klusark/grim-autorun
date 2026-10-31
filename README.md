@@ -56,8 +56,8 @@ open differences and the pitfalls.
 From `autorun/` in a UCRT64 shell:
 
 ```sh
-SIMFPS=60 TS=100 sh run_all.sh 6000     # whole game on ScummVM, ~5 min; log in logs/all.log
-TS=100 sh run_chapter.sh ch23_morgue.lua # one chapter from its checkpoint save
+SIMFPS=60 sh run_all.sh 6000     # whole game on ScummVM, ~5 min; log in logs/all.log
+sh run_chapter.sh ch23_morgue.lua # one chapter from its checkpoint save
 python tools/test_all.py scummvm         # all test tiers on ScummVM, ~1 min
 sh orig_all.sh                           # whole game on the original exe (takes about an hour)
 python3 tools/ftrace_cmp.py logs/ft_sv.log logs/ft_orig_new.log 0.01 0.05 4   # first frame differences

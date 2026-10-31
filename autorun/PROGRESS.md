@@ -11,7 +11,7 @@ ends the run at once (`AR_KEEP_GOING = TRUE` goes on).
     sh run_chapter.sh chNN.lua         one chapter; it loads its own save with ar_load(N) as its first line
     sh rebuild_saves.sh                rebuilds every checkpoint chapter by chapter
 
-(MSYS2 UCRT64 shell, scummvm from ~/scummvm/build, TS=100 for normal speed, AR_WALK=TRUE in a
+(MSYS2 UCRT64 shell, scummvm from ~/scummvm/build, AR_WALK=TRUE in a
 script to stop Manny running.) The generated scripts are in ./generated, the logs in ./logs, the
 AUTORUN lines tell what happened and the last steps are shown in the top left of the screen.
 

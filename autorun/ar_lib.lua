@@ -294,7 +294,7 @@ end
 
 -- A few steps to the side of the way to (x, y): where Manny bumps into a wall a player nudges the stick left or right
 AR_WIGGLE_SIDE = 1
--- (counts of frames were tuned at the fast time scale, where a frame is 133 ms of game time: this many frames at any scale)
+-- (counts of frames were tuned where a frame is 133 ms of game time: this many frames at any frame time)
 ar_fr = function(n)
 	local ft = system.frameTime
 	if not ft or ft < 1 then

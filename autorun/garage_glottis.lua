@@ -3,7 +3,7 @@
 --
 -- scummvm --autorun=garage_glottis.lua --save-slot=N --debugflags=scripts grim-win
 --
--- To run it faster add --engine-speed=0 --time-scale=800, and mute the voices (speech_mute
+-- To run it faster add --engine-speed=0 --sim-fps=60, and mute the voices (speech_mute
 -- with subtitles), as they keep their normal speed.
 --
 -- The output goes through PrintDebug, so it needs --debugflags=scripts. Every line starts

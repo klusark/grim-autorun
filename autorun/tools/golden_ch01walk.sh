@@ -5,7 +5,7 @@
 AR=/c/Users/Joel/grim_tools/autorun
 cd "$AR"
 cat fullcmp_lib.lua ar_lib.lua > _fc_ar_lib.lua
-DEBUGFLAGS=actors LIB=_fc_ar_lib.lua SIMMS=17 SIMFPS=60 TS=100 timeout 300 sh run_chapter.sh ch01_work_order.lua 100 > /dev/null 2>&1
+DEBUGFLAGS=actors LIB=_fc_ar_lib.lua SIMMS=17 SIMFPS=60 timeout 300 sh run_chapter.sh ch01_work_order.lua 100 > /dev/null 2>&1
 rm -f _fc_ar_lib.lua
 python3 - <<'PY'
 import re

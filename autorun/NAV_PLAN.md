@@ -37,7 +37,7 @@ Contents
   that guard is part of the pass criteria (5.5).
 * Engine-side switches of how the game is *driven* are not builtins and stay: `--autorun=` (ScummVM loads the
   script; the original gets it by the F12 injection), `--sim-fps` (the deterministic clock the ScummVM runs use;
-  never `--time-scale`), the save-slot and config options.
+  the only clock option), the save-slot and config options.
 
 What the run uses today that this rule removes (found by grep on 2026-10-24):
 

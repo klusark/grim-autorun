@@ -48,7 +48,7 @@ section 2), so check git before you trust a status line.
 
 - `grim-actor-fixes-split`: the current work, split into reviewable commits on top of master (sectors and
   shrinking like the original, planner, Walker_WalkSectors, walker heading frame, constraint, box
-  collision, clip plane/shadow, puck, texts/iris, `--autorun/--time-scale/--sim-fps`, debug aids, gamma,
+  collision, clip plane/shadow, puck, texts/iris, `--autorun/--sim-fps`, debug aids, gamma,
   chores, lipsync, sound position, Lua fixes ...). Run `git log master..grim-actor-fixes-split`.
 - `grim-actor-fixes`: the older unsplit branch the split came from ("many changes" commits).
 - `grim-time-scale` / `grim-turning`: the turning port (section 7).
@@ -70,7 +70,7 @@ section 2), so check git before you trust a status line.
 - To drive the game without the autorun: hook `GrimEngine::mainLoop` to `debugLua()` a script file once. stdio
   and getenv are forbidden in ScummVM, so use `Common::FSNode`. Read results through `warning()`. Call
   `LuaBase::instance()->registerOpcodes()` first, because restored saves lack builtins that were added later.
-- Engine options added for testing: `--autorun=file.lua`, `--time-scale` (TS), `--sim-fps=N` (deterministic:
+- Engine options added for testing: `--autorun=file.lua`, `--sim-fps=N` (deterministic:
   fixed game time per frame; mixer, iMuse and movies are stepped by the engine), ini `sim_frame_ms=17`,
   `--show-fps`. Compare with the original only at 60 fps vs `--sim-fps=60`.
 - Remote Lua console in ScummVM: `autorun/rl.sh start N`, then `rl2.sh 'lua'` (env SCUMMVM_LUA_REMOTE). The
@@ -91,9 +91,8 @@ Detailed docs: `autorun/PROGRESS.md` (chapter table), `TESTS.md`, `TEST_PLAN.md`
   `ar_describe()` lists the touchable objects and verbs in the current set. Use `ar_fr(n)` for frame thresholds.
 - **Run commands** (from an MSYS2 UCRT64 shell; tool calls time out at 600 s, so run long ones detached with
   `setsid nohup` and poll the log):
-  - `SIMFPS=60 TS=100 sh run_all.sh 6000`: full game, ~310 s, passed 3/3 (logs/all.log).
-  - `sh run_chapter.sh chNN.lua`: one chapter. **Use TS=100** (the default TS=800 takes 8x steps that jump over
-    thin sectors and hide bugs).
+  - `SIMFPS=60 sh run_all.sh 6000`: full game, ~310 s, passed 3/3 (logs/all.log).
+  - `sh run_chapter.sh chNN.lua`: one chapter.
   - Env vars: FRAMES/DUMPDIR/REAL (no skips, voices)/LOG/SAVES/EXTRALIB/GRIMOFF/GRIMON/TESTSETS/SIMMS.
   - Never leave a `ch*_dbg.lua` in the autorun dir, because run_all globs `ch*.lua`. Never edit `generated/`.
 - **Save slots:** each chapter saves once with `ar_checkpoint(N)`, where N is its position among the ch*.lua
@@ -200,7 +199,7 @@ Detailed docs: `autorun/PROGRESS.md` (chapter table), `TESTS.md`, `TEST_PLAN.md`
 ## 7. Engine port status and open differences
 
 ### Frame-match pipeline (2026-10-27)
-- ScummVM: `EXTRALIB=fullcmp_lib.lua LOG=ft_sv SIMMS=17 SIMFPS=60 TS=100 sh run_all.sh 7000`.
+- ScummVM: `EXTRALIB=fullcmp_lib.lua LOG=ft_sv SIMMS=17 SIMFPS=60 sh run_all.sh 7000`.
 - Original: `EXTRALIB=/c/Users/Joel/grim_tools/autorun/fullcmp_lib.lua sh orig_all.sh [chNN]`.
 - Compare: `python3 tools/ftrace_cmp.py logs/ft_sv.log logs/ft_orig_new.log 0.01 0.05 4`. The oracle log
   `logs/ft_orig_new.log` covers ch01-ch19.

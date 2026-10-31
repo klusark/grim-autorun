@@ -8,7 +8,7 @@ AR=/c/Users/Joel/grim_tools/autorun
 MIN=${1:-2800}
 cd "$AR"
 cat fullcmp_lib.lua ar_lib.lua > _fc_ar_lib.lua
-LIB=_fc_ar_lib.lua SIMMS=17 SIMFPS=60 TS=100 timeout 300 sh run_chapter.sh ch01_work_order.lua 200 > /dev/null 2>&1
+LIB=_fc_ar_lib.lua SIMMS=17 SIMFPS=60 timeout 300 sh run_chapter.sh ch01_work_order.lua 200 > /dev/null 2>&1
 rm -f _fc_ar_lib.lua
 (echo "AUTORUN === chapter ch01_work_order ==="; grep -a "FT " logs/ch01_work_order.log) > logs/golden_ch01_sv.log
 out=$(python3 tools/ftrace_cmp.py logs/golden_ch01_sv.log tests/golden/ch01_orig_ft.log 0.0005 0.05 3 ch01)
