@@ -42,6 +42,9 @@ fi
 for r in $GRIMOFF; do sed -i "/^\[grim-win\]/a $r=false" "$AR/generated/_scummvm_$$.ini"; done
 for r in $GRIMON; do sed -i "/^\[grim-win\]/a $r=true" "$AR/generated/_scummvm_$$.ini"; done
 [ -n "$RENDEREVERY" ] && sed -i "/^\[grim-win\]/a sim_render_every=$RENDEREVERY" "$AR/generated/_scummvm_$$.ini"
+[ -n "$WALLFPS" ] && sed -i "/^\[grim-win\]/a sim_wall_fps=$WALLFPS" "$AR/generated/_scummvm_$$.ini"
+[ -n "$HOLDMS" ] && sed -i "/^\[grim-win\]/a sim_hold_ms=$HOLDMS" "$AR/generated/_scummvm_$$.ini"
+[ -n "$MARKER" ] && sed -i "/^\[grim-win\]/a frame_marker=true" "$AR/generated/_scummvm_$$.ini"
 [ -n "$NOPATCHR" ] && sed -i '/^\[grim-win\]/a no_patchr=true' "$AR/generated/_scummvm_$$.ini"
 [ -n "$DUMPPATCHR" ] && sed -i '/^\[grim-win\]/a dump_patchr=true' "$AR/generated/_scummvm_$$.ini"
 
@@ -55,7 +58,7 @@ stallpid=$!
 start=$(date +%s)
 timeout "$limit" ./scummvm.exe --config="$(cygpath -w "$AR/generated/_scummvm_$$.ini")" --savepath="$(cygpath -w "${SAVES:-$AR/saves}")" \
 	--autorun="$(cygpath -w "$AR/generated/chapter_$$.lua")" --debugflags="${DEBUGFLAGS:-scripts}" \
-	$([ -z "$REALTIME" ] && echo "--engine-speed=${ES:-0} --sim-fps=${SIMFPS:-60}") --show-fps "$@" grim-win > "$AR/logs/$name.log" 2>&1
+	$([ -z "$REALTIME" ] && echo "--engine-speed=${ES:-0} --sim-fps=${SIMFPS:-60}") $([ -z "$NOFPS" ] && echo --show-fps) "$@" grim-win > "$AR/logs/$name.log" 2>&1
 code=$?
 kill $stallpid 2>/dev/null
 echo "scummvm exit: $code after $(( $(date +%s) - start )) s" >> "$AR/logs/$name.log"
