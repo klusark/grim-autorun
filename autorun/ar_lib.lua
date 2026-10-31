@@ -35,6 +35,11 @@ end
 
 AR_FAILED = FALSE
 
+-- AR_NOTIMEOUT (set for a run in real time, REALTIME=1): no wait, walk, drive or movie of the run is given up after a time; it goes on until it ends or is killed
+if AR_NOTIMEOUT then
+	AR_IDLE_MAX = 1000000000000
+end
+
 AR_KEEP_GOING = FALSE
 
 -- The last few steps are shown in the top left corner of the screen. Text objects are part of
@@ -391,6 +396,9 @@ end
 -- go on with something else use ar_try_wait). what names what was waited for.
 ar_wait_for = function(cond, timeout, what)
 	local ok
+	if AR_NOTIMEOUT then
+		timeout = 1000000000000
+	end
 	-- (nothing is skipped in a real run: the movies and the speech take what they take)
 	if AR_REAL and timeout >= 30000 then
 		timeout = timeout * 10
@@ -475,7 +483,7 @@ ar_skipper = function()
 			if not AR_MOVIE_START or now < AR_MOVIE_START then
 				AR_MOVIE_START = now
 			end
-			if now - AR_MOVIE_START > (AR_REAL and 400 or 200) then
+			if not AR_NOTIMEOUT and now - AR_MOVIE_START > (AR_REAL and 400 or 200) then
 				ar_log("a movie that does not end: stopped after " .. tostring(now - AR_MOVIE_START) .. " s")
 				ar_press_key(ar_real_key("OVERRIDE"))
 				AR_MOVIE_START = nil
@@ -487,7 +495,7 @@ ar_skipper = function()
 		-- key that expires the text
 		if IsMessageGoing() then
 			AR_MSG_TIME = (AR_MSG_TIME or 0) + 100
-			if AR_MSG_TIME > (AR_REAL and 180000 or 15000) then
+			if not AR_NOTIMEOUT and AR_MSG_TIME > (AR_REAL and 180000 or 15000) then
 				ar_log("skipping a line that does not end")
 				ar_press_key(ar_real_key("EXPIRE_TEXT"))
 				AR_MSG_TIME = 0
@@ -581,7 +589,7 @@ ar_walk_stick = function(x, y, z, stop_when, max_ms)
 	end
 	local startset = system.currentSet
 	AR_STICK_PASSED = nil
-	while not passed and system.currentSet == startset and ar_far(x, y, z, AR_HOP_TOL or 0.015) and waited < (max_ms or 8000) and not (stop_when and stop_when()) and stuck < ar_fr(90) and not ar_walk_blocked() do
+	while not passed and system.currentSet == startset and ar_far(x, y, z, AR_HOP_TOL or 0.015) and waited < (max_ms or (AR_NOTIMEOUT and 1000000000000) or 8000) and not (stop_when and stop_when()) and stuck < ar_fr(90) and not ar_walk_blocked() do
 		if cutSceneLevel > 0 then
 			ar_wait_for_control()
 		end
@@ -702,6 +710,9 @@ end
 ar_walk_to = function(x, y, z, stop_when, max_ms)
 	local tries = 0
 	local budget = max_ms or AR_WALK_MAX
+	if AR_NOTIMEOUT then
+		budget = 1000000000000
+	end
 	if not budget then
 		-- 10 seconds, and what the way takes at walking speed (the run is about 1.4 units a second)
 		local mp0 = manny:getpos()
@@ -1285,7 +1296,7 @@ ar_do = function(verb, noun1, noun2)
 	-- (the game's code for the verb: it can be a script that never ends, a flight that does not arrive; the time of a movie of a cutscene, which plays in
 	-- real time, is not counted)
 	local ran = 0
-	while find_script(code) and ran < (AR_CODE_TIMEOUT or 300000) do
+	while find_script(code) and ran < ((AR_NOTIMEOUT and 1000000000000) or AR_CODE_TIMEOUT or 300000) do
 		sleep_for(100)
 		if not (cutSceneLevel > 0 and IsMoviePlaying and IsMoviePlaying()) then
 			ran = ran + 100
@@ -1309,6 +1320,9 @@ ar_dialog_ready = function(dlg, timeout)
 	local waited = 0
 	local idle = 0
 	timeout = timeout or 300000
+	if AR_NOTIMEOUT then
+		timeout = 1000000000000
+	end
 	while system.buttonHandler ~= dlg and waited < timeout and idle < 4000 do
 		sleep_for(100)
 		waited = waited + 100
@@ -1893,6 +1907,9 @@ end
 -- Steers the Bone Wagon to a point with the held keys: forward all the time, and the turn
 -- keys by the angle to the point. Returns TRUE when it is near the point.
 ar_drive_to = function(x, y, z, tolerance, timeout, stop_when, vehicle)
+	if AR_NOTIMEOUT then
+		timeout = 1000000000000
+	end
 	vehicle = vehicle or bonewagon
 	local waited = 0
 	local flip = 1
@@ -2013,6 +2030,9 @@ end
 
 -- Turns a vehicle (the forklift) on the spot to a heading with the held turn keys
 ar_turn_vehicle = function(vehicle, yaw, tolerance, timeout)
+	if AR_NOTIMEOUT then
+		timeout = 1000000000000
+	end
 	local waited = 0
 	local flip = 1
 	local lastdiff = nil
@@ -2270,6 +2290,9 @@ end
 -- Drags the broadaxe (Manny only walks backwards with it) to a point: the turn keys aim his
 -- back at the point, the backward key is held while he is roughly aimed
 ar_axe_drive_to = function(x, y, tolerance, timeout, stop_when)
+	if AR_NOTIMEOUT then
+		timeout = 1000000000000
+	end
 	local waited = 0
 	local flip = 1
 	local lastdiff = nil
@@ -2312,6 +2335,9 @@ end
 
 -- Turns Manny (with the axe) on the spot to a heading with the turn keys
 ar_axe_face = function(yaw, tol, timeout)
+	if AR_NOTIMEOUT then
+		timeout = 1000000000000
+	end
 	local waited = 0
 	local flip = 1
 	local lastdiff = nil
@@ -2349,6 +2375,9 @@ end
 ar_climb = function(up, stop_when, timeout)
 	local waited = 0
 	timeout = timeout or 60000
+	if AR_NOTIMEOUT then
+		timeout = 1000000000000
+	end
 	while manny.is_climbing and not (stop_when and stop_when()) and waited < timeout do
 		if up then
 			if not find_script(manny.climb_up) then

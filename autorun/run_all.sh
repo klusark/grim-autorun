@@ -13,7 +13,9 @@ AR=/c/Users/Joel/grim_tools/autorun
 # A small window and a frame drawn in 64 (not the whole window, a frame in 8): the same run, 12% less cpu time and a third less wall time. Not where frames are
 # captured (FRAMES) or the run is real (REAL), which want what a player sees; WIN= and RENDEREVERY= give the values.
 [ -z "$FRAMES" ] && [ -z "$REAL" ] && { : "${WIN:=640x480}"; : "${RENDEREVERY:=64}"; }
+# (a run in real time, REALTIME=1, has no time limit and no stall watch unless asked for: it goes on until it ends or is killed; timeout 0 is no limit)
 limit="${1:-1800}"
+[ -n "$REALTIME" ] && [ $# -eq 0 ] && limit=0
 [ $# -ge 1 ] && shift
 mkdir -p "$AR/logs" "$AR/saves_new" "${SAVES:-$AR/saves}"
 
@@ -27,7 +29,8 @@ mkdir -p "$AR/logs" "$AR/saves_new" "${SAVES:-$AR/saves}"
 	# REAL=1: nothing is skipped and the voices are on; FRAMES=<ms>: ScummVM writes a frame that often (to DUMPDIR)
 	echo "$MODE_LUA"
 	[ -n "$FRAMES" ] && echo "AR_FRAMES = $FRAMES"
-	echo 'AR_TIMEOUT = 36000000'
+	# (the autorun's own watchdog fails a run after this much game time: 10 hours, none in real time)
+	if [ -n "$REALTIME" ]; then echo 'AR_TIMEOUT = 1000000000000'; else echo 'AR_TIMEOUT = 36000000'; fi
 	# NOSCREEN=1: no progress text drawn on the screen (for a video)
 	[ -n "$NOSCREEN" ] && echo 'AR_NOSCREEN = TRUE'
 	cur=""
@@ -61,6 +64,10 @@ if [ -z "$REAL" ]; then
 else
 	sed -i '/^\[grim-win\]/a subtitles=true' "$AR/generated/_scummvm_$$.ini"
 fi
+# (the data archives are read into memory at the start: Year 1 takes a tenth less time; PRELOAD=0 for a run without it)
+[ "${PRELOAD:-1}" != 0 ] && sed -i '/^\[grim-win\]/a preload_data=true' "$AR/generated/_scummvm_$$.ini"
+# (the files that lie loose in the game folder are not used: LOOSE=1 brings them back; the archives are all there is: a loose file of the name of an archive member used to take its place)
+[ -z "$LOOSE" ] && sed -i '/^\[grim-win\]/a loose_files=false' "$AR/generated/_scummvm_$$.ini"
 [ -n "$SIMMS" ] && sed -i "/^\[grim-win\]/a sim_frame_ms=$SIMMS" "$AR/generated/_scummvm_$$.ini"
 [ -n "$RENDEREVERY" ] && sed -i "/^\[grim-win\]/a sim_render_every=$RENDEREVERY" "$AR/generated/_scummvm_$$.ini"
 [ -n "$DUMPDIR" ] && sed -i "/^\[grim-win\]/a dump_frames_dir=$DUMPDIR" "$AR/generated/_scummvm_$$.ini"
@@ -77,7 +84,7 @@ cd /home/Joel/scummvm/${SVM_BUILD:-build-opt}
 export SCUMMVM_LUA_REMOTE="$AR/generated/remote_$$"
 mkdir -p "$SCUMMVM_LUA_REMOTE"
 : > "$AR/logs/${LOG:-all}.log"
-sh "$AR/stall_watch.sh" "$AR/logs/${LOG:-all}.log" "${STALL:-90}" $$ &
+sh "$AR/stall_watch.sh" "$AR/logs/${LOG:-all}.log" "${STALL:-$([ -n "$REALTIME" ] && echo 0 || ([ -n "$REAL" ] && echo 90 || echo 15))}" $$ &
 stallpid=$!
 start=$(date +%s)
 timeout "$limit" ./scummvm.exe --config="$(cygpath -w "$AR/generated/_scummvm_$$.ini")" --savepath="$(cygpath -w "${SAVES:-$AR/saves}")" \

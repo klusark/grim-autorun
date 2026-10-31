@@ -2519,6 +2519,9 @@ end
 
 -- the time a way may take: twice what it takes at the rate Manny walks and turns, and a few seconds more
 ar_way_budget = function(path)
+	if AR_NOTIMEOUT then
+		return 1000000000000
+	end
 	if AR_WALK_MAX then
 		return AR_WALK_MAX
 	end
