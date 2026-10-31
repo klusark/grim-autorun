@@ -1255,8 +1255,10 @@ ar_w_step_cost = function(nav, w, k, c, z, d)
 		return d * (1 + pen * pen * 0.6) * held
 	end
 	if c == 4 then
-		-- (the sector of a door or trigger on the way: only if there is no other way)
-		return d * 25 * held
+		-- (the sector of a door or trigger on the way: dearer than floor, AR_HOT_COST, 3 now, it was 25: the hall's way past the desk crosses eva_chat_box, a chat, and with 25 the
+		-- line of sight refused it and the way stayed a row of 8 cm points. A walk that must not enter one is a door or a cheat box on a way that does not need it: the
+		-- cost of a hot sector the way crosses anyway is only what it takes to prefer a way that does not; AR_HOT_COST = 25 and AR_NO_HOT_LOS = TRUE bring the old rules back)
+		return d * (AR_HOT_COST or 3) * held
 	end
 	return nil
 end
@@ -1535,7 +1537,7 @@ ar_w_los = function(nav, w, x1, y1, z1, x2, y2, maxpen)
 			return nil
 		end
 		local c, cz = ar_w_code(nav, w, k, z)
-		if not (c == 1 or (c == 4 and AR_GOAL_HOT[AR_W_HOT])) or w.tmp[k] then
+		if not (c == 1 or (c == 4 and (AR_GOAL_HOT[AR_W_HOT] or (not AR_NO_HOT_LOS and AR_WAY_HOT and AR_WAY_HOT[AR_W_HOT])))) or w.tmp[k] then
 			return nil
 		end
 		if w.obst and w.obst[1] and s > 3 and s < steps - 2 and ar_w_obst_cost(w, k) > 8 then
@@ -1589,6 +1591,18 @@ ar_w_way = function(nav, w, sk, gk, sx, sy, sz, gx, gy, gz)
 			k = AR_PARENT[k]
 		end
 	end
+	-- (the hot sectors the way itself goes through: a line may cut through those, AR_HOT_LOS)
+	AR_WAY_HOT = { }
+	if not AR_NO_HOT_LOS then
+		local hk = 1
+		while hk <= n do
+			local hc, hz = ar_w_code(nav, w, ar_w_cell(w, rev[hk]), AR_SZ[rev[hk]])
+			if hc == 4 and AR_W_HOT then
+				AR_WAY_HOT[AR_W_HOT] = TRUE
+			end
+			hk = hk + 1
+		end
+	end
 	-- forward, as runs of cells between the links
 	local raw = { }
 	local m = 0
@@ -1613,6 +1627,9 @@ ar_w_way = function(nav, w, sk, gk, sx, sy, sz, gx, gy, gz)
 	end
 	m = m + 1
 	raw[m] = { gx, gy, gz, "g", ar_w_pen_at(nav, w, gx, gy, gz) }
+	if AR_NAVDEBUG and ar_dbg_raw then
+		ar_dbg_raw(nav, w, rev, n)
+	end
 	-- pulled straight: from each point that stays, the farthest of the following points (up to the next link) that the floor
 	-- reaches in a straight line no nearer to the walls than the cells it passes over
 	local out = { }
@@ -1910,6 +1927,12 @@ ar_w_plan = function(nav, w, x, y, z)
 	AR_ACT_C = { }
 	local path = ar_w_plan0(nav, w, x, y, z)
 	AR_ACT_C = nil
+	-- (for the overlay and the report of NAVDEBUG, ar_navdebug.lua)
+	AR_DBG_PATH = path
+	AR_DBG_PATH_SET = system.currentSet
+	if AR_NAVDEBUG and path and ar_dbg_report then
+		ar_dbg_report(nav, path)
+	end
 	return path
 end
 
@@ -2463,6 +2486,11 @@ ar_follow_progress = function(nav, w, path, n, cum, i, q)
 	if j > n then
 		j = n
 	end
+	-- (on a stair the point of the way is the entry he has passed, and the way left is measured from the exit: from the entry it grows all the way up the stair, and
+	-- every stair was a hold-up of 2 s that slanted the stick for the points after it)
+	if AR_IN_CONS and path[j][4] == "s" and path[j + 1] and not AR_STAIR_PROGRESS_OLD then
+		j = j + 1
+	end
 	local left = sqrt((q.x - path[j][1]) * (q.x - path[j][1]) + (q.y - path[j][2]) * (q.y - path[j][2])) + cum[j]
 	if left < AR_FOLLOW_BEST - 0.03 then
 		AR_FOLLOW_BEST = left
@@ -2470,7 +2498,9 @@ ar_follow_progress = function(nav, w, path, n, cum, i, q)
 		if AR_WIGGLE and left < AR_WIGGLE_LEFT - 0.15 then
 			AR_WIGGLE = nil
 		end
-	elseif AR_FOLLOW_SPENT - AR_FOLLOW_BEST_AT > 1000 and AR_REENTRIES < 2 and ar_follow_in_trigger(nav) then
+	elseif AR_FOLLOW_SPENT - AR_FOLLOW_BEST_AT > 1000 and AR_REENTRIES < 2 and (AR_WIGGLES >= 1 or AR_NO_WIGGLE_FIRST) and ar_follow_in_trigger(nav) then
+		-- (a seam between two floors that do not quite meet, inside a sector the game reacts to, holds Manny up as well as a trigger that has to be left and entered
+		-- again: the slanted stick, AR_WIGGLE below, is tried first; AR_NO_WIGGLE_FIRST = TRUE for the step out at once, as it was)
 		-- Held up standing in a sector that the game reacts to when it is entered (a door that closed on the way, a trigger
 		-- that opens one): Doorman is done with it, a step out and in again is what a player does.
 		AR_REENTRIES = AR_REENTRIES + 1
@@ -2487,6 +2517,9 @@ ar_follow_progress = function(nav, w, path, n, cum, i, q)
 		AR_WIGGLE_LEFT = left
 		AR_FOLLOW_BEST_AT = AR_FOLLOW_SPENT - 1200
 		ar_log("nav: held up at " .. format("%.2f %.2f", q.x, q.y) .. ": aimed " .. tostring(AR_WIGGLE) .. " degrees to one side")
+		if AR_NAVDEBUG and ar_dbg_holdup then
+			ar_dbg_holdup(q, nav, path, i, n)
+		end
 	elseif AR_FOLLOW_SPENT - AR_FOLLOW_BEST_AT > 3000 then
 		-- Held up: whatever is in front of him is in the way (the cells there are blocked for the rest of the walk). At the very
 		-- end of the way: as near as the walls let him.

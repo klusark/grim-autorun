@@ -47,6 +47,7 @@ mkdir -p "$AR/logs" "$AR/saves_new" "${SAVES:-$AR/saves}"
 			[ -n "$EXTRALIB" ] && cat "$AR/$EXTRALIB"
 			cat "$AR/$lib" "$AR/ar_nav.lua" "$AR/nav_setfile.lua"
 			cat "$AR/ar_helpers.lua" "$AR/ar_full.lua"
+			[ -n "$NAVDEBUG" ] && cat "$AR/ar_navdebug.lua"
 			[ -n "$FULL" ] && cat "$AR"/ex*.lua
 			cur="$lib"
 		fi
@@ -62,7 +63,9 @@ cp "$APPDATA/ScummVM/scummvm.ini" "$AR/generated/_scummvm_$$.ini"
 if [ -z "$REAL" ]; then
 	sed -i '/^\[grim-win\]/a speech_mute=true\nsubtitles=true\ntalkspeed=179' "$AR/generated/_scummvm_$$.ini"
 else
-	sed -i '/^\[grim-win\]/a subtitles=true' "$AR/generated/_scummvm_$$.ini"
+	# (a speech_mute=true in the user's own scummvm.ini would keep the voices off: the key is taken out and set to false)
+	sed -i '/^speech_mute=/d' "$AR/generated/_scummvm_$$.ini"
+	sed -i '/^\[grim-win\]/a speech_mute=false\nsubtitles=true' "$AR/generated/_scummvm_$$.ini"
 fi
 # (the data archives are read into memory at the start: Year 1 takes a tenth less time; PRELOAD=0 for a run without it)
 [ "${PRELOAD:-1}" != 0 ] && sed -i '/^\[grim-win\]/a preload_data=true' "$AR/generated/_scummvm_$$.ini"

@@ -153,7 +153,15 @@ ar_nav_of = function(set)
 					local c = ar_nav_len(nav.hn) + 1
 					nav.hn[c] = sf.n[i]
 					nav.hp[c] = sf.p[i]
-				elseif AR_FULL and sf.t[i] == "camera" then
+				elseif sf.t[i] == "camera" then
+					-- (the camera sectors, for the planner to keep out of the ones that are not the start's or the goal's: the camera would go there and come back)
+					nav.cp = nav.cp or { }
+					nav.cn = nav.cn or { }
+					local cc = ar_nav_len(nav.cn) + 1
+					nav.cn[cc] = sf.n[i]
+					nav.cp[cc] = sf.p[i]
+				end
+				if AR_FULL and sf.t[i] == "camera" then
 					-- (the 100% modes walk into every camera sector, to see every setup: the middle of it)
 					nav.camera = nav.camera or { }
 					local p = sf.p[i]

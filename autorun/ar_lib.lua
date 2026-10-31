@@ -51,7 +51,10 @@ ar_shown_objs = ar_shown_objs or { }
 ar_shown_count = ar_shown_count or 0
 -- (a font of its own: the text objects crash the original when the game gets rid of the one it uses, as it does
 -- at the change of the year)
-AR_FONT = AR_FONT or LockFont("kino14s.laf")
+AR_FONT = AR_FONT or LockFont("ocr10.laf")
+-- (a small font, a line is cut at AR_SHOW_COLS characters so that it does not wrap on the 640 pixels of the screen, and the lines are AR_SHOW_STEP apart)
+AR_SHOW_COLS = 88
+AR_SHOW_STEP = 14
 
 ar_screen_clear = function()
 	local i = 1
@@ -72,12 +75,15 @@ ar_screen_draw = function()
 		if i == ar_shown_count then
 			color = Yellow
 		end
-		ar_shown_objs[i] = MakeTextObject(ar_shown[i], { x = 8, y = 20 + (i - 1) * 24, font = AR_FONT, fgcolor = color, ljustify = TRUE })
+		ar_shown_objs[i] = MakeTextObject(ar_shown[i], { x = 8, y = 20 + (i - 1) * AR_SHOW_STEP, font = AR_FONT, fgcolor = color, ljustify = TRUE })
 		i = i + 1
 	end
 end
 
 ar_screen_add = function(msg)
+	if strlen(msg) > AR_SHOW_COLS then
+		msg = strsub(msg, 1, AR_SHOW_COLS - 3) .. "..."
+	end
 	local i = 1
 	ar_screen_clear()
 	if ar_shown_count >= AR_SHOW_LINES then
@@ -131,6 +137,7 @@ end
 
 ar_finish = function()
 	ar_log("verbs given through the keys: " .. AR_KEYS_USED)
+	ar_log("frames: " .. tostring(AR_FRAME))
 	if AR_FAILED then
 		ar_log("RESULT FAILED")
 	else
@@ -540,6 +547,21 @@ ar_note_camera = function()
 	if setup ~= AR_CAMERA then
 		AR_CAMERA = setup
 		ar_log("camera: " .. setup)
+	end
+end
+
+-- The engine calls system.camChangeHandler(prev, next) on every change of the camera's setup (it looks it up in the system table). AR_CAMDBG = TRUE logs each, with
+-- where Manny is: the tool for finding what moves the camera.
+AR_FRAME = AR_FRAME or 0
+if not AR_CAMCHANGE_SET then
+	AR_CAMCHANGE_SET = TRUE
+	AR_CAMCHANGE_OLD = system.camChangeHandler or function() end
+	system.camChangeHandler = function(prev, next)
+		if AR_CAMDBG then
+			local mp = manny:getpos()
+			ar_log("CAMDBG " .. tostring(system.currentSet.name) .. " " .. tostring(prev) .. "->" .. tostring(next) .. format(" manny %.3f %.3f cut %d", mp.x, mp.y, cutSceneLevel))
+		end
+		return AR_CAMCHANGE_OLD(prev, next)
 	end
 end
 
@@ -2170,6 +2192,7 @@ end
 -- (an override that is active without having been set in this run: it comes with a loaded save)
 ar_override_clock = function()
 	while TRUE do
+		AR_FRAME = AR_FRAME + 1
 		-- Manny's idle animation (scratching, smoking) runs until the player touches a key
 		-- (every frame, not at the beats of a timer: the frame in which this happens would depend on where the timer's beats fall, which is not the same in the original and in ScummVM)
 		if manny.is_idling then
