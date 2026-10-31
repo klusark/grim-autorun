@@ -1,0 +1,91 @@
+{
+    "name": "grim",
+    "current_scene": "Grim",
+    "current_program_scene": "Grim",
+    "scene_order": [{ "name": "Grim" }],
+    "sources": [
+        {
+            "name": "Grim",
+            "id": "scene",
+            "versioned_id": "scene",
+            "settings": {
+                "id_counter": 2,
+                "custom_size": false,
+                "items": [
+                    {
+                        "name": "ScummVM",
+                        "id": 1,
+                        "visible": true,
+                        "locked": false,
+                        "pos": { "x": 0.0, "y": 0.0 },
+                        "rot": 0.0,
+                        "scale": { "x": 1.0, "y": 1.0 },
+                        "align": 5,
+                        "bounds_type": 2,
+                        "bounds_align": 0,
+                        "bounds": { "x": 1440.0, "y": 1080.0 },
+                        "crop_left": 0, "crop_top": 0, "crop_right": 0, "crop_bottom": 0,
+                        "group_item_backup": false,
+                        "scale_filter": "disable",
+                        "blend_method": "default",
+                        "blend_type": "normal",
+                        "show_transition": { "duration": 0 },
+                        "hide_transition": { "duration": 0 }
+                    },
+                    {
+                        "name": "ScummVM audio",
+                        "id": 2,
+                        "visible": true,
+                        "locked": false,
+                        "pos": { "x": 0.0, "y": 0.0 },
+                        "rot": 0.0,
+                        "scale": { "x": 1.0, "y": 1.0 },
+                        "align": 5,
+                        "bounds_type": 0,
+                        "bounds_align": 0,
+                        "bounds": { "x": 0.0, "y": 0.0 },
+                        "crop_left": 0, "crop_top": 0, "crop_right": 0, "crop_bottom": 0,
+                        "group_item_backup": false,
+                        "scale_filter": "disable",
+                        "blend_method": "default",
+                        "blend_type": "normal",
+                        "show_transition": { "duration": 0 },
+                        "hide_transition": { "duration": 0 }
+                    }
+                ]
+            }
+        },
+        {
+            "name": "ScummVM",
+            "id": "window_capture",
+            "versioned_id": "window_capture",
+            "settings": {
+                "method": 2,
+                "priority": 2,
+                "window": "ScummVM:SDL_app:scummvm.exe",
+                "cursor": false,
+                "client_area": true,
+                "compatibility": false
+            },
+            "mixers": 0,
+            "enabled": true
+        },
+        {
+            "name": "ScummVM audio",
+            "id": "wasapi_process_output_capture",
+            "versioned_id": "wasapi_process_output_capture",
+            "settings": {
+                "priority": 2,
+                "window": "ScummVM:SDL_app:scummvm.exe"
+            },
+            "mixers": 1,
+            "volume": 1.0,
+            "muted": false,
+            "enabled": true
+        }
+    ],
+    "groups": [],
+    "quick_transitions": [],
+    "transitions": [],
+    "modules": {}
+}

@@ -105,7 +105,12 @@ if dialog_log and not AR_REAL then
 end
 
 ar_log = function(msg)
-	PrintDebug("AUTORUN " .. msg .. "\n")
+	-- (SPEEDLOG: the frame of every line, to see what a stop was waiting for)
+	if AR_SPEEDLOG then
+		PrintDebug("AUTORUN [" .. tostring(AR_FRAME) .. "] " .. msg .. "\n")
+	else
+		PrintDebug("AUTORUN " .. msg .. "\n")
+	end
 	-- (FRAMES=0: a frame at every step that passed, the same point of the script in both engines, whatever their speed)
 	if AR_FRAMES and AR_FRAME_CH and strfind(msg, "^PASS ") then
 		ar_frame(AR_FRAME_CH .. "_s" .. format("%04d", AR_STEP_N or 0))
@@ -137,7 +142,7 @@ end
 
 ar_finish = function()
 	ar_log("verbs given through the keys: " .. AR_KEYS_USED)
-	ar_log("frames: " .. tostring(AR_FRAME))
+	ar_log("frames: " .. tostring(AR_FRAME) .. ", under the autorun control: " .. tostring(AR_FRAME_CTL or 0))
 	if AR_FAILED then
 		ar_log("RESULT FAILED")
 	else
@@ -1062,7 +1067,9 @@ ar_approach = function(obj)
 		ar_try_wait(ar_offered, 1200)
 	end
 	-- (not offered from there, within 30 cm of the use point: the heading of the use point is for standing on it. A player turns to the object itself)
-	if obj.obj_x and not ar_offered() then
+	-- (and only where the object is near: from three metres off a player does not turn to it and look all round for it, he walks up to it first; the scan in the lobby of
+	-- chapter 2 turned him twice round, 12 s, before the walk to the door; AR_SCAN_FAR = TRUE for the old order)
+	if obj.obj_x and not ar_offered() and (AR_SCAN_FAR or not obj.use_pnt_x or ar_dist2d(obj.use_pnt_x, obj.use_pnt_y) < 1.0) then
 		ar_face(obj)
 		sleep_for(100)
 		ar_wait_turn()
@@ -1532,6 +1539,32 @@ ar_menu_save = function(slot)
 	WriteRegistryValue("LastSavedGame", fname)
 end
 
+-- Waits for the game to be in its normal state for a save (no cutscene, the normal button handler), at most 60 s. A handler that is not the normal one and has not changed
+-- for 5 s with no cutscene is a mode that stays (the Bone Wagon of ch56, the end of ch04 and ch07): waiting for it was the whole 60 s, three times in a run.
+-- AR_SETTLE_FULL = TRUE for the old wait.
+ar_wait_normal = function()
+	local waited = 0
+	local same = 0
+	local last = system.buttonHandler
+	while waited < 60000 do
+		if cutSceneLevel == 0 and ar_handler_normal() then
+			return TRUE
+		end
+		sleep_for(100)
+		waited = waited + 100
+		if cutSceneLevel == 0 and system.buttonHandler == last then
+			same = same + 100
+		else
+			same = 0
+			last = system.buttonHandler
+		end
+		if same >= 5000 and not AR_SETTLE_FULL then
+			return nil
+		end
+	end
+	return nil
+end
+
 -- Makes a checkpoint and ends the run: the save holds the state for the next chapter. The
 -- saver is a task of its own, and the chapter must end after calling this. A save also holds
 -- the tasks, so the old saver that wakes up in the next chapter must stay quiet.
@@ -1540,7 +1573,7 @@ ar_save_task = function(slot, chapter)
 		sleep_for(50)
 	end
 	-- a save taken while a conversation or cutscene is still on screen restores half drawn
-	ar_try_wait(function() return cutSceneLevel == 0 and ar_handler_normal() end, 60000)
+	ar_wait_normal()
 	sleep_for(1000)
 	stop_script(ar_watchdog)
 	stop_script(ar_skipper)
@@ -1558,7 +1591,7 @@ ar_checkpoint = function(slot)
 	if not AR_ONE_SHOT then
 		-- a run that goes on to the next chapter: save here and keep playing. A save taken while the game is in its
 		-- normal state loads into a game whose actors never move: the menu saves from its render mode, so do the same.
-		ar_try_wait(function() return cutSceneLevel == 0 and ar_handler_normal() end, 60000)
+		ar_wait_normal()
 		ar_wait_for_control()
 		-- (no cutscene movie in the save: the skipper that the save brings back would take it for one that never ended. A movie of the set that loops, a lighthouse or a
 	-- chimney, never ends, and waiting for it was the whole timeout of the wait)
@@ -1665,7 +1698,7 @@ end
 ar_settle_arrival = function()
 	if ar_target_reached() then
 		if AR_TRACE then ar_state("arrival before wait, cut " .. tostring(cutSceneLevel)) end
-		sleep_for(500)
+		sleep_for(AR_SETTLE_MS or 100)
 		ar_wait_for_control()
 		if AR_TRACE then ar_state("arrival after wait, cut " .. tostring(cutSceneLevel)) end
 	end
@@ -2193,6 +2226,10 @@ end
 ar_override_clock = function()
 	while TRUE do
 		AR_FRAME = AR_FRAME + 1
+		-- (the frames in which the autorun has the control: no cutscene, the game does not move Manny by a script; the frames to cut by tuning the run)
+		if cutSceneLevel == 0 then
+			AR_FRAME_CTL = (AR_FRAME_CTL or 0) + 1
+		end
 		-- Manny's idle animation (scratching, smoking) runs until the player touches a key
 		-- (every frame, not at the beats of a timer: the frame in which this happens would depend on where the timer's beats fall, which is not the same in the original and in ScummVM)
 		if manny.is_idling then

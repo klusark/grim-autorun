@@ -1,0 +1,8 @@
+{
+    "rate_control": "CQP",
+    "cqp": 18,
+    "preset2": "p5",
+    "profile": "high",
+    "bf": 2,
+    "keyint_sec": 2
+}

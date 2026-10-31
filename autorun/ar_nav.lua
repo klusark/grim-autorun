@@ -1613,6 +1613,29 @@ ar_w_way = function(nav, w, sk, gk, sx, sy, sz, gx, gy, gz)
 		local kk = rev[i]
 		local l = AR_VIA[kk]
 		if l then
+			-- (a point on the line of the step, 35 cm before its foot, so that the way comes at it square: from the side he stands at the foot turning on the spot, at
+			-- 1 degree a frame; AR_NO_APPROACH = TRUE for the way as it was)
+			if not AR_NO_APPROACH then
+				local ddx = l.ex - l.px
+				local ddy = l.ey - l.py
+				local dl = sqrt(ddx * ddx + ddy * ddy)
+				if dl > 0.02 then
+					local ax = l.px - ddx / dl * 0.35
+					local ay = l.py - ddy / dl * 0.35
+					local ak = ar_w_key(w, ax, ay)
+					local prev = raw[m]
+					local pd = sqrt((prev[1] - ax) * (prev[1] - ax) + (prev[2] - ay) * (prev[2] - ay))
+					if AR_APPROACH_DBG then ar_log(format("approach %.2f %.2f for %s at %.2f %.2f: key %s pd %.2f code %s", ax, ay, tostring(l.kind), l.px, l.py, tostring(ak), pd, tostring(ak and ar_w_code(nav, w, ak, l.pz)))) end
+					-- (and the point before is on the near side of the foot, along the step: a raw point past it, the cells of the way that cross the foot, is no side to come from)
+					local behind = (prev[1] - l.px) * ddx + (prev[2] - l.py) * ddy < 0
+					-- (and the point is ahead of that one: from less than 55 cm out it would lie behind where he stands, the police station stairs at the start of ch24)
+					local pf = sqrt((prev[1] - l.px) * (prev[1] - l.px) + (prev[2] - l.py) * (prev[2] - l.py))
+					if ak and pd > 0.2 and pf > 0.55 and behind and ar_w_code(nav, w, ak, l.pz) == 1 and ar_w_los(nav, w, ax, ay, l.pz, l.px, l.py, 2) then
+						m = m + 1
+						raw[m] = { ax, ay, l.pz, "q", ar_w_pen_at(nav, w, ax, ay, l.pz) }
+					end
+				end
+			end
 			m = m + 1
 			raw[m] = { l.px, l.py, l.pz, "x", ar_w_pen_at(nav, w, l.px, l.py, l.pz) }
 			m = m + 1
@@ -1638,7 +1661,7 @@ ar_w_way = function(nav, w, sk, gk, sx, sy, sz, gx, gy, gz)
 	local a = 1
 	while a < m do
 		local j = a + 1
-		if raw[a][4] == "p" or raw[a][4] == "x" then
+		if raw[a][4] == "p" or raw[a][4] == "x" or raw[a][4] == "q" then
 			-- (the line may go no nearer to the walls than the way itself does between the two points, and at least a cell away; only
 			-- its two ends, where the points are, may be nearer: the goal is often at a wall)
 			local maxpen = 1
@@ -1667,6 +1690,14 @@ ar_w_way = function(nav, w, sk, gk, sx, sy, sz, gx, gy, gz)
 		o = o + 1
 		out[o] = raw[j]
 		a = j
+	end
+	-- (the point before the foot of a step is kept by the straightening as an end of its own, kind q, and is a point of the way like the others)
+	local oq = 1
+	while out[oq] do
+		if out[oq][4] == "q" then
+			out[oq][4] = "p"
+		end
+		oq = oq + 1
 	end
 	return out
 end
@@ -2358,7 +2389,15 @@ ar_follow_frame0 = function(nav, w, path, n, cum, i)
 	end
 	-- (a run on a long straight stretch, heading the right way; a walk round the corners and up to where Manny has to be)
 	local togo = sqrt((p.x - wp[1]) * (p.x - wp[1]) + (p.y - wp[2]) * (p.y - wp[2]))
-	if not AR_WALK and togo > 0.8 and abs(ar_heading_off(tx, ty, p.z)) < 20 then
+	-- (the points that are to be reached exactly, x g c s, are run to from AR_RUN_X = 12 cm, they were walked to from 80 cm: the last 80 cm of every step and of the goal were a
+	-- walk of 2 s; the heading may be up to AR_RUN_OFF = 45 degrees off the aim for a run, it was 20, and a step (c, s, x) is turned to while he walks from 30 cm out.
+	-- A point that is only passed, kind p, is run to from 10 cm: the straight way has fewer points and longer stretches than the cell path had, but the one after a
+	-- jump or a turn is short, and with the 80 cm of the points that are to be reached exactly it was walked; AR_RUN_P = 0.8 for the old reach, set by a chapter round a walk that has to be slower)
+	local runfrom = AR_RUN_X or 0.12
+	if kind == "p" then
+		runfrom = AR_RUN_P or 0.1
+	end
+	if not AR_WALK and togo > runfrom and abs(ar_heading_off(tx, ty, p.z)) < (AR_RUN_OFF or 45) then
 		manny:set_run(TRUE)
 	else
 		manny:set_run(FALSE)
@@ -2366,14 +2405,36 @@ ar_follow_frame0 = function(nav, w, path, n, cum, i)
 	local turning = ar_steer(tx, ty, p.z, 8)
 	local off = abs(AR_STEER_D or 0)
 	local limit = 40
+	-- (a corner of the way, within 25 cm of the point before it or of the one he is going to: he turns round it while he walks, not standing at it; (the last leg to a goal only with AR_CORNER_G = TRUE: ch54 walks to the foot of a ladder with it and is held in the hub); AR_NO_CORNER_WALK = TRUE for the old stop)
+	local corner = nil
+	if not AR_NO_CORNER_WALK and (kind == "p" or (kind == "g" and AR_CORNER_G and togo > 0.5)) then
+		if kind == "p" and togo < 0.25 then
+			corner = TRUE
+		elseif path[i - 1] and sqrt((p.x - path[i - 1][1]) * (p.x - path[i - 1][1]) + (p.y - path[i - 1][2]) * (p.y - path[i - 1][2])) < 0.25 then
+			corner = TRUE
+		end
+	elseif not AR_NO_CORNER_WALK and kind == "x" and path[i - 1] and path[i - 1][4] == "c" then
+		-- (the landing of a cheat box: where the game has put him, and he turns to the way on while he walks)
+		corner = TRUE
+	end
+	-- (the first second of a walk: he faces the way he came to rest, the door he came out of, and turning to the way at a degree a frame stood him still for as long as
+	-- the turn is; he walks while he turns, AR_NO_START_WALK = TRUE for the old stand)
+	if not AR_NO_START_WALK and (kind == "p" or kind == "x") and AR_FOLLOW_SPENT < 1500 then
+		corner = TRUE
+	end
 	if kind == "s" and AR_IN_CONS then
 		-- (on the stair the engine keeps him on its line whatever the heading, up to 80 degrees off it)
 		limit = 70
+	elseif corner then
+		limit = AR_TURN_LIM or 75
 	elseif kind ~= "p" then
 		limit = 15
+		if kind ~= "g" and togo > (AR_FAR_STEP or 0.3) then
+			limit = 45
+		end
 	elseif w.x0 and ar_w_pen_at(nav, w, p.x, p.y, p.z) == 0 then
 		-- (well clear of the walls: on the way while turning, as a player does with the stick held to one side)
-		limit = 75
+		limit = AR_TURN_LIM or 75
 	end
 	if off < limit then
 		manny:walk_forward()

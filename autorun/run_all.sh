@@ -47,7 +47,7 @@ mkdir -p "$AR/logs" "$AR/saves_new" "${SAVES:-$AR/saves}"
 			[ -n "$EXTRALIB" ] && cat "$AR/$EXTRALIB"
 			cat "$AR/$lib" "$AR/ar_nav.lua" "$AR/nav_setfile.lua"
 			cat "$AR/ar_helpers.lua" "$AR/ar_full.lua"
-			[ -n "$NAVDEBUG" ] && cat "$AR/ar_navdebug.lua"
+			{ [ -n "$NAVDEBUG" ] || [ -n "$SPEEDLOG" ]; } && cat "$AR/ar_navdebug.lua"
 			[ -n "$FULL" ] && cat "$AR"/ex*.lua
 			cur="$lib"
 		fi

@@ -343,3 +343,71 @@ ar_dbg_ring_push = function()
 	AR_DBG_RING_N = AR_DBG_RING_N + 1
 	AR_DBG_RING[AR_DBG_RING_N - 60 * floor(AR_DBG_RING_N / 60)] = format("%.2f %.2f %.0f %s", p.x, p.y, manny:getrot().y, m)
 end
+
+-- AR_SPEEDLOG = TRUE: how Manny moves, frame by frame, as segments: "stop" (under 3 mm a frame), "walk" (under 1.6 cm a frame, the run is 2.3 cm), "run", with where it
+-- began and ended, the frames, whether the autorun has the control (cutSceneLevel 0), and what the follower was at (AR_WHERE). For tuning a route until he neither
+-- stops nor walks where the autorun is steering. A set change closes the segment.
+AR_SPEED = AR_SPEED or { }
+ar_speed_class = function(d)
+	if d < 0.003 then
+		return "stop"
+	elseif d < 0.016 then
+		return "walk"
+	end
+	return "run"
+end
+ar_speed_flush = function(final)
+	local s = AR_SPEED
+	if s.class and s.frames >= (final and 1 or 3) then
+		ar_log(format("SPEED %-4s %3d frames %s (%.2f %.2f) -> (%.2f %.2f) %s, control %s, %s, idling %s, costume %s", s.class, s.frames, tostring(s.set), s.x0, s.y0, s.x1, s.y1, format("%.2f m", s.dist), tostring(s.control), tostring(s.where), tostring(s.idle), tostring(s.costume)))
+	end
+	s.class = nil
+end
+ar_speed_task = function()
+	while TRUE do
+		if system.currentSet and manny then
+			local p = manny:getpos()
+			local s = AR_SPEED
+			local set = tostring(system.currentSet.name)
+			local control = cutSceneLevel == 0
+			if s.set == set and s.px then
+				local d = sqrt((p.x - s.px) * (p.x - s.px) + (p.y - s.py) * (p.y - s.py))
+				local c = ar_speed_class(d)
+				-- (a jump of more than 0.5 m in a frame is the game moving him: a cheat box, a script)
+				if d > 0.5 then
+					ar_speed_flush()
+					ar_log(format("SPEED jump %.2f m in a frame at (%.2f %.2f) %s", d, p.x, p.y, set))
+				elseif c ~= s.class or control ~= s.control then
+					ar_speed_flush()
+					s.class = c
+					s.frames = 0
+					s.dist = 0
+					s.x0 = p.x
+					s.y0 = p.y
+					s.set = set
+					s.control = control
+					s.where = AR_WHERE
+					s.idle = manny.is_idling
+					s.costume = manny:get_costume()
+				end
+				if s.class then
+					s.frames = s.frames + 1
+					s.dist = s.dist + d
+					s.x1 = p.x
+					s.y1 = p.y
+				end
+			else
+				ar_speed_flush()
+				s.set = set
+				s.class = nil
+			end
+			s.set = set
+			s.px = p.x
+			s.py = p.y
+		end
+		break_here()
+	end
+end
+if AR_SPEEDLOG and not AR_SPEED_TASK then
+	AR_SPEED_TASK = start_script(ar_speed_task)
+end

@@ -28,6 +28,9 @@ AR_NOTIMEOUT = TRUE"
 # NAVDEBUG=1: the nav is drawn on the screen (ar_navdebug.lua)
 [ -n "$NAVDEBUG" ] && MODE_LUA="$MODE_LUA
 AR_NAVDEBUG = TRUE"
+# SPEEDLOG=1: the movement of Manny as segments of stop, walk and run (ar_navdebug.lua)
+[ -n "$SPEEDLOG" ] && MODE_LUA="$MODE_LUA
+AR_SPEEDLOG = TRUE"
 # the 100% modes keep their own saves and logs (their checkpoints hold a different game). The real modes (full, full100) save their checkpoints by default: a
 # run of hours has to be able to replay the chapter that failed alone (SAVE= with nothing turns it off, but chapter 64 of mode full is held up in the
 # meadow without the save: the menu mode of the save changes how much game time passes between the chapters)
