@@ -62,16 +62,44 @@ safe_tap = function(d)
 	ar_wait_for_control()
 end
 
--- puts tumbler k in the middle of the window; returns TRUE when it stands there and the later
--- tumblers have not been moved
+-- The wheel turns while a turn key is held, 5 degrees in the first frame and 3 more each frame to 20 (vd.turn_clockwise); when the key is let go Manny
+-- waits for the end of the turning chore, about 20 frames. So the key is held until the tumbler is in the window and let go once: a press for every 5
+-- degrees costs 25 frames each. A frame turns 20 degrees at most, less than the width of the window (259..279, 21 degrees), so the hold cannot jump over
+-- it; the rest of the 248..290 of the safe is left for the small turns of the later sessions (a change of direction and a last tap move the chain 5 degrees).
+-- Returns TRUE when tumbler k stands in the window, "bad" when a later tumbler was picked up on the way.
+AR_WLO2 = 259
+AR_WHI2 = 279
+safe_hold = function(k, d)
+	local T = vd.safe_door.tumblers
+	local frames = 0
+	local ok = nil
+	local bad = nil
+	ar_key_down(safe_key(d))
+	while not ok and not bad and frames < 150 do
+		break_here()
+		frames = frames + 1
+		if k < 4 and T[k + 1].lock then
+			bad = TRUE
+		elseif ((k == 1) or T[k].lock) and safe_in(T[k].rot, AR_WLO2, AR_WHI2) then
+			ok = TRUE
+		end
+	end
+	ar_key_up(safe_key(d))
+	ar_wait_for_control()
+	ar_log("safe: tumbler " .. k .. " held " .. frames .. " frames, now at " .. T[k].rot)
+	return ok, bad
+end
+
+-- puts tumbler k in the window; returns TRUE when it stands there and the later tumblers have not been moved
 safe_place = function(k, lastdir)
 	local T = vd.safe_door.tumblers
 	local r = T[k].rot
-	if safe_in(r, AR_WMID_LO, AR_WMID_HI) and not T[k].lock then
+	if safe_in(r, AR_WLO2, AR_WHI2) and (k == 1 or not T[k].lock) then
 		return TRUE, lastdir
 	end
-	local dr = safe_steps(r, 1, AR_WMID_LO, AR_WMID_HI)
-	local dl = safe_steps(r, -1, AR_WMID_LO, AR_WMID_HI)
+	local dr = safe_steps(r, 1, AR_WLO2, AR_WHI2)
+	local dl = safe_steps(r, -1, AR_WLO2, AR_WHI2)
+	-- (the end of the hold is up to a frame, 20 degrees, past the edge of the window)
 	local cr = safe_collides(k, 1, dr + 20)
 	local cl = safe_collides(k, -1, dl + 20)
 	local d = 1
@@ -85,31 +113,12 @@ safe_place = function(k, lastdir)
 	if d == lastdir then
 		safe_tap(-d)
 	end
-	-- (a stale lock of tumbler k+1 means the last session left it picked up)
-	local frames = 0
-	local done = nil
-	while not done and frames < 6000 do
-		local rk = T[k].rot
-		local engaged = (k == 1) or T[k].lock
-		local n = safe_steps(rk, d, AR_WMID_LO, AR_WMID_HI)
-		if engaged and n == 0 then
-			done = TRUE
-		elseif engaged and n <= 60 then
-			safe_tap(d)
-		else
-			ar_key_down(safe_key(d))
-			break_here()
-			ar_key_up(safe_key(d))
-			ar_wait_for_control()
-		end
-		if k < 4 and T[k + 1].lock then
-			-- picked up: not wanted
-			ar_log("safe: tumbler " .. (k + 1) .. " was picked up by mistake")
-			return nil, d
-		end
-		frames = frames + 1
+	local ok, bad = safe_hold(k, d)
+	if bad then
+		ar_log("safe: tumbler " .. (k + 1) .. " was picked up by mistake")
+		return nil, d
 	end
-	return done, d
+	return ok, d
 end
 
 -- cracks the safe from the wheel (the handler vd.buttonHandler is on); returns TRUE when all stand in the
@@ -151,6 +160,11 @@ ar_do("use", vd.door_jam, mn.chisel)
 ar_wait_for(function() return vd.door_busted end, 300000)
 ar_wait_for_control()
 ar_check(vd.door_busted, "the door jam is drilled")
+-- TODO: Engine fix
+-- (the wheel's sound is started every frame of a held key; a speed run is silent, and the engine's iMuse loops for ever in imSetParam when so many follow one another)
+if not AR_REAL then
+	vd.play_wheel_sfx = function() end
+end
 ar_do("use", vd.wheel)
 ar_wait_for(function() return system.buttonHandler == vd.buttonHandler end, 60000)
 ar_check(system.buttonHandler == vd.buttonHandler, "Manny holds the wheel")
