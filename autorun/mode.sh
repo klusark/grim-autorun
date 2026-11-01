@@ -39,4 +39,12 @@ if [ -n "$MODE" ]; then
 	[ -n "$FULL" ] || [ -n "$REAL" ] && : "${SAVES:=$AR/saves_$MODE}"
 fi
 [ -n "$REAL" ] && : "${SAVE:=1}"
+
+# ini_set <ini file> <key> <value>: the key is set at the top of the [grim-win] section of the copy of scummvm.ini the run uses (an old line of the key is
+# taken out first). The one place where the section header pattern is written, so that no run script needs a sed inside its sed.
+ini_set() {
+	_ini="$1"; _key="$2"; _val="$3"
+	sed -i "/^\[grim-win\]/,/^\[/{/^$_key=/d}" "$_ini"
+	sed -i "/^\[grim-win\]/a $_key=$_val" "$_ini"
+}
 true

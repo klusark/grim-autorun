@@ -65,30 +65,35 @@ mkdir -p "$AR/logs" "$AR/saves_new" "${SAVES:-$AR/saves}"
 	echo 'ar_finish()'
 } > "$AR/generated/all_$$.lua"
 
-cp "$APPDATA/ScummVM/scummvm.ini" "$AR/generated/_scummvm_$$.ini"
+INI="$AR/generated/_scummvm_$$.ini"
+cp "$APPDATA/ScummVM/scummvm.ini" "$INI"
 if [ -z "$REAL" ]; then
-	sed -i '/^\[grim-win\]/a speech_mute=true\nsubtitles=true\ntalkspeed=179' "$AR/generated/_scummvm_$$.ini"
+	ini_set "$INI" speech_mute true; ini_set "$INI" subtitles true; ini_set "$INI" talkspeed 179
 else
-	# (a speech_mute=true in the user's own scummvm.ini would keep the voices off: the key is taken out and set to false)
-	sed -i '/^speech_mute=/d' "$AR/generated/_scummvm_$$.ini"
-	sed -i '/^\[grim-win\]/a speech_mute=false\nsubtitles=true' "$AR/generated/_scummvm_$$.ini"
+	# (a speech_mute=true in the user's own scummvm.ini would keep the voices off: ini_set takes the old line out and sets false)
+	ini_set "$INI" speech_mute false; ini_set "$INI" subtitles true
 fi
 # (the data archives are read into memory at the start: Year 1 takes a tenth less time; PRELOAD=0 for a run without it)
-[ "${PRELOAD:-1}" != 0 ] && sed -i '/^\[grim-win\]/a preload_data=true' "$AR/generated/_scummvm_$$.ini"
+[ "${PRELOAD:-1}" != 0 ] && ini_set "$INI" preload_data true
 # (the files that lie loose in the game folder are not used: LOOSE=1 brings them back; the archives are all there is: a loose file of the name of an archive member used to take its place)
-[ -z "$LOOSE" ] && sed -i '/^\[grim-win\]/a loose_files=false' "$AR/generated/_scummvm_$$.ini"
-[ -n "$SIMMS" ] && sed -i "/^\[grim-win\]/a sim_frame_ms=$SIMMS" "$AR/generated/_scummvm_$$.ini"
-[ -n "$RENDEREVERY" ] && sed -i "/^\[grim-win\]/a sim_render_every=$RENDEREVERY" "$AR/generated/_scummvm_$$.ini"
-[ -n "$WALLFPS" ] && sed -i "/^\[grim-win\]/a sim_wall_fps=$WALLFPS" "$AR/generated/_scummvm_$$.ini"
-[ -n "$HOLDMS" ] && sed -i "/^\[grim-win\]/a sim_hold_ms=$HOLDMS" "$AR/generated/_scummvm_$$.ini"
-[ -n "$MARKER" ] && sed -i "/^\[grim-win\]/a frame_marker=true" "$AR/generated/_scummvm_$$.ini"
-[ -n "$DUMPDIR" ] && sed -i "/^\[grim-win\]/a dump_frames_dir=$DUMPDIR" "$AR/generated/_scummvm_$$.ini"
-[ -n "$NOPATCHR" ] && sed -i '/^\[grim-win\]/a no_patchr=true' "$AR/generated/_scummvm_$$.ini"
-[ -n "$DUMPPATCHR" ] && sed -i '/^\[grim-win\]/a dump_patchr=true' "$AR/generated/_scummvm_$$.ini"
+[ -z "$LOOSE" ] && ini_set "$INI" loose_files false
+[ -n "$SIMMS" ] && ini_set "$INI" sim_frame_ms "$SIMMS"
+[ -n "$RENDEREVERY" ] && ini_set "$INI" sim_render_every "$RENDEREVERY"
+[ -n "$JITTER" ] && ini_set "$INI" sim_jitter "$JITTER"
+[ -n "$JITTERSEED" ] && ini_set "$INI" sim_jitter_seed "$JITTERSEED"
+# NOSHORT=1: no zero-length frame after a change of set, a load or a save (the original has none); SHORTSIM=1: the zero frame in a simulated run too
+[ -n "$NOSHORT" ] && ini_set "$INI" no_short_frame true
+[ -n "$SHORTSIM" ] && ini_set "$INI" sim_short_frame true
+[ -n "$WALLFPS" ] && ini_set "$INI" sim_wall_fps "$WALLFPS"
+[ -n "$HOLDMS" ] && ini_set "$INI" sim_hold_ms "$HOLDMS"
+[ -n "$MARKER" ] && ini_set "$INI" frame_marker true
+[ -n "$DUMPDIR" ] && ini_set "$INI" dump_frames_dir "$DUMPDIR"
+[ -n "$NOPATCHR" ] && ini_set "$INI" no_patchr true
+[ -n "$DUMPPATCHR" ] && ini_set "$INI" dump_patchr true
 # WIN=640x480 sets the size of the window (it plays in a window, not fullscreen)
 if [ -n "$WIN" ]; then
-	sed -i "s/^last_window_width=.*/last_window_width=${WIN%x*}/; s/^last_window_height=.*/last_window_height=${WIN#*x}/; s/^window_maximized=.*/window_maximized=false/" "$AR/generated/_scummvm_$$.ini"
-	sed -i '/^\[grim-win\]/a fullscreen=false' "$AR/generated/_scummvm_$$.ini"
+	sed -i "s/^last_window_width=.*/last_window_width=${WIN%x*}/; s/^last_window_height=.*/last_window_height=${WIN#*x}/; s/^window_maximized=.*/window_maximized=false/" "$INI"
+	ini_set "$INI" fullscreen false
 fi
 
 cd /home/Joel/scummvm/${SVM_BUILD:-build-opt}

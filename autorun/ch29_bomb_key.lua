@@ -2,7 +2,7 @@
 -- watch it for a moment; it blows the safe open and Manny fishes out the skeleton key.
 -- Checkpoint in slot 45.
 
-ar_load(28)
+ar_load(21)
 AR_NEW = TRUE
 ar_log("start in " .. ar_set_name())
 ar_wait_for_control()
