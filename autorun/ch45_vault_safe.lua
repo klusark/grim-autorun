@@ -161,10 +161,6 @@ ar_wait_for(function() return vd.door_busted end, 300000)
 ar_wait_for_control()
 ar_check(vd.door_busted, "the door jam is drilled")
 -- TODO: Engine fix
--- (the wheel's sound is started every frame of a held key; a speed run is silent, and the engine's iMuse loops for ever in imSetParam when so many follow one another)
-if not AR_REAL then
-	vd.play_wheel_sfx = function() end
-end
 ar_do("use", vd.wheel)
 ar_wait_for(function() return system.buttonHandler == vd.buttonHandler end, 60000)
 ar_check(system.buttonHandler == vd.buttonHandler, "Manny holds the wheel")
