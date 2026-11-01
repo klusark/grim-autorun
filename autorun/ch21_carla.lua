@@ -24,8 +24,6 @@ AR_FAILED = nil
 ar_log("the neck to the ladder passed after " .. ar_neck_tries .. " tries")
 ar_go(si.ladder, se)
 ar_go(se.sd_door, xb)
--- back along the extend-o-bridge, the stick follows its camera boxes
-ar_bridge_west()
 ar_go(xb.hb_door, hb)
 ar_wait_for_control()
 ar_check(sl.detector.owner == manny, "Manny has the metal detector")
