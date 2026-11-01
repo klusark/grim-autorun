@@ -3,8 +3,18 @@
 -- The lounge elevator of the high roller opens when Manny steps into the sector in front of it (hl.elev_open); its
 -- walk boxes only exist then.
 ar_hl_elevator = function()
-	ar_walk_to(-0.78, 2.68, 0)
-	-- the sentence of the sector runs a moment later and then makes the way to the door
+	local tries = 0
+	local open = nil
+	while not open and tries < 2 do
+		ar_walk_to(-0.78, 2.68, 0)
+		-- the sentence of the sector runs a moment later and then makes the way to the door
+		open = ar_try_wait(function() return ar_sector_on("hl_elev") end, 3000)
+		if not open then
+			-- (Manny came in at the spot, already in the sector, so that walking in did nothing: out to the place where Nick stands, and in again)
+			ar_walk_to(hl.virago_obj.use_pnt_x, hl.virago_obj.use_pnt_y, hl.virago_obj.use_pnt_z)
+		end
+		tries = tries + 1
+	end
 	ar_wait_for(function() return ar_sector_on("hl_elev") end, 5000, "the elevator way to open")
 	ar_wait_for_control()
 end

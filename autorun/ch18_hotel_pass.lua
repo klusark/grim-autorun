@@ -1,11 +1,11 @@
--- Chapter 18: the gold flake liqueur from the casino bar, then across the town to the Hotel
--- Hatchet's elevator, and past Raoul, who lets him through now that Glottis is gambling inside. Checkpoint in slot 34.
+-- Chapter 18: right after the pass went to Glottis: the gold flake liqueur from the casino bar, across the town to the track, where Carla in the security hall is charmed
+-- (the liqueur, the metal detector into the cat box) and the can opener and the metal detector are taken from the cat stables (chapters 21 and 22 were these), and on
+-- to the Hotel Hatchet's elevator, and past Raoul, who lets him through now that Glottis is gambling inside. Checkpoint in slot 34.
 
 ar_load(17)
 AR_NEW = TRUE
 ar_log("start in " .. ar_set_name())
 ar_wait_for_control()
-ar_go(cn.ci_door, ci)
 ar_do("pickUp", ci.liqueur)
 ar_wait_for(function() return ci.liqueur.owner == manny end, 30000)
 ar_check(ci.liqueur.owner == manny, "Manny has the liqueur")
@@ -27,6 +27,58 @@ ar_wait_for_control()
 if system.currentSet == tw then
 	ar_go(tw.tb_door, tb)
 end
+-- Carla (chapter 21 was this)
+ar_go(tb.gt_door, gt)
+ar_wait_for_control()
+ar_state("in the security lobby")
+-- down the stairs into the security hall (Carla greets Manny when he steps off them)
+ar_go(gt.sl_door, sl)
+ar_state("in the security hall")
+ar_walk_to(-0.67, -0.92, 0)
+ar_wait_for_control()
+-- the liqueur wears off in ten seconds: drink it here, just short of the detector, and walk through
+ar_hold(ci.liqueur)
+ar_press("use")
+ar_wait_for(function() return manny.golden end, 20000)
+ar_check(manny.golden, "Manny is golden")
+ar_wait_for_control()
+-- through the metal detector: Carla searches Manny and, charmed, tells her troubles
+ar_walk_to(0.17, -0.35, 0)
+ar_wait_for(function() return ca2 and system.buttonHandler == ca2 end, 120000)
+ar_check(ca2 and system.buttonHandler == ca2, "Carla talks")
+-- the babble goes on until the detector line is offered
+ar_wait_for(function() return ca2[30].text ~= nil and ca2[30].text ~= "" and system.buttonHandler == ca2 end, 300000)
+ar_pick(ca2, 30)
+ar_wait_for(function() return ca2.node == "detector" end, 30000)
+ar_pick(ca2, 100)
+ar_wait_for(function() return sl.detector.in_catbox end, 60000)
+ar_check(sl.detector.in_catbox, "the detector is in the cat box")
+ar_wait_for(function() return sl.carla_scorned end, 120000)
+ar_wait_for_control()
+-- the cat stables (chapter 22 was this): the can opener, and the detector out of the litter
+ar_go(sl.gt_door, gt)
+ar_go(gt.tb_door, tb)
+ar_wait_for_control()
+ar_go(tb.ts_door, ts)
+ar_go(ts.kh_door, kh)
+ar_go(kh.ks_door, ks)
+ar_wait_for_control()
+ar_describe()
+ar_do("pickUp", ks.opener)
+ar_check(ks.opener.owner == manny, "Manny has the can opener")
+-- (the dig for the detector is watched to its end: skipped, it does not hand the detector over)
+AR_NO_SKIP = TRUE
+ar_do("use", ks.litter2, mo.scythe)
+ar_wait_for(function() return sl.detector.retrieved end, 120000)
+ar_wait_for(function() return sl.detector.owner == manny end, 60000)
+AR_NO_SKIP = nil
+ar_wait_for_control()
+ar_check(sl.detector.owner == manny, "Manny has the metal detector")
+-- and on to the Hotel Hatchet
+ar_go(ks.kh_door, kh)
+ar_go(kh.ts_door, ts)
+ar_go(ts.tb_door, tb)
+ar_wait_for_control()
 -- (Glottis is gambling in the high roller lounge since chapter 17: Raoul lets Manny through without the pass)
 ar_go(tb.hh_door, hh, -0.3, 0.0, 0)
 ar_wait_for_control()
