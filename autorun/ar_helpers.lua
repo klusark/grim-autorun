@@ -45,32 +45,6 @@ ar_hh_elevator = function()
 	end
 end
 
--- Along the extend-o-bridge: its walkways are joined by sectors that carry Manny on to the next one, which the stick
--- follows. The first leg is walked by the planner and stops when the carrying has happened.
-ar_xb_west = function()
-	return manny:getpos().x < 33
-end
-ar_xb_carried = function()
-	return manny:getpos().x > 32
-end
-ar_bridge_east = function()
-	ar_walk_to(30.5, -15.5, 1.0, ar_xb_carried)
-	ar_wait_for_control()
-	AR_STICK = TRUE
-	ar_walk_stick(30.5, -15.5, 1.0)
-	-- (the carrying sector lies a few centimetres short of this point: with the real clock Manny is carried before he is within reach of it, and a walk that goes on to it
-	-- walks back west, into the sector that carries him back, for ever; the leg ends when he has been carried)
-	ar_walk_stick(31.2, -13.5, 1.0, ar_xb_carried)
-	ar_walk_stick(36.0, -13.9, 1.5)
-	-- (a time of its own: the stick pushes against the edge of the walkway and a sector carries Manny back a metre each time; in the simulated run he is "stuck" and the leg
-	-- ends, with the real clock that goes on for ever)
-	ar_walk_stick(39.9, -13.6, 1.82, nil, 6000)
-	-- (the walk finds the way over the ramp to the door, the stick runs against the edge of the walkway)
-	AR_STICK = nil
-	ar_go(xb.se_door, se)
-	AR_STICK = nil
-end
-
 -- A walk that ends when the target is farther away than at the start: Manny has been carried on.
 ar_leg_stop = function()
 	return point_proximity(AR_LEG_X, AR_LEG_Y, AR_LEG_Z) > AR_LEG_PROX0 + 1.0

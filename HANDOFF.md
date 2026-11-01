@@ -18,7 +18,7 @@ section 2), so check git before you trust a status line.
   `autorun/GHIDRA_NAMES.md`.
 - **Autorun waits:** keep walk budgets short (about 10 s by default). Override per walk with
   `ar_walk_to(..., max_ms)` / `AR_WALK_MAX`. A timeout is an error, not a retry. If Manny gets stuck, fix the
-  route with waypoints in the chapter or in `autorun/ar_routes_original.lua` instead of waiting longer.
+  route with waypoints in the chapter or in `autorun/ar_helpers.lua` instead of waiting longer.
   After each run, grep the log for `walk stalled`, `walk took more than` and `nav: no way`.
 - **`orig_test.sh` kills `GRIMFANDANGO.exe`** before and after a test. The user often plays the original by
   hand (Backspace+F12 Lua). Run `tasklist | grep -qi grimfandango` first, and skip or ask if it is running.
@@ -83,7 +83,7 @@ Detailed docs: `autorun/PROGRESS.md` (chapter table), `TESTS.md`, `TEST_PLAN.md`
 
 - **The whole game is scripted:** ch01..ch65 (ch65 ends in the credits). Each chapter passes standalone.
   `ar_lib_legacy.lua` serves ch01-ch14 and `ar_lib.lua` ch15+ (`AR_NEW = TRUE`); run_chapter/run_all choose by name.
-  Other libraries: `ar_nav.lua` (A* over sector dumps), `ar_helpers.lua`, `ar_routes_original.lua`, `ar_safe.lua`.
+  Other libraries: `ar_nav.lua` (A* over sector dumps), `ar_helpers.lua`, `ar_safe.lua`.
 - **Everything goes through real keys,** like a player: walking is keys only since 2026-10-23
   (`ar_steer`/`ar_walk_stick`/`ar_nav` + `ar_walk_path`); verbs via `ar_do` (walk, face, gaze makes it the hot
   object, press key); items via hotkeys (`ar_hold`); doors via `ar_go(door,target,viaX,viaY,viaZ)`; driving
