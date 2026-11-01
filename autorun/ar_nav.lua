@@ -23,7 +23,9 @@
 
 -- (a save brings back the lists of the run that made it: they are read again)
 AR_NAV = { }
-AR_SLICE = TRUE
+-- (a search is spread over frames, 300 cells a frame; AR_NOSLICE = TRUE does it in the one frame it is asked in: the frames of the search are game time in which
+-- Manny stands still, a player's pathfinder is not slow)
+AR_SLICE = not AR_NOSLICE
 
 -- Every move of an actor to a place (PutActorAt: setpos, moveto, the cheat boxes' teleport_out_of_hot_box, a script that puts Manny
 -- somewhere) goes through one builtin. It is wrapped once, so that every jump of Manny is seen for what it is, with where he was, where
@@ -799,7 +801,9 @@ ar_w_code = function(nav, w, k, zref)
 	i = 1
 	while best.h[i] do
 		local h = best.h[i]
-		if ar_nav_act_c(hot, h) then
+		-- (a hot sector over or under the floor is at its own height: the lower walkway's sd_ws1..3 lie under the end of the extend-o-bridge's ramp, and made the
+		-- ramp's cells there a door's, three times dearer, so that the way went round them to the far side of ws_sd_box)
+		if ar_nav_act_c(hot, h) and ar_w_hot_zok(nav, h, bz) then
 			if w.hcons[h] then
 				return 2, bz
 			elseif w.cheat[h] then
@@ -991,6 +995,8 @@ ar_nav_learn = function(nav, t)
 	end
 	nav.learned[t.hot] = { x = t.tx, y = t.ty, z = t.tz }
 	ar_log("nav: " .. tostring(t.hot) .. " moves Manny to " .. format("%.2f %.2f %.2f", t.tx, t.ty, t.tz) .. ": a link from now on")
+	-- (the line tools/export_nav_known.py reads to write ar_nav_known.lua: the links a run has learned, to be known from the start of the next)
+	ar_log("NAVLEARNED " .. tostring(t.set.setFile) .. " " .. tostring(t.hot) .. " " .. format("%.4f %.4f %.4f", t.tx, t.ty, t.tz))
 	nav.w = nil
 end
 

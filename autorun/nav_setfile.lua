@@ -182,6 +182,17 @@ ar_nav_of = function(set)
 		id = id + 1
 	end
 	AR_NAV[set.setFile] = nav
+	-- the links that earlier runs learned (ar_nav_known.lua, written by tools/export_nav_known.py): a hot sector that a script moves Manny out of
+	-- is a link from the start, not from the first time he is carried
+	-- (AR_USE_KNOWN, on unless the run script has NOKNOWN=1: with all of them the speed run was 2,550 frames longer than without)
+	if AR_USE_KNOWN and AR_NAV_KNOWN and AR_NAV_KNOWN[set.setFile] then
+		nav.learned = nav.learned or { }
+		local hn, l = next(AR_NAV_KNOWN[set.setFile], nil)
+		while hn do
+			nav.learned[hn] = { x = l.x, y = l.y, z = l.z }
+			hn, l = next(AR_NAV_KNOWN[set.setFile], hn)
+		end
+	end
 	ar_log("nav: " .. tostring(set.setFile) .. " read, " .. ar_nav_len(nav.n) .. " walk sectors, " .. ar_nav_len(nav.hn) .. " hot")
 	return nav
 end
