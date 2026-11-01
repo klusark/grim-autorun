@@ -1,5 +1,5 @@
 -- Chapter 17: Charlie at the casino table gives the ticket printer and, since Velasco told about
--- the union card, the V.I.P. pass. Checkpoint in slot 33.
+-- the union card, the V.I.P. pass, which goes to Glottis at the piano at once (he gambles in the high roller lounge). Checkpoint in slot 33.
 
 ar_load(16)
 AR_NEW = TRUE
@@ -26,5 +26,12 @@ ar_check(cn.printer.owner == manny, "Manny has the ticket printer")
 ar_check(cn.pass.owner == manny, "Manny has the V.I.P. pass")
 ar_pick_exit(ch1)
 ar_wait_for_control()
+-- the pass to Glottis at the piano right away: he runs off to gamble in the high roller lounge, and with him there Raoul lets Manny through without a pass
+ar_go(cn.ci_door, ci)
+ar_wait_for_control()
+ar_do("use", ci.glottis_obj, cn.pass)
+ar_wait_for(function() return hl.glottis_gambling end, 600000)
+ar_wait_for_control()
+ar_check(hl.glottis_gambling, "Glottis gambles")
 ar_state("end of chapter 17")
 ar_checkpoint(17)

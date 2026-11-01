@@ -1,5 +1,5 @@
 -- Chapter 18: the gold flake liqueur from the casino bar, then across the town to the Hotel
--- Hatchet's elevator: the V.I.P. pass gets Manny past Raoul. Checkpoint in slot 34.
+-- Hatchet's elevator, and past Raoul, who lets him through now that Glottis is gambling inside. Checkpoint in slot 34.
 
 ar_load(17)
 AR_NEW = TRUE
@@ -27,15 +27,11 @@ ar_wait_for_control()
 if system.currentSet == tw then
 	ar_go(tw.tb_door, tb)
 end
--- the pass is taken out here: next to the elevator door the game does not open the inventory
-ar_hold(cn.pass)
-AR_KEEP_HELD = TRUE
+-- (Glottis is gambling in the high roller lounge since chapter 17: Raoul lets Manny through without the pass)
 ar_go(tb.hh_door, hh, -0.3, 0.0, 0)
-AR_KEEP_HELD = nil
 ar_wait_for_control()
-ar_do("use", hh.hl_door, cn.pass)
-ar_wait_for(function() return hh.showed_pass end, 120000)
-ar_check(hh.showed_pass, "the V.I.P. pass got Manny past Raoul")
+ar_hh_elevator()
+ar_go(hh.hl_door, hl)
 ar_wait_for(function() return system.currentSet == hl end, 120000)
 ar_wait_for_control()
 ar_state("in the high roller lounge")
