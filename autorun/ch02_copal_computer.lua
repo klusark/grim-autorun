@@ -19,6 +19,33 @@ ar_expect_set(os, "outside")
 
 -- outside -> street -> alley, through the door sectors
 ar_go(os.st_door, st)
+
+-- the first time outside: the clown at the festival gives the two dead worms (empty balloons) and the inflated cat balloon, and the bread
+-- is in the basket; chapters 4 and 6 use them
+ar_log("step: the clown")
+ar_go(st.fe_door, fe)
+ar_do("use", fe.clown_obj)
+ar_pick(cl1, 50)
+ar_pick(cl1, 60)
+ar_pick(cl1, 63)
+ar_pick(cl1, 104)
+ar_wait_for(function() return ar_find_owned(fe.balloons) end, 120000)
+ar_check(ar_find_owned(fe.balloons), "the first dead worm")
+ar_wait_for_control()
+ar_do("use", fe.clown_obj)
+ar_pick(cl1, 64)
+ar_pick(cl1, 104)
+ar_wait_for(function() return ar_find_owned(fe.balloons) end, 5000)
+ar_wait_for_control()
+ar_do("use", fe.clown_obj)
+ar_pick(cl1, 64)
+ar_pick(cl1, 100)
+ar_wait_for(function() return fe.balloon_cat.owner == manny end, 120000)
+ar_check(fe.balloon_cat.owner == manny, "Manny has the cat balloon")
+ar_wait_for_control()
+ar_do("pickUp", fe.basket)
+ar_check(ar_find_owned(fe.breads), "Manny has a piece of bread")
+ar_go(fe.st_door, st)
 ar_go(st.al_door, al)
 
 -- the rope up to the ledge, in through the window

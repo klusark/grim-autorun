@@ -8,7 +8,9 @@ AR_NEW = TRUE
 ar_log("start in " .. ar_set_name())
 ar_wait_for_control()
 -- the ring of the wreck: Glottis comments, then Chepito appears
-ar_walk_to(0.55, -3.65, 0)
+-- (the ring is a thin band of hot sectors, ring3 around x 0.55 to 0.60 here: Chepito comes when Manny crosses it, so the goal lies beyond the band
+-- and not on its edge, where a stop 2 cm short never enters it)
+ar_walk_to(0.70, -3.65, 0)
 ar_wait_for_control()
 ar_walk_to(-0.1, -4.35, 0)
 

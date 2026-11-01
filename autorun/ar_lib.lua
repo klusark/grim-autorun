@@ -1069,7 +1069,10 @@ ar_approach = function(obj)
 	-- (not offered from there, within 30 cm of the use point: the heading of the use point is for standing on it. A player turns to the object itself)
 	-- (and only where the object is near: from three metres off a player does not turn to it and look all round for it, he walks up to it first; the scan in the lobby of
 	-- chapter 2 turned him twice round, 12 s, before the walk to the door; AR_SCAN_FAR = TRUE for the old order)
-	if obj.obj_x and not ar_offered() and (AR_SCAN_FAR or not obj.use_pnt_x or ar_dist2d(obj.use_pnt_x, obj.use_pnt_y) < 1.0) then
+	-- (and only where turning could make the game offer it: it is offered within the range of the object, from farther off a turn and a look round find nothing,
+	-- and the lever of chapter 12, range 0.7, 1.1 m off, had Manny turn all the way round, 6 s, before he walked to it. AR_SCAN_ALWAYS = TRUE turns the rule
+	-- off for the verbs that need the time the look round takes: Meche in chapter 55 walks to Manny meanwhile)
+	if obj.obj_x and not ar_offered() and (AR_SCAN_FAR or not obj.use_pnt_x or (ar_dist2d(obj.use_pnt_x, obj.use_pnt_y) < 1.0 and (AR_SCAN_ALWAYS or not obj.range or not obj.obj_y or ar_dist2d(obj.obj_x, obj.obj_y) < obj.range + 0.2))) then
 		ar_face(obj)
 		sleep_for(100)
 		ar_wait_turn()
@@ -1162,6 +1165,20 @@ ar_approach = function(obj)
 	-- still nothing: a player turns on the spot, looking for it
 	if not ar_offered() and not ar_set_changed() then
 		ar_scan_for(obj)
+	end
+	-- (and where the verb would fail now: if the game does not let it be touched at the moment, Meche in chapter 55 is not while she seduces Charlie, a wait for
+	-- that, up to 20 s, and one more approach from wherever Manny has got to: it costs nothing where the verb works)
+	if not ar_offered() and not ar_set_changed() and not AR_REAPPROACH then
+		AR_OBJ = obj
+		if not obj.touchable then
+			ar_try_wait(function() return AR_OBJ.touchable or ar_set_changed() end, 20000)
+		end
+		if not ar_set_changed() and obj.touchable then
+			ar_log("approach again: " .. tostring(obj.name))
+			AR_REAPPROACH = TRUE
+			ar_approach(obj)
+			AR_REAPPROACH = nil
+		end
 	end
 end
 

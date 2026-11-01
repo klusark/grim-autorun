@@ -1,5 +1,5 @@
--- Chapter 4: the tube room puzzle. Cards from the office and a punched card from the hole punch
--- in the hallway; two balloons from the balloon man at the festival, filled at the packing
+-- Chapter 4: the tube room puzzle. The punched card (chapter 1: cards from the office, the hole punch
+-- in the hallway); two balloons from the balloon man at the festival (chapter 2), filled at the packing
 -- room with the two chemicals and sent down the office tube to jam the tube switcher;
 -- in the tube room lock the dead bolt, leave so Brennis goes, turn the wheel and send the
 -- punched card down the red tube. That reaps Meche. Checkpoint in slot 13.
@@ -7,45 +7,20 @@
 ar_load(3)
 ar_log("start in " .. ar_set_name())
 ar_wait_for_control()
-ar_go(ha.mo_door, mo)
-ar_do("pickUp", mo.cards)
-ar_check(ar_has(mo.cards), "Manny has the cards")
-ar_go(mo.ha_door, ha)
-ar_do("use", ha.hole_punch, mo.cards)
+-- (the cards were taken and a card punched in chapter 1)
 ar_check(ar_has(mo.one_card), "Manny has a card")
 ar_check(mo.one_card.punched, "the card is punched")
 ar_state("end of chapter 4a")
 
 ar_log("next step, now in " .. ar_set_name())
 ar_wait_for_control()
-ar_go(ha.lo_door, lo)
-ar_do("use", lo.os_door)
-ar_expect_set(os, "outside")
-ar_go(os.st_door, st)
-ar_go(st.fe_door, fe)
-
-ar_do("use", fe.clown_obj)
-ar_pick(cl1, 50)
-ar_pick(cl1, 60)
-ar_pick(cl1, 63)
-ar_pick(cl1, 104)
-ar_wait_for(function() return ar_find_owned(fe.balloons) end, 120000)
-ar_check(ar_find_owned(fe.balloons), "the first empty balloon")
-ar_wait_for_control()
-
-ar_do("use", fe.clown_obj)
-ar_pick(cl1, 64)
-ar_pick(cl1, 104)
-ar_wait_for(function() return ar_find_owned(fe.balloons) end, 5000)
-ar_wait_for_control()
+-- (the two empty balloons, the dead worms, came from the clown in chapter 2)
+ar_check(ar_find_owned(fe.balloons), "Manny has the empty balloons")
 ar_state("end of chapter 4b")
 
 ar_log("next step, now in " .. ar_set_name())
 ar_wait_for_control()
-ar_go(fe.st_door, st)
-ar_go(st.os_door, os)
-ar_do("use", os.lo_door)
-ar_expect_set(lo, "in the lobby")
+ar_go(ha.lo_door, lo)
 ar_go(lo.pk_door, pk)
 
 ar_do("use", pk.nozzle_1, ar_find_owned(fe.balloons))

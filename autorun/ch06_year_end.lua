@@ -1,8 +1,8 @@
 -- Chapter 6: the rest of Year 1. Out of the headquarters by the elevator to the alley, up the
 -- rope to the ledge and in through Domino's window: punch the speed bag three times so the
--- mouthpiece falls, take it and the coral from the drawer. Down again for a cat balloon and
--- a piece of bread (once the hook is thrown the alley rope's landing is no longer walkable,
--- so everything is fetched first). Back up, tie the coral to the rope and throw the hook at
+-- mouthpiece falls, take it and the coral from the drawer. (The cat balloon and a piece of
+-- bread came from the festival in chapter 2; once the hook is thrown the alley rope's landing is no longer
+-- walkable, so everything is fetched first.) Tie the coral to the rope and throw the hook at
 -- the ladder, climb to the roof, put the balloon and the bread in the dish so the pigeons
 -- leave, take the eggs. Down to the shop for the bondo, fit the mouthpiece, wave the eggs at
 -- the eye in the alley to go down to the headquarters, the eggs to Salvador and the mouthpiece
@@ -32,27 +32,10 @@ ar_state("end of chapter 5a")
 
 ar_log("next step, now in " .. ar_set_name())
 ar_wait_for_control()
-ar_do("use", le.rope_down)
-ar_expect_set(al, "back in the alley")
-ar_go(al.st_door, st)
-ar_go(st.fe_door, fe)
-
-ar_do("use", fe.clown_obj)
-ar_pick(cl1, 64)
-ar_pick(cl1, 100)
-ar_wait_for(function() return fe.balloon_cat.owner == manny end, 120000)
+-- (the cat balloon and the bread were fetched in chapter 2, on the first trip outside: Manny stays on the ledge)
 ar_check(fe.balloon_cat.owner == manny, "Manny has the cat balloon")
-ar_wait_for_control()
-
-ar_do("pickUp", fe.basket)
 ar_check(ar_find_owned(fe.breads), "Manny has a piece of bread")
 ar_state("end of chapter 5c")
-
--- back up to the ledge
-ar_go(fe.st_door, st)
-ar_go(st.al_door, al)
-ar_do("use", al.rope)
-ar_expect_set(le, "on the ledge")
 
 ar_log("next step, now in " .. ar_set_name())
 ar_wait_for_control()

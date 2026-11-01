@@ -9,12 +9,21 @@
 ar_load(11)
 ar_log("start in " .. ar_set_name())
 ar_wait_for_control()
+-- The lever first: down, so that Glottis climbs the tree (and fastens his weight), and up again at once. Glottis stays in the tree
+-- with the lever up, and from then on the game itself, the moment the pumps are in step, drops the barrow and runs the cutscene that
+-- shakes the shocks loose: nothing is left to do after the barrow.
+ar_do("use", tr.switch)
+ar_wait_for(function() return tr.tree.has_glottis end, 120000)
+ar_check(tr.tree.has_glottis, "Glottis is in the tree")
+ar_wait_for_control()
+ar_do("use", tr.switch)
+ar_wait_for_control()
 ar_do("use", tr.wheelbarrow)
 ar_wait_for(function() return manny.holding_wheelbarrow end, 60000)
 ar_wait_for_control()
 ar_check(manny.holding_wheelbarrow, "Manny pushes the wheelbarrow")
 
--- Sweep the hoses forward and back, stopping and waiting a random moment in the gaps between
+-- (Fallback) Sweep the hoses forward and back, stopping and waiting a random moment in the gaps between
 -- them: the barrow is pushed along one line, over the hoses of pumps 1, 2, 3 and 4 in that
 -- order (barrow x about 2.85, 3.07, 3.31 and 3.60). Each hose gets its beat when the barrow
 -- leaves it, so the waits decide the beats, and some sweep pairs the pumps up.
@@ -81,6 +90,67 @@ ar_barrow_to_the_end = function()
 	sleep_for(150)
 end
 
+-- The pumps start on beats 3 1 2 4 (a beat is a tick of 500 ms, 1 to 4, and a pump takes the beat of the tick on which the barrow
+-- leaves its hose) and the tree shakes when pump 1 = pump 2, pump 3 = pump 4 and the two pairs differ. So only the middle two hoses
+-- are needed: pump 2 takes the beat of pump 1 and pump 3 that of pump 4, and the outer two stay as they are. The barrow stands just past
+-- the hose of pump 2; it is run into a hose, held there (the pump's beat is 0 while it is in the hose) until the tick that makes the
+-- exit land on the beat wanted, and run out. A start tick that lands on another beat is moved by the difference and tried again.
+-- (the old sweeping over all four hoses, below, is what is left to do if the beats are not as they start)
+ar_set_hose = function(pump, want, inx, outx, tick0)
+	local tick = tick0 or want
+	while tick > 4 do
+		tick = tick - 4
+	end
+	local tries = 0
+	while pump.beat ~= want and tries < 12 do
+		tries = tries + 1
+		-- (into the hose from the side the barrow is on)
+		ar_barrow_to(inx, ar_barrow_x() < inx)
+		-- (the barrow is still, then the push starts on the edge of the tick, and goes on until the hose lets go: every frame counted,
+		-- so that the same start tick gives the same beat)
+		local w = 0
+		while not ar_barrow_idle() and w < 600 do
+			break_here()
+			w = w + 1
+		end
+		w = 0
+		while tr.beat ~= tick and w < 400 do
+			break_here()
+			w = w + 1
+		end
+		ar_key_down("MOVE_FORWARD")
+		w = 0
+		while pump.beat == 0 and w < 300 do
+			break_here()
+			w = w + 1
+		end
+		ar_key_up("MOVE_FORWARD")
+		w = 0
+		while not ar_barrow_idle() and w < 600 do
+			break_here()
+			w = w + 1
+		end
+		ar_log("hose: pump beat " .. tostring(pump.beat) .. ", wanted " .. want .. ", started on tick " .. tick)
+		if pump.beat ~= want then
+			tick = tick + want - pump.beat
+			while tick < 1 do
+				tick = tick + 4
+			end
+			while tick > 4 do
+				tick = tick - 4
+			end
+		end
+	end
+	return pump.beat == want
+end
+if tr.pump1.beat >= 1 and tr.pump4.beat >= 1 and tr.pump1.beat ~= tr.pump4.beat and ar_barrow_x() > 3.1 and ar_barrow_x() < 3.2 then
+	ar_log("the middle two hoses: pump 2 to beat " .. tr.pump1.beat .. ", pump 3 to beat " .. tr.pump4.beat)
+	if ar_set_hose(tr.pump2, tr.pump1.beat, 3.07, 3.13, tr.pump1.beat - 1) then
+		ar_set_hose(tr.pump3, tr.pump4.beat, 3.34, 3.43, tr.pump4.beat + 1)
+	end
+	ar_wait_for(function() return tr.tree.synched or mod_solved end, 3000)
+end
+
 AR_SWEEPS = 0
 AR_FWD = TRUE
 while not tr.tree.synched and AR_SWEEPS < 500 do
@@ -111,26 +181,8 @@ while not tr.tree.synched and AR_SWEEPS < 500 do
 	ar_log("sweep " .. AR_SWEEPS .. ": beats " .. tr.pump1.beat .. " " .. tr.pump2.beat .. " " .. tr.pump3.beat .. " " .. tr.pump4.beat .. " synched " .. (tr.tree.synched and "yes" or "no"))
 end
 ar_keys_up()
-ar_check(tr.tree.synched, "the pumps are out of step")
-
--- let go of the wheelbarrow
-AR_TRIES = 0
-while manny.holding_wheelbarrow and AR_TRIES < 8 do
-	AR_TRIES = AR_TRIES + 1
-	ar_wait_for_control()
-	ar_press("use")
-	sleep_for(1500)
-	ar_wait_for(function() return not find_script(tr.drop_wheelbarrow) end, 20000)
-end
-ar_check(not manny.holding_wheelbarrow, "Manny has put the wheelbarrow down")
-ar_wait_for_control()
-
--- the lever down: Glottis climbs the tree, the lever up again while he is in it
-ar_do("use", tr.switch)
-ar_wait_for(function() return tr.tree.has_glottis end, 120000)
-ar_check(tr.tree.has_glottis, "Glottis is in the tree")
-ar_wait_for_control()
-ar_do("use", tr.switch)
+-- (the pumps in step: the game drops the barrow and shakes the shocks loose by itself)
+ar_check(tr.tree.synched or mod_solved, "the pumps are out of step")
 ar_wait_for(function() return mod_solved end, 240000)
 ar_check(mod_solved, "the shocks are loose (puzzle state 17)")
 ar_wait_for_control()

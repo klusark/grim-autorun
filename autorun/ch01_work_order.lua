@@ -6,11 +6,20 @@ ar_log("start in " .. ar_set_name())
 ar_wait_for_control()
 
 if system.currentSet == mo then
+	-- the cards on the desk, and a card from them punched at the hole punch in the hallway: chapter 4 needs the punched card,
+	-- and Manny is in both rooms now anyway
+	ar_log("step: the cards")
+	ar_do("pickUp", mo.cards)
+	ar_check(ar_has(mo.cards), "Manny has the cards")
 	ar_log("step: office to hallway")
 	ar_go(mo.ha_door, ha)
 end
 
 if system.currentSet == ha then
+	ar_log("step: punch a card")
+	ar_do("use", ha.hole_punch, mo.cards)
+	ar_check(ar_has(mo.one_card), "Manny has a card")
+	ar_check(mo.one_card.punched, "the card is punched")
 	ar_log("step: hallway to garage")
 	ar_go(ha.ga_door, ga)
 end
