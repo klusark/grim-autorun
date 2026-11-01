@@ -7,6 +7,10 @@ AR_NEW = nil
 ar_log("start in " .. ar_set_name())
 ar_wait_for_control()
 ar_go(cb.cf_door, cf)
+-- the letters of the cafe office, on the way through it (nothing gates them): chapter 15 used to go back for them from the Blue Casket, through the cafe, the coat check
+-- and the office and back again
+ar_do("pickUp", cf.letters)
+ar_check(cf.letters.owner == manny, "Manny has the letters")
 ar_go(cf.cc_door, cc)
 -- (the game sends Manny back out of the coat check the first time: in again by the door of the cafe)
 if system.currentSet ~= cc then
