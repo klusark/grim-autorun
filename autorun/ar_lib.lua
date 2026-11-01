@@ -983,10 +983,29 @@ end
 
 -- A player who cannot see the object offered turns on the spot until the game offers it
 ar_scan_for = function(obj)
+	-- A full turn on the spot never found an object in a speed run (17 looks round, 5,826 frames, none offered anything): what gets the object offered is the walk to its
+	-- use point, the push and the creeping step that follow. The look round is for AR_SCAN = TRUE; what it would have been for is logged instead.
+	if not AR_SCAN then
+		ar_log("SCAN skipped for " .. tostring(obj.name) .. " at " .. ar_set_name() .. ": " .. ar_why_not_offered(obj))
+		-- Every one of them was an object that is touchable and in view, a few centimetres outside its range (1 to 29): a turn does not change that, a step toward it by what is
+		-- missing does. Off unless AR_RANGE_STEP = TRUE: it saves 1,891 frames in chapter 29, and puts Manny where he and Toto run into each other at the neck of the ship
+		-- (the walk to the fridge is then planned seven times and fails); the walks and the creeping of ar_approach get the object offered otherwise
+		if AR_RANGE_STEP and obj.touchable and obj.interest_actor and obj.obj_x and obj.range then
+			local over = proximity(obj.interest_actor) - obj.range
+			local mp = manny:getpos()
+			local d = ar_dist2d(obj.obj_x, obj.obj_y)
+			if over > 0 and over < 0.6 and d > 0.05 then
+				ar_walk_stick(mp.x + (obj.obj_x - mp.x) * (over + 0.05) / d, mp.y + (obj.obj_y - mp.y) * (over + 0.05) / d, mp.z, ar_offered, 3000)
+				ar_try_wait(ar_offered, 600)
+			end
+		end
+		return ar_offered()
+	end
 	local p = manny:getpos()
 	local base = manny:getrot().y
 	local i = 1
 	local found = nil
+	local f0 = AR_FRAME
 	while i <= 15 and not found and not ar_set_changed() do
 		ar_face_yaw(base + i * 24)
 		sleep_for(150)
@@ -995,6 +1014,8 @@ ar_scan_for = function(obj)
 		end
 		i = i + 1
 	end
+	-- (the SCAN lines: what each look round was for, whether it found the object and what it cost; the sum is in tools/scan_report.py)
+	ar_log("SCAN " .. tostring(obj.name) .. " found " .. tostring(found) .. " after " .. (i - 1) .. " turns, " .. tostring(AR_FRAME - f0) .. " frames, at " .. ar_set_name())
 	return found
 end
 
