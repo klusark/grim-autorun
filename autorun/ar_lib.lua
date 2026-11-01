@@ -1112,6 +1112,31 @@ ar_approach = function(obj)
 			ar_scan_for(obj)
 		end
 	end
+	-- As a player does it with an item: steer at the object and push the stick until the game offers it, and use the item from there. The game does not walk Manny to the
+	-- use point for an item (the sentence of the scythe on Bruno's body began at once, from where the stick had brought him, and its scene walked him to its own place:
+	-- 190 frames less than walking to the use point first, round the body). Only on plain floor all the way (a hot sector on the line is a door or a trigger), and not for a
+	-- door or an actor that has moved off; otherwise, or when it is not offered after 4 s, it goes on as before. AR_NO_STICK_APPROACH = TRUE leaves it out.
+	if AR_APPROACH_ITEM and not AR_NO_STICK_APPROACH and obj.obj_x and not obj.walkOut and not ar_offered() and not ar_actor_away(obj) and not ar_set_changed() then
+		local nav = ar_nav_of(system.currentSet)
+		local mp = manny:getpos()
+		local d = ar_dist2d(obj.obj_x, obj.obj_y)
+		-- (to a point at about the range of the object, where the game offers it: the object itself can be on a table or in a wall)
+		local back = min((obj.range or 0.6) * 0.9, d * 0.9)
+		if nav and d > 0.1 then
+			local w = ar_w(nav)
+			AR_GOAL_HOT = { }
+			if ar_w_los(nav, w, mp.x, mp.y, mp.z, obj.obj_x + (mp.x - obj.obj_x) * back / d, obj.obj_y + (mp.y - obj.obj_y) * back / d, 1) then
+				local f0 = AR_FRAME
+				ar_walk_stick(obj.obj_x, obj.obj_y, mp.z, ar_changed_or_offered, 4000)
+				ar_log("STICKAPP " .. tostring(obj.name) .. " from " .. format("%.2f", d) .. " m: offered " .. tostring(ar_offered() and 1 or 0) .. " after " .. (AR_FRAME - f0) .. " frames")
+			else
+				ar_log("STICKAPP " .. tostring(obj.name) .. " not tried, the line to it is not plain floor")
+			end
+		end
+		if ar_set_changed() then
+			return
+		end
+	end
 	if ar_offered() or AR_NO_WALK_APPROACH then
 		return
 	end

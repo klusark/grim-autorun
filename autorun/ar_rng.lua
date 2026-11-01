@@ -103,3 +103,14 @@ if not AR_RNG_HOOKED then
 end
 -- (every time this file is run: after a save is loaded it is run again, with the limbs of the save and the state of rand of the game as it was)
 ar_rng_resync()
+
+-- Every chapter starts from the same state of the generator (5, as at boot): a change of timing in one chapter no longer changes the random events of all the chapters
+-- after it (idles, the picks of the sounds, Meche's, Toto's walks), which made every comparison of two runs carry the noise of the chapters that came later. Hooked once.
+if not AR_RNG_CHAPTER_HOOKED and ar_frame_chapter then
+	AR_RNG_CHAPTER_HOOKED = TRUE
+	AR_RNG_FRAME_CHAPTER = ar_frame_chapter
+	ar_frame_chapter = function(name)
+		AR_RNG_FRAME_CHAPTER(name)
+		ar_rng_resync()
+	end
+end

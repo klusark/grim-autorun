@@ -18,14 +18,17 @@ ar_wait_for_control()
 -- Manny stands where the animation puts him, the picks are worked out, and the verb is pressed at the first frame at which the flick falls inside the twist.
 -- Every pick that then happens is compared with the one worked out; the first that differs ends this and the verb is tried the old way, again and again.
 -- In real time the frames are not the fixed 60 a second the lengths are worked out for: then it is the old way at once.
-AR_MA_L = { [0] = 633, [1] = 1667, [2] = 1367, [3] = 3383 }
+AR_MA_L = { [0] = 633, [1] = 1667, [2] = 1366, [3] = 3383 }
 AR_MA_TW0 = 296
 AR_MA_TW1 = 474
 AR_MA_MARGIN = 12
 
--- milliseconds of frame k of the 60 a second clock of a simulated run (the frame counts here are too large to multiply by 50 in a float: k / 3 and k mod 3)
+-- milliseconds of frame k of the 60 a second clock of a simulated run (the frame counts here are too large to multiply by 50 in a float: k / 3 and k mod 3). The 16, 17,
+-- 17 ms of the frames repeat every three, and where they fall against the frame counter of the autorun depends on how many frames went before: AR_MA_OFF (0 to 2) is the
+-- phase, found from the picks that are seen (ar_ma_calibrate)
+AR_MA_OFF = 1
 ar_ma_ms = function(k)
-	local a = k + 1
+	local a = k + AR_MA_OFF
 	return floor(a / 3) * 50 + floor(mod(a, 3) * 50 / 3)
 end
 
@@ -39,11 +42,56 @@ ar_ma_end = function(f, chore)
 	return m
 end
 
+-- The phase for ar_ma_end, from the frame times the tracker has seen: the tracker's picks, stamped in its own place in the order of the frame, follow the 16, 17, 17 ms
+-- pattern of the frames one phase on (found from 60 picks in a run of the whole game and in the chapter by itself: 2 and 0 for the pattern, 0 and 1 for the picks).
+-- TRUE when there is a phase and a pick has been seen
+ar_ma_calibrate = function()
+	if not AR_MA_PF then
+		return nil
+	end
+	local ft = ar_ma_ftphase()
+	if not ft then
+		return nil
+	end
+	AR_MA_OFF = mod(ft + 1, 3)
+	AR_MA_OFFS = { AR_MA_OFF }
+	return TRUE
+end
+
+-- the phase of the 16, 17, 17 ms pattern as the tracker sees it: the one for which the differences of ar_ma_ms are the frame times of the last 12 frames; nil if none or two
+ar_ma_ftphase = function()
+	local found = nil
+	local count = 0
+	local off = 0
+	while off <= 2 do
+		AR_MA_OFF = off
+		local ok = TRUE
+		local j = 0
+		while j < 12 do
+			local e = AR_MA_FTR[j]
+			if not e or ar_ma_ms(e.f) - ar_ma_ms(e.f - 1) ~= e.t then
+				ok = nil
+			end
+			j = j + 1
+		end
+		if ok then
+			count = count + 1
+			found = off
+		end
+		off = off + 1
+	end
+	if count == 1 then
+		return found
+	end
+	return nil
+end
+
 -- a tracker: the frame and the idle of the last pick (the bag of masterTable gets one more mark with each)
 ar_ma_track = function()
 	local prev = nil
 	while TRUE do
 		break_here()
+		AR_MA_FTR[mod(AR_FRAME, 12)] = { f = AR_FRAME, t = system.frameTime }
 		if system.currentSet == ar and meche_ash_idles and masterTable and masterTable[meche_ash_idles] then
 			local b = masterTable[meche_ash_idles]
 			local cur = { }
@@ -164,21 +212,54 @@ ar_ma_sim = function(xs, fv, last)
 	return picks
 end
 
--- frames to wait before the verb so that a flick falls inside the twist, with the picks worked out for it; or nil
+-- the pick of the flick inside the twist for a verb at frame fv among the picks, or nil
+ar_ma_hit = function(picks, fv)
+	local lo = fv + AR_MA_TW0 + AR_MA_MARGIN
+	local hi = fv + AR_MA_TW1 - AR_MA_MARGIN
+	local i = 1
+	while picks[i] do
+		if picks[i].c == 2 and picks[i].f >= lo and picks[i].f <= hi then
+			return picks[i]
+		end
+		i = i + 1
+	end
+	return nil
+end
+
+-- frames to wait before the verb so that a flick falls inside the twist, with the picks worked out for it; or nil. The same picks have to come out for every phase of the
+-- frame pattern that fits what was seen
 ar_ma_plan = function()
 	local xs = ar_rng_peek(2400)
 	local d = 0
 	while d <= 700 do
 		local fv = AR_FRAME + d
-		local picks = ar_ma_sim(xs, fv, fv + AR_MA_TW1 + 2)
-		local lo = fv + AR_MA_TW0 + AR_MA_MARGIN
-		local hi = fv + AR_MA_TW1 - AR_MA_MARGIN
-		local i = 1
-		while picks[i] do
-			if picks[i].c == 2 and picks[i].f >= lo and picks[i].f <= hi then
-				return d, picks[i].f, picks
+		local ref = nil
+		local first = nil
+		local ok = TRUE
+		local o = 1
+		while AR_MA_OFFS[o] and ok do
+			AR_MA_OFF = AR_MA_OFFS[o]
+			local picks = ar_ma_sim(xs, fv, fv + AR_MA_TW1 + 2)
+			local hit = ar_ma_hit(picks, fv)
+			if not hit then
+				ok = nil
+			elseif not ref then
+				ref = picks
+				first = hit
+			else
+				local i = 1
+				while ref[i] or picks[i] do
+					if not ref[i] or not picks[i] or ref[i].f ~= picks[i].f or ref[i].c ~= picks[i].c then
+						ok = nil
+					end
+					i = i + 1
+				end
 			end
-			i = i + 1
+			o = o + 1
+		end
+		if ok and ref then
+			AR_MA_OFF = AR_MA_OFFS[1]
+			return d, first.f, ref
 		end
 		d = d + 1
 	end
@@ -187,16 +268,29 @@ end
 
 local tries = 0
 if not AR_NOTIMEOUT and AR_RNG_BAD == 0 then
+	AR_MA_FTR = { }
 	start_script(ar_ma_track)
 	-- where ashtray_fun walks Manny to and turns him: the verb then does not walk him (the steps of a walk draw numbers of their own)
 	ar_walk_to(-0.126024, -0.168297, 0)
 	ar_face_yaw(63.2788)
 	sleep_for(100)
 	ar_wait_for_control()
-	-- a pick after the walk is over, then the bag and the numbers are as they will be
-	AR_MA_N = 0
-	ar_wait_for(function() return AR_MA_N >= 2 end, 20000, "two picks of Meche")
-	local d, pf, picks = ar_ma_plan()
+	-- a pick has to be seen (at most 200 frames) and 12 frames of the pattern
+	local calibrated = nil
+	local waited = 0
+	while not calibrated and waited < 12000 do
+		calibrated = ar_ma_calibrate()
+		if not calibrated then
+			sleep_for(100)
+			waited = waited + 100
+		end
+	end
+	local d, pf, picks = nil, nil, nil
+	if calibrated then
+		d, pf, picks = ar_ma_plan()
+	else
+		ar_log("MA the phase of the frame pattern is not known: the old way")
+	end
 	ar_log("MA wait " .. tostring(d) .. " frames for a flick at frame " .. tostring(pf))
 	if d then
 		AR_MA_PRED = picks
