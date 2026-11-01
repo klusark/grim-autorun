@@ -895,11 +895,19 @@ ar_hold = function(item)
 			end
 			i = i + 1
 		end
-		if not slot or slot > 9 then
+		if not slot or slot > 18 then
 			ar_log("no hotkey for " .. tostring(item.name) .. ", inventory place " .. tostring(slot))
 			return nil
 		end
-		ar_press_key(keys[slot])
+		if slot > 9 then
+			-- (the places 10 to 18 are the keys 1 to 9 with the shift key down: the game reads the shift key from the keyboard when a key arrives, so the hotkey
+			-- function is called itself with it set)
+			shiftKeyDown = TRUE
+			inventory_hot_key_pressed(keys[slot - 9])
+			shiftKeyDown = nil
+		else
+			ar_press_key(keys[slot])
+		end
 	end
 	AR_HOLD_ITEM = item
 	ar_wait_for(function() return manny.is_holding == AR_HOLD_ITEM end, 30000)

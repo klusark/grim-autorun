@@ -1,5 +1,5 @@
 -- Chapter 65 (Year 4): the end. Manny opens the greenhouse door (the hothouse blows up with Hector in it), the last cutscene
--- (byebye) and the credits play, and the game ends. The run ends with the credits ("done with credits").
+-- (byebye) and the credits play, and the game ends. The run ends where the last cutscene begins.
 
 AR_NEW = TRUE
 AR_CONTROL_TIMEOUT = 900000
@@ -14,14 +14,13 @@ ar_wait_turn()
 ar_face_precise(d, 3)
 sleep_for(800)
 AR_NO_WALK_APPROACH = TRUE
--- (the last movie is played, not skipped: the skip would take Manny straight to the credits and out of the game, before the
--- run has seen them begin)
+-- (the skipper of the run is off: it would skip the cutscene the moment it begins, and the credits, and the game would end before the run says its result)
 AR_NO_SKIP = TRUE
 ar_do("use", d, me.gun)
 AR_NO_WALK_APPROACH = nil
--- the hothouse blows up, the last movie plays (the actors stand still while it does), then the credits begin: that is the end,
--- there is no need to sit through them
-ar_wait_for(function() return find_script(cut_scene.end_credits) end, 900000, "the credits to begin")
-ar_check(find_script(cut_scene.end_credits), "the last cutscene is over, the credits begin")
-ar_state("THE END, the credits are rolling")
+-- the hothouse blows up and the last cutscene (byebye) begins: that is the end of the run, the cutscene and the credits are not sat through (a skip of the
+-- movie takes the game to the credits and out of it before the run could say its result)
+ar_wait_for(function() return find_script(cut_scene.byebye) end, 120000, "the last cutscene to begin")
+ar_check(find_script(cut_scene.byebye), "the last cutscene begins")
+ar_state("THE END, the last cutscene begins")
 AR_CREDITS_REACHED = TRUE

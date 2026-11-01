@@ -1,26 +1,8 @@
--- Chapter 25: from the cafe across town to the high roller lounge and its kitchen, where Raoul
--- now keeps running in and out of the pantry. Checkpoint in slot 41.
+-- Chapter 25: the way to the kitchen (the cask is in chapter 19 now) is gone; nothing to do here. Checkpoint in slot 41.
 
 ar_load(24)
 AR_NEW = TRUE
 ar_log("start in " .. ar_set_name())
 ar_wait_for_control()
--- (from where chapter 23 ends, the pawn shop of the cafe; the way to the hall does not pass the casino now)
-ar_go(pc.ev_door, ev)
-ar_go(ev.be_door, bw)
-ar_go(bw.hb_door, hb)
-ar_go(hb.xb_door, xb)
-ar_go(xb.tx_door, tx)
-ar_go(tx.ts_door, ts)
-ar_go(ts.tb_door, tb)
-ar_go(tb.hh_door, hh, -0.3, 0.0, 0)
-ar_wait_for_control()
-ar_hh_elevator()
-ar_go(hh.hl_door, hl)
-ar_wait_for_control()
-ar_state("in the high roller lounge")
-ar_go(hl.hk_door, hk)
-ar_wait_for_control()
-ar_state("in the kitchen")
-ar_describe()
+ar_state("end of chapter 25")
 ar_checkpoint(25)
