@@ -12,7 +12,212 @@ ar_go(vd.ar_door, ar)
 ar_wait_for_control()
 ar_wait_for(function() return ar.greeted and not find_script(ar.greet_manny) and cutSceneLevel == 0 end, 300000)
 ar_wait_for_control()
+-- The stockings burn when Meche's loop (ar.meche_idle) picks the flick while ashtray.twisted is true, 296 to 474 frames after the verb is pressed. Her pick is a draw of
+-- pick_one_of(meche_ash_idles, TRUE) from the game's random numbers (a shuffle bag: each of her four idles once before any repeats), and those are predictable
+-- (ar_rng.lua): the bag is in masterTable, each idle has its length, a background script draws one number every frame and a pick takes the numbers after it. So
+-- Manny stands where the animation puts him, the picks are worked out, and the verb is pressed at the first frame at which the flick falls inside the twist.
+-- Every pick that then happens is compared with the one worked out; the first that differs ends this and the verb is tried the old way, again and again.
+-- In real time the frames are not the fixed 60 a second the lengths are worked out for: then it is the old way at once.
+AR_MA_L = { [0] = 633, [1] = 1667, [2] = 1367, [3] = 3383 }
+AR_MA_TW0 = 296
+AR_MA_TW1 = 474
+AR_MA_MARGIN = 12
+
+-- milliseconds of frame k of the 60 a second clock of a simulated run (the frame counts here are too large to multiply by 50 in a float: k / 3 and k mod 3)
+ar_ma_ms = function(k)
+	local a = k + 1
+	return floor(a / 3) * 50 + floor(mod(a, 3) * 50 / 3)
+end
+
+-- the frame at which an idle that was picked at frame f is over and the next pick is made
+ar_ma_end = function(f, chore)
+	local m = f + 1
+	local t0 = ar_ma_ms(f)
+	while ar_ma_ms(m) - t0 < AR_MA_L[chore] do
+		m = m + 1
+	end
+	return m
+end
+
+-- a tracker: the frame and the idle of the last pick (the bag of masterTable gets one more mark with each)
+ar_ma_track = function()
+	local prev = nil
+	while TRUE do
+		break_here()
+		if system.currentSet == ar and meche_ash_idles and masterTable and masterTable[meche_ash_idles] then
+			local b = masterTable[meche_ash_idles]
+			local cur = { }
+			local i = 1
+			while b[i] do
+				cur[i] = b[i].marker and 1 or 0
+				i = i + 1
+			end
+			if prev then
+				-- (a full bag is cleared before the pick: the marks are then those of the pick alone)
+				local base = { }
+				local full = 1
+				i = 1
+				while prev[i] do
+					if prev[i] == 0 then
+						full = nil
+					end
+					i = i + 1
+				end
+				i = 1
+				while prev[i] do
+					if full then
+						base[i] = 0
+					else
+						base[i] = prev[i]
+					end
+					i = i + 1
+				end
+				local found = nil
+				local changed = nil
+				i = 1
+				while cur[i] do
+					if cur[i] ~= prev[i] then
+						changed = TRUE
+					end
+					if cur[i] == 1 and base[i] == 0 and not found then
+						found = i
+					end
+					i = i + 1
+				end
+				if changed and found then
+					AR_MA_PF = AR_FRAME
+					AR_MA_PC = b[found].value
+					AR_MA_N = (AR_MA_N or 0) + 1
+					-- the pick that was worked out for this frame, if there was one
+					if AR_MA_PRED and AR_MA_PRED[AR_MA_PI] then
+						local pr = AR_MA_PRED[AR_MA_PI]
+						if pr.f == AR_FRAME and pr.c == b[found].value then
+							AR_MA_PI = AR_MA_PI + 1
+							AR_MA_HIT = (AR_MA_HIT or 0) + 1
+						else
+							AR_MA_MISS = TRUE
+							ar_log("MA pick differs: frame " .. AR_FRAME .. " idle " .. tostring(b[found].value) .. ", worked out: frame " .. pr.f .. " idle " .. pr.c)
+						end
+					end
+				end
+			end
+			prev = cur
+		end
+	end
+end
+
+-- the picks from the next frame on, worked out from the bag, the last pick and the numbers to come (xs, from ar_rng_peek), for a verb pressed at frame fv:
+-- Manny's own draw in the animation, the pick of the sound of the cigarette, comes 180 frames after the verb and takes a number of the picks after it
+ar_ma_sim = function(xs, fv, last)
+	local b = masterTable[meche_ash_idles]
+	local bag = { }
+	local val = { }
+	local i = 1
+	while b[i] do
+		bag[i] = b[i].marker and 1 or 0
+		val[i] = b[i].value
+		i = i + 1
+	end
+	local count = i - 1
+	local idx = 1
+	local f = AR_FRAME
+	local npf = ar_ma_end(AR_MA_PF, AR_MA_PC)
+	local picks = { }
+	local n = 0
+	while f < last do
+		f = f + 1
+		idx = idx + 1
+		if fv and f == fv + 180 then
+			idx = idx + 1
+		end
+		if f == npf then
+			local all = 1
+			i = 1
+			while i <= count do
+				if bag[i] == 0 then
+					all = nil
+				end
+				i = i + 1
+			end
+			if all then
+				i = 1
+				while i <= count do
+					bag[i] = 0
+					i = i + 1
+				end
+			end
+			local got = nil
+			while not got do
+				local r = ar_rng_value(xs[idx], nil)
+				idx = idx + 1
+				local k = 1 + floor((count - 1 + 0.999899983) * r)
+				if bag[k] == 0 then
+					bag[k] = 1
+					got = k
+				end
+			end
+			n = n + 1
+			picks[n] = { f = f, c = val[got] }
+			npf = ar_ma_end(f, val[got])
+		end
+	end
+	return picks
+end
+
+-- frames to wait before the verb so that a flick falls inside the twist, with the picks worked out for it; or nil
+ar_ma_plan = function()
+	local xs = ar_rng_peek(2400)
+	local d = 0
+	while d <= 700 do
+		local fv = AR_FRAME + d
+		local picks = ar_ma_sim(xs, fv, fv + AR_MA_TW1 + 2)
+		local lo = fv + AR_MA_TW0 + AR_MA_MARGIN
+		local hi = fv + AR_MA_TW1 - AR_MA_MARGIN
+		local i = 1
+		while picks[i] do
+			if picks[i].c == 2 and picks[i].f >= lo and picks[i].f <= hi then
+				return d, picks[i].f, picks
+			end
+			i = i + 1
+		end
+		d = d + 1
+	end
+	return nil
+end
+
 local tries = 0
+if not AR_NOTIMEOUT and AR_RNG_BAD == 0 then
+	start_script(ar_ma_track)
+	-- where ashtray_fun walks Manny to and turns him: the verb then does not walk him (the steps of a walk draw numbers of their own)
+	ar_walk_to(-0.126024, -0.168297, 0)
+	ar_face_yaw(63.2788)
+	sleep_for(100)
+	ar_wait_for_control()
+	-- a pick after the walk is over, then the bag and the numbers are as they will be
+	AR_MA_N = 0
+	ar_wait_for(function() return AR_MA_N >= 2 end, 20000, "two picks of Meche")
+	local d, pf, picks = ar_ma_plan()
+	ar_log("MA wait " .. tostring(d) .. " frames for a flick at frame " .. tostring(pf))
+	if d then
+		AR_MA_PRED = picks
+		AR_MA_FLICK = pf
+		AR_MA_PI = 1
+		AR_MA_MISS = nil
+		local target = AR_FRAME + d
+		while AR_FRAME < target and not AR_MA_MISS do
+			break_here()
+		end
+		if not AR_MA_MISS then
+			ar_gaze_at(ar.ashtray)
+			ar_press("use")
+			ar_log("MA verb pressed at frame " .. AR_FRAME .. ", the flick worked out for frame " .. tostring(pf))
+			ar_wait_for(function() return ar.stockings_tossed or AR_MA_MISS or AR_FRAME > AR_MA_FLICK + 700 end, 60000, "the stockings or a different pick")
+			ar_wait_for_control()
+		end
+	end
+	AR_MA_PRED = nil
+	stop_script(ar_ma_track)
+end
 while not ar.stockings_tossed and tries < 40 do
 	ar_do("use", ar.ashtray)
 	ar_wait_for_control()

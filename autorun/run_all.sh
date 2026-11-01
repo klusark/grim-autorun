@@ -52,7 +52,7 @@ mkdir -p "$AR/logs" "$AR/saves_new" "${SAVES:-$AR/saves}"
 			# (the extra library comes first, as it does in build_original.sh: the order of the tasks of a frame is the order they were started in)
 			[ -n "$EXTRALIB" ] && cat "$AR/$EXTRALIB"
 			cat "$AR/$lib" "$AR/ar_nav.lua" "$AR/nav_setfile.lua" "$AR/ar_nav_known.lua"
-			cat "$AR/ar_helpers.lua" "$AR/ar_full.lua"
+			cat "$AR/ar_helpers.lua" "$AR/ar_rng.lua" "$AR/ar_full.lua"
 			{ [ -n "$NAVDEBUG" ] || [ -n "$SPEEDLOG" ]; } && cat "$AR/ar_navdebug.lua"
 			[ -n "$FULL" ] && cat "$AR"/ex*.lua
 			cur="$lib"
