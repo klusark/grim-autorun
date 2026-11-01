@@ -13,6 +13,8 @@ ar_go(bw.hb_door, hb)
 ar_go(hb.xb_door, xb)
 ar_go(xb.se_door, se)
 ar_go(se.si_door, si)
+-- (on in through the neck by the ladder past Toto: held up there with the timing of some runs, planned again seven times)
+ar_ship_neck()
 ar_wait_for_control()
 ar_state("in the ship")
 -- the open fridge (and its crisper) distracts the two while the dishwater goes into the booze

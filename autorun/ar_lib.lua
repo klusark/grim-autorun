@@ -1645,8 +1645,11 @@ ar_checkpoint = function(slot)
 		AR_MOVIE_START = nil
 		-- (a run of the whole game does not save unless asked to, SAVE=1 in run_all.sh: the saves are for playing a chapter by itself)
 		if AR_NOSAVE then
-			-- (the time that the save takes goes by all the same: the next chapter starts in a scene that has settled)
-			sleep_for(1000 + 300 + 1500 + 4000)
+			-- (the time that the save takes went by all the same, 6.8 s at the end of every chapter, so that the next chapter started in a scene that had settled:
+			-- 408 frames of nothing a chapter in a speed run; AR_CHECKPOINT_PAUSE = <ms> brings a pause back)
+			if AR_CHECKPOINT_PAUSE then
+				sleep_for(AR_CHECKPOINT_PAUSE)
+			end
 			ar_log("checkpoint " .. slot .. " not saved")
 			return
 		end
@@ -1805,7 +1808,11 @@ ar_go = function(door, target, vx, vy, vz)
 				entered = nil
 			end
 			if not entered or not ar_target_reached() then
-				ar_settle_door()
+				-- (a second for the game to start the sentence of the door, when Manny walked into its sector: for a door that has none nothing is on its way, and the second
+				-- was a stop of 60 frames before the walk to the use point, the first time outside on the way to the clown)
+				if entered then
+					ar_settle_door()
+				end
 				-- (the game's walk out, or what the door does, to its end)
 				ar_try_wait(function() return ar_target_reached() or (not find_script(Sentence) and cutSceneLevel == 0) end, 15000)
 				ar_wait_for_control()

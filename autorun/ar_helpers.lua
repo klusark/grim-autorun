@@ -44,3 +44,24 @@ ar_hh_elevator = function()
 		end
 	end
 end
+
+-- The neck inside the ship, between the ladder and the cabin, is hardly wider than Manny and Toto together (their collision spheres leave about 3 mm): along its east
+-- edge, as a player pushing against the wall goes, he gets through; the planner keeps to the middle of the neck, against Toto. Whether he gets through depends on how he
+-- comes at it, so when he is held up he steps back and tries again, as a player does. (And at a walk to the points, AR_RUN_P: a run to the points of the way from 25 cm
+-- and less was planned again 7 times here.) Called after the ladder, going in, and before it, going out.
+ar_ship_neck = function()
+	AR_RUN_P = 0.8
+	AR_KEEP_GOING = TRUE
+	local tries = 0
+	while manny:getpos().y < -0.56 and tries < 6 do
+		ar_walk_to(-0.06, -0.50, 0)
+		if manny:getpos().y < -0.56 then
+			ar_walk_to(0.05, -1.05, 0)
+		end
+		tries = tries + 1
+	end
+	AR_RUN_P = nil
+	AR_KEEP_GOING = nil
+	AR_FAILED = nil
+	ar_log("the neck to the ladder passed after " .. tries .. " tries")
+end
