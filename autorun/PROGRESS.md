@@ -32,22 +32,11 @@ AUTORUN lines tell what happened and the last steps are shown in the top left of
 | ch17_charlie | 32 | Charlie: ticket printer and the V.I.P. pass | 33 |
 | ch18_hotel_pass | 33 | liqueur, across town, the pass past Raoul into the high roller lounge | 34 |
 
-| ch19_baster | 34 | baster from the kitchen, the Blue Casket kiss cutscene, dishwater from the sink | 35 |
-| ch20_naranja | 35 | the ship: fridge and crisper open, baster into the booze, sailor out, dog tags | 36 |
-| ch21_carla | 36 | liqueur at the security lobby, Carla charmed, the detector into the cat box | 37 |
-| ch22_cat_litter | 37 | the can opener, the scythe finds the detector in the litter | 38 |
-| ch23_morgue | 38 | detector to Membrillo, dog tags on the corpse: vacancy | 39 |
-| ch24_glottis_pass | 39 | the pass to Glottis (gambling) | 40 |
-| ch25_to_kitchen | 40 | across town to the high roller kitchen | 41 |
-| ch26_stowaway | 41 | Raoul trapped in the pantry with the scythe, opener, Manny in the cask | 42 |
-| ch27_forklift_card | 42 | forklift into the elevator, jam it, lever, hidden hall: union card | 43 |
-| ch28_cigcase | 43 | Nick's threats, he leaves, the cigarette case | 44 |
-| ch29_bomb_key | 44 | the case is a bomb for Carla's safe: skeleton key | 45 |
-| ch30_lighthouse | 45 | the key opens the lighthouse, Lola, the card | 46 |
-| ch31_jacket | 46 | the card to Lupe, jacket, slip of paper | 47 |
-| ch32_photofinish | 47 | the paper to Toto: photo finish | 48 |
-| ch33_ticket | 48 | the ticket printer set to race 6 day 2 week 2 | 49 |
-| ch34_blackmail | 49 | photo window, blackmail photo, Nick: the strike | 50 |
+| ch19_baster | 34 | Nick and the cigarette case, Raoul in the pantry, baster, cask, forklift: union card; Carla's bomb: the skeleton key; dishwater from the Blue Casket sink | 35 |
+| ch20_lighthouse | 35 | the key opens the lighthouse, Lola, the card | 36 |
+| ch21_jacket | 36 | the card to Lupe, jacket, slip of paper | 37 |
+| ch29_naranja | 37 | one trip to the ship: sailor out, dog tags, the paper to Toto: photo finish, the ticket printer set to race 6 day 2 week 2 | 45 |
+| ch34_blackmail | 45 | photo window, blackmail photo, Nick: the strike | 50 |
 | ch35_velasco_done | 50 | Velasco is told everything is done | 51 |
 | ch36_byeruba | 51 | the roulette panel breaks the house: end of Rubacava | 52 |
 | ch37_lola_start | 52 | Year 3: down the ladder to the engine room, anchors hooked, ship torn from the pier, hydrofoil | 53 |

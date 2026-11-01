@@ -1,17 +1,14 @@
--- Chapter 30: the skeleton key opens the lighthouse door; at the top Manny finds Lola (cutscene).
--- Checkpoint in slot 46.
+-- Chapter 20: from the Blue Casket kitchen to the lighthouse: the skeleton key (chapter 19) opens its door; at the top Manny finds Lola (cutscene) and gets the card.
+-- Checkpoint in slot 36.
 
-ar_load(29)
+ar_load(19)
 AR_NEW = TRUE
 ar_log("start in " .. ar_set_name())
 ar_wait_for_control()
-ar_go(gt.tb_door, tb)
-ar_wait_for_control()
-ar_go(tb.ts_door, ts)
-ar_go(ts.tx_door, tx)
-ar_go(tx.xb_door, xb)
-ar_go(xb.hb_door, hb)
-ar_go(hb.dd_door, dd)
+ar_go(bk.bi_door, bi)
+ar_go(bi.be_door, be)
+ar_go(be.bw_door, bw)
+ar_go(bw.dd_door, dd)
 ar_wait_for_control()
 ar_go(dd.lx_door, lx)
 ar_wait_for_control()
@@ -32,4 +29,4 @@ ar_wait_for(function() return cutSceneLevel == 0 and not find_script(cut_scene.l
 ar_wait_for_control()
 ar_state("after Lola")
 ar_check(lx.lengua.owner == manny, "Manny has the card")
-ar_checkpoint(30)
+ar_checkpoint(20)

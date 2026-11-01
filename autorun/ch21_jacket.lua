@@ -1,7 +1,7 @@
--- Chapter 31: the card for Lupe at the coat check, who hands Manny the jacket of the man the card
--- belongs to; the pocket holds a slip of paper. Checkpoint in slot 47.
+-- Chapter 21: the card for Lupe at the coat check, who hands Manny the jacket of the man the card
+-- belongs to; the pocket holds a slip of paper. Checkpoint in slot 37.
 
-ar_load(30)
+ar_load(20)
 AR_NEW = TRUE
 ar_log("start in " .. ar_set_name())
 ar_wait_for_control()
@@ -25,4 +25,4 @@ ar_do("use", cc.lupe_obj, cc.jacket)
 ar_wait_for(function() return cc.jacket.owner ~= manny end, 120000)
 ar_wait_for_control()
 ar_state("end of chapter 31")
-ar_checkpoint(31)
+ar_checkpoint(21)

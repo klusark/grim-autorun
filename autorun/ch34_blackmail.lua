@@ -2,7 +2,7 @@
 -- back as the incriminating photo of Nick; Nick, back at his desk, is blackmailed over the dock
 -- workers' foreman (the strike is on). Checkpoint in slot 50.
 
-ar_load(33)
+ar_load(29)
 AR_NEW = TRUE
 ar_log("start in " .. ar_set_name())
 ar_wait_for_control()

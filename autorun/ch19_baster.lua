@@ -1,6 +1,6 @@
 -- Chapter 19: the first time in the high roller lounge, Nick (the case), and Raoul (trapped in the pantry), the turkey baster from the kitchen, the cask and the
 -- wine cellar, out by the forklift with the union card, then to the Blue Casket with the baster, filled with dishwater at the Blue
--- Casket's kitchen sink. Checkpoint 35.
+-- Casket's kitchen sink. On the way past the track betting hall Carla's bomb gives the skeleton key. Checkpoint 35.
 
 ar_load(18)
 AR_NEW = TRUE
@@ -171,6 +171,24 @@ ar_wait_for_control()
 ar_go(hh.tb_door, tb)
 ar_wait_for_control()
 ar_tw_exit()
+-- Carla in the security hall, a step from here (chapter 29 was this): the cigarette case is a bomb for her safe, and the skeleton key is in it. The lighthouse, the coat
+-- check and the ship follow from the Blue Casket in one trip, so the key is wanted before it
+ar_go(tb.gt_door, gt)
+ar_wait_for_control()
+ar_go(gt.sl_door, sl)
+ar_wait_for_control()
+ar_do("use", sl.carla_obj, hl.case)
+ar_wait_for(function() return bo1 and system.buttonHandler == bo1 end, 120000)
+ar_check(bo1 and system.buttonHandler == bo1, "Manny talks to Carla about the case")
+ar_pick(bo1, 300)
+ar_pick(bo1, 400)
+ar_wait_for(function() return sl.bomb_detonated end, 300000)
+ar_wait_for(function() return sl.key.owner == manny end, 300000)
+ar_wait_for_control()
+ar_check(sl.key.owner == manny, "Manny has the skeleton key")
+-- (the game puts Manny out into the lol gate hall after the key)
+ar_go(gt.tb_door, tb)
+ar_wait_for_control()
 ar_go(tb.ts_door, ts)
 ar_go(ts.tx_door, tx)
 ar_go(tx.xb_door, xb)
