@@ -115,9 +115,9 @@ Every fix or difference found gets a case in the same turn (`feedback-always-add
   waits for the log's first `Switching to set` instead of 12 s, and `orig_test.sh` writes the focus of the window every 5 s to `<log copy>.focus`.
 
 
-## Added 2026-10-26: the original on a fixed frame time (tools patch_simtime.py)
+## Added 2026-10-26: the original on a fixed frame time (tools patches/grim/simtime.py)
 
-* `python patch_simtime.py <exe> <out> 17` (grim_tools): the 5 bytes at 0x401721 (`mov eax,[0x4f5a48]`) become `mov eax,17`: every frame of the original is a frame
+* `python -m patches grim <exe> <out> --only simtime` (grim_tools; `--simtime-ms` sets the step, default 17): the 5 bytes at 0x401721 (`mov eax,[0x4f5a48]`) become `mov eax,17`: every frame of the original is a frame
   of 17 ms (the fixed-step path of FUN_00482990 -> FUN_004a3c80), whatever the machine does. `sh tools/orig_clock.sh simtime|realtime` switches the install's exe
   (`GRIMFANDANGO.exe.simtime` / `.realtime`). ScummVM's `sim_frame_ms=17` (ini; `SIMMS=17` in run_chapter.sh / run_all.sh) gives the same step:
   the walks of `flat_dir_*` are the same to 4 decimals on both (0.2040 in 30 frames; the old 16/17 ms jitter gave 0.1996, ScummVM at 60 fps 0.2000).

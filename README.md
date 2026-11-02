@@ -32,8 +32,8 @@ open differences and the pitfalls.
 | `autorun/tools/` | Python and shell tools: trace compare, golden tests, frame diff, coverage, audio probes, offline Lua 3.1 (`lua31/`), original math check (`origmath/`) |
 | `emi_autorun/` | Escape from Monkey Island playthrough, built on the Grim libraries (see its `PROGRESS.md`) |
 | `crashdbg/` | Windows helpers for the original exe: debugger launcher (`grimrun2`), breakpoint tracer (`grimtrace`), iMuse tracer (`imtrace`), memory read/write, F12 sender |
-| `grimdlg/` | `grimdlg.dll`, which the patched exe loads for logging (`grimdebug.log`) and frame limiting. Build it 32-bit with MSYSTEM=MINGW32 |
-| `patch_*.py` | Patchers for the v1.01 exe: `patch_debuglog.py`, `patch_framelimit.py`, `patch_simtime.py` (`patch_inputdialog.py` targets the Remastered exe and is not used) |
+| `patches/grimdlg/` | Source of `grimdlg.dll`, which the patched exe loads for logging (`grimdebug.log`), frame limiting and the input dialog. `python -m patches` builds it (32-bit gcc) next to the output exe unless `--no-dll` |
+| `patches/` | Patch pipeline for the original exes: `python -m patches --list`. `grim` (debuglog, `--with framelimit,simtime`), `emi` (F11 Lua hook), `remastered` (inputdialog, not used) |
 | `tools/` | Script analysis: `digest.py` (state-changing lines per function), `sectors.py` (plot sector dumps), `safe_solver.py`, `items.py` |
 | `gt.sh` | Look up voice text by id or regex in `grim_text.txt` |
 | `lua31dis.py`, `delua.exe` | Lua 3.1 bytecode disassembler and decompiler |
@@ -48,8 +48,8 @@ open differences and the pitfalls.
 - Grim Fandango data in `C:\GOG Games\GRIMDATA`, and the decompiled scripts in `C:\Users\Joel\grim_lua_src`.
 - The original exe and the patched copies. `.gitignore` excludes the binaries, game data, extracted text,
   saves, logs and captures, so a fresh clone has none of them. You have to rebuild or re-extract them:
-  - Extract the v1.01 exe from `GFUPD101.EXE`, then patch it with the `patch_*.py` scripts and the steps in HANDOFF.md.
-  - Rebuild the C tools in `crashdbg/` and `grimdlg/` with gcc.
+  - Extract the v1.01 exe from `GFUPD101.EXE`, then patch it with `python -m patches grim <in> <out>` and the steps in HANDOFF.md.
+  - Rebuild the C tools in `crashdbg/` with gcc (`patches/grimdlg/` is built by the patch pipeline).
 
 ## Quick start
 

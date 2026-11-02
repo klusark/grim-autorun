@@ -45,7 +45,7 @@ on what ran before them (`door_from_inside` failed in the suite, passed alone) o
      (still, moving, fast, across, from each start that is not a repeat), keeping the full ring as `AR_NT_FULL = TRUE`.
    * Collision: 150 frames per case where the collision happens within 30; stop at 40 frames after the first contact
      (section 4 wants the trace anyway).
-   * The frame limiter: `patch_framelimit.py` exists. If the original can run at 120 fps with `GRIM_FPS=120` and
+   * The frame limiter: `patches/grim/framelimit.py` exists. If the original can run at 120 fps with `GRIM_FPS=120` and
      `system.frameTime` follows, the walks halve. To be measured against determinism (1.5): a changed frame time
      changes the results, so the recorded values must be re-recorded at the chosen rate, once.
 2. **ScummVM, 60 s to 30 s.** Same grouping by set; `--sim-fps` already makes it run as fast as the CPU goes, so the

@@ -3,7 +3,7 @@
  *
  * It also provides GrimLogDebug/Warning/Error for the original executable. The
  * retail PrintDebug, PrintWarning and PrintError Lua builtins do nothing, and
- * patch_debuglog.py points them at these exports, which append the message to
+ * patches/grim/debuglog.py points them at these exports, which append the message to
  * grimdebug.log next to the executable. */
 
 #include <windows.h>
@@ -347,7 +347,7 @@ __declspec(dllexport) void __cdecl GrimLogError(void) {
 	logFromLua("ERROR");
 }
 
-/* Called by patch_framelimit.py's stub once per frame of the original executable: holds the game to 60 frames
+/* Called by patches/grim/framelimit.py's stub once per frame of the original executable: holds the game to 60 frames
  * a second (unthrottled it runs at ~850 and some of its per frame arithmetic stops working). */
 __declspec(dllexport) void __cdecl GrimFrameLimit(void) {
 	static LARGE_INTEGER freq, next;

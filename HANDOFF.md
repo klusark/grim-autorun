@@ -29,7 +29,7 @@ section 2), so check git before you trust a status line.
   CRLF while HEAD is LF, so strip the CRs (`tr -d '\r'`) from modified grim files before committing.
 - Never use Windows compatibility layers or anything that triggers UAC; no admin rights are needed. Ask
   before touching the registry or the install directory.
-- The user does not want the Remastered exe (`patch_inputdialog.py`, `GrimFandango_patched.exe`); ignore it.
+- The user does not want the Remastered exe (`patches/remastered/inputdialog.py`, `GrimFandango_patched.exe`); ignore it.
 
 ## 1. Locations
 
@@ -123,13 +123,13 @@ Detailed docs: `autorun/PROGRESS.md` (chapter table), `TESTS.md`, `TEST_PLAN.md`
 
 ## 5. Running the original exe
 
-- **Install exe** = v1.01 extracted from GFUPD101 + `patch_debuglog.py` + autorun patches in `gfupd/v101_autorun.exe`:
+- **Install exe** = v1.01 extracted from GFUPD101 + `patches/grim/debuglog.py` + autorun patches in `gfupd/v101_autorun.exe`:
   - TextAllowed check skipped (file offset 643658+2: 74->EB).
   - ExperimentalDisplay check NOPed (7622+2).
   - GetKeyState(Backspace) NOPed (9708+11).
   - WM_ACTIVATE/WM_ACTIVATEAPP patched so the game doesn't pause unfocused.
-  - Fixed 17 ms frame time: `patch_simtime.py`; switch with `sh tools/orig_clock.sh simtime|realtime`.
-  - 60 fps limiter: `patch_framelimit.py` (GrimFrameLimit in grimdlg.dll; the stub must not overwrite the
+  - Fixed 17 ms frame time: `patches/grim/simtime.py`; switch with `sh tools/orig_clock.sh simtime|realtime`.
+  - 60 fps limiter: `patches/grim/framelimit.py` (GrimFrameLimit in grimdlg.dll; the stub must not overwrite the
     NUL of the last string in the .text cave).
   - The original runs with ScummVM's Lua patches (GRIMDATA/DATA006.LAB).
 - **Lua injection:** with Backspace held, F12 calls `lua_dofile("grimpatch.bin")` from GRIMDATA (window proc
@@ -138,9 +138,9 @@ Detailed docs: `autorun/PROGRESS.md` (chapter table), `TESTS.md`, `TEST_PLAN.md`
   - grimpatch.bin must have **CRLF** line ends; write it with `mk_grimpatch.py`/`mk_cmd.py` (python text mode).
   - It must not end with `local x = dofile(..)`; end it with a PrintDebug.
   - F12 must be PostMessage'd to all 3 game windows.
-- **Logging:** retail `PrintDebug` (0x49ddd0) is a no-op. `patch_debuglog.py` points the PrintDebug/Warning/Error
-  slots (0x4eab8c/94/9c) at stubs in .text slack (0x4d6120) that call `grimdlg.dll` (`grimdlg/`, build with
-  MSYSTEM=MINGW32, 32-bit). Output goes to `GRIMDATA/grimdebug.log`.
+- **Logging:** retail `PrintDebug` (0x49ddd0) is a no-op. `patches/grim/debuglog.py` points the PrintDebug/Warning/Error
+  slots (0x4eab8c/94/9c) at stubs in .text slack (0x4d6120) that call `grimdlg.dll` (`patches/grimdlg/`, built by the pipeline;
+  32-bit gcc). Output goes to `GRIMDATA/grimdebug.log`.
 - **Launcher:** the exe crashes (AV in the software blitter) ~10 s after start without a debugger attached, so
   `crashdbg/grimrun2.exe` runs it under DEBUG_ONLY_THIS_PROCESS with `-w` and prints registers/stack on an AV.
   `run_original.sh` deletes the HKCU VirtualStore LucasArts key before each run and honours `GRIMRUN=` (e.g.

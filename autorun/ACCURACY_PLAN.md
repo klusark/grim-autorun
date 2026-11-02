@@ -106,7 +106,7 @@ Everything below uses the same shape, which the collision work already proved ou
    (`FUN_004a3c10`: `timeGetTime() - last`, capped at 300 ms), so its frame times are 16/17 ms with jitter and long frames at loads,
    and a trace indexed by frame drifts within seconds. The fix is in the original: its per-frame update `FUN_00482990(draw, fixedMs)`
    already has a fixed-step path (`FUN_004a3c80(fixedMs)`) chosen by the one-shot global `DAT_004f5a48` that the frame function
-   `FUN_004016a0` passes and zeroes each frame. `tools/patch_simtime.py`: the 5 bytes at `0x401721` (`mov eax,[0x4f5a48]`) become
+   `FUN_004016a0` passes and zeroes each frame. `tools/patches/grim/simtime.py`: the 5 bytes at `0x401721` (`mov eax,[0x4f5a48]`) become
    `mov eax,17`; every frame is then a 17 ms frame whatever the wall clock, as in ScummVM (`--sim-fps` set to the same whole-ms step;
    a 16/17 pattern is possible later by letting the `grimdlg.dll` hook write the next value). With the limiter off the original runs
    at about 850 fps with the same game logic: the suite in two minutes instead of 25.

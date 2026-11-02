@@ -4,7 +4,7 @@
 #   env: REBUILT_DIR (default /c/Users/Joel/grim-decomp/build/run), SIMTIME (ms per frame, default 17 = the original's patched frame time),
 #        REBUILT_DELAY (seconds from start to the injection, default 25; the game must be in Manny's office), NOMOVIE (default 1)
 # The engine side is in grim-decomp: GRIM_LUA_FILE (lines run as Lua, once, between frames), GRIM_DEBUGLOG (PrintDebug -> log, like
-# grimdlg.dll), GRIM_SIMTIME (fixed frame time like patch_simtime.py), GRIM_ACTIVE (no pause when unfocused), GRIM_NOMOVIE.
+# grimdlg.dll), GRIM_SIMTIME (fixed frame time like patches/grim/simtime.py), GRIM_ACTIVE (no pause when unfocused), GRIM_NOMOVIE.
 # Only kills the game it started (by pid), never the user's own copy.
 AR=/c/Users/Joel/grim_tools/autorun
 # GRIMDATA/autorun_all.lua, grimdebug.log and the saves are shared: one run at a time, others wait here
