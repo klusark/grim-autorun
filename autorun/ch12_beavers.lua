@@ -1,11 +1,11 @@
--- Chapter 10 (Year 2): the beaver room's gate leads to the beaver dam, where burning beavers
+-- Chapter 12 (Year 2): the beaver room's gate leads to the beaver dam, where burning beavers
 -- chase Manny off the first time. Fetch bones from the dam (outside the beavers' death zone),
 -- go along the rock trail to the tar river and, for each beaver: throw a bone into the tar, the
 -- beaver dives for it and flies up out of the tar, and the fire extinguisher, sprayed at it
 -- as it flies, freezes it so that it sinks. Three beavers end the fight (puzzle states 14, 15).
--- Checkpoint in slot 25.
+-- Back in the beaver room the key opens the padlock, and with it Year 2 ends. Checkpoint in slot 28.
 
-ar_load(9)
+ar_load(11)
 ar_log("start in " .. ar_set_name())
 ar_wait_for_control()
 -- the gate, Glottis, the beavers chase Manny out of the dam
@@ -56,5 +56,11 @@ while not bd.all_beavers_dead and AR_TRIES < 12 do
 end
 ar_check(bd.all_beavers_dead, "all the beavers are dead (puzzle state 15)")
 ar_wait_for_control()
-ar_state("end of chapter 10")
-ar_checkpoint(10)
+ar_go(bd.bv_door, bv)
+ar_wait_for_control()
+ar_do("use", bv.padlock)
+ar_wait_for(function() return bv.padlock.unlocked end, 120000)
+ar_check(bv.padlock.unlocked, "the padlock is open")
+ar_wait_for_control()
+ar_state("end of chapter 12")
+ar_checkpoint(12)

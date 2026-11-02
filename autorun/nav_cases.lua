@@ -72,7 +72,7 @@ NAVTESTS = {
 	-- the same with the boxes shrunk, as they are with an item in the hand: the edge between two floors is a gap the game does not let
 	-- Manny walk square through (ch04, the red balloon)
 	{ id = "band_shrunk", set = "mo", shrink = TRUE, from = { 1.41, 0.04, 0 }, to = { 0.70, 2.17, 0 } },
-	-- a way of slivers of sectors, 3 to 10 cm wide, 1.9 m long, the only one from the rock of the dam to the beaver room (ch11)
+	-- a way of slivers of sectors, 3 to 10 cm wide, 1.9 m long, the only one from the rock of the dam to the beaver room (ch12)
 	{ id = "dam_slivers", set = "bd", from = { 3.87, 2.74, -0.10 }, to = { 1.65, 0.56, 0.23 } },
 	-- arriving in the garage by the door to the hallway: the pocket there is cut off from the garage by a passage that is off until Manny steps
 	-- into the trigger of the door (ch01); the way over it is planned as if it were on

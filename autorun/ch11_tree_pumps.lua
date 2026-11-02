@@ -1,12 +1,11 @@
--- Chapter 12 (Year 2): the tree pump room. The tree's four pumps beat out of step; pushing the
+-- Chapter 11 (Year 2): the tree pump room. The tree's four pumps beat out of step; pushing the
 -- wheelbarrow over the hoses pinches them and sets a hose's beat when it is released, and the
 -- tree shakes when the pumps pair up (1 with 2, 3 with 4, the two pairs apart). Sweep the
 -- barrow over the hoses until they do, put the lever down so Glottis climbs the tree to
 -- fasten a weight, and put it up again while he is up there: the tree shakes the shocks loose.
--- With the beavers gone and the padlock open the Bone Wagon then leaves the forest, and
--- Year 2 ends. Checkpoint in slot 28.
+-- The shocks loose, the Bone Wagon takes the bumpy road (it leads to the beaver room once the signpost is set in the navigation room). Checkpoint in slot 27.
 
-ar_load(11)
+ar_load(10)
 ar_log("start in " .. ar_set_name())
 ar_wait_for_control()
 -- The lever first: down, so that Glottis climbs the tree (and fastens his weight), and up again at once. Glottis stays in the tree
@@ -186,5 +185,31 @@ ar_check(tr.tree.synched or mod_solved, "the pumps are out of step")
 ar_wait_for(function() return mod_solved end, 240000)
 ar_check(mod_solved, "the shocks are loose (puzzle state 17)")
 ar_wait_for_control()
-ar_state("end of chapter 12")
-ar_checkpoint(12)
+-- The bumpy road at the east end of the signpost fork (the wagon stands by the trail to the tree): along the vehicle sectors, through the door box.
+if not manny.is_driving then
+	ar_do("use", sg.bone_wagon)
+	ar_wait_for(function() return manny.is_driving end, 120000)
+	ar_wait_for_control()
+end
+AR_ROAD = {
+	{ 7.00, -4.60 },
+	{ 6.70, -3.20 },
+	{ 6.30, -1.80 },
+	{ 6.30, -0.30 },
+	{ 7.10, 0.90 },
+	{ 8.20, 2.00 },
+	{ 9.30, 3.00 },
+	{ 10.50, 4.00 },
+	{ 11.55, 4.50 },
+	{ 12.00, 4.80 },
+}
+AR_ROAD_I = 1
+while AR_ROAD[AR_ROAD_I] and system.currentSet == sg do
+	ar_drive_to(AR_ROAD[AR_ROAD_I][1], AR_ROAD[AR_ROAD_I][2], 0, 0.8, 20000, function() return system.currentSet ~= sg end)
+	AR_ROAD_I = AR_ROAD_I + 1
+end
+ar_wait_for(function() return system.currentSet == bv end, 60000)
+ar_expect_set(bv, "in the beaver room")
+ar_wait_for_control()
+ar_state("end of chapter 11")
+ar_checkpoint(11)
