@@ -1,11 +1,12 @@
 -- Chapter 17: Charlie at the casino table gives the ticket printer and, since Velasco told about
 -- the union card, the V.I.P. pass, which goes to Glottis at the piano at once (he gambles in the high roller lounge). Checkpoint in slot 33.
 
-ar_load(16)
+ar_load(15)
 AR_NEW = TRUE
 ar_log("start in " .. ar_set_name())
 ar_wait_for_control()
-ar_go(dd.bw_door, bw)
+ar_go(bi.be_door, be)
+ar_go(be.bw_door, bw)
 ar_go(bw.ev_door, ev, -2.49, -2.35, 0.2)
 ar_go(ev.ce_door, ce, -0.5, -0.85, 0.05)
 ar_go(ce.cc_door, cc)

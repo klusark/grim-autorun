@@ -6,6 +6,12 @@ AR_NEW = TRUE
 ar_log("start in " .. ar_set_name())
 ar_wait_for_control()
 ar_go(lx.dd_door, dd)
+-- Terry (chapter 16 was this): the revolutionaries' book into the barrel of bees, he is arrested (cutscene); the dry dock is on the way back from the lighthouse
+ar_wait_for_control()
+ar_do("use", dd.barrel_bees, bi.book)
+ar_wait_for(function() return dd.terry_arrested end, 120000)
+ar_check(dd.terry_arrested, "Terry is arrested")
+ar_wait_for_control()
 ar_go(dd.bw_door, bw)
 ar_go(bw.ev_door, ev, -2.49, -2.35, 0.2)
 ar_go(ev.ce_door, ce, -0.5, -0.85, 0.05)
