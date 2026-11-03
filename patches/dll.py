@@ -7,7 +7,8 @@ import os
 import shutil
 import subprocess
 
-SRC = os.path.join(os.path.dirname(os.path.abspath(__file__)), "patch", "patch.c")
+SRC_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "patch")
+SOURCES = ["patch.c", "config.c"]
 MSYS = "C:/msys64"
 
 
@@ -38,9 +39,10 @@ def compiler_env(compiler):
 
 def build(out_dir):
     out = os.path.join(out_dir, "patch.dll")
-    cmd = [find_compiler(), "-shared", "-O2", "-static-libgcc", "-o", out, SRC, "-luser32", "-lgdi32", "-lwinmm"]
-    if not os.path.isfile(SRC):
-        raise SystemExit("patch.dll source not found: " + SRC)
+    cmd = [find_compiler(), "-shared", "-O2", "-static-libgcc", "-o", out] + [os.path.join(SRC_DIR, c) for c in SOURCES] + ["-luser32", "-lgdi32", "-lwinmm"]
+    for c in SOURCES:
+        if not os.path.isfile(os.path.join(SRC_DIR, c)):
+            raise SystemExit("patch.dll source not found: " + os.path.join(SRC_DIR, c))
     if not os.path.isdir(out_dir):
         raise SystemExit("cannot build patch.dll, output folder does not exist: " + out_dir)
     try:
