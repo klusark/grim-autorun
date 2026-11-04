@@ -318,7 +318,7 @@ EXPORT void __cdecl GrimRegOpen(void *root, unsigned subkey, const char *version
 	}
 	cfg_Open(path);
 	if (!install())
-		MessageBoxA(NULL, "grim.ini: the registry functions are not the ones of Grim Fandango v1.01, the registry is used.", "patch.dll", MB_OK);
+		MessageBoxA(NULL, "grim.ini: the registry functions are not the ones of Grim Fandango v1.01. Their settings are not read from grim.ini and the game may not work.", "patch.dll", MB_OK);
 }
 
 #endif
