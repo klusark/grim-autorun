@@ -2,6 +2,7 @@
 
 The reference is normally the original's run (expected/original.log). Per test it reports
   same      every value equal (numbers within --tol, default 1e-6: the logs have 6 decimals)
+  close     the values that differ are numbers within --close (default 1e-3) of the reference: counted apart, not a failure
   DIFF      a value differs, a key is missing or extra, or the test ended differently (END / FAILED)
   MISSING   the test is not in the other log
 A Lua error message (ERROR lines) is engine-specific text, so only the fact that a test raised one is compared.
@@ -38,7 +39,9 @@ def parse(lines):
         elif word == "V":
             name, key, vals = (rest.split("|", 2) + ["", ""])[:3]
             t = tests.setdefault(name, {"status": "running", "values": [], "error": None})
-            t["values"].append((key, TOKEN.findall(vals)))
+            # (a key logged again in the same test is numbered: key, key#2, ...)
+            n = sum(1 for k, _ in t["values"] if k == key or k.startswith(key + "#"))
+            t["values"].append((key if n == 0 else "%s#%d" % (key, n + 1), TOKEN.findall(vals)))
         elif word in ("END", "FAILED", "TIMEOUT"):
             t = tests.get(rest)
             # (TIMEOUT comes before FAILED and is the one kept)
@@ -79,8 +82,9 @@ def unstable_keys(runs):
     return out
 
 
-def diff_values(a, b, tol, name="", unstable=()):
-    """Lines of the differences between two value lists [(key, tokens)]; keys in unstable are not compared."""
+def diff_values(a, b, tol, name="", unstable=(), close=0.0):
+    """The differences between two value lists [(key, tokens)] as (line, is_close) pairs; is_close: every value is a number within
+    `close` of the reference. Keys in unstable are not compared."""
     out = []
     a = [(k, v) for k, v in a if "%s|%s" % (name, k) not in unstable]
     b = [(k, v) for k, v in b if "%s|%s" % (name, k) not in unstable]
@@ -88,10 +92,11 @@ def diff_values(a, b, tol, name="", unstable=()):
     ak = dict(a)
     for key, ta in a:
         if key not in bk:
-            out.append("  %-24s missing (reference: %s)" % (key, " ".join(ta)))
+            out.append(("  %-24s missing (reference: %s)" % (key, " ".join(ta)), False))
             continue
         tb = bk[key]
         bad = len(ta) != len(tb)
+        far = bad
         worst = 0.0
         for x, y in zip(ta, tb):
             nx, ny = num(x), num(y)
@@ -99,18 +104,22 @@ def diff_values(a, b, tol, name="", unstable=()):
                 d = abs(nx - ny)
                 worst = max(worst, d)
                 bad |= d > tol
+                far |= d > close
             else:
                 bad |= x != y
+                far |= x != y
         if bad:
-            out.append("  %-24s %s  vs  %s%s" % (key, " ".join(ta), " ".join(tb), ("  (max diff %g)" % worst) if worst else ""))
+            out.append(("  %-24s %s  vs  %s%s" % (key, " ".join(ta), " ".join(tb), ("  (max diff %g)" % worst) if worst else ""),
+                        not far))
     for key, tb in b:
         if key not in ak:
-            out.append("  %-24s extra: %s" % (key, " ".join(tb)))
+            out.append(("  %-24s extra: %s" % (key, " ".join(tb)), False))
     return out
 
 
 def main(argv):
     tol = 1e-6
+    close = 1e-3
     show_all = False
     files = []
     unstable_path = None
@@ -118,6 +127,9 @@ def main(argv):
     while i < len(argv):
         if argv[i] == "--tol":
             tol = float(argv[i + 1])
+            i += 1
+        elif argv[i] == "--close":
+            close = float(argv[i + 1])
             i += 1
         elif argv[i] == "--unstable":
             unstable_path = argv[i + 1]
@@ -140,6 +152,7 @@ def main(argv):
     (order_a, ta), (order_b, tb) = logs
     unstable = load_unstable(unstable_path)
     bad = 0
+    near = 0
     print("reference %s\nother     %s" % tuple(files))
     for name in order_a + [n for n in order_b if n not in ta]:
         a, b = ta.get(name), tb.get(name)
@@ -150,23 +163,30 @@ def main(argv):
             print("%-26s MISSING" % name)
             bad += 1
             continue
-        lines = diff_values(a["values"], b["values"], tol, name, unstable)
+        lines = diff_values(a["values"], b["values"], tol, name, unstable, close)
         skipped = sum(1 for k, _ in a["values"] if "%s|%s" % (name, k) in unstable)
         if a["status"] != b["status"] and "%s|(status)" % name not in unstable:
-            lines.insert(0, "  ended: %s vs %s" % (a["status"], b["status"]))
+            lines.insert(0, ("  ended: %s vs %s" % (a["status"], b["status"]), False))
         if (a["error"] is None) != (b["error"] is None):
-            lines.insert(0, "  Lua error: %s vs %s" % (a["error"], b["error"]))
-        if lines:
+            lines.insert(0, ("  Lua error: %s vs %s" % (a["error"], b["error"]), False))
+        if lines and all(c for _, c in lines):
+            near += 1
+            print("%-26s close (%d values within %g)" % (name, len(lines), close))
+            if show_all:
+                for l, _ in lines:
+                    print(l)
+        elif lines:
             bad += 1
             print("%-26s DIFF (%d)" % (name, len(lines)))
-            for l in lines[:None if show_all else 12]:
+            for l, _ in lines[:None if show_all else 12]:
                 print(l)
             if len(lines) > 12 and not show_all:
                 print("  ... %d more (--all)" % (len(lines) - 12))
         else:
             print("%-26s same (%d values)%s" % (name, len(a["values"]) - skipped,
                                                   (", %d unstable in the reference not compared" % skipped) if skipped else ""))
-    print("%d of %d tests differ" % (bad, len(order_a)))
+    print("%d of %d tests differ, %d are close (within %g), %d the same" % (bad, len(order_a), near, close,
+                                                                        len(order_a) - bad - near))
     return 1 if bad else 0
 
 

@@ -1,2 +1,2 @@
-# test|key values that differed between 5 runs of the original; not compared
+# test|key values that differed between 3 runs of the original; not compared
 next_order|order

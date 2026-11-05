@@ -1,4 +1,4 @@
-START 19 tests
+START 58 tests
 BEGIN actor_place
 V actor_place|start|0.000000 0.000000 0.000000
 V actor_place|put|1.250000 -0.500000 0.000000
@@ -72,21 +72,67 @@ V actor_stair|frames|182.000000
 V actor_stair|end|0.000000 2.017000 0.500000
 V actor_stair|sector|2.000000
 END actor_stair
+BEGIN point_and_angles
+V point_and_angles|between|45.011654
+V point_and_angles|pointed|0.000000 0.000000 0.000000
+V point_and_angles|pointed2|0.000000 0.000000 0.000000
+V point_and_angles|between_after|108.437866
+V point_and_angles|yaw_to_b|-45.003426
+V point_and_angles|yaw_to_self|153.434448
+V point_and_angles|yaw_to_above|153.434448
+END point_and_angles
+BEGIN turn_key
+V turn_key|left|"0.0000 1.4450 2.8900 4.3349 5.7799 7.2249 8.6698 10.1146 11.5595 13.0043 14.4491 15.8938 17.3386 18.7833 20.2280 21.6727 23.1173 24.5620 26.0065 27.4511 "
+V turn_key|right|"28.8958 27.4722 26.0497 24.6269 23.2044 21.7817 20.3591 18.9364 17.5137 16.0909 "
+V turn_key|end|14.668087 1.000000
+END turn_key
+BEGIN puck
+V puck|flat|0.000000 1.000000 0.000000
+V puck|ramp_up|0.000000 0.894427 0.447214
+V puck|ramp_side|-1.000000 0.000000 0.000000
+V puck|ramp_side_add|-1.000000 0.500000 0.250000
+END puck
+BEGIN walk_vector
+V walk_vector|right30|0.430059 0.111206 0.000000
+V walk_vector|right30_rot|-92.295067
+V walk_vector|up30|0.829106 0.376751 0.000000
+V walk_vector|up30_rot|-22.963493
+END walk_vector
+BEGIN collide
+V collide|f0|0.000000 0.000000 0.000000
+V collide|f10|0.000000 0.170000 0.000000
+V collide|f20|0.000000 0.340000 0.000000
+V collide|f30|0.000000 0.510000 0.000000
+V collide|f40|0.000000 0.680000 0.000000
+V collide|f50|0.000000 0.850000 0.000000
+V collide|end|0.000000 1.020000 0.000000
+V collide|block|0.000000 1.000000 0.000000
+END collide
+BEGIN camera
+V camera|position|-0.500000 6.000000
+V camera|fov_roll|0.000000
+V camera|setup|0.000000
+V camera|screen_origin|320.000000
+V camera|screen_1_1|410.000000 149.000000
+V camera|screen_m2_m2|130.000000 428.000000
+V camera|screen_up3|320.000000 194.000000
+V camera|screen_far_right|nil
+END camera
 BEGIN chore_keys
 V chore_keys|costume|"cr_luav.cos"
 V chore_keys|at_once|0.000000 0.000000
-V chore_keys|trace|"0 1 1 1 1 1 2 2 2 2 2 2 2 2 2 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 "
-V chore_keys|frames|59.000000
-V chore_keys|last|4.000000
+V chore_keys|keys_trace|"0/17 1/17 1/17 1/17 1/17 1/17 2/17 2/17 2/17 2/17 2/17 2/17 2/17 2/17 2/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 "
+V chore_keys|keys_frames|59.000000
+V chore_keys|keys_last|4.000000
 END chore_keys
 BEGIN chore_short
-V chore_short|trace|"0 10 10 "
-V chore_short|frames|3.000000
-V chore_short|last|11.000000
+V chore_short|short_trace|"0/17 10/17 10/17 "
+V chore_short|short_frames|3.000000
+V chore_short|short_last|11.000000
 V chore_short|zero_at_once|11.000000 3.000000
-V chore_short|trace|"11 "
-V chore_short|frames|1.000000
-V chore_short|last|30.000000
+V chore_short|zero_trace|"11/17 "
+V chore_short|zero_frames|1.000000
+V chore_short|zero_last|30.000000
 END chore_short
 BEGIN chore_loop
 V chore_loop|trace|"0 20 20 20 20 20 20 20 20 21 21 21 21 21 21 21 21 21 20 20 20 20 20 20 20 20 20 21 21 21 21 21 21 21 21 21 20 20 20 20 20 20 20 20 20 "
@@ -120,7 +166,7 @@ V strings|concat|"a12.5" "10"
 V strings|ascii|65.000000
 END strings
 BEGIN next_order
-V next_order|order|"olivia,98,manny,eva,7,56,105,49,14,domino,63,112,velasco,21,126,lupe,119,28,glottis,77,salvador,70,35,chepito,84,133,42,91,meche,140,"
+V next_order|order|"49,98,140,7,meche,56,105,olivia,14,manny,eva,119,112,21,70,domino,63,28,velasco,77,126,lupe,42,35,84,glottis,133,salvador,91,chepito,"
 V next_order|globals_counted|1.000000
 END next_order
 BEGIN tasks
@@ -530,6 +576,180 @@ V builtins|fn_vfx|"function"
 V builtins|fn_write|"function"
 V builtins|fn_writeto|"function"
 END builtins
+BEGIN rotate_vector
+V rotate_vector|yaw90|0.000000 1.000000 0.000000
+V rotate_vector|yaw45|-0.707107 0.706836 0.000000
+V rotate_vector|pitch30|0.000000 0.865834 0.500000
+V rotate_vector|roll60|0.499668 0.000000 -0.866025
+V rotate_vector|all|1.673817 2.317398 2.412792
+V rotate_vector|yaw_neg|0.000271 -1.413943 0.000000
+END rotate_vector
+BEGIN angle_between_vectors
+V angle_between_vectors|right|90.000000
+V angle_between_vectors|same|0.019783
+V angle_between_vectors|opposite|180.000000
+V angle_between_vectors|skew|76.509415
+V angle_between_vectors|unnormal|90.000000
+END angle_between_vectors
+BEGIN per_second
+V per_second|values|0.017000 1.020000 -0.042500 0.000000
+END per_second
+BEGIN colors
+V colors|components|10.000000 128.000000 255.000000
+V colors|clamped|255.000000 0.000000 7.000000
+END colors
+BEGIN files
+V files|check_set|1.000000
+V files|check_tab|1.000000
+V files|check_missing|nil
+V files|check_case|1.000000
+END files
+BEGIN registry
+V registry|unset|nil
+V registry|string|"hello"
+V registry|number|"42"
+V registry|float|"1.5"
+END registry
+BEGIN shrink_pos
+V shrink_pos|flat_centre|0.000000 0.000000 0.000000
+V shrink_pos|flat_near_edge|1.700061 0.000000 0.000000
+V shrink_pos|flat_corner|1.700061 1.700061 0.000000
+V shrink_pos|flat_outside|1.700061 1.000000 0.000000
+V shrink_pos|flat_big_r|nil
+V shrink_pos|edge_shared|0.000000 0.000000 0.000000
+V shrink_pos|edge_gap|0.000000 2.000010 0.000000
+V shrink_pos|edge_wedge|3.687881 -0.111590 0.000000
+V shrink_pos|edge_off|0.000000 -1.700061 0.000000
+V shrink_pos|stair_ramp|1.700061 0.500000 0.324985
+V shrink_pos|stair_hot|1.500000 -2.500000 0.000000
+END shrink_pos
+BEGIN shrink_boxes
+V shrink_boxes|shrunk_centre|0.000000 "floor" 4096.000000
+V shrink_boxes|shrunk_1_6|nil
+V shrink_boxes|shrunk_1_4|0.000000 "floor" 4096.000000
+V shrink_boxes|unshrunk_1_6|0.000000 "floor" 4096.000000
+V shrink_boxes|edge_shrunk_shared|1.000000 "e_right" 4096.000000
+V shrink_boxes|edge_shrunk_left_wall|nil
+V shrink_boxes|edge_shrunk_wedge|nil
+END shrink_boxes
+BEGIN actor_sectors
+V actor_sectors|lo_walk|0.000000
+V actor_sectors|lo_in_lo|0.000000
+V actor_sectors|hot_walk|0.000000
+V actor_sectors|hot_hot|nil
+V actor_sectors|in_hot|3.000000
+V actor_sectors|ramp|1.000000
+V actor_sectors|put_outside|2.000000 3.000000 0.500000
+V actor_sectors|outside_sector|2.000000
+END actor_sectors
+BEGIN walk_outside
+V walk_outside|frames|60.000000
+V walk_outside|end|2.000000 0.500000 0.000000
+END walk_outside
+BEGIN walk_edges
+V walk_edges|shared_frames|60.000000
+V walk_edges|shared_end|1.033286 0.506933 0.000000
+V walk_edges|shared_sector|1.000000
+V walk_edges|to_gap_frames|58.000000
+V walk_edges|to_gap_end|0.000000 3.034000 0.000000
+V walk_edges|to_gap_sector|2.000000
+V walk_edges|to_wedge_frames|72.000000
+V walk_edges|to_wedge_end|3.533973 -1.501348 0.000000
+V walk_edges|to_wedge_sector|4.000000
+V walk_edges|into_off_frames|29.000000
+V walk_edges|into_off_end|0.000000 -2.000000 0.000000
+V walk_edges|into_off_sector|1.000000
+END walk_edges
+BEGIN opposite_edge
+V opposite_edge|ret_left|nil
+V opposite_edge|after_left|-0.500000 2.000000 0.000000
+V opposite_edge|ret_right|nil
+V opposite_edge|after_right|0.500000 2.000000 0.000000
+V opposite_edge|ret_none|nil
+END opposite_edge
+BEGIN dostring
+V dostring|value|3.000000
+V dostring|multi|"a"
+V dostring|side_effect|7.000000
+END dostring
+BEGIN dostring_bad
+ERROR dostring_bad parse error;
+V dostring_bad|bad_syntax|nil
+V dostring_bad|after|1.000000
+END dostring_bad
+BEGIN call
+V call|ok|"bc"
+V call|packed|"table"
+END call
+BEGIN foreach
+V foreach|sum|63.000000
+V foreach|n|3.000000 "nil"
+END foreach
+BEGIN tags
+V tags|index_method|"idx:missing" "idx:other"
+V tags|present|5.000000
+V tags|tag_same|1.000000
+V tags|tag_of_number|1.000000 1.000000
+END tags
+BEGIN scripts
+V scripts|found|1.000000
+V scripts|is_number|"task"
+V scripts|current|"task"
+V scripts|found_after_stop|nil
+V scripts|stopped_by_function|nil
+V scripts|two_ran|2.000000
+END scripts
+BEGIN patterns
+V patterns|digits|nil
+V patterns|anchor|1.000000 nil 5.000000
+V patterns|class|2.000000 nil 2.000000
+V patterns|captures|nil
+V patterns|gsub_count|"bba"
+V patterns|gsub_fn|"2 4 6"
+V patterns|gsub_anchor|"x hello"
+V patterns|balanced|2.000000
+END patterns
+BEGIN number_text
+V number_text|concat|"0.333333" "25" "1.#INF" "0"
+V number_text|big|"2.14748e+009" "4.29497e+009" "1.23457e+011"
+V number_text|small|"1e-005" "0.1" "0.142857"
+V number_text|format_g|"0.0001" "1e+020" "3.14"
+V number_text|format_d|"-3" "   42" "42   |" "00042"
+V number_text|tonumber_text|150.000000 -7.000000
+V number_text|compare|1.000000 nil 1.000000
+END number_text
+BEGIN task_control
+V task_control|ran_3|3.000000
+V task_control|paused_others|0.000000
+V task_control|unpaused|3.000000
+V task_control|args|"1,two,3"
+V task_control|nested|"o1o2i1o3i2"
+END task_control
+BEGIN sector_active
+V sector_active|off_before|nil
+V sector_active|on_by_name|3.000000 "e_off" 4096.000000
+V sector_active|off_by_name|nil
+V sector_active|on_by_prefix|nil
+V sector_active|on_by_upper|nil
+V sector_active|on_by_id|nil
+V sector_active|off_by_id|nil
+V sector_active|left_off|nil
+V sector_active|shared_left_off|1.000000 "e_right" 4096.000000
+V sector_active|left_on|0.000000 "e_left" 4096.000000
+END sector_active
+BEGIN sector_active_kept
+V sector_active_kept|off_after_return|3.000000 "e_off" 4096.000000
+END sector_active_kept
+BEGIN point_heights
+V point_heights|lo_above|nil
+V point_heights|lo_below|nil
+V point_heights|hi_at_lo_height|nil
+V point_heights|hi_far_above|nil
+V point_heights|ramp_low|nil
+V point_heights|ramp_high|nil
+V point_heights|ramp_edge_lo|1.000000 "stair_a" 4096.000000
+V point_heights|ramp_edge_hi|2.000000 "hi" 4096.000000
+END point_heights
 BEGIN set_flat
 V set_flat|setup|0.000000
 V set_flat|centre|0.000000 "floor" 4096.000000
@@ -556,6 +776,40 @@ V set_stair|ramp_mid|1.000000 "stair_a" 4096.000000
 V set_stair|hi|2.000000 "hi" 4096.000000
 V set_stair|hot_type|nil
 END set_stair
+BEGIN setups
+V setups|first_setup|0.000000
+V setups|first_pos|-0.500000 6.000000
+V setups|first_fov_roll|0.000000
+V setups|first_origin|320.000000 240.000000
+V setups|first_point|421.000000 337.000000
+V setups|one_setup|1.000000
+V setups|one_pos|-5.000000 2.500000
+V setups|one_fov_roll|0.000000
+V setups|one_origin|325.000000 304.000000
+V setups|one_point|498.000000 288.000000
+V setups|two_setup|2.000000
+V setups|two_pos|0.500000 1.500000
+V setups|two_fov_roll|6.000000
+V setups|two_origin|320.000000 240.000000
+V setups|two_point|72.000000 179.000000
+V setups|zero_setup|0.000000
+V setups|zero_pos|-0.500000 6.000000
+V setups|zero_fov_roll|0.000000
+V setups|zero_origin|320.000000 240.000000
+V setups|zero_point|421.000000 337.000000
+V setups|out_of_range|1.000000
+END setups
+BEGIN setup_kept
+V setup_kept|after_return|2.000000
+V setup_kept|of_other_set|0.000000
+END setup_kept
+BEGIN sector_types
+V sector_types|walk|0.000000 "floor" 4096.000000
+V sector_types|camera|2.000000 "special_spot" 16384.000000
+V sector_types|special|nil
+V sector_types|camera_none|2.000000 "special_spot" 16384.000000
+V sector_types|in_special|2.000000 1.000000
+END sector_types
 BEGIN localize
 V localize|one|"/crt001/Clean room text one"
 V localize|two|"/crt002/Second line, with punctuation: 1, 2; 3."
@@ -563,4 +817,46 @@ V localize|short|"/crt003/x"
 V localize|missing|"/nosuchid/"
 V localize|plain|"//no slashes"
 END localize
-SUMMARY 19 tests, 1 failed
+BEGIN frame_time
+V frame_time|steady|"17 17 17 17 17 17 17 17 "
+V frame_time|after_same_set|"17 17 17 17 "
+V frame_time|after_other_set|"17 17 17 17 "
+V frame_time|after_back|"17 17 17 17 "
+END frame_time
+BEGIN sleep_for
+ERROR sleep_for call expression not a function
+V sleep_for|sleep_100ms_frames|100.000000
+END sleep_for
+BEGIN walk_rates
+V walk_rates|rate1_states|"1/1/nil 1/nil/nil 1/nil/nil 1/nil/nil 1/nil/nil 1/nil/nil 1/nil/nil 1/nil/nil 1/nil/nil 1/nil/nil 1/nil/nil 1/nil/nil 1/nil/nil 1/nil/nil 1/nil/nil 1/nil/nil 1/nil/nil 1/nil/nil 1/nil/nil 1/nil/nil 1/nil/nil 1/nil/nil "
+V walk_rates|rate1_frames|211.000000
+V walk_rates|rate1_end|1.005000 1.506874 0.000000
+V walk_rates|rate1_yaw|-35.639145
+V walk_rates|rate2_states|"1/1/nil 1/nil/nil 1/nil/nil 1/nil/nil 1/nil/nil 1/nil/nil "
+V walk_rates|rate2_frames|52.000000
+V walk_rates|rate2_end|1.019987 1.527505 0.000000
+V walk_rates|rate2_yaw|-35.636150
+V walk_rates|rate3_states|"1/1/nil 1/nil/nil 1/nil/nil "
+V walk_rates|rate3_frames|26.000000
+V walk_rates|rate3_end|1.039968 1.555014 0.000000
+V walk_rates|rate3_yaw|-35.635475
+END walk_rates
+BEGIN walk_retarget
+V walk_retarget|at_20|0.340000 0.000000 0.000000
+V walk_retarget|retarget_states|"1/1/nil 1/1/nil 1/nil/nil 1/nil/nil 1/nil/nil 1/nil/nil 1/nil/nil 1/nil/nil 1/nil/nil 1/nil/nil 1/nil/nil 1/nil/nil "
+V walk_retarget|retarget_frames|118.000000
+V walk_retarget|retarget_end|-1.010795 1.513132 0.000000
+V walk_retarget|retarget_yaw|39.480076
+END walk_retarget
+BEGIN walk_behind
+V walk_behind|behind_states|"1/1/nil 1/nil/nil 1/nil/nil 1/nil/nil 1/nil/nil 1/nil/nil 1/nil/nil 1/nil/nil 1/nil/nil "
+V walk_behind|behind_frames|87.000000
+V walk_behind|behind_end|-0.000296 -1.516997 0.000000
+V walk_behind|behind_yaw|-180.997986
+END walk_behind
+BEGIN walk_interrupted
+V walk_interrupted|moving_after_put|nil
+V walk_interrupted|moving_next|nil
+V walk_interrupted|after_10|-0.841573 -0.903444 0.000000
+END walk_interrupted
+SUMMARY 58 tests, 1 failed

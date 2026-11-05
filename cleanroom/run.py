@@ -45,6 +45,30 @@ UCRT64 = r"C:\msys64\ucrt64\bin"
 
 MANIFEST = "cr_manifest.txt"
 MARKER = "grimtestdata.txt"
+LUA31 = os.path.join(ROOT, "autorun", "tools", "lua31")
+
+
+def lint():
+    """Parses every Lua file with the game's own Lua 3.1 (autorun/tools/lua31, which loads LUA.DLL): a file that does not
+    parse would only drop its tests on the engines, with one ERROR line at the start. Skipped when the tool is missing."""
+    exe = os.path.join(LUA31, "lua31.exe")
+    dll = os.path.join(LUA31, "LUA.DLL")
+    if not (os.path.exists(exe) and os.path.exists(dll)):
+        return True
+    stub = os.path.join(BUILD, "_lint_stub.lua")
+    with open(stub, "wb") as f:
+        f.write(b"cr_test = function(n, f) end\r\nseterrormethod = function(f) end\r\ndofile = function(f) end\r\n")
+    files = [os.path.join(HERE, "lua", "_system.lua")] + sorted(
+        os.path.join(HERE, "tests", t) for t in os.listdir(os.path.join(HERE, "tests")) if t.endswith(".lua"))
+    ok = True
+    for path in files:
+        out = subprocess.run([exe, dll, stub, path], capture_output=True, text=True, cwd=LUA31, timeout=30)
+        text = (out.stdout + out.stderr).strip()
+        if "error" in text.lower() or "last token" in text:
+            print("lint: %s does not parse:\n  %s" % (os.path.relpath(path, HERE), text.replace("\n", "\n  ")))
+            ok = False
+    os.remove(stub)
+    return ok
 
 
 def build(only=None):
@@ -226,6 +250,8 @@ def main():
     if a.what == "compare":
         return compare.main(a.logs)
     build(a.only)
+    if not lint():
+        return 2
     if a.what == "build":
         return 0
     if a.what == "scummvm":

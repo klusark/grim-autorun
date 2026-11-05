@@ -12,17 +12,17 @@ cr_costume_actor = function()
 end
 
 -- (CR_LV and IsActorChoring every frame while the chore plays, at most max frames)
-cr_follow_chore = function(a, chore, max)
+cr_follow_chore = function(a, chore, max, key)
 	local f = 0
 	local s = ""
 	while f < max and IsActorChoring(a, chore, FALSE, "cr_luav.cos") do
-		s = s .. tostring(CR_LV) .. " "
+		s = s .. tostring(CR_LV) .. "/" .. tostring(PerSecond(1000)) .. " "
 		break_here()
 		f = f + 1
 	end
-	cr_log("trace", s)
-	cr_log("frames", f)
-	cr_log("last", CR_LV)
+	cr_log(key .. "_trace", s)
+	cr_log(key .. "_frames", f)
+	cr_log(key .. "_last", CR_LV)
 end
 
 cr_t_chore_keys = function()
@@ -31,7 +31,7 @@ cr_t_chore_keys = function()
 	cr_frames(1)
 	PlayActorChore(a, 0, "cr_luav.cos")
 	cr_log("at_once", CR_LV, IsActorChoring(a, 0, FALSE, "cr_luav.cos"))
-	cr_follow_chore(a, 0, 120)
+	cr_follow_chore(a, 0, 120, "keys")
 end
 cr_test("chore_keys", cr_t_chore_keys)
 
@@ -39,10 +39,10 @@ cr_t_chore_short = function()
 	local a = cr_costume_actor()
 	cr_frames(1)
 	PlayActorChore(a, 1, "cr_luav.cos")
-	cr_follow_chore(a, 1, 30)
+	cr_follow_chore(a, 1, 30, "short")
 	PlayActorChore(a, 3, "cr_luav.cos")
 	cr_log("zero_at_once", CR_LV, IsActorChoring(a, 3, FALSE, "cr_luav.cos"))
-	cr_follow_chore(a, 3, 30)
+	cr_follow_chore(a, 3, 30, "zero")
 end
 cr_test("chore_short", cr_t_chore_short)
 

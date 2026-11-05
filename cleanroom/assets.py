@@ -67,6 +67,18 @@ def files():
         out[name + ".zbm"] = zfar
         setup = dict(CAMERA, name=name + "_0", background=name + ".bm", zbuffer=name + ".zbm")
         out[name + ".set"] = F.set_file(["cr_pal.cmp"], [setup], [LIGHT], sectors)
+    # a set of three setups (cameras): above, from the south at an angle and rolled, and from the east with a narrow fov
+    out["cr_cams.bm"] = F.bitmap(W, H, F.checker(W, H, 80, (90, 90, 40), (120, 120, 60)))
+    setups = [dict(CAMERA, name="cams_top", background="cr_cams.bm", zbuffer="cr_flat.zbm"),
+              dict(name="cams_south", background="cr_cams.bm", zbuffer="cr_flat.zbm", position=(0.0, -5.0, 2.5),
+                   interest=(0.0, 0.0, 0.5), roll=5.0, fov=45.0, nclip=0.05, fclip=50.0),
+              dict(name="cams_east", background="cr_cams.bm", position=(6.0, 0.5, 1.5), interest=(0.0, 0.0, 0.0),
+                   roll=0.0, fov=30.0, nclip=0.1, fclip=40.0)]
+    out["cr_cams.set"] = F.set_file(["cr_pal.cmp"], setups, [LIGHT], [
+        ("floor", "walk", True, 0.0, rect(-3, -3, 3, 3)),
+        ("cam_south", "camera", True, 0.0, rect(-3, -3, 3, 0)),
+        ("special_spot", "special", True, 0.0, rect(-1, -1, 1, 1)),
+    ])
     return out
 
 
