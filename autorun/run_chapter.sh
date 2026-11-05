@@ -67,7 +67,7 @@ stallpid=$!
 start=$(date +%s)
 timeout "$limit" ./scummvm.exe --config="$(cygpath -w "$AR/generated/_scummvm_$$.ini")" --savepath="$(cygpath -w "${SAVES:-$AR/saves}")" \
 	--autorun="$(cygpath -w "$AR/generated/chapter_$$.lua")" --debugflags="${DEBUGFLAGS:-scripts}" \
-	$([ -z "$REALTIME" ] && echo "--engine-speed=${ES:-0} --sim-fps=${SIMFPS:-60}") $([ -z "$NOFPS" ] && echo --show-fps) "$@" grim-win > "$AR/logs/$name.log" 2>&1
+	$([ -z "$REALTIME" ] && echo "--engine-speed=${ES:-0} --sim-fps=${SIMFPS:-60}") $([ -z "$NOFPS" ] && echo --show-fps) "$@" "${TARGET:-grim-win}" > "$AR/logs/$name.log" 2>&1
 code=$?
 kill $stallpid 2>/dev/null
 echo "scummvm exit: $code after $(( $(date +%s) - start )) s" >> "$AR/logs/$name.log"

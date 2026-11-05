@@ -333,6 +333,13 @@ ar_walk_blocked = function()
 	return nil
 end
 
+-- A dialog (or the computer, or the pause screen) has the keys: the game hands them to its own button handler, which is a table,
+-- and a player's keys no longer walk Manny. The walkers stop there (the dialog started by a scene: Carla's babble after the
+-- search at the metal detector) instead of steering him on under it.
+ar_walk_keys_taken = function()
+	return type(system.buttonHandler) == "table"
+end
+
 ar_wiggle = function(x, y)
 	local p = manny:getpos()
 	local yt = GetActorYawToPoint(manny.hActor, x, y, p.z)
@@ -616,7 +623,7 @@ ar_walk_stick = function(x, y, z, stop_when, max_ms)
 	end
 	local startset = system.currentSet
 	AR_STICK_PASSED = nil
-	while not passed and system.currentSet == startset and ar_far(x, y, z, AR_HOP_TOL or 0.015) and waited < (max_ms or (AR_NOTIMEOUT and 1000000000000) or 8000) and not (stop_when and stop_when()) and stuck < ar_fr(90) and not ar_walk_blocked() do
+	while not passed and system.currentSet == startset and ar_far(x, y, z, AR_HOP_TOL or 0.015) and waited < (max_ms or (AR_NOTIMEOUT and 1000000000000) or 8000) and not (stop_when and stop_when()) and stuck < ar_fr(90) and not ar_walk_blocked() and not ar_walk_keys_taken() do
 		if cutSceneLevel > 0 then
 			ar_wait_for_control()
 		end
@@ -754,6 +761,10 @@ ar_walk_to = function(x, y, z, stop_when, max_ms)
 		ar_log("walk: the keys that walk are off now (Manny hangs on the chain)")
 		return nil
 	end
+	if ar_walk_keys_taken() then
+		ar_log("walk: a dialog has the keys, Manny does not walk")
+		return nil
+	end
 	ar_note_camera()
 	-- There is no clicking in the game: Manny is steered with the keys, turning toward the point and stepping forward. The
 	-- way through the sectors is planned by ar_nav.lua where the straight line leaves them
@@ -771,7 +782,7 @@ ar_walk_to = function(x, y, z, stop_when, max_ms)
 	local tries = 0
 	local startset = system.currentSet
 	AR_STICK_PASSED = nil
-	while system.currentSet == startset and not (AR_STICK_PASSED and (AR_HOP_TOL or ar_dist2d(x, y) < 0.2)) and ar_far(x, y, z, AR_HOP_TOL) and tries < 4 and AR_WALK_SPENT < budget and not (stop_when and stop_when()) do
+	while system.currentSet == startset and not ar_walk_keys_taken() and not (AR_STICK_PASSED and (AR_HOP_TOL or ar_dist2d(x, y) < 0.2)) and ar_far(x, y, z, AR_HOP_TOL) and tries < 4 and AR_WALK_SPENT < budget and not (stop_when and stop_when()) do
 		AR_WALK_SPENT = AR_WALK_SPENT + ar_walk_stick(x, y, z, stop_when, budget - AR_WALK_SPENT)
 		tries = tries + 1
 		if ar_far(x, y, z) and not (stop_when and stop_when()) then
@@ -1988,6 +1999,19 @@ if not AR_OLD_GCS then
 			return 1
 		end
 		return AR_OLD_GCS(k, a, b)
+	end
+end
+
+-- The steps of the walkers go through Actor.walk_forward, not through a key: while a dialog (a table handler) has the keys and no cutscene runs,
+-- a player cannot step Manny, so a step then is a failure of the autorun (the walk went on under Carla's dialog, through the detector
+-- again). A save keeps the wrapper, it must not be wrapped twice.
+if not AR_OLD_WALK_FORWARD then
+	AR_OLD_WALK_FORWARD = Actor.walk_forward
+	Actor.walk_forward = function(a)
+		if a == manny and type(system.buttonHandler) == "table" and cutSceneLevel == 0 and not AR_ALLOW_STEP_UNDER_DIALOG then
+			ar_fail("Manny was stepped while a dialog has the keys (" .. tostring(AR_WHERE) .. ")")
+		end
+		return AR_OLD_WALK_FORWARD(a)
 	end
 end
 

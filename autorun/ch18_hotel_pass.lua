@@ -46,6 +46,12 @@ ar_wait_for_control()
 ar_walk_to(0.17, -0.35, 0)
 ar_wait_for(function() return ca2 and system.buttonHandler == ca2 end, 120000)
 ar_check(ca2 and system.buttonHandler == ca2, "Carla talks")
+-- the dialog has the keys: nothing of the walk goes on under it, Manny stands where the scene left him (the walkers used to steer him on, through the
+-- sector of the detector again, which started the scene a second time)
+CARLA_STILL0 = manny:getpos()
+sleep_for(2000)
+CARLA_STILL1 = manny:getpos()
+ar_check(system.buttonHandler ~= ca2 or (abs(CARLA_STILL1.x - CARLA_STILL0.x) < 0.005 and abs(CARLA_STILL1.y - CARLA_STILL0.y) < 0.005), "Manny stands still while Carla talks")
 -- the babble goes on until the detector line is offered
 ar_wait_for(function() return ca2[30].text ~= nil and ca2[30].text ~= "" and system.buttonHandler == ca2 end, 300000)
 ar_pick(ca2, 30)
