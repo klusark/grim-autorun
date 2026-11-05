@@ -1,5 +1,5 @@
 // Starts the original Grim Fandango v1.01 exe (GRIMFANDANGO.EXE), the Grim Fandango Remastered exe (GrimFandango.exe, debuglog only) or
-// the Escape from Monkey Island v1.1 exe (Monkey4.exe, or the patched Monkey4_f12.exe) suspended, applies the patches to the process in memory and resumes it. The game is recognized from the exe's bytes.
+// the Escape from Monkey Island v1.1 exe (Monkey4.exe) suspended, applies the patches to the process in memory and resumes it. The game is recognized from the exe's bytes.
 // No debugger is attached and the exe on disk is not changed.
 //
 // Grim patches (on by default unless marked):
@@ -19,7 +19,7 @@
 //   simtime    fixed frame time, --simtime-ms N (default 17)
 //   nopause    the game goes on when its window is not the active one (it stops otherwise)
 //   offscreen  the window opens 20000 pixels off the screen and never takes the focus (for unattended runs)    (off)
-//   f11        F11 runs lua_dofile("grimpatch.bin"), as in Monkey4_f12.exe (skipped when the exe already has it)
+//   f11        F11 runs lua_dofile("grimpatch.bin")
 //   undo640    puts the desktop mode back first thing, when the exe has the 640x480 compatibility setting (below)
 //   windowed   the game's own -w switch is added to the command line unless you pass it
 //
@@ -40,7 +40,7 @@
 // (config_test.c is a host test of config.c: gcc -DCONFIG_TEST -o ct config_test.c && ./ct)
 //
 // build (64-bit is fine, the game is a 32-bit process):  g++ -O2 -static -o grimlaunch.exe grimlaunch.cpp
-// usage:  grimlaunch [--with a,b|all] [--only a,b] [--skip a,b] [--simtime-ms N] [--no-ini] [--resume-delay MS] <GRIMFANDANGO.exe|Monkey4_f12.exe> [game arguments...]
+// usage:  grimlaunch [--with a,b|all] [--only a,b] [--skip a,b] [--simtime-ms N] [--no-ini] [--resume-delay MS] <GRIMFANDANGO.exe|Monkey4.exe> [game arguments...]
 #include <windows.h>
 #include <cctype>
 #include <cstdio>
@@ -365,17 +365,11 @@ static void patchRemasteredSimtime() {
 // ---- EMI (Monkey4.exe v1.1) ----
 
 // WndProc 0x406700: its WM_KEYDOWN handler range-checks the key at 0x4068cb (cmp eax,0x44 / ja default, 0x406880). The hook sends F11
-// (edi = VK_F11) to lua_dofile (0x4420c0, cdecl) before the default path. Monkey4_f12.exe has the same hook in the exe, with its code at
-// 0x4abe90 (past .text VirtualSize).
+// (edi = VK_F11) to lua_dofile (0x4420c0, cdecl) before the default path.
 static const DWORD EMI_KEY_CHECK = 0x004068cb, EMI_KEY_BACK = 0x004068d0, EMI_KEY_DEFAULT = 0x00406880, EMI_DOFILE = 0x004420c0;
-static const DWORD EMI_F12_CAVE = 0x004abe90;
 
 static void patchEmiF11() {
 	std::string at = read(EMI_KEY_CHECK, 5);
-	if (at == jmp(EMI_KEY_CHECK, EMI_F12_CAVE)) {
-		printf("f11 is already in the exe\n");
-		return;
-	}
 	if (at != bytes({0x83, 0xf8, 0x44, 0x77, 0xb0}))
 		die("unexpected bytes at the EMI key check (" + hex(EMI_KEY_CHECK) + "): not the v1.1 Monkey4.exe");
 	DWORD file = cstring("grimpatch.bin");
@@ -583,7 +577,7 @@ static Game detectGame(const std::string &exe) {
 		return REMASTERED;
 	if (fileBytes(exe, 0x00401721, 5, b) && b == bytes({0xa1, 0x48, 0x5a, 0x4f, 0x00}))
 		return GRIM;
-	if (fileBytes(exe, EMI_KEY_CHECK, 5, b) && (b == bytes({0x83, 0xf8, 0x44, 0x77, 0xb0}) || b == jmp(EMI_KEY_CHECK, EMI_F12_CAVE)))
+	if (fileBytes(exe, EMI_KEY_CHECK, 5, b) && b == bytes({0x83, 0xf8, 0x44, 0x77, 0xb0}))
 		return EMI;
 	fprintf(stderr, "%s is neither the Grim Fandango v1.01 exe, the Remastered exe nor the EMI v1.1 exe\n", exe.c_str());
 	exit(1);
@@ -657,7 +651,7 @@ int main(int argc, char **argv) {
 		}
 	}
 	if (i >= argc) {
-		fprintf(stderr, "usage: grimlaunch [--with a,b|all] [--only a,b] [--skip a,b] [--simtime-ms N] [--no-ini] [--resume-delay MS] <GRIMFANDANGO.exe|GrimFandango.exe|Monkey4_f12.exe> [game arguments...]\n");
+		fprintf(stderr, "usage: grimlaunch [--with a,b|all] [--only a,b] [--skip a,b] [--simtime-ms N] [--no-ini] [--resume-delay MS] <GRIMFANDANGO.exe|GrimFandango.exe|Monkey4.exe> [game arguments...]\n");
 		return 2;
 	}
 	for (auto *list : {&with, &only, &skip})
