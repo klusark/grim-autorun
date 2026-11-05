@@ -1,4 +1,4 @@
--- The Lua interpreter and its libraries: numbers, strings, tables, the order of next()
+-- The Lua interpreter and its libraries: numbers, strings, tables, the order of next()  -- games: grim emi
 
 cr_t_numbers = function()
 	cr_log("arith", 7 / 2, 2 ^ 10, -7 / 3, 1e20 * 1e20)

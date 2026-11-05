@@ -60,6 +60,7 @@ gfupd/
 
 # Clean-room tests: generated data, run folders (copies of the original program files) and run logs
 cleanroom/build/
+cleanroom/build_emi/
 cleanroom/run/
 cleanroom/logs/
 !cleanroom/expected/*.log

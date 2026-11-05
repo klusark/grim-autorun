@@ -1,4 +1,4 @@
--- Frame time: PerSecond(1000) is the frame time in ms; around set changes, chores and the first frames of a task
+-- Frame time: PerSecond(1000) is the frame time in ms; around set changes, chores and the first frames of a task  -- games: grim emi
 
 cr_dt_trace = function(n)
 	local s = ""
@@ -13,6 +13,10 @@ end
 
 cr_t_frame_time = function()
 	cr_log("steady", cr_dt_trace(8))
+	-- (no EMI sets yet: a set that does not exist crashes the original Monkey4.exe)
+	if CR_GAME == "emi" then
+		return
+	end
 	MakeCurrentSet("cr_flat.set")
 	cr_log("after_same_set", cr_dt_trace(4))
 	MakeCurrentSet("cr_edge.set")

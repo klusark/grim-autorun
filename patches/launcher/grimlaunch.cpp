@@ -13,6 +13,12 @@
 //              exclusive full screen at startup (device scan, mode enumeration) or for movies, which blanked the monitor
 //
 // EMI patches:
+//   debuglog   PrintDebug appends its text to grimdebug.log next to the exe (no dll: the release exe drops the text, see patchEmiDebuglog)
+//   datadir    the game's data folder ("Install Path" in the registry) is the folder of the exe
+//   nocd       no disc check (the movies of the data folder are not looked for)
+//   simtime    fixed frame time, --simtime-ms N (default 17)
+//   nopause    the game goes on when its window is not the active one (it stops otherwise)
+//   offscreen  the window opens 20000 pixels off the screen and never takes the focus (for unattended runs)    (off)
 //   f11        F11 runs lua_dofile("grimpatch.bin"), as in Monkey4_f12.exe (skipped when the exe already has it)
 //   undo640    puts the desktop mode back first thing, when the exe has the 640x480 compatibility setting (below)
 //   windowed   the game's own -w switch is added to the command line unless you pass it
@@ -34,7 +40,7 @@
 // (config_test.c is a host test of config.c: gcc -DCONFIG_TEST -o ct config_test.c && ./ct)
 //
 // build (64-bit is fine, the game is a 32-bit process):  g++ -O2 -static -o grimlaunch.exe grimlaunch.cpp
-// usage:  grimlaunch [--with a,b|all] [--only a,b] [--skip a,b] [--simtime-ms N] [--no-ini] <GRIMFANDANGO.exe|Monkey4_f12.exe> [game arguments...]
+// usage:  grimlaunch [--with a,b|all] [--only a,b] [--skip a,b] [--simtime-ms N] [--no-ini] [--resume-delay MS] <GRIMFANDANGO.exe|Monkey4_f12.exe> [game arguments...]
 #include <windows.h>
 #include <cctype>
 #include <cstdio>
@@ -404,11 +410,128 @@ static void patchEmiUndo640() {
 	write(EMI_ENTRY, jmp(EMI_ENTRY, va));
 }
 
+static std::string g_dir;   // the folder of the exe
+static const DWORD EMI_IAT_CREATEFILEA = 0x004ac194, EMI_IAT_WRITEFILE = 0x004ac120;
+
+// The release Monkey4.exe builds PrintDebug's text (its argument and "\n", 0x418420..0x4184f0) and frees it without writing it anywhere.
+// At 0x4184f2 the text is at [esp+0x18] (null when the argument was not a string); the hook appends it to grimdebug.log next to the
+// exe (CreateFileA with FILE_APPEND_DATA, opened on the first call, then WriteFile: not buffered, so a killed game loses nothing), then
+// runs the seven bytes it replaced (mov edx,[esp+0x18]; pop edi; cmp edx,ebx) and goes on at 0x4184f9.
+static void patchEmiDebuglog() {
+	static const DWORD AT = 0x004184f2;
+	expect(AT, bytes({0x8b, 0x54, 0x24, 0x18, 0x5f, 0x3b, 0xd3}), "EMI PrintDebug");
+	DWORD handle = alloc(4, 4), written = alloc(4, 4), path = cstring(g_dir + "\\grimdebug.log");
+	write(handle, le32(0));
+	std::string c = bytes({0x8b, 0x54, 0x24, 0x18, 0x85, 0xd2, 0x74, 0x00});   // mov edx,[esp+0x18]; test edx,edx; jz done
+	size_t jzDone = c.size() - 1;
+	c += bytes({0x60, 0x8b, 0xf2, 0xa1}) + le32(handle);                         // pushad; mov esi,edx; mov eax,[handle]
+	c += bytes({0x85, 0xc0, 0x75, 0x00});                                        // test eax,eax; jnz have
+	size_t jnzHave = c.size() - 1;
+	c += bytes({0x6a, 0x00, 0x68}) + le32(0x80) + bytes({0x6a, 0x04, 0x6a, 0x00, 0x6a, 0x03, 0x6a, 0x04, 0x68}) + le32(path);
+	c += bytes({0xff, 0x15}) + le32(EMI_IAT_CREATEFILEA);                         // CreateFileA(path, FILE_APPEND_DATA, share r/w, 0, OPEN_ALWAYS, NORMAL, 0)
+	c += bytes({0xa3}) + le32(handle);                                           // mov [handle],eax
+	c[jnzHave] = (char)(c.size() - (jnzHave + 1));
+	c += bytes({0x8b, 0xfe, 0x33, 0xc0, 0x83, 0xc9, 0xff, 0xf2, 0xae, 0xf7, 0xd1, 0x49});   // ecx = strlen(esi)
+	c += bytes({0x6a, 0x00, 0x68}) + le32(written) + bytes({0x51, 0x56, 0xff, 0x35}) + le32(handle);
+	c += bytes({0xff, 0x15}) + le32(EMI_IAT_WRITEFILE);                           // WriteFile(handle, text, len, &written, 0)
+	c += bytes({0x61});                                                          // popad
+	c[jzDone] = (char)(c.size() - (jzDone + 1));
+	c += bytes({0x8b, 0x54, 0x24, 0x18, 0x5f, 0x3b, 0xd3});                       // done: the replaced bytes
+	DWORD va = alloc(c.size() + 5);
+	write(va, c + jmp(va + c.size(), AT + 7));
+	write(AT, jmp(AT, va) + bytes({0x90, 0x90}));
+}
+
+// The frame time (0x40bfe0, called once a frame from 0x40bea2) is the time since the last frame from the performance counter, unless the
+// int its argument points at is above 0: then it is that many milliseconds (* 0.001). The int is loaded at 0x40c04d (mov eax,[esp+0x14];
+// xor edx,edx; mov eax,[eax]); it is --simtime-ms instead, so every frame is that long (the result is still capped at 0.125 s).
+static void patchEmiSimtime() {
+	static const DWORD LOAD = 0x0040c04d;
+	expect(LOAD, bytes({0x8b, 0x44, 0x24, 0x14, 0x33, 0xd2, 0x8b, 0x00}), "the EMI frame time");
+	write(LOAD, bytes({0xb8}) + le32(g_simtimeMs) + bytes({0x33, 0xd2, 0x90}));   // mov eax,ms; xor edx,edx; nop
+}
+
+// The main loop (0x4065ac) pumps the messages and runs a frame (0x407280 -> 0x40be30) only while the byte at 0x4d4ef4 (set when the
+// window is activated, 0x4067bd) or the one at 0x4d4ef5 (written nowhere in the exe: it stays 0) is set. A game started behind other
+// windows, or one whose window loses the focus, stops at once and waits. The second byte is set to 1, so the game runs either way.
+static void patchEmiNopause() {
+	static const DWORD RUN_IN_BACKGROUND = 0x004d4ef5;
+	expect(0x00407289, bytes({0xa0}) + le32(RUN_IN_BACKGROUND), "the EMI frame check");
+	write(RUN_IN_BACKGROUND, bytes({0x01}));
+}
+
+// The window out of sight, for runs nobody watches (the clean-room tests). EMI's Direct3D does not start on a desktop of its own
+// (cleanroom/tools/offscreen.c: "Please make sure you are not running any application that takes exclusive control of your
+// hardware"), so the window stays on the user's desktop, 20000 pixels off the screen, and never takes the focus:
+//   CreateWindowExA (0x4064fb) and MoveWindow (0x462f19, the windowed resize) go through stubs that put x and y at -20000;
+//   CreateWindowExA also gets WS_EX_NOACTIVATE and WS_EX_TOOLWINDOW (no taskbar button);
+//   ShowWindow(SW_SHOWNORMAL) at 0x406501 becomes SW_SHOWNOACTIVATE;
+//   SetActiveWindow (0x407243) and SetForegroundWindow (0x46316b) are not called (pop the pushed argument instead).
+// Drawing goes on as before (into the back buffer; the copy to the window is clipped away). nopause keeps the game running.
+static void patchEmiOffscreen() {
+	static const DWORD CREATE = 0x004064fb, SHOW_ARG = 0x00406501, ACTIVATE = 0x00407243, FOREGROUND = 0x0046316b, MOVE = 0x00462f19;
+	static const DWORD IAT_CREATEWINDOWEXA = 0x004ac30c, IAT_MOVEWINDOW = 0x004ac33c;
+	expect(CREATE, bytes({0xff, 0x15}) + le32(IAT_CREATEWINDOWEXA), "the EMI CreateWindowExA call");
+	expect(SHOW_ARG, bytes({0x6a, 0x01, 0x50}), "the EMI ShowWindow argument");
+	expect(ACTIVATE, bytes({0xff, 0x15, 0xd8, 0xc2, 0x4a, 0x00}), "the EMI SetActiveWindow call");
+	expect(FOREGROUND, bytes({0xff, 0x15, 0x2c, 0xc3, 0x4a, 0x00}), "the EMI SetForegroundWindow call");
+	expect(MOVE, bytes({0xff, 0x15}) + le32(IAT_MOVEWINDOW), "the EMI MoveWindow call");
+	const DWORD far_ = (DWORD)-20000;
+	// CreateWindowExA(exstyle [esp+4], class, name, style, x [esp+0x14], y [esp+0x18], ...)
+	std::string c = bytes({0x81, 0x4c, 0x24, 0x04}) + le32(0x08000080);                 // or dword [esp+4],NOACTIVATE|TOOLWINDOW
+	c += bytes({0xc7, 0x44, 0x24, 0x14}) + le32(far_) + bytes({0xc7, 0x44, 0x24, 0x18}) + le32(far_);
+	c += bytes({0xff, 0x25}) + le32(IAT_CREATEWINDOWEXA);                                 // jmp [CreateWindowExA]
+	DWORD create = alloc(c.size());
+	write(create, c);
+	// MoveWindow(hwnd [esp+4], x [esp+8], y [esp+0xc], w, h, repaint)
+	c = bytes({0xc7, 0x44, 0x24, 0x08}) + le32(far_) + bytes({0xc7, 0x44, 0x24, 0x0c}) + le32(far_);
+	c += bytes({0xff, 0x25}) + le32(IAT_MOVEWINDOW);
+	DWORD move = alloc(c.size());
+	write(move, c);
+	write(CREATE, bytes({0xe8}) + le32(create - (CREATE + 5)) + bytes({0x90}));
+	write(MOVE, bytes({0xe8}) + le32(move - (MOVE + 5)) + bytes({0x90}));
+	write(SHOW_ARG, bytes({0x6a, 0x04}));                                                // SW_SHOWNOACTIVATE
+	write(ACTIVATE, bytes({0x58, 0x90, 0x90, 0x90, 0x90, 0x90}));                         // pop eax (the window)
+	write(FOREGROUND, bytes({0x58, 0x90, 0x90, 0x90, 0x90, 0x90}));
+}
+
+// The disc check (0x407380, disc 1 or 2) looks for Movies\intro_a.m4b or Movies\herm.m4b in the data folder and asks for the CD when
+// it is missing; it passes at once when the byte at 0x4bfafc is 0 (1 in the exe). The byte is set to 0.
+static void patchEmiNocd() {
+	static const DWORD CHECK_DISC = 0x004bfafc;
+	expect(CHECK_DISC, bytes({0x01}), "the EMI disc check flag");
+	write(CHECK_DISC, bytes({0x00}));
+}
+
+// The game finds its archives (local.m4b, patch.m4b ...) in the current folder and then in "Install Path" of
+// HKLM\SOFTWARE\LucasArts Entertainment Company LLC\Monkey4\Retail, which 0x406140(buffer, size) reads (its only caller, 0x4073c8,
+// keeps it at 0x4d4d80). The function copies the folder of the exe instead: a copy of the exe elsewhere (the clean-room tests) reads
+// only its own folder, never the install's data. For the install itself this is the same folder.
+static void patchEmiDatadir() {
+	static const DWORD READ_INSTALL_PATH = 0x00406140;
+	expect(READ_INSTALL_PATH, bytes({0x51, 0x8b, 0x44, 0x24, 0x0c, 0x8d, 0x4c, 0x24, 0x0c}), "the EMI Install Path read");
+	if (g_dir.size() >= 0x100)
+		die("the folder of the exe is too long for the game's buffer");
+	DWORD path = cstring(g_dir);
+	std::string c = bytes({0x56, 0x57, 0x8b, 0x7c, 0x24, 0x0c, 0xbe}) + le32(path);   // push esi; push edi; mov edi,[esp+0xc]; mov esi,path
+	c += bytes({0xac, 0xaa, 0x84, 0xc0, 0x75, 0xfa});                                 // copy: lodsb; stosb; test al,al; jnz copy
+	c += bytes({0x5f, 0x5e, 0xb0, 0x01, 0xc3});                                       // pop edi; pop esi; mov al,1; ret
+	DWORD va = alloc(c.size());
+	write(va, c);
+	write(READ_INSTALL_PATH, jmp(READ_INSTALL_PATH, va));
+}
+
 static const struct { const char *name; void (*apply)(); bool def; int games; } PATCHES[] = {
 	{"debuglog", patchDebuglog, true, GRIM | REMASTERED},
 	{"framelimit", patchFramelimit, false, GRIM},
 	{"simtime", patchSimtime, true, GRIM},
 	{"config", patchConfig, true, GRIM},
+	{"debuglog", patchEmiDebuglog, true, EMI},
+	{"datadir", patchEmiDatadir, true, EMI},
+	{"nocd", patchEmiNocd, true, EMI},
+	{"simtime", patchEmiSimtime, true, EMI},
+	{"nopause", patchEmiNopause, true, EMI},
+	{"offscreen", patchEmiOffscreen, false, EMI},
 	{"f11", patchEmiF11, true, EMI},
 	{"undo640", patchEmiUndo640, true, EMI},   // only when the exe has the 640x480 compatibility setting
 	{"windowed", patchWindowed, true, GRIM},   // and the game's own -w switch, added to its command line in main
@@ -511,6 +634,7 @@ static bool has(const std::vector<std::string> &v, const char *name) {
 int main(int argc, char **argv) {
 	std::vector<std::string> with, only, skip;
 	bool noIni = false;
+	int resumeDelay = 0;   // (a debugging aid: time to attach a debugger to the patched, still suspended game)
 	int i = 1;
 	for (; i < argc && !strncmp(argv[i], "--", 2); i++) {
 		std::string o = argv[i];
@@ -526,13 +650,14 @@ int main(int argc, char **argv) {
 		else if (o == "--only") only = split(argv[++i]);
 		else if (o == "--skip") skip = split(argv[++i]);
 		else if (o == "--simtime-ms") g_simtimeMs = atoi(argv[++i]);
+		else if (o == "--resume-delay") resumeDelay = atoi(argv[++i]);
 		else {
 			fprintf(stderr, "unknown option %s\n", o.c_str());
 			return 2;
 		}
 	}
 	if (i >= argc) {
-		fprintf(stderr, "usage: grimlaunch [--with a,b|all] [--only a,b] [--skip a,b] [--simtime-ms N] [--no-ini] <GRIMFANDANGO.exe|GrimFandango.exe|Monkey4_f12.exe> [game arguments...]\n");
+		fprintf(stderr, "usage: grimlaunch [--with a,b|all] [--only a,b] [--skip a,b] [--simtime-ms N] [--no-ini] [--resume-delay MS] <GRIMFANDANGO.exe|GrimFandango.exe|Monkey4_f12.exe> [game arguments...]\n");
 		return 2;
 	}
 	for (auto *list : {&with, &only, &skip})
@@ -541,7 +666,7 @@ int main(int argc, char **argv) {
 			for (auto &p : PATCHES)
 				known |= n == p.name;
 			if (!known) {
-				fprintf(stderr, "no patch %s (Grim: debuglog, framelimit, simtime, config, windowed; Remastered: debuglog; EMI: f11, undo640, windowed)\n", n.c_str());
+				fprintf(stderr, "no patch %s (Grim: debuglog, framelimit, simtime, config, windowed; Remastered: debuglog, windowed, simtime; EMI: debuglog, datadir, nocd, simtime, nopause, offscreen, f11, undo640, windowed)\n", n.c_str());
 				return 2;
 			}
 		}
@@ -551,6 +676,7 @@ int main(int argc, char **argv) {
 		die("GetFullPathName");
 	std::string dir = exe;
 	dir.erase(dir.find_last_of('\\'));
+	g_dir = dir;
 	Game game = detectGame(exe);
 	g_game = game;
 	printf("%s\n", game == GRIM ? "Grim Fandango v1.01" : game == REMASTERED ? "Grim Fandango Remastered" : "Escape from Monkey Island v1.1");
@@ -584,7 +710,7 @@ int main(int argc, char **argv) {
 	}
 	bool needDll = false;
 	for (const char *n : {"debuglog", "framelimit", "config"})
-		needDll |= enabled(n, strcmp(n, "framelimit") != 0);
+		needDll |= game != EMI && enabled(n, strcmp(n, "framelimit") != 0);
 	if (needDll && GetFileAttributesA((dir + '\\' + DLL_NAME).c_str()) == INVALID_FILE_ATTRIBUTES)
 		fprintf(stderr, "warning: %s is not in %s, the stubs will do nothing\n", DLL_NAME, dir.c_str());
 	if (enabled("config", true) && !noIni) {
@@ -631,8 +757,14 @@ int main(int argc, char **argv) {
 			printf("applied %s\n", p.name);
 		}
 
+	if (resumeDelay) {
+		printf("pid %lu, resumed in %d ms\n", pi.dwProcessId, resumeDelay);
+		fflush(stdout);
+		Sleep(resumeDelay);
+	}
 	ResumeThread(pi.hThread);
 	printf("started pid %lu\n", pi.dwProcessId);
+	fflush(stdout);
 	WaitForSingleObject(pi.hProcess, INFINITE);
 	DWORD code = 0;
 	GetExitCodeProcess(pi.hProcess, &code);

@@ -25,6 +25,7 @@ args_ResReport_none|r
 args_ResReport_num|r
 args_ResReport_str|r
 args_ResReport_tab|r
+args_collectgarbage_none|r
 args_date_none|r
 args_tostring_fn|r
 args_tostring_tab|r
