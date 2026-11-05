@@ -218,6 +218,10 @@ Hand-written tests, besides the per-frame walk and turn values:
   | `mf_cr_float_*`, `mf_cr_tfloat_*` (box from 1 m up) | differ in either format (as `hdr_float_*`) |
   | `mf_rects` | `GetActorNodeLocation` on the original depends on the format: world positions for a text model (as ScummVM, but with the node's pivot counted twice: `cr_tpiv` node 1 at 1.5 m, ScummVM 1.0), the node offsets for a binary one (node 0 at 8 times the actor's position) |
 
+  Fix: ScummVM branch `grim-model-bounds` (c678e70885d, on origin/master) works the box, centre and radius out from the
+  vertices through the node transforms for both formats, as the original does. On grim-actor-fixes it turns 18 tests from
+  differ or close to the same as the original (every `mf_cr_trad`/`brad`/`trot`/`tprot`/`trotx` case and the `hdr_ctrx`,
+  `ctrz`, `bbig`, `bside` sphere cases) and makes no test worse.
   The lying box (`cr_rotx`) as a wall is too low (0.3 m) for the mover's sphere: no engine collides with it. The two engines
   turn a node the same way (the head node of `cr_trotx` is at the same place on both).
 - `MakeSectorActive` with a number does nothing on the original. A sector switched on stays on across a change of set on the
