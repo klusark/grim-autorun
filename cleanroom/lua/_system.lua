@@ -91,7 +91,9 @@ cr_main = function()
 	local id, f
 	cr_out("START " .. CR_N .. " tests")
 	while i <= CR_N do
-		if CR_ONLY == nil or CR_ONLY == CR_TESTS[i].name then
+		if CR_SKIP and CR_SKIP[CR_TESTS[i].name] then
+			cr_out("SKIP " .. CR_TESTS[i].name)
+		elseif CR_ONLY == nil or CR_ONLY[CR_TESTS[i].name] then
 			CR_CUR = CR_TESTS[i].name
 			CR_DONE = nil
 			cr_out("BEGIN " .. CR_CUR)

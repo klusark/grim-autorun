@@ -1,0 +1,241 @@
+-- Camera setters, lights, shadows, sound without sound files, 2D primitives, images, object states, text settings, controls
+
+cr_t_camera_set = function()
+	MakeCurrentSet("cr_cams.set")
+	MakeCurrentSetup(0)
+	cr_frames(1)
+	cr_log("fov", GetCameraFOV())
+	cr_log("roll", GetCameraRoll())
+	SetCameraFOV(40)
+	cr_log("fov_set", GetCameraFOV())
+	SetCameraRoll(12)
+	cr_log("roll_set", GetCameraRoll())
+	SetCameraPosition(1, -4, 3)
+	local fov, x, y, z, roll = GetCameraPosition()
+	cr_log("position_set", x, y, z)
+	SetCameraInterest(0.5, 0.5, 0)
+	local f = cr_fn("GetCameraInterest")
+	if f then
+		cr_log("interest", f())
+	end
+	local v = GetCameraLookVector()
+	if type(v) == "table" then
+		cr_log("look_vector", v.x, v.y, v.z)
+	else
+		cr_log("look_vector", v)
+	end
+	cr_log("screen_after", WorldToScreen(0, 0, 0))
+	MakeCurrentSetup(1)
+	cr_frames(1)
+	cr_log("fov_other_setup", GetCameraFOV())
+	MakeCurrentSetup(0)
+	cr_frames(1)
+	cr_log("fov_back", GetCameraFOV())
+end
+cr_test("camera_set", cr_t_camera_set)
+
+cr_t_next_setup = function()
+	MakeCurrentSet("cr_cams.set")
+	MakeCurrentSetup(0)
+	cr_frames(1)
+	NextSetup()
+	cr_log("next", GetCurrentSetup("cr_cams.set"))
+	NextSetup()
+	NextSetup()
+	cr_log("next_wrap", GetCurrentSetup("cr_cams.set"))
+	PreviousSetup()
+	cr_log("previous", GetCurrentSetup("cr_cams.set"))
+	MakeCurrentSetup(0)
+	PreviousSetup()
+	cr_log("previous_wrap", GetCurrentSetup("cr_cams.set"))
+	MakeCurrentSetup(0)
+end
+cr_test("next_setup", cr_t_next_setup)
+
+cr_t_lights = function()
+	MakeCurrentSet("cr_flat.set")
+	cr_frames(1)
+	SetAmbientLight(1)
+	SetLightIntensity("cr_light", 0.5)
+	SetLightPosition("cr_light", 1, 2, 3)
+	TurnLightOn("cr_light", FALSE)
+	TurnLightOn(0, TRUE)
+	LightMgrSetChange()
+	local f = cr_fn("GetLightPosition")
+	if f then
+		cr_log("position", f("cr_light"))
+	end
+	local g = cr_fn("GetLightIntensity")
+	if g then
+		cr_log("intensity", g("cr_light"))
+	end
+	local h = cr_fn("IsLightOn")
+	if h then
+		cr_log("on", h("cr_light"))
+	end
+	local k = cr_fn("FindLight")
+	if k then
+		cr_log("find", k("cr_light"), k("no_light"))
+	end
+	cr_log("ok", 1)
+end
+cr_test("lights", cr_t_lights)
+
+cr_t_shadows = function()
+	MakeCurrentSet("cr_flat.set")
+	local a = cr_attr_actor("cr_shadowed")
+	SetActiveShadow(a, 0)
+	SetActorShadowPoint(a, 0, -4000, 2000)
+	SetActorShadowPlane(a, "floor")
+	AddShadowPlane(a, "floor")
+	ActivateActorShadow(a, 0, TRUE)
+	SetActorShadowValid(a, -1)
+	cr_frames(2)
+	local f = cr_fn("ActorDistToShadowPlane")
+	if f then
+		cr_log("dist", f(a))
+	end
+	KillActorShadows(a)
+	cr_frames(1)
+	cr_log("ok", 1)
+	PutActorInSet(a, nil)
+end
+cr_test("shadows", cr_t_shadows)
+
+-- (SetShadowColor crashed the original with any arguments in the argument probe; here with the game's own values)
+cr_t_shadow_color = function()
+	SetShadowColor(25, 15, 15)
+	cr_log("ok", 1)
+end
+cr_test("shadow_color", cr_t_shadow_color)
+
+cr_t_sound_volumes = function()
+	ImSetSfxVol(64)
+	cr_log("sfx", ImGetSfxVol())
+	ImSetMusicVol(32)
+	cr_log("music", ImGetMusicVol())
+	ImSetVoiceVol(100)
+	cr_log("voice", ImGetVoiceVol())
+	ImSetSfxVol(200)
+	cr_log("sfx_over", ImGetSfxVol())
+	ImSetSfxVol(-5)
+	cr_log("sfx_under", ImGetSfxVol())
+	ImSetSfxVol(127)
+	ImSetMusicVol(127)
+	ImSetVoiceVol(127)
+end
+cr_test("sound_volumes", cr_t_sound_volumes)
+
+cr_t_sound_missing = function()
+	cr_log("start", ImStartSound("no_such.imu", 64, 1))
+	cr_log("playing", IsSoundPlaying("no_such.imu"))
+	cr_log("param", ImGetParam("no_such.imu", 1))
+	ImSetParam("no_such.imu", 1, 5)
+	ImStopSound("no_such.imu")
+	ImStopAllSounds()
+	ImSetState(1001)
+	ImSetSequence(0)
+	ImPause()
+	ImResume()
+	cr_log("play", PlaySound("no_such.wav"))
+	PlaySoundAt("no_such.wav", 0, 0, 0)
+	SetSoundPosition("no_such.wav", 1, 2, 3)
+	cr_log("ok", 1)
+end
+cr_test("sound_missing", cr_t_sound_missing)
+
+cr_t_primitives = function()
+	local red = MakeColor(255, 0, 0)
+	local l = DrawLine(10, 20, 100, 200, { color = red })
+	cr_log("line", type(l))
+	local r = DrawRectangle(30, 30, 60, 60, { color = red, filled = TRUE })
+	cr_log("rect", type(r))
+	local p = DrawPolygon({ 10, 10, 50, 10, 50, 50, 10, 50 }, { color = red })
+	cr_log("polygon", type(p))
+	ChangePrimitive(l, { x = 5, y = 6 })
+	ChangePrimitive(r, { color = MakeColor(0, 255, 0) })
+	cr_frames(1)
+	KillPrimitive(l)
+	KillPrimitive(r)
+	PurgePrimitiveQueue()
+	BlastRect(0, 0, 20, 20, { color = red })
+	cr_frames(1)
+	cr_log("ok", 1)
+end
+cr_test("primitives", cr_t_primitives)
+
+cr_t_images = function()
+	local img = GetImage("cr_obj.bm")
+	cr_log("image", type(img))
+	BlastImage(img, 10, 20, TRUE)
+	cr_frames(1)
+	FreeImage(img)
+	cr_log("ok", 1)
+end
+cr_test("images", cr_t_images)
+
+cr_t_image_missing = function()
+	cr_log("missing", GetImage("no_such.bm"))
+end
+cr_test("image_missing", cr_t_image_missing)
+
+cr_t_object_states = function()
+	MakeCurrentSet("cr_flat.set")
+	cr_frames(1)
+	-- (a bitmap of its own: FreeObjectState frees the bitmap on the original; with a set background, loading that set
+	-- afterwards crashed the original)
+	local s = NewObjectState(0, 1, "cr_obj.bm", nil, TRUE)
+	cr_log("state", type(s))
+	SetObjectType(s, 2)
+	SendObjectToFront(s)
+	SendObjectToBack(s)
+	cr_frames(1)
+	FreeObjectState(s)
+	cr_log("ok", 1)
+end
+cr_test("object_states", cr_t_object_states)
+
+cr_t_text_settings = function()
+	SetTextSpeed(5)
+	cr_log("speed", GetTextSpeed())
+	SetTextSpeed(20)
+	cr_log("speed_over", GetTextSpeed())
+	SetSpeechMode(1)
+	cr_log("speech_mode", GetSpeechMode())
+	SetSpeechMode(3)
+	cr_log("speech_mode3", GetSpeechMode())
+	SetTranslationMode(1)
+	cr_log("translation", GetTranslationMode())
+	SetTranslationMode(0)
+	cr_log("translation0", GetTranslationMode())
+	cr_log("message_going", IsMessageGoing())
+	PurgeText()
+	ExpireText()
+end
+cr_test("text_settings", cr_t_text_settings)
+
+cr_t_controls = function()
+	cr_log("return", GetControlState(13))
+	cr_log("shift", GetControlState(16))
+	DisableControl(13)
+	cr_log("disabled", GetControlState(13))
+	EnableControl(13)
+	cr_log("enabled", GetControlState(13))
+	FlushControls()
+end
+cr_test("controls", cr_t_controls)
+
+cr_t_control_out_of_range = function()
+	cr_log("big", GetControlState(9999))
+end
+cr_test("control_out_of_range", cr_t_control_out_of_range)
+
+cr_t_movies_idle = function()
+	cr_log("playing", IsMoviePlaying())
+	cr_log("fullscreen", IsFullscreenMoviePlaying())
+	StopMovie()
+	PauseMovie(TRUE)
+	PauseMovie(FALSE)
+	cr_log("ok", 1)
+end
+cr_test("movies_idle", cr_t_movies_idle)

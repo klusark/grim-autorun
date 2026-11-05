@@ -181,3 +181,23 @@ def model3do(name, meshes, nodes):
 def box(sx, sy, sz, z0=0.0):
     """The 8 corners of a box centred on the z axis, from z0 up."""
     return [(x, y, z) for x in (-sx / 2, sx / 2) for y in (-sy / 2, sy / 2) for z in (z0, z0 + sz)]
+
+
+def font(widths, height=10, base=8):
+    """A .laf bitmap font of 256 characters: character c is widths(c) pixels wide and `height` high; its picture is a frame
+    with the bits of c inside (our own glyphs; only the sizes matter to the tests). Header: count, data size, line height,
+    baseline, 2, 0, first and last character, the 256 codes, a 16-byte record a character, one byte a pixel (0 or 255)."""
+    recs = b""
+    data = b""
+    for c in range(256):
+        w = widths(c)
+        pix = bytearray(w * height)
+        for y in range(height):
+            for x in range(w):
+                edge = x == 0 or y == 0 or x == w - 1 or y == height - 1
+                bit = (c >> ((x + y) % 8)) & 1
+                pix[y * w + x] = 255 if edge or bit else 0
+        recs += struct.pack("<IbbbBII", len(data), w + 1, 0, -base, 0, w, height)
+        data += bytes(pix)
+    head = struct.pack("<8I", 256, len(data), height + 2, base, 2, 0, 0, 255)
+    return head + struct.pack("<256H", *range(256)) + recs + data
