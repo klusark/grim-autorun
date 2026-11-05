@@ -7,7 +7,8 @@
 //   simtime    fixed frame time, --simtime-ms N (default 17)
 //   config     the game reads its settings from grim.ini next to the exe instead of the registry (patch.dll)
 //   windowed   the game runs in a window: its own -w switch is added to the command line unless you pass it (full screen
-//              at a high desktop resolution makes its software blitter overrun a heap buffer and crash)
+//              at a high desktop resolution makes its software blitter overrun a heap buffer and crash), and it no longer goes to
+//              exclusive full screen at startup (device scan, mode enumeration) or for movies, which blanked the monitor
 //
 // config: when grim.ini does not exist yet it is written from the registry (the Grim Fandango v1.0 key under HKLM\SOFTWARE, 32-bit
 // view). $GRIM_INI names another file. --no-ini leaves grim.ini alone.
@@ -272,12 +273,37 @@ static void patchConfig() {
 	write(REG_OPEN, jmp(REG_OPEN, loaderStub("GrimRegOpen")));
 }
 
+// The DirectDraw setup (0x4760d0) runs in windowed mode too. To list the display modes it takes exclusive full screen (cooperative level
+// 0x51, then 0x11) and only then goes back to DDSCL_NORMAL (8): on a big monitor that blanks the whole screen. Listing the modes does not
+// need exclusive access, so both calls ask for DDSCL_NORMAL, as the last one already does.
+//
+// The device enumeration callback (0x4761b0) tests every DirectDraw device the same way (cooperative level 0x11), which shows as a
+// flash of WS_EX_TOPMOST on the window. And the window is first created as a popup the size of the screen and only turned into the
+// window afterwards: it is created 640x480 instead, so it never covers the screen.
+static void patchWindowed() {
+	expect(0x00476111, bytes({0x6a, 0x51}), "DirectDraw cooperative level (first)");    // push 0x51
+	expect(0x00476145, bytes({0x6a, 0x11}), "DirectDraw cooperative level (second)");   // push 0x11
+	expect(0x00476179, bytes({0x6a, 0x08}), "DirectDraw cooperative level (last)");     // push DDSCL_NORMAL
+	expect(0x00476297, bytes({0x6a, 0x11}), "DirectDraw cooperative level (device test)");   // push 0x11
+	expect(0x004ac2d5, bytes({0x6a, 0x01, 0xff, 0xd7, 0x50}), "CreateWindowExA height");   // push 1; call GetSystemMetrics; push eax
+	expect(0x004ac2da, bytes({0x6a, 0x00, 0xff, 0xd7, 0x50}), "CreateWindowExA width");    // push 0; call GetSystemMetrics; push eax
+	// Starting a movie (0x4022a0) switches a windowed game to full screen (0x402930) and the end of the movie (0x4022e6) switches back:
+	// the monitor goes black for a moment each time. The jump over the switch is made unconditional, so movies play in the window.
+	expect(0x004022ac, bytes({0x74, 0x0f}), "movie switch to full screen");                  // je 0x4022bd
+	write(0x004022ac, bytes({0xeb, 0x0f}));                                                  // jmp 0x4022bd
+	write(0x00476111, bytes({0x6a, 0x08}));
+	write(0x00476145, bytes({0x6a, 0x08}));
+	write(0x00476297, bytes({0x6a, 0x08}));
+	write(0x004ac2d5, bytes({0x68}) + le32(480));                                            // push 480
+	write(0x004ac2da, bytes({0x68}) + le32(640));                                            // push 640
+}
+
 static const struct { const char *name; void (*apply)(); bool def; } PATCHES[] = {
 	{"debuglog", patchDebuglog, true},
 	{"framelimit", patchFramelimit, false},
 	{"simtime", patchSimtime, true},
 	{"config", patchConfig, true},
-	{"windowed", nullptr, true},   // the game's own -w switch, added to its command line in main
+	{"windowed", patchWindowed, true},   // also the game's own -w switch, added to its command line in main
 };
 
 static std::vector<std::string> split(const std::string &s) {
