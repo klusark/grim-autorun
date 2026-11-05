@@ -335,7 +335,37 @@ static void installHook(void) {
 	}
 }
 
+/* PrintDebug("CRSNAP:<file>") saves the back buffer to <file> (a 24-bit .bmp, relative to the game folder) with the
+ * game's own screenshot code (Render_SaveScreenshotBmp, the Backspace+S debug key), for the tests of grim_tools/cleanroom
+ * that look at where a text is drawn. Only on the executable whose bytes are known: v1.01. */
+typedef void (__cdecl *SaveScreenshotFn)(const char *);
+#define SAVE_SCREENSHOT_ADDR 0x00487340
+static const unsigned char saveScreenshotStart[] = { 0x83, 0xec, 0x38, 0xb8, 0x08, 0x00, 0x00, 0x00, 0x56, 0x89, 0x44, 0x24 };
+
+static int snapFromLua(void) {
+	LuaObject obj;
+	const char *s;
+
+	if (!resolveLua())
+		return 0;
+	obj = luaLua2C(1);
+	if (!luaIsString(obj))
+		return 0;
+	s = luaGetString(obj);
+	if (strncmp(s, "CRSNAP:", 7) != 0)
+		return 0;
+	if (IsBadReadPtr((const void *)SAVE_SCREENSHOT_ADDR, sizeof(saveScreenshotStart)) ||
+	    memcmp((const void *)SAVE_SCREENSHOT_ADDR, saveScreenshotStart, sizeof(saveScreenshotStart)) != 0) {
+		logLine("ERROR", "CRSNAP: not the known executable, no screenshot");
+		return 1;
+	}
+	((SaveScreenshotFn)SAVE_SCREENSHOT_ADDR)(s + 7);
+	return 1;
+}
+
 __declspec(dllexport) void __cdecl GrimLogDebug(void) {
+	if (snapFromLua())
+		return;
 	logFromLua("DEBUG");
 }
 

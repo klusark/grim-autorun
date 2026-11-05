@@ -1,4 +1,4 @@
-START 4839 tests
+START 4870 tests
 BEGIN attr_scale
 V attr_scale|scale|2.000000
 V attr_scale|scale_half|0.500000
@@ -498,7 +498,7 @@ V strings|concat|"a12.5" "10"
 V strings|ascii|65.000000
 END strings
 BEGIN next_order
-V next_order|order|"49,98,140,7,domino,56,105,velasco,14,lupe,119,112,21,70,glottis,63,28,chepito,77,126,42,35,salvador,84,meche,133,olivia,91,manny,eva,"
+V next_order|order|"49,98,140,domino,7,56,velasco,105,14,lupe,63,112,glottis,21,salvador,119,chepito,28,77,126,70,35,meche,84,133,olivia,42,manny,eva,91,"
 V next_order|globals_counted|1.000000
 END next_order
 BEGIN tasks
@@ -2179,6 +2179,140 @@ END say_line
 BEGIN say_line_restore
 V say_line_restore|speed|7.000000
 END say_line_restore
+BEGIN tp_nothing
+V tp_nothing|nothing_text|none
+END tp_nothing
+BEGIN tp_spot_centre
+V tp_spot_centre|spot_centre_screen|320.000000 240.000000
+V tp_spot_centre|spot_centre_going|1.000000
+V tp_spot_centre|spot_centre_text|263.000000 231.000000 375.000000 240.000000
+END tp_spot_centre
+BEGIN tp_spot_left
+V tp_spot_left|spot_left_screen|137.000000 194.000000
+V tp_spot_left|spot_left_going|1.000000
+V tp_spot_left|spot_left_text|80.000000 185.000000 192.000000 194.000000
+END tp_spot_left
+BEGIN tp_spot_right
+V tp_spot_right|spot_right_screen|552.000000 332.000000
+V tp_spot_right|spot_right_going|1.000000
+V tp_spot_right|spot_right_text|495.000000 323.000000 607.000000 332.000000
+END tp_spot_right
+BEGIN tp_spot_high
+V tp_spot_high|spot_high_screen|320.000000 194.000000
+V tp_spot_high|spot_high_going|1.000000
+V tp_spot_high|spot_high_text|263.000000 185.000000 375.000000 194.000000
+END tp_spot_high
+BEGIN tp_spot_left_edge
+V tp_spot_left_edge|spot_left_edge_screen|16.000000 240.000000
+V tp_spot_left_edge|spot_left_edge_going|1.000000
+V tp_spot_left_edge|spot_left_edge_text|5.000000 231.000000 94.000000 252.000000
+END tp_spot_left_edge
+BEGIN tp_spot_right_edge
+V tp_spot_right_edge|spot_right_edge_screen|623.000000 240.000000
+V tp_spot_right_edge|spot_right_edge_going|1.000000
+V tp_spot_right_edge|spot_right_edge_text|545.000000 231.000000 634.000000 252.000000
+END tp_spot_right_edge
+BEGIN tp_spot_top_edge
+V tp_spot_top_edge|spot_top_edge_screen|320.000000 22.000000
+V tp_spot_top_edge|spot_top_edge_going|1.000000
+V tp_spot_top_edge|spot_top_edge_text|263.000000 13.000000 375.000000 22.000000
+END tp_spot_top_edge
+BEGIN tp_spot_bottom_edge
+V tp_spot_bottom_edge|spot_bottom_edge_screen|320.000000 477.000000
+V tp_spot_bottom_edge|spot_bottom_edge_going|1.000000
+V tp_spot_bottom_edge|spot_bottom_edge_text|263.000000 461.000000 375.000000 470.000000
+END tp_spot_bottom_edge
+BEGIN tp_spot_off_left
+V tp_spot_off_left|spot_off_left_screen|nil
+V tp_spot_off_left|spot_off_left_going|1.000000
+V tp_spot_off_left|spot_off_left_text|263.000000 441.000000 375.000000 450.000000
+END tp_spot_off_left
+BEGIN tp_spot_off_top
+V tp_spot_off_top|spot_off_top_screen|nil
+V tp_spot_off_top|spot_off_top_going|1.000000
+V tp_spot_off_top|spot_off_top_text|263.000000 441.000000 375.000000 450.000000
+END tp_spot_off_top
+BEGIN tp_spot_behind_camera
+V tp_spot_behind_camera|spot_behind_camera_screen|nil
+V tp_spot_behind_camera|spot_behind_camera_going|1.000000
+V tp_spot_behind_camera|spot_behind_camera_text|263.000000 441.000000 375.000000 450.000000
+END tp_spot_behind_camera
+BEGIN tp_long_centre
+V tp_long_centre|long_centre_going|1.000000
+V tp_long_centre|long_centre_text|11.000000 231.000000 627.000000 240.000000
+END tp_long_centre
+BEGIN tp_medium_left_edge
+V tp_medium_left_edge|medium_left_edge_going|1.000000
+V tp_medium_left_edge|medium_left_edge_text|1.000000 225.000000 125.000000 246.000000
+END tp_medium_left_edge
+BEGIN tp_moved
+V tp_moved|moved_before|171.000000 231.000000 283.000000 240.000000
+V tp_moved|moved_after|171.000000 231.000000 283.000000 240.000000
+END tp_moved
+BEGIN tp_no_set
+V tp_no_set|no_set_going|1.000000
+V tp_no_set|no_set_text|263.000000 441.000000 375.000000 450.000000
+END tp_no_set
+BEGIN tp_other_set
+V tp_other_set|other_set_going|1.000000
+V tp_other_set|other_set_text|263.000000 441.000000 375.000000 450.000000
+END tp_other_set
+BEGIN tp_hidden
+V tp_hidden|hidden_going|1.000000
+V tp_hidden|hidden_text|354.000000 231.000000 466.000000 240.000000
+END tp_hidden
+BEGIN tp_costume
+V tp_costume|costume_going|1.000000
+V tp_costume|costume_text|263.000000 441.000000 375.000000 450.000000
+END tp_costume
+BEGIN tp_offpos_dialog
+V tp_offpos_dialog|offpos_dialog_going|1.000000
+V tp_offpos_dialog|offpos_dialog_text|263.000000 7.000000 375.000000 16.000000
+END tp_offpos_dialog
+BEGIN tp_offpos_corner
+V tp_offpos_corner|offpos_corner_going|1.000000
+V tp_offpos_corner|offpos_corner_text|5.000000 7.000000 94.000000 28.000000
+END tp_offpos_corner
+BEGIN tp_offpos_far_corner
+V tp_offpos_far_corner|offpos_far_corner_going|1.000000
+V tp_offpos_far_corner|offpos_far_corner_text|545.000000 461.000000 634.000000 479.000000
+END tp_offpos_far_corner
+BEGIN tp_offpos_middle
+V tp_offpos_middle|offpos_middle_going|1.000000
+V tp_offpos_middle|offpos_middle_text|143.000000 291.000000 255.000000 300.000000
+END tp_offpos_middle
+BEGIN tp_offpos_default
+V tp_offpos_default|offpos_default_going|1.000000
+V tp_offpos_default|offpos_default_text|263.000000 441.000000 375.000000 450.000000
+END tp_offpos_default
+BEGIN tp_table_xy
+V tp_table_xy|table_xy_going|1.000000
+V tp_table_xy|table_xy_text|43.000000 97.000000 155.000000 106.000000
+END tp_table_xy
+BEGIN tp_table_x_only
+V tp_table_x_only|table_x_only_going|1.000000
+V tp_table_x_only|table_x_only_text|443.000000 140.000000 555.000000 149.000000
+END tp_table_x_only
+BEGIN tp_table_y_only
+V tp_table_y_only|table_y_only_going|1.000000
+V tp_table_y_only|table_y_only_text|353.000000 57.000000 465.000000 66.000000
+END tp_table_y_only
+BEGIN tp_table_xy_zero
+V tp_table_xy_zero|table_xy_zero_going|1.000000
+V tp_table_xy_zero|table_xy_zero_text|5.000000 7.000000 94.000000 28.000000
+END tp_table_xy_zero
+BEGIN tp_table_xy_far
+V tp_table_xy_far|table_xy_far_going|1.000000
+V tp_table_xy_far|table_xy_far_text|545.000000 461.000000 634.000000 479.000000
+END tp_table_xy_far
+BEGIN tp_table_xy_negative
+V tp_table_xy_negative|table_xy_negative_going|1.000000
+V tp_table_xy_negative|table_xy_negative_text|5.000000 7.000000 94.000000 28.000000
+END tp_table_xy_negative
+BEGIN tp_table_xy_no_set
+V tp_table_xy_no_set|table_xy_no_set_going|1.000000
+V tp_table_xy_no_set|table_xy_no_set_text|93.000000 197.000000 205.000000 206.000000
+END tp_table_xy_no_set
 BEGIN frame_time
 V frame_time|steady|"17 17 17 17 17 17 17 17 "
 V frame_time|after_same_set|"17 17 17 17 "
@@ -4642,7 +4776,7 @@ BEGIN args_GetActorNodeLocation_p2_tab
 V args_GetActorNodeLocation_p2_tab|r|nil
 END args_GetActorNodeLocation_p2_tab
 BEGIN args_GetActorNodeLocation_p2_neg
-V args_GetActorNodeLocation_p2_neg|r|0.000000 0.000000 0.000000
+V args_GetActorNodeLocation_p2_neg|r|0.000000 0.000000 1799.415649
 END args_GetActorNodeLocation_p2_neg
 SKIP args_GetActorNodeLocation_p2_big
 BEGIN args_GetActorPos_none
@@ -5613,22 +5747,22 @@ BEGIN args_GetCurrentSetup_p1_tab
 V args_GetCurrentSetup_p1_tab|r|nil
 END args_GetCurrentSetup_p1_tab
 BEGIN args_GetDiskFreeSpace_none
-V args_GetDiskFreeSpace_none|r|110876.757813
+V args_GetDiskFreeSpace_none|r|110845.390625
 END args_GetDiskFreeSpace_none
 BEGIN args_GetDiskFreeSpace_nil
-V args_GetDiskFreeSpace_nil|r|110876.757813
+V args_GetDiskFreeSpace_nil|r|110845.390625
 END args_GetDiskFreeSpace_nil
 BEGIN args_GetDiskFreeSpace_str
-V args_GetDiskFreeSpace_str|r|110876.757813
+V args_GetDiskFreeSpace_str|r|110845.390625
 END args_GetDiskFreeSpace_str
 BEGIN args_GetDiskFreeSpace_num
-V args_GetDiskFreeSpace_num|r|110876.757813
+V args_GetDiskFreeSpace_num|r|110845.390625
 END args_GetDiskFreeSpace_num
 BEGIN args_GetDiskFreeSpace_tab
-V args_GetDiskFreeSpace_tab|r|110876.757813
+V args_GetDiskFreeSpace_tab|r|110845.390625
 END args_GetDiskFreeSpace_tab
 BEGIN args_GetDiskFreeSpace_fn
-V args_GetDiskFreeSpace_fn|r|110876.757813
+V args_GetDiskFreeSpace_fn|r|110845.390625
 END args_GetDiskFreeSpace_fn
 SKIP args_GetFontDimensions_none
 SKIP args_GetFontDimensions_nil
@@ -5840,22 +5974,22 @@ BEGIN args_GetLightType_l_tab
 V args_GetLightType_l_tab|r|"omni"
 END args_GetLightType_l_tab
 BEGIN args_GetMemoryUsage_none
-V args_GetMemoryUsage_none|r|10732278.000000
+V args_GetMemoryUsage_none|r|10573633.000000
 END args_GetMemoryUsage_none
 BEGIN args_GetMemoryUsage_nil
-V args_GetMemoryUsage_nil|r|10733129.000000
+V args_GetMemoryUsage_nil|r|10574484.000000
 END args_GetMemoryUsage_nil
 BEGIN args_GetMemoryUsage_str
-V args_GetMemoryUsage_str|r|10733970.000000
+V args_GetMemoryUsage_str|r|10575325.000000
 END args_GetMemoryUsage_str
 BEGIN args_GetMemoryUsage_num
-V args_GetMemoryUsage_num|r|10734811.000000
+V args_GetMemoryUsage_num|r|10576166.000000
 END args_GetMemoryUsage_num
 BEGIN args_GetMemoryUsage_tab
-V args_GetMemoryUsage_tab|r|10735756.000000
+V args_GetMemoryUsage_tab|r|10577111.000000
 END args_GetMemoryUsage_tab
 BEGIN args_GetMemoryUsage_fn
-V args_GetMemoryUsage_fn|r|10736594.000000
+V args_GetMemoryUsage_fn|r|10577949.000000
 END args_GetMemoryUsage_fn
 BEGIN args_GetPhysicalBytes_none
 V args_GetPhysicalBytes_none|r|2147483648.000000
@@ -6380,22 +6514,22 @@ BEGIN args_GetTextSpeed_fn
 V args_GetTextSpeed_fn|r|7.000000
 END args_GetTextSpeed_fn
 BEGIN args_GetTickCount_none
-V args_GetTickCount_none|r|511912416.000000
+V args_GetTickCount_none|r|511963872.000000
 END args_GetTickCount_none
 BEGIN args_GetTickCount_nil
-V args_GetTickCount_nil|r|511912416.000000
+V args_GetTickCount_nil|r|511963872.000000
 END args_GetTickCount_nil
 BEGIN args_GetTickCount_str
-V args_GetTickCount_str|r|511912416.000000
+V args_GetTickCount_str|r|511963872.000000
 END args_GetTickCount_str
 BEGIN args_GetTickCount_num
-V args_GetTickCount_num|r|511912416.000000
+V args_GetTickCount_num|r|511963872.000000
 END args_GetTickCount_num
 BEGIN args_GetTickCount_tab
-V args_GetTickCount_tab|r|511912416.000000
+V args_GetTickCount_tab|r|511963872.000000
 END args_GetTickCount_tab
 BEGIN args_GetTickCount_fn
-V args_GetTickCount_fn|r|511912416.000000
+V args_GetTickCount_fn|r|511963872.000000
 END args_GetTickCount_fn
 BEGIN args_GetTranslationMode_none
 V args_GetTranslationMode_none|r|0.000000
@@ -9897,22 +10031,22 @@ BEGIN args_ReadRegistryValue_p1_tab
 V args_ReadRegistryValue_p1_tab|r|nil
 END args_ReadRegistryValue_p1_tab
 BEGIN args_ResReport_none
-V args_ResReport_none|r|10864505.000000
+V args_ResReport_none|r|11194851.000000
 END args_ResReport_none
 BEGIN args_ResReport_nil
-V args_ResReport_nil|r|10865291.000000
+V args_ResReport_nil|r|11195637.000000
 END args_ResReport_nil
 BEGIN args_ResReport_str
-V args_ResReport_str|r|10866067.000000
+V args_ResReport_str|r|11196413.000000
 END args_ResReport_str
 BEGIN args_ResReport_num
-V args_ResReport_num|r|10866843.000000
+V args_ResReport_num|r|11197189.000000
 END args_ResReport_num
 BEGIN args_ResReport_tab
-V args_ResReport_tab|r|10867723.000000
+V args_ResReport_tab|r|11198069.000000
 END args_ResReport_tab
 BEGIN args_ResReport_fn
-V args_ResReport_fn|r|10868496.000000
+V args_ResReport_fn|r|11198842.000000
 END args_ResReport_fn
 BEGIN args_ResetTextures_none
 V args_ResetTextures_none|r|nil
@@ -14953,7 +15087,7 @@ BEGIN args_ceil_fn
 ERROR args_ceil_fn bad argument #1 to function `ceil' (number expected)
 FAILED args_ceil_fn
 BEGIN args_collectgarbage_none
-V args_collectgarbage_none|r|6688.000000
+V args_collectgarbage_none|r|3389.000000
 END args_collectgarbage_none
 BEGIN args_collectgarbage_nil
 ERROR args_collectgarbage_nil bad argument #1 to function `collectgarbage' (number expected)
@@ -14989,7 +15123,7 @@ BEGIN args_cos_fn
 ERROR args_cos_fn bad argument #1 to function `cos' (number expected)
 FAILED args_cos_fn
 BEGIN args_date_none
-V args_date_none|r|"11/05/26 23:24:31"
+V args_date_none|r|"11/05/26 23:25:23"
 END args_date_none
 BEGIN args_date_nil
 ERROR args_date_nil bad argument #1 to function `date' (string expected)
@@ -15755,10 +15889,10 @@ BEGIN args_tostring_num
 V args_tostring_num|r|"1.5"
 END args_tostring_num
 BEGIN args_tostring_tab
-V args_tostring_tab|r|"table: 040C5E5C"
+V args_tostring_tab|r|"table: 0ACDD83C"
 END args_tostring_tab
 BEGIN args_tostring_fn
-V args_tostring_fn|r|"function: 03DB658C"
+V args_tostring_fn|r|"function: 04092D3C"
 END args_tostring_fn
 BEGIN args_type_none
 ERROR args_type_none API error - attempt to push a NOOBJECT
@@ -15778,4 +15912,4 @@ END args_type_tab
 BEGIN args_type_fn
 V args_type_fn|r|"function" -4.000000
 END args_type_fn
-SUMMARY 4839 tests, 255 failed
+SUMMARY 4870 tests, 255 failed

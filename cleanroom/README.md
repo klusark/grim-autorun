@@ -30,7 +30,8 @@ by address. `chore_short` once differed in one run out of seven, so it may need 
   `GrimDataDir` at the run folder and sets `good_times` (no CD check).
   `run.py` does not start if a `GRIMFANDANGO.exe` is running already, and it kills only the process it started.
 - **ScummVM:** a build with `scummvm/grim-test-data.patch` (a detection entry for the marker file `grimtestdata.txt`,
-  flag `GF_TESTDATA`: no `gfupd101.exe`, no `grim-patch.lab`, no md5 check, loose files and the folder's own LABs).
+  flag `GF_TESTDATA`: no `gfupd101.exe`, no `grim-patch.lab`, no md5 check, loose files and the folder's own LABs;
+  `PrintDebug("CRSNAP:<file>")` saves a picture of the screen).
   `scummvm/build.sh` builds it in the worktree `~/scummvm-cleanroom` (`git worktree add --detach ../scummvm-cleanroom
   <branch>` and `git apply` the patch first). `SCUMMVM=` selects another exe. Without `--sim-fps` (branches without the
   autorun options) the frame times are real ones and the per-frame values do not match.
@@ -51,9 +52,10 @@ run from source text (the exe has the Lua 3.1 parser).
 |---|---|
 | `run.py` | build, run either engine, compare |
 | `compare.py` | extracts the CR lines from an engine log, compares two runs (`--tol`, default 1e-6) |
+| `snaps.py` | pictures of the screen (`cr_snap`): reads the .bmp files and logs the box of the bright pixels |
 | `formats.py` | writers: LAB, grim.tab (RCNE), .bm/.zbm (raw, RGB565), .cmp, text .set, text .cos, binary and text .3do (no faces; a header or radius of your own if asked; `model_bounds` works out the box as the original does) |
 | `assets.py` | the data: three sets (`cr_flat`, `cr_edge`, `cr_stair`), backgrounds, the text table, `cr_luav.cos` |
-| `lua/_system.lua` | the runner (`cr_test`, `cr_log`, `cr_frames`, `cr_until`) |
+| `lua/_system.lua` | the runner (`cr_test`, `cr_log`, `cr_frames`, `cr_until`, `cr_snap`) |
 | `tests/*.lua` | the tests |
 | `expected/original.log` | the original's results, the reference for ScummVM runs |
 | `expected/unstable.txt` | values the original does not repeat run to run (not compared) |
@@ -80,6 +82,12 @@ Before a run, `run.py` parses every Lua file with the game's own LUA.DLL (`autor
 parse would otherwise drop its tests with one ERROR line. A test that raises an error writes `ERROR` and `FAILED`, and the
 runner goes on. Log what you see and let the comparison decide. Test names, keys and the order of the keys must not depend
 on the engine. A key logged twice in a test is compared as `key`, `key#2`, ...
+
+What Lua cannot read can be looked at on the screen: `cr_snap(key)` saves a picture of it, and run.py logs under `key` the
+box of its bright pixels (`x0 y0 x1 y1`, or `none`). The tests draw white text on the dark backgrounds, so the box is that
+of the text. The call is `PrintDebug("CRSNAP:<file>")`: on the original, patch.dll saves the back buffer with the game's own
+screenshot function (`Render_SaveScreenshotBmp` 0x487340, the Backspace+S debug key; only on v1.01, whose bytes it checks);
+on ScummVM, the test patch draws the scene and saves it (ScummVM's picture is grey, which does not change the box).
 
 `compare.py` puts a test in one of three classes. `same`: equal within 1e-6. `close`: all differing values are numbers
 within 1e-3 (`--close`). `DIFF`: anything else.
@@ -224,6 +232,16 @@ Hand-written tests, besides the per-frame walk and turn values:
   sphere cases within 1e-3. `hdr_ctrz_both_sphere` goes from the same to within 1e-3; no test differs that did not.
   The lying box (`cr_rotx`) as a wall is too low (0.3 m) for the mover's sphere: no engine collides with it. The two engines
   turn a node the same way (the head node of `cr_trotx` is at the same place on both).
+- Text position (`text_pos.lua`, with `cr_snap`). The original places the line of an actor once, when `SayLine` starts
+  (`Actor_CreateSubtitle` 0x48b2e0): above the screen rectangle the actor was drawn in; for an actor without a costume, in
+  the current set, centred above the point its position projects to (hidden or not); else, and when the point is off the
+  screen or behind the camera, at the off-screen position. The `x` and `y` of SayLine's table replace that point (`y` is
+  then the top of the text). The text is kept 40 pixels from the sides and 10 from the top and bottom, and wraps when it
+  does not fit. ScummVM puts the line of an actor without a costume at the top left corner (the screen box of no costume is
+  0, 0), ignores the table's `x` and `y`, puts a hidden actor's line at the off-screen position, and wraps a line wider than
+  the screen into six at the left; the original keeps it on one line (11 to 627). The off-screen position matches, except
+  at the corners (a few pixels). A model without faces is never drawn: both use the off-screen position for an actor with
+  such a costume, so the placement above a drawn actor is not tested yet.
 - `MakeSectorActive` with a number does nothing on the original. A sector switched on stays on across a change of set on the
   original; ScummVM resets it. The current setup is kept across a change of set on the original; ScummVM goes back to 0.
   `GetCurrentSetup` of a set that is not current is 0 on the original and nil on ScummVM.
