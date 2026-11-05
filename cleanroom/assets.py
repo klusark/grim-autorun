@@ -82,6 +82,45 @@ HEADER_MODELS = {
 }
 
 
+
+def _body(pos=(0, 0, 0), pivot=(0, 0, 0), rot=(0, 0, 0)):
+    """BOX_MODEL's nodes with the body node moved, pivoted or turned (pitch, yaw, roll)."""
+    return [BOX_MODEL[2][0], ("body", 0, 0, pos, pivot, rot)] + BOX_MODEL[2][2:]
+
+
+# A wide body (1 x 0.2 x 1.8 m) for a turn about z to show in the bounding box
+WIDE_BODY = [("body", F.box(1.0, 0.2, 1.8))]
+
+# The two formats of a model: binary (LDOM, F.model3do) and text (F.model3do_text). The original works out the bounding box,
+# centre and radius from the vertices through the full node transforms after either (rdModel3_LoadPostProcess), and reads
+# neither the binary header nor the text radius. ScummVM reads the binary header; from a text model it reads the radius and
+# works out the box from the vertices moved by each mesh's position only (Model::loadText), without the node's rotation.
+# name: (format, meshes, nodes, binary header or text radius)
+FORMAT_MODELS = {
+    # the body box in text: the same as cr_box.3do
+    "cr_tbox": ("text", BOX_MODEL[1], BOX_MODEL[2], None),
+    # the radius of the file 3 m, in either format (the box where the mesh has it)
+    "cr_trad": ("text", BOX_MODEL[1], BOX_MODEL[2], 3.0),
+    "cr_brad": ("binary", BOX_MODEL[1], BOX_MODEL[2], dict(radius=3.0)),
+    # the body node 0.5 m to +x, and the box 1 m up by its vertices, in text (cr_nodex and cr_float are the binary ones)
+    "cr_tnodex": ("text", BOX_MODEL[1], _body(pos=(0.5, 0, 0)), None),
+    "cr_tfloat": ("text", [("body", F.box(0.4, 0.3, 0.6, 1.0))], BOX_MODEL[2], None),
+    # the wide body, as it is and turned 90 degrees about z (yaw): 0.2 m along x and 1 m along y
+    "cr_wide": ("binary", WIDE_BODY, BOX_MODEL[2], None),
+    "cr_rot": ("binary", WIDE_BODY, _body(rot=(0, 90, 0)), None),
+    "cr_trot": ("text", WIDE_BODY, _body(rot=(0, 90, 0)), None),
+    # the body box turned 90 degrees about x (pitch): lying along y, 0.3 m high
+    "cr_rotx": ("binary", BOX_MODEL[1], _body(rot=(90, 0, 0)), None),
+    "cr_trotx": ("text", BOX_MODEL[1], _body(rot=(90, 0, 0)), None),
+    # the body node's pivot 0.5 m to +x
+    "cr_piv": ("binary", BOX_MODEL[1], _body(pivot=(0.5, 0, 0)), None),
+    "cr_tpiv": ("text", BOX_MODEL[1], _body(pivot=(0.5, 0, 0)), None),
+    # the pivot 0.5 m to +x and a yaw of 90 degrees: the box to +y if the turn is about the node (as ScummVM draws it)
+    "cr_prot": ("binary", BOX_MODEL[1], _body(pivot=(0.5, 0, 0), rot=(0, 90, 0)), None),
+    "cr_tprot": ("text", BOX_MODEL[1], _body(pivot=(0.5, 0, 0), rot=(0, 90, 0)), None),
+}
+
+
 def files():
     out = {}
     out["cr_box.3do"] = F.model3do(*BOX_MODEL)
@@ -94,7 +133,12 @@ def files():
     out["cr_nodex.3do"] = F.model3do("cr_nodex.3do", BOX_MODEL[1],
                                      [BOX_MODEL[2][0], ("body", 0, 0, (0.5, 0, 0), (0, 0, 0), (0, 0, 0))] + BOX_MODEL[2][2:])
     out["cr_float.3do"] = F.model3do("cr_float.3do", [("body", F.box(0.4, 0.3, 0.6, 1.0))], BOX_MODEL[2])
-    for m in list(HEADER_MODELS) + ["cr_meshx", "cr_nodex", "cr_float"]:
+    for m, (fmt, meshes, nodes, h) in FORMAT_MODELS.items():
+        if fmt == "text":
+            out[m + ".3do"] = F.model3do_text(m + ".3do", meshes, nodes, h)
+        else:
+            out[m + ".3do"] = F.model3do(m + ".3do", meshes, nodes, h)
+    for m in list(HEADER_MODELS) + ["cr_meshx", "cr_nodex", "cr_float"] + list(FORMAT_MODELS):
         out[m + ".cos"] = F.costume([("MMDL", -1, m + ".3do"), ("LUAV", -1, "CR_LV")], BOX_COSTUME[1])
     # a small bitmap of its own for object states and images: the original frees a bitmap with the object state that used
     # it, and a set whose background it was crashes when loaded afterwards

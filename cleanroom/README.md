@@ -51,7 +51,7 @@ run from source text (the exe has the Lua 3.1 parser).
 |---|---|
 | `run.py` | build, run either engine, compare |
 | `compare.py` | extracts the CR lines from an engine log, compares two runs (`--tol`, default 1e-6) |
-| `formats.py` | writers: LAB, grim.tab (RCNE), .bm/.zbm (raw, RGB565), .cmp, text .set, text .cos, binary .3do (no faces; a header of your own if asked) |
+| `formats.py` | writers: LAB, grim.tab (RCNE), .bm/.zbm (raw, RGB565), .cmp, text .set, text .cos, binary and text .3do (no faces; a header or radius of your own if asked; `model_bounds` works out the box as the original does) |
 | `assets.py` | the data: three sets (`cr_flat`, `cr_edge`, `cr_stair`), backgrounds, the text table, `cr_luav.cos` |
 | `lua/_system.lua` | the runner (`cr_test`, `cr_log`, `cr_frames`, `cr_until`) |
 | `tests/*.lua` | the tests |
@@ -202,6 +202,24 @@ Hand-written tests, besides the per-frame walk and turn values:
   mode box walks through a box wall and takes another path around a sphere wall; with 7240c11 every mover mode gives the
   same result. grim-actor-fixes matches the original for every walk forward. No ScummVM build collides during
   `WalkActorTo` (`cm_to_*`), and the original does.
+- Model formats (`model_format.lua`, models in assets.py `FORMAT_MODELS`). The original reads binary (LDOM) and text .3do
+  (`rdModel3_Load` 0x40a980 picks by the magic) and after either works the box, the centre and the radius out from the
+  vertices through the full node transforms (`rdModel3_AccumulateNodeBounds` 0x40c710: rotation, position and pivot). It
+  uses neither the radius line of a text model nor the header of a binary one. ScummVM reads the binary header; from a text
+  model it reads the radius and works the box out from each mesh's position plus its vertices, without the node's
+  rotation (`Model::loadText`). Results, against the original:
+
+  | tests | ScummVM |
+  |---|---|
+  | `mf_cr_tbox_*`, `cr_tnodex` walls, `cr_piv`/`cr_tpiv` walls, `cr_rot` (binary, turned) | same: text and binary agree when no node is turned |
+  | `mf_cr_trad_*`, `mf_cr_brad_*` sphere (radius 3 m in the file, text or binary) | differ: ScummVM uses the file's radius, the original the box's half diagonal |
+  | `mf_cr_trot_wall_box`, `mf_cr_tprot_wall_box`, `mf_cr_trotx_mover_sphere` (text, node turned) | differ: ScummVM's box for the text model is the unturned one; the binary ones are the same |
+  | `mf_cr_tnodex`, `cr_piv`, `cr_tpiv`, `cr_prot`, `cr_tprot` as the mover, sphere | differ in either format: `Actor::getSphereInfo` puts the sphere at `_pos + _center` without turning the centre with the actor's yaw (20 degrees here; the box path does turn it) |
+  | `mf_cr_float_*`, `mf_cr_tfloat_*` (box from 1 m up) | differ in either format (as `hdr_float_*`) |
+  | `mf_rects` | `GetActorNodeLocation` on the original depends on the format: world positions for a text model (as ScummVM, but with the node's pivot counted twice: `cr_tpiv` node 1 at 1.5 m, ScummVM 1.0), the node offsets for a binary one (node 0 at 8 times the actor's position) |
+
+  The lying box (`cr_rotx`) as a wall is too low (0.3 m) for the mover's sphere: no engine collides with it. The two engines
+  turn a node the same way (the head node of `cr_trotx` is at the same place on both).
 - `MakeSectorActive` with a number does nothing on the original. A sector switched on stays on across a change of set on the
   original; ScummVM resets it. The current setup is kept across a change of set on the original; ScummVM goes back to 0.
   `GetCurrentSetup` of a set that is not current is 0 on the original and nil on ScummVM.
