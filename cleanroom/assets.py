@@ -57,8 +57,21 @@ LUAV_COSTUME = (
 )
 
 
+# A model without a picture: a root, a body box 0.4 x 0.3 x 1.8 m, a head node at 1.7 m, an arm node off to the side
+BOX_MODEL = ("cr_box.3do", [("body", F.box(0.4, 0.3, 1.8))],
+             [("root", -1, -1, (0, 0, 0), (0, 0, 0), (0, 0, 0)),
+              ("body", 0, 0, (0, 0, 0), (0, 0, 0), (0, 0, 0)),
+              ("head", -1, 1, (0, 0, 1.7), (0, 0, 0), (0, 0, 0)),
+              ("arm", -1, 1, (0.3, 0.1, 1.2), (0, 0, 0), (0, 0, 30))])
+# the same chores as LUAV_COSTUME, on the model costume (the Lua Variable is component 1)
+BOX_COSTUME = ([("MMDL", -1, "cr_box.3do"), ("LUAV", -1, "CR_LV")],
+               [(name, length, [(1, keys) for _, keys in tracks]) for name, length, tracks in LUAV_COSTUME[1]])
+
+
 def files():
     out = {}
+    out["cr_box.3do"] = F.model3do(*BOX_MODEL)
+    out["cr_box.cos"] = F.costume(*BOX_COSTUME)
     out["cr_luav.cos"] = F.costume(*LUAV_COSTUME)
     out["cr_pal.cmp"] = F.colormap([(i, i, i) for i in range(256)])
     zfar = F.bitmap(W, H, [0xFFFF] * (W * H), fmt=5)

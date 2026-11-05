@@ -1,4 +1,4 @@
-START 58 tests
+START 61 tests
 BEGIN actor_place
 V actor_place|start|0.000000 0.000000 0.000000
 V actor_place|put|1.250000 -0.500000 0.000000
@@ -166,7 +166,7 @@ V strings|concat|"a12.5" "10"
 V strings|ascii|65.000000
 END strings
 BEGIN next_order
-V next_order|order|"49,98,140,7,meche,56,105,olivia,14,manny,eva,119,112,21,70,domino,63,28,velasco,77,126,lupe,42,35,84,glottis,133,salvador,91,chepito,"
+V next_order|order|"49,98,domino,7,velasco,105,lupe,14,63,meche,21,salvador,70,119,chepito,28,glottis,77,126,56,35,133,84,42,olivia,112,manny,eva,91,140,"
 V next_order|globals_counted|1.000000
 END next_order
 BEGIN tasks
@@ -725,6 +725,47 @@ V task_control|unpaused|3.000000
 V task_control|args|"1,two,3"
 V task_control|nested|"o1o2i1o3i2"
 END task_control
+BEGIN model_costume
+V model_costume|costume|"cr_box.cos"
+V model_costume|keys_trace|"0 1 1 1 1 1 2 2 2 2 2 2 2 2 2 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 "
+V model_costume|keys_frames|59.000000
+V model_costume|keys_last|4.000000
+END model_costume
+BEGIN model_nodes
+V model_nodes|root|4.000000 -4.000000 0.000000
+V model_nodes|head|0.000000 0.000000 1.700000
+V model_nodes|arm|0.300000 0.100000 1.200000
+V model_nodes|head_yaw90|0.000000 0.000000 1.700000
+V model_nodes|arm_yaw90|0.300000 0.100000 1.200000
+V model_nodes|arm_tilted|0.300000 0.100000 1.200000
+V model_nodes|rect|640.000000
+END model_nodes
+BEGIN model_collide
+V model_collide|box_f0|0.000000 -1.000000 0.000000
+V model_collide|box_f15|0.000000 -0.745000 0.000000
+V model_collide|box_f30|-1.#IND00 -1.#IND00 -1.#IND00
+V model_collide|box_f45|-1.#IND00 -1.#IND00 -1.#IND00
+V model_collide|box_f60|-1.#IND00 -1.#IND00 -1.#IND00
+V model_collide|box_f75|-1.#IND00 -1.#IND00 -1.#IND00
+V model_collide|box_end|-1.#IND00 -1.#IND00 -1.#IND00
+V model_collide|box_other|0.100000 0.500000 0.000000
+V model_collide|sphere_f0|0.000000 -1.000000 0.000000
+V model_collide|sphere_f15|-0.042799 -1.362689 0.000000
+V model_collide|sphere_f30|-0.063710 -1.360967 0.000000
+V model_collide|sphere_f45|-0.087656 -1.358705 0.000000
+V model_collide|sphere_f60|-0.115063 -1.355734 0.000000
+V model_collide|sphere_f75|-0.146411 -1.351832 0.000000
+V model_collide|sphere_end|-0.182235 -1.346712 0.000000
+V model_collide|sphere_other|0.100000 0.500000 0.000000
+V model_collide|sphere_half_f0|0.000000 -1.000000 0.000000
+V model_collide|sphere_half_f15|0.000000 -0.745000 0.000000
+V model_collide|sphere_half_f30|0.000000 -0.489999 0.000000
+V model_collide|sphere_half_f45|-0.023090 -0.425931 0.000000
+V model_collide|sphere_half_f60|-0.061612 -0.419990 0.000000
+V model_collide|sphere_half_f75|-0.111692 -0.409773 0.000000
+V model_collide|sphere_half_end|-0.176177 -0.392315 0.000000
+V model_collide|sphere_half_other|0.100000 0.500000 0.000000
+END model_collide
 BEGIN sector_active
 V sector_active|off_before|nil
 V sector_active|on_by_name|3.000000 "e_off" 4096.000000
@@ -859,4 +900,4 @@ V walk_interrupted|moving_after_put|nil
 V walk_interrupted|moving_next|nil
 V walk_interrupted|after_10|-0.841573 -0.903444 0.000000
 END walk_interrupted
-SUMMARY 58 tests, 1 failed
+SUMMARY 61 tests, 1 failed
