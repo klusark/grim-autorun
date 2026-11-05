@@ -197,6 +197,11 @@ Hand-written tests, besides the per-frame walk and turn values:
   So dc7e5c2 puts the spheres where the original has them for real models, whose header matches their mesh. Two
   differences remain. ScummVM should work the box, the centre and the radius out from the mesh as the original does, not
   read them from the file. And it should not leave the actor off the floor after a sphere push with a z part.
+- Collision mode of the mover (`collision_mode.lua`, ScummVM commit 7240c11; report for the PR in
+  `reports/7240c11-collision-mode.md`). On the original, only the mode of the other actor counts. On master, a mover with
+  mode box walks through a box wall and takes another path around a sphere wall; with 7240c11 every mover mode gives the
+  same result. grim-actor-fixes matches the original for every walk forward. No ScummVM build collides during
+  `WalkActorTo` (`cm_to_*`), and the original does.
 - `MakeSectorActive` with a number does nothing on the original. A sector switched on stays on across a change of set on the
   original; ScummVM resets it. The current setup is kept across a change of set on the original; ScummVM goes back to 0.
   `GetCurrentSetup` of a set that is not current is 0 on the original and nil on ScummVM.
