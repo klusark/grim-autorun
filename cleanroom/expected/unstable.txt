@@ -17,6 +17,7 @@ args_GetTickCount_none|r
 args_GetTickCount_num|r
 args_GetTickCount_str|r
 args_GetTickCount_tab|r
+args_GetVisibleThings_fn|r
 args_ResReport_fn|r
 args_ResReport_nil|r
 args_ResReport_none|r

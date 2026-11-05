@@ -170,8 +170,15 @@ def run_engine(engine, only=None, fresh=False):
             suspect = name
             continue
         print("%s: %s crashed or hung the engine twice; skipped, run again" % (engine, name))
-        skip.add(name)
-        new.append(name)
+        group = [name]
+        # (the valid call of a builtin crashes: every call that changes one position of it is skipped with it)
+        m = re.match(r"^(args_.+)_p0$", name)
+        if m:
+            text = open(os.path.join(HERE, "tests", "zz_args.lua")).read()
+            group += sorted(set(re.findall(r'cr_test\("(%s_p[1-9][0-9]*_[a-z]+)"' % re.escape(m.group(1)), text)))
+            print("%s: and the %d calls of its positions" % (engine, len(group) - 1))
+        skip.update(group)
+        new.extend(group)
         suspect = None
     if engine == "original" and new:
         with open(CRASHERS, "w", newline="\n") as f:
