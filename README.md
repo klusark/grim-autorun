@@ -33,8 +33,8 @@ open differences and the pitfalls.
 | `cleanroom/` | Engine tests on both engines with none of the game's data: our own Lua, sets, bitmaps, costumes (see its README) |
 | `emi_autorun/` | Escape from Monkey Island playthrough, built on the Grim libraries (see its `PROGRESS.md`) |
 | `crashdbg/` | Windows helpers for the original exe: debugger launcher (`grimrun2`), breakpoint tracer (`grimtrace`), iMuse tracer (`imtrace`), memory read/write, F12 sender |
-| `patches/patch/` | Source of `patch.dll` (`patch.c`: logging to `grimdebug.log`, frame limiter; `config.c`: grim.ini instead of the registry), loaded by the patched game. Build steps are in the header of `launcher/grimlaunch.cpp` (32-bit gcc) |
-| `patches/launcher/` | `grimlaunch.cpp`: starts the original v1.01 exe suspended and patches it in memory (debuglog, simtime, config on by default; framelimit with `--with`; the game's `-w` window switch is added by default). Writes `grim.ini` from the registry when it is missing. Also starts EMI's v1.1 `Monkey4.exe` windowed (`-w`, F11 runs `grimpatch.bin`, and the GOG 640x480 compatibility setting is undone in memory), with PrintDebug to `grimdebug.log`, a fixed frame time, no disc check and the exe's folder as its data folder |
+| `launcher/` (patch.dll) | Source of `patch.dll` (`patch.c`: logging to `grimdebug.log`, frame limiter; `config.c`: grim.ini instead of the registry), loaded by the patched game. Build steps are in the header of `grimlaunch.cpp` (32-bit gcc) |
+| `launcher/` | `grimlaunch.cpp`: starts the original v1.01 exe suspended and patches it in memory (debuglog, simtime, config on by default; framelimit with `--with`; the game's `-w` window switch is added by default). Writes `grim.ini` from the registry when it is missing. Also starts EMI's v1.1 `Monkey4.exe` windowed (`-w`, F11 runs `grimpatch.bin`, and the GOG 640x480 compatibility setting is undone in memory), with PrintDebug to `grimdebug.log`, a fixed frame time, no disc check and the exe's folder as its data folder |
 | `tools/` | Script analysis: `digest.py` (state-changing lines per function), `sectors.py` (plot sector dumps), `safe_solver.py`, `items.py` |
 | `gt.sh` | Look up voice text by id or regex in `grim_text.txt` |
 | `lua31dis.py`, `delua.exe` | Lua 3.1 bytecode disassembler and decompiler |
@@ -49,8 +49,8 @@ open differences and the pitfalls.
 - Grim Fandango data in `C:\GOG Games\GRIMDATA`, and the decompiled scripts in `C:\Users\Joel\grim_lua_src`.
 - The original exe and the patched copies. `.gitignore` excludes the binaries, game data, extracted text,
   saves, logs and captures, so a fresh clone has none of them. You have to rebuild or re-extract them:
-  - Extract the v1.01 exe from `GFUPD101.EXE`, then run it with `patches/launcher/grimlaunch.exe GRIMFANDANGO.exe` (see HANDOFF.md).
-  - Rebuild the C tools in `crashdbg/` with gcc (`patch.dll` and `grimlaunch.exe` build as described in `patches/launcher/grimlaunch.cpp`).
+  - Extract the v1.01 exe from `GFUPD101.EXE`, then run it with `launcher/grimlaunch.exe GRIMFANDANGO.exe` (see HANDOFF.md).
+  - Rebuild the C tools in `crashdbg/` with gcc (`patch.dll` and `grimlaunch.exe` build as described in `launcher/grimlaunch.cpp`).
 
 ## Quick start
 

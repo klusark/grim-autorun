@@ -389,15 +389,15 @@ def newer(target, sources):
 def prepare_tools(d):
     """patch.dll and grimlaunch.exe, built from the sources of this repository (an old grimlaunch.exe lacks the windowed patch
     and takes the whole screen), when they are older than the sources."""
-    pdir = os.path.join(ROOT, "patches")
-    dll_src = [os.path.join(pdir, "patch", "patch.c"), os.path.join(pdir, "patch", "config.c")]
+    pdir = os.path.join(ROOT, "launcher")
+    dll_src = [os.path.join(pdir, "patch.c"), os.path.join(pdir, "config.c")]
     dll = os.path.join(d, "patch.dll")
     if not newer(dll, dll_src):
         env = dict(os.environ, PATH=MINGW32 + os.pathsep + os.environ.get("PATH", ""))
         subprocess.run([os.path.join(MINGW32, "gcc.exe"), "-shared", "-O2", "-static-libgcc", "-o", dll] + dll_src +
                        ["-luser32", "-lgdi32", "-lwinmm"], check=True, env=env)
         print("original: built patch.dll")
-    launcher_src = [os.path.join(pdir, "launcher", "grimlaunch.cpp")]
+    launcher_src = [os.path.join(pdir, "grimlaunch.cpp")]
     launcher = os.path.join(d, "grimlaunch.exe")
     if not newer(launcher, launcher_src):
         env = dict(os.environ, PATH=UCRT64 + os.pathsep + os.environ.get("PATH", ""))
