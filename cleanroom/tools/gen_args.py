@@ -11,6 +11,7 @@ The original is the reference: where ScummVM accepts what the original refuses, 
 Lua errors differ. A call that crashes the original is found by run.py (expected/crashers.txt) and skipped on both.
 
 DENY: builtins that would end or block the run, change the runner itself or touch files outside the test folder."""
+import json
 import os
 import re
 import sys
@@ -60,6 +61,62 @@ def family_patterns(name):
     return out
 
 
+# Every position of a builtin: valid arguments of the kinds tools/signatures.py found in the game's scripts (OVERRIDES
+# where the guess is wrong), with one position at a time replaced by a wrong value (nil, a string, a number, a table; for
+# numbers also -1 and 1e9). Keys: p<position>_<what>.
+VALID = {"actor": "CR_ARGS_ACTOR", "number": "0", "costume": '"cr_box.cos"', "set": '"cr_flat.set"', "string": '"x"',
+         "table": "{ }", "bool": "TRUE", "font": "cr_args_font()", "bitmap": '"cr_obj.bm"', "light": '"cr_light"'}
+BAD = [("nil", "nil"), ("str", '"cr"'), ("num", "1.5"), ("tab", "{ }"), ("neg", "-1"), ("big", "1000000000")]
+OVERRIDES = {
+    "PlayActorChore": ["actor", "number", "costume"], "PlayActorChoreLooping": ["actor", "number", "costume"],
+    "StopActorChore": ["actor", "number", "costume"], "CompleteActorChore": ["actor", "number", "costume"],
+    "IsActorChoring": ["actor", "number", "bool", "costume"], "SetActorChoreLooping": ["actor", "number", "bool", "costume"],
+    "FadeInChore": ["actor", "costume", "number", "number"], "FadeOutChore": ["actor", "costume", "number", "number"],
+    "SetActorCostume": ["actor", "costume"], "PushActorCostume": ["actor", "costume"], "GetActorCostume": ["actor", "number"],
+    "SetActorWalkChore": ["actor", "number", "costume"], "SetActorRestChore": ["actor", "number", "costume"],
+    "SetActorTurnChores": ["actor", "number", "number", "costume"], "SetActorTalkChore": ["actor", "number", "number", "costume"],
+    "SetActorMumblechore": ["actor", "number", "costume"], "SayLine": ["actor", "string", "table"],
+    "ImStartSound": ["string", "number", "number"], "SetSoundPosition": ["string", "number", "number", "number"],
+    "PutActorInSet": ["actor", "set"], "MakeCurrentSet": ["set"], "GetCurrentSetup": ["set"], "LockSet": ["set"],
+    "SetActorRot": ["actor", "number", "number", "number", "bool"], "ActorLookAt": ["actor", "number", "number", "number", "number"],
+    "MakeTextObject": ["string", "table"], "LockFont": ["string"], "GetPointSector": ["number", "number", "number", "number"],
+    "IsPointInSector": ["number", "number", "number", "string"], "MakeSectorActive": ["string", "bool"],
+    "SetActorHead": ["actor", "number", "number", "number", "number", "number", "number"],
+    "WalkActorVector": ["actor", "actor", "number", "number", "number", "number"],
+    "NewObjectState": ["number", "number", "bitmap", "bitmap", "bool"], "GetImage": ["bitmap"],
+}
+
+
+def signatures():
+    path = os.path.join(HERE, "tools", "signatures.json")
+    sigs = json.load(open(path)) if os.path.exists(path) else {}
+    sigs.update(OVERRIDES)
+    return sigs
+
+
+def position_patterns(name, sigs):
+    sig = sigs.get(name)
+    if not sig:
+        return []
+    sig = list(sig)
+    # (a light builtin names its light first)
+    if "Light" in name and sig[0] == "string":
+        sig[0] = "light"
+    # (p0: all positions valid. When it crashes an engine, run.py skips the whole p group of the builtin at once)
+    out = [("p0", ", ".join(VALID.get(x, "0") for x in sig))]
+    for i, k in enumerate(sig):
+        for bad, expr in BAD:
+            if (bad in ("str",) and k in ("string", "costume", "set")) or (bad in ("num", "neg", "big") and k != "number") \
+                    or (bad == "tab" and k == "table"):
+                continue
+            if bad == "str" and k in ("bitmap", "light"):
+                continue
+            args = [VALID.get(x, "0") for x in sig]
+            args[i] = expr
+            out.append(("p%d_%s" % (i + 1, bad), ", ".join(args)))
+    return out
+
+
 def builtins():
     names = []
     log = sys.argv[1] if len(sys.argv) > 1 else os.path.join(HERE, "expected", "original.log")
@@ -88,6 +145,24 @@ def main():
            "end",
            'cr_test("args_setup", cr_t_args_setup)',
            "",
+           "-- (each builtin gets an actor of its own, and every call starts from the same state: the set, the actor at the",
+           "-- origin facing 0. Otherwise a call that breaks the shared actor makes the calls after it fail, and run.py blames them)",
+           "cr_args_for = function(name)",
+           "\tif CR_ARGS_FOR ~= name then",
+           "\t\tCR_ARGS_FOR = name",
+           "\t\tif CR_ARGS_ACTOR then",
+           "\t\t\tPutActorInSet(CR_ARGS_ACTOR, nil)",
+           "\t\tend",
+           '\t\tMakeCurrentSet("cr_flat.set")',
+           '\t\tCR_ARGS_ACTOR = LoadActor("cr_args_" .. name)',
+           '\t\tPutActorInSet(CR_ARGS_ACTOR, "cr_flat.set")',
+           "\t\tSetActorFollowBoxes(CR_ARGS_ACTOR, TRUE)",
+           '\t\tSetActorCostume(CR_ARGS_ACTOR, "cr_box.cos")',
+           "\tend",
+           "\tPutActorAt(CR_ARGS_ACTOR, 0, 0, 0)",
+           "\tSetActorRot(CR_ARGS_ACTOR, 0, 0, 0)",
+           "end",
+           "",
            "-- (fresh handles for the families of tools/gen_args.py)",
            "cr_args_font = function()",
            '\treturn LockFont("cr_font.laf")',
@@ -109,12 +184,14 @@ def main():
            "end",
            ""]
     n = 0
+    sigs = signatures()
     for name in builtins():
-        pats = PATTERNS + (ACTOR_PATTERNS if "Actor" in name else []) + family_patterns(name)
+        pats = PATTERNS + (ACTOR_PATTERNS if "Actor" in name else []) + family_patterns(name) + position_patterns(name, sigs)
         for key, args in pats:
             n += 1
             fn = "cr_t_args_%d" % n
             out += ["%s = function()" % fn,
+                    '\tcr_args_for("%s")' % name,
                     "\tlocal r1, r2, r3, r4 = %s(%s)" % (name, args),
                     '\tcr_log("r", r1, r2, r3, r4)',
                     "end",

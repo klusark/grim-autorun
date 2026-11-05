@@ -1,0 +1,852 @@
+{
+"ActivateActorShadow": [
+"actor",
+"number",
+"bool"
+],
+"ActorLookAt": [
+"actor",
+"actor",
+"number",
+"number",
+"number"
+],
+"ActorPuckOrient": [
+"actor",
+"bool"
+],
+"ActorToClean": [
+"actor"
+],
+"AddShadowPlane": [
+"actor",
+"string"
+],
+"AttachToResources": [],
+"BlastImage": [
+"number",
+"number",
+"number",
+"bool"
+],
+"BlastMultipleLines": [
+"number",
+"table",
+"number",
+"table",
+"number",
+"table"
+],
+"BlastRect": [
+"number",
+"number",
+"number",
+"number",
+"table"
+],
+"BlastText": [
+"string",
+"table"
+],
+"BundleResource": [
+"string"
+],
+"ChangePrimitive": [
+"number",
+"table"
+],
+"ChangeTextObject": [
+"string",
+"string",
+"number"
+],
+"CheckFirstTime": [
+"string"
+],
+"CheckForCD": [
+"set",
+"bool",
+"number"
+],
+"CheckForFile": [
+"number"
+],
+"CleanBuffer": [],
+"CommonButtonHandler": [
+"number",
+"number",
+"number"
+],
+"CommonCameraChange": [
+"number",
+"number"
+],
+"CommonEnter": [],
+"CommonExit": [],
+"CommonPostCameraChange": [
+"number"
+],
+"CompleteActorChore": [
+"actor",
+"number",
+"number"
+],
+"DetachFromResources": [],
+"DimRegion": [
+"number",
+"number",
+"number",
+"number",
+"number"
+],
+"DimScreen": [],
+"DisableControl": [
+"number"
+],
+"Display": [],
+"Doorman": [],
+"DrawLine": [
+"number",
+"number",
+"number",
+"number",
+"table"
+],
+"DrawPolygon": [
+"table",
+"table"
+],
+"DrawRectangle": [
+"number",
+"number",
+"number",
+"number",
+"table"
+],
+"DriveActorTo": [
+"actor",
+"number",
+"number",
+"number"
+],
+"EnableControl": [
+"number"
+],
+"EnableDebugKeys": [],
+"EngineDisplay": [
+"bool"
+],
+"Enumerate3DDevices": [
+"number"
+],
+"EnumerateVideoDevices": [],
+"ExpireText": [],
+"FadeInChore": [
+"actor",
+"costume",
+"number",
+"number"
+],
+"FadeOutChore": [
+"actor",
+"costume",
+"number",
+"number"
+],
+"FileFindDispose": [],
+"FileFindFirst": [
+"number",
+"string"
+],
+"FileFindNext": [],
+"FlushControls": [],
+"ForceRefresh": [],
+"FreeImage": [
+"number"
+],
+"FreeObjectState": [
+"number"
+],
+"FunctionName": [
+"number"
+],
+"GetActorCostume": [
+"actor",
+"number"
+],
+"GetActorCostumeDepth": [
+"actor"
+],
+"GetActorLookRate": [
+"actor"
+],
+"GetActorNodeLocation": [
+"actor",
+"number"
+],
+"GetActorPos": [
+"actor"
+],
+"GetActorPuckVector": [
+"actor"
+],
+"GetActorRect": [
+"actor"
+],
+"GetActorRot": [
+"actor"
+],
+"GetActorSector": [
+"actor",
+"number"
+],
+"GetActorTalkColor": [
+"actor"
+],
+"GetActorTimeScale": [
+"actor"
+],
+"GetActorWalkRate": [
+"actor"
+],
+"GetActorYawToPoint": [
+"actor",
+"number",
+"number",
+"number"
+],
+"GetAngleBetweenActors": [
+"actor",
+"actor"
+],
+"GetAngleBetweenVectors": [
+"number",
+"number"
+],
+"GetCameraActor": [],
+"GetCameraLookVector": [
+"number"
+],
+"GetCameraPosition": [],
+"GetColorComponents": [
+"number"
+],
+"GetControlState": [
+"number"
+],
+"GetCurrentScript": [],
+"GetCurrentSetup": [
+"set"
+],
+"GetDiskFreeSpace": [],
+"GetImage": [
+"string"
+],
+"GetPointSector": [
+"number",
+"number",
+"number"
+],
+"GetSaveGameData": [
+"number"
+],
+"GetSaveGameImage": [
+"number"
+],
+"GetSectorOppositeEdge": [
+"actor",
+"number"
+],
+"GetShrinkPos": [
+"number",
+"number",
+"number",
+"number"
+],
+"GetSpeechMode": [],
+"GetSystemFonts": [],
+"GetTextCharPosition": [
+"number",
+"number"
+],
+"GetTextObjectDimensions": [
+"number"
+],
+"GetTextSpeed": [],
+"GetTranslationMode": [],
+"GetVideoDevices": [],
+"GetVisibleThings": [],
+"ImFadeParam": [
+"number",
+"number",
+"number",
+"number"
+],
+"ImGetMusicVol": [],
+"ImGetParam": [
+"number",
+"number"
+],
+"ImGetSfxVol": [],
+"ImGetVoiceVol": [],
+"ImPause": [],
+"ImResume": [],
+"ImSetMusicVol": [
+"number"
+],
+"ImSetParam": [
+"number",
+"number",
+"number"
+],
+"ImSetSequence": [
+"number"
+],
+"ImSetSfxVol": [
+"number"
+],
+"ImSetState": [
+"number"
+],
+"ImSetVoiceEffect": [
+"string"
+],
+"ImSetVoiceVol": [
+"number"
+],
+"ImStartSound": [
+"number",
+"number",
+"number"
+],
+"ImStopAllSounds": [],
+"ImStopSound": [
+"number"
+],
+"InputDialog": [
+"string",
+"string",
+"number"
+],
+"IrisDown": [
+"number",
+"number",
+"number"
+],
+"IrisUp": [
+"number",
+"number",
+"number"
+],
+"Is3DHardwareEnabled": [],
+"IsActorChoring": [
+"actor",
+"number",
+"number",
+"number"
+],
+"IsActorInSector": [
+"actor",
+"number"
+],
+"IsActorMoving": [
+"actor"
+],
+"IsActorResting": [
+"actor"
+],
+"IsActorTurning": [
+"actor"
+],
+"IsFullscreenMoviePlaying": [],
+"IsMessageGoing": [
+"actor"
+],
+"IsMoviePlaying": [],
+"IsPointInSector": [
+"number",
+"number",
+"number",
+"string"
+],
+"IsSoundPlaying": [
+"number"
+],
+"JustLoaded": [],
+"KillActorShadows": [
+"actor"
+],
+"KillPrimitive": [
+"number"
+],
+"KillTextObject": [
+"number"
+],
+"LightMgrSetChange": [],
+"LightMgrStartup": [],
+"Load": [
+"number"
+],
+"LoadActor": [
+"number"
+],
+"LoadCostume": [
+"costume"
+],
+"LocalizeString": [
+"number"
+],
+"LockFont": [
+"string"
+],
+"LockSet": [
+"set"
+],
+"MakeColor": [
+"number",
+"number",
+"number"
+],
+"MakeCurrentSet": [
+"set"
+],
+"MakeCurrentSetup": [
+"number"
+],
+"MakeSectorActive": [
+"string",
+"bool"
+],
+"MakeTextObject": [
+"string",
+"table"
+],
+"MarioStyleControl": [
+"number",
+"number"
+],
+"NewObjectState": [
+"number",
+"number",
+"string",
+"bool",
+"bool"
+],
+"NextSetup": [],
+"NukeResources": [],
+"PauseMovie": [
+"bool"
+],
+"PerSecond": [
+"number"
+],
+"PlayActorChore": [
+"actor",
+"number",
+"number"
+],
+"PlayActorChoreLooping": [
+"actor",
+"number",
+"number"
+],
+"PlaySoundAt": [
+"number",
+"actor",
+"number",
+"number",
+"number"
+],
+"PointActorAt": [
+"actor",
+"number",
+"number",
+"number"
+],
+"PopActorCostume": [
+"actor"
+],
+"PreRender": [
+"bool",
+"bool"
+],
+"PreviousSetup": [],
+"PrintActorCostumes": [
+"actor"
+],
+"PrintDebug": [
+"string"
+],
+"PrintLine": [
+"string",
+"table"
+],
+"PrintWarning": [
+"string"
+],
+"PurgePrimitiveQueue": [],
+"PushActorCostume": [
+"actor",
+"number"
+],
+"PutActorAt": [
+"actor",
+"number",
+"number",
+"number"
+],
+"PutActorAtInterest": [
+"actor"
+],
+"PutActorInSet": [
+"actor",
+"set"
+],
+"ReadRegistryValue": [
+"string"
+],
+"RenderModeUser": [
+"bool"
+],
+"ResetMarioControls": [],
+"ResetTextures": [],
+"RestoreIMuse": [],
+"RotateVector": [
+"number",
+"number"
+],
+"RunFullscreenMovie": [
+"string"
+],
+"SampleButtonHandler": [
+"number",
+"number",
+"number"
+],
+"Save": [
+"number"
+],
+"SaveIMuse": [],
+"SayLine": [
+"actor",
+"number",
+"bool"
+],
+"ScreenShot": [
+"number",
+"number"
+],
+"SendObjectToBack": [
+"number"
+],
+"SendObjectToFront": [
+"number"
+],
+"SetActiveShadow": [
+"actor",
+"number"
+],
+"SetActorChoreLooping": [
+"actor",
+"number",
+"number",
+"number"
+],
+"SetActorClipActive": [
+"actor",
+"bool"
+],
+"SetActorClipPlane": [
+"actor",
+"number",
+"number",
+"number",
+"number",
+"number",
+"number"
+],
+"SetActorCollisionMode": [
+"actor",
+"number"
+],
+"SetActorCollisionScale": [
+"actor",
+"number"
+],
+"SetActorColormap": [
+"actor",
+"number"
+],
+"SetActorConstrain": [
+"actor",
+"bool"
+],
+"SetActorCostume": [
+"actor",
+"bool"
+],
+"SetActorFollowBoxes": [
+"actor",
+"bool"
+],
+"SetActorFrustrumCull": [
+"actor",
+"bool"
+],
+"SetActorHead": [
+"actor",
+"number",
+"number",
+"number",
+"number",
+"number",
+"number"
+],
+"SetActorInvClipNode": [
+"actor",
+"number"
+],
+"SetActorLookRate": [
+"actor",
+"number"
+],
+"SetActorMumblechore": [
+"actor",
+"number",
+"number"
+],
+"SetActorPitch": [
+"actor",
+"number"
+],
+"SetActorReflection": [
+"actor",
+"number"
+],
+"SetActorRestChore": [
+"actor",
+"number",
+"number"
+],
+"SetActorRoll": [
+"actor",
+"number"
+],
+"SetActorRot": [
+"actor",
+"number",
+"number",
+"number",
+"number"
+],
+"SetActorScale": [
+"actor",
+"number"
+],
+"SetActorShadowPlane": [
+"actor",
+"string"
+],
+"SetActorShadowPoint": [
+"actor",
+"number",
+"number",
+"number"
+],
+"SetActorShadowValid": [
+"actor",
+"number"
+],
+"SetActorTalkChore": [
+"actor",
+"number",
+"number",
+"number"
+],
+"SetActorTalkColor": [
+"actor",
+"number"
+],
+"SetActorTimeScale": [
+"actor",
+"number"
+],
+"SetActorTurnChores": [
+"actor",
+"number",
+"number",
+"number"
+],
+"SetActorTurnRate": [
+"actor",
+"number"
+],
+"SetActorVisibility": [
+"actor",
+"number"
+],
+"SetActorWalkChore": [
+"actor",
+"number",
+"number"
+],
+"SetActorWalkDominate": [
+"actor",
+"bool"
+],
+"SetActorWalkRate": [
+"actor",
+"number"
+],
+"SetAmbientLight": [
+"number"
+],
+"SetCameraInterest": [
+"number",
+"number",
+"number"
+],
+"SetCameraRoll": [
+"number"
+],
+"SetEmergencyFont": [
+"bool"
+],
+"SetGamma": [
+"number"
+],
+"SetHardwareState": [
+"bool"
+],
+"SetLightIntensity": [
+"string",
+"number"
+],
+"SetLightPosition": [
+"string",
+"number",
+"number",
+"number"
+],
+"SetObjectType": [
+"number",
+"number",
+"bool"
+],
+"SetOffscreenTextPos": [
+"number",
+"number"
+],
+"SetSayLineDefaults": [
+"table"
+],
+"SetSelectedActor": [
+"actor"
+],
+"SetShadowColor": [
+"number",
+"number",
+"number"
+],
+"SetSoundPosition": [
+"number",
+"actor",
+"number",
+"number"
+],
+"SetSpeechMode": [
+"number"
+],
+"SetTextSpeed": [
+"number"
+],
+"SetTranslationMode": [
+"number"
+],
+"SetVideoDevices": [
+"number",
+"number"
+],
+"ShrinkBoxes": [
+"number"
+],
+"ShutUpActor": [
+"actor"
+],
+"SpewStartup": [],
+"StartFullscreenMovie": [
+"string"
+],
+"StartMovie": [
+"string",
+"bool",
+"number",
+"number"
+],
+"StopActorChore": [
+"actor",
+"number",
+"number"
+],
+"StopMovie": [
+"string"
+],
+"SubmitSaveGameData": [
+"number"
+],
+"TextFileGetLine": [
+"number",
+"number"
+],
+"TextFileGetLineCount": [
+"number"
+],
+"TombRaiderControl": [
+"number",
+"number"
+],
+"TurnActor": [
+"actor",
+"number"
+],
+"TurnActorTo": [
+"actor",
+"number",
+"number",
+"number"
+],
+"TurnLightOn": [
+"string",
+"bool"
+],
+"UnLockSet": [
+"set"
+],
+"UnShrinkBoxes": [],
+"WalkActorForward": [
+"actor"
+],
+"WalkActorTo": [
+"actor",
+"number",
+"number",
+"number"
+],
+"WalkActorVector": [
+"actor",
+"number",
+"number",
+"number",
+"number",
+"number"
+],
+"WorldToScreen": [
+"number",
+"number",
+"number"
+],
+"WriteRegistryValue": [
+"string",
+"number"
+]
+}
