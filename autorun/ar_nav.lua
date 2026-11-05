@@ -2249,6 +2249,10 @@ ar_follow = function(nav, w, path, stop_when, budget)
 			AR_FOLLOW_RESULT = "done"
 		elseif ar_walk_blocked() then
 			AR_FOLLOW_RESULT = "done"
+		elseif ar_walk_keys_taken() then
+			-- (a dialog has the keys now: the walk ends, as it does for a player whose keys go to the dialog)
+			ar_log("nav: a dialog has the keys, the walk ends")
+			AR_FOLLOW_RESULT = "done"
 		elseif cutSceneLevel > 0 then
 			ar_wait_for_control()
 			AR_FOLLOW_RESULT = "wait"

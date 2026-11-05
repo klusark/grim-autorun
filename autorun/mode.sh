@@ -50,7 +50,8 @@ fi
 # taken out first). The one place where the section header pattern is written, so that no run script needs a sed inside its sed.
 ini_set() {
 	_ini="$1"; _key="$2"; _val="$3"
-	sed -i "/^\[grim-win\]/,/^\[/{/^$_key=/d}" "$_ini"
-	sed -i "/^\[grim-win\]/a $_key=$_val" "$_ini"
+	_t="${TARGET:-grim-win}"
+	sed -i "/^\[$_t\]/,/^\[/{/^$_key=/d}" "$_ini"
+	sed -i "/^\[$_t\]/a $_key=$_val" "$_ini"
 }
 true

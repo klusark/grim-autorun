@@ -4,7 +4,7 @@ Rule: every function that is decoded gets a name (and a plate comment for what i
 
 | Address | Name | What |
 | --- | --- | --- |
-| 0x004016a0 | Game_FrameUpdate | per-frame function; fixed frame time global DAT_004f5a48 (patched by patch_simtime.py at 0x401721) |
+| 0x004016a0 | Game_FrameUpdate | per-frame function; fixed frame time global DAT_004f5a48 (patched by patches/grim/simtime.py at 0x401721) |
 | 0x00482990 | Engine_UpdateFrame | sound, timer, Lua tasks, actor update |
 | 0x004a3c10 / 0x004a3c80 / 0x004a3ce0 | Timer_UpdateFromWallClock / Timer_UpdateFixedStep / Timer_Reset | frame time (ms, seconds, total) |
 | 0x004a3be0 / bf0 / c00 | Timer_GetTotalMs / Timer_GetFrameMs / Timer_GetFrameSeconds | |
@@ -184,3 +184,5 @@ Rule: every function that is decoded gets a name (and a plate comment for what i
 | 0x00465350 | Color_Saturate | divide by the largest channel when over 255 |
 | 0x0049dc90 | Model_UpdateLighting | static once with 32 lights, dynamic with 4; flag 0x20000 uses FUN_0049b210 instead (not decoded) |
 | 0x004635a0 / 0x00463680 / 0x00463760 | (GL device vtable +0x54/+0x58/+0x5c) | fixed function directional/point/spot light setters; no callers found |
+| 0x004a00a0 (Grim) | Lua_GetAngleBetweenActors | unsigned angle between the walker heading axis and the 3D direction to the other actor (delta normalized with its vertical part, not flattened) |
+| 0x0041af40 (EMI, Monkey4.exe) | Lua_GetAngleBetweenActors | acos(dot((sin yaw, 0, cos yaw), normalized 3D delta)), degrees, unsigned; actor yaw = +0xb4 |
