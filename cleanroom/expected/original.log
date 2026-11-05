@@ -53,7 +53,6 @@ V walk_chore|resting|10.000000 1.000000
 V walk_chore|trace|"10 nil nil nil nil 21 21 21 21 21 21 21 21 21 20 20 20 20 20 20 20 20 20 21 21 21 21 21 21 21 21 21 20 20 20 20 20 20 20 20 20 21 21 21 21 21 21 21 21 20 20 20 20 20 20 20 20 20 21 10 10 10 10 10 10 10 10 10 10 10 "
 V walk_chore|after|10.000000 nil 1.000000
 END walk_chore
-SKIP rest_chore_zero
 BEGIN turn_chores
 V turn_chores|left_trace|"0 1 2 2 2 2 2 2 2 2 2 3 3 3 3 3 3 3 3 3 "
 END turn_chores
@@ -717,7 +716,6 @@ BEGIN shadows
 V shadows|dist|0.000000
 V shadows|ok|1.000000
 END shadows
-SKIP shadow_color
 BEGIN sound_volumes
 V sound_volumes|sfx|64.000000
 V sound_volumes|music|32.000000
@@ -1073,32 +1071,6 @@ V model_nodes|arm_yaw90|0.300000 0.100000 1.200000
 V model_nodes|arm_tilted|0.300000 0.100000 1.200000
 V model_nodes|rect|640.000000
 END model_nodes
-BEGIN model_collide
-V model_collide|box_f0|0.000000 -1.000000 0.000000
-V model_collide|box_f15|0.000000 -0.745000 0.000000
-V model_collide|box_f30|-1.#IND00 -1.#IND00 -1.#IND00
-V model_collide|box_f45|-1.#IND00 -1.#IND00 -1.#IND00
-V model_collide|box_f60|-1.#IND00 -1.#IND00 -1.#IND00
-V model_collide|box_f75|-1.#IND00 -1.#IND00 -1.#IND00
-V model_collide|box_end|-1.#IND00 -1.#IND00 -1.#IND00
-V model_collide|box_other|0.100000 0.500000 0.000000
-V model_collide|sphere_f0|0.000000 -1.000000 0.000000
-V model_collide|sphere_f15|-0.042799 -1.362689 0.000000
-V model_collide|sphere_f30|-0.063710 -1.360967 0.000000
-V model_collide|sphere_f45|-0.087656 -1.358705 0.000000
-V model_collide|sphere_f60|-0.115063 -1.355734 0.000000
-V model_collide|sphere_f75|-0.146411 -1.351832 0.000000
-V model_collide|sphere_end|-0.182235 -1.346712 0.000000
-V model_collide|sphere_other|0.100000 0.500000 0.000000
-V model_collide|sphere_half_f0|0.000000 -1.000000 0.000000
-V model_collide|sphere_half_f15|0.000000 -0.745000 0.000000
-V model_collide|sphere_half_f30|0.000000 -0.489999 0.000000
-V model_collide|sphere_half_f45|-0.023090 -0.425931 0.000000
-V model_collide|sphere_half_f60|-0.061612 -0.419990 0.000000
-V model_collide|sphere_half_f75|-0.111692 -0.409773 0.000000
-V model_collide|sphere_half_end|-0.176177 -0.392315 0.000000
-V model_collide|sphere_half_other|0.100000 0.500000 0.000000
-END model_collide
 BEGIN localize
 V localize|one|"/crt001/Clean room text one"
 V localize|two|"/crt002/Second line, with punctuation: 1, 2; 3."
@@ -1242,8 +1214,6 @@ END font
 BEGIN font_missing
 V font_missing|missing|nil
 END font_missing
-SKIP font_dims_handle
-SKIP font_dims_name
 BEGIN text_objects
 V text_objects|lower|18.000000 12.000000
 V text_objects|upper|27.000000 12.000000
@@ -1443,7 +1413,6 @@ END args_ActivateActorShadow_p2_tab
 BEGIN args_ActivateActorShadow_p2_neg
 V args_ActivateActorShadow_p2_neg|r|nil
 END args_ActivateActorShadow_p2_neg
-SKIP args_ActivateActorShadow_p2_big
 BEGIN args_ActivateActorShadow_p3_nil
 V args_ActivateActorShadow_p3_nil|r|nil
 END args_ActivateActorShadow_p3_nil
@@ -1798,8 +1767,6 @@ END args_AddShadowPlane_p1_str
 BEGIN args_AddShadowPlane_p1_tab
 V args_AddShadowPlane_p1_tab|r|nil
 END args_AddShadowPlane_p1_tab
-SKIP args_AddShadowPlane_p2_nil
-SKIP args_AddShadowPlane_p2_tab
 BEGIN args_BlastImage_none
 V args_BlastImage_none|r|nil
 END args_BlastImage_none
@@ -3033,7 +3000,6 @@ END args_FadeInChore_p3_num
 BEGIN args_FadeInChore_p3_tab
 V args_FadeInChore_p3_tab|r|nil
 END args_FadeInChore_p3_tab
-SKIP args_FadeInChore_p3_neg
 BEGIN args_FadeInChore_p3_big
 V args_FadeInChore_p3_big|r|nil
 END args_FadeInChore_p3_big
@@ -3103,7 +3069,6 @@ END args_FadeOutChore_p3_num
 BEGIN args_FadeOutChore_p3_tab
 V args_FadeOutChore_p3_tab|r|nil
 END args_FadeOutChore_p3_tab
-SKIP args_FadeOutChore_p3_neg
 BEGIN args_FadeOutChore_p3_big
 V args_FadeOutChore_p3_big|r|nil
 END args_FadeOutChore_p3_big
@@ -3185,7 +3150,6 @@ END args_FileFindFirst_p1_big
 BEGIN args_FileFindFirst_p2_nil
 V args_FileFindFirst_p2_nil|r|nil
 END args_FileFindFirst_p2_nil
-SKIP args_FileFindFirst_p2_tab
 BEGIN args_FileFindNext_none
 V args_FileFindNext_none|r|nil
 END args_FileFindNext_none
@@ -3747,7 +3711,6 @@ END args_GetActorNodeLocation_p2_tab
 BEGIN args_GetActorNodeLocation_p2_neg
 V args_GetActorNodeLocation_p2_neg|r|0.000000 0.000000 0.000000
 END args_GetActorNodeLocation_p2_neg
-SKIP args_GetActorNodeLocation_p2_big
 BEGIN args_GetActorPos_none
 V args_GetActorPos_none|r|nil
 END args_GetActorPos_none
@@ -4507,7 +4470,6 @@ END args_GetCameraLookVector_p1_tab
 BEGIN args_GetCameraLookVector_p1_neg
 V args_GetCameraLookVector_p1_neg|r|table
 END args_GetCameraLookVector_p1_neg
-SKIP args_GetCameraLookVector_p1_big
 BEGIN args_GetCameraPosition_none
 V args_GetCameraPosition_none|r|0.000000 -0.500000 6.000000
 END args_GetCameraPosition_none
@@ -4733,17 +4695,6 @@ END args_GetDiskFreeSpace_tab
 BEGIN args_GetDiskFreeSpace_fn
 V args_GetDiskFreeSpace_fn|r|125825.687500
 END args_GetDiskFreeSpace_fn
-SKIP args_GetFontDimensions_none
-SKIP args_GetFontDimensions_nil
-SKIP args_GetFontDimensions_str
-SKIP args_GetFontDimensions_num
-SKIP args_GetFontDimensions_tab
-SKIP args_GetFontDimensions_fn
-SKIP args_GetFontDimensions_f
-SKIP args_GetFontDimensions_f_nil
-SKIP args_GetFontDimensions_f_str
-SKIP args_GetFontDimensions_f_num
-SKIP args_GetFontDimensions_f_tab
 BEGIN args_GetImage_none
 V args_GetImage_none|r|nil
 END args_GetImage_none
@@ -4771,12 +4722,6 @@ END args_GetImage_p1_nil
 BEGIN args_GetImage_p1_tab
 V args_GetImage_p1_tab|r|nil
 END args_GetImage_p1_tab
-SKIP args_GetKeyLength_none
-SKIP args_GetKeyLength_nil
-SKIP args_GetKeyLength_str
-SKIP args_GetKeyLength_num
-SKIP args_GetKeyLength_tab
-SKIP args_GetKeyLength_fn
 BEGIN args_GetLightAngles_none
 V args_GetLightAngles_none|r|nil
 END args_GetLightAngles_none
@@ -5590,7 +5535,6 @@ END args_ImFadeParam_p1_tab
 BEGIN args_ImFadeParam_p1_neg
 V args_ImFadeParam_p1_neg|r|nil
 END args_ImFadeParam_p1_neg
-SKIP args_ImFadeParam_p1_big
 BEGIN args_ImFadeParam_p2_nil
 V args_ImFadeParam_p2_nil|r|nil
 END args_ImFadeParam_p2_nil
@@ -5735,7 +5679,6 @@ END args_ImGetParam_p1_tab
 BEGIN args_ImGetParam_p1_neg
 V args_ImGetParam_p1_neg|r|1.000000
 END args_ImGetParam_p1_neg
-SKIP args_ImGetParam_p1_big
 BEGIN args_ImGetParam_p2_nil
 V args_ImGetParam_p2_nil|r|1.000000
 END args_ImGetParam_p2_nil
@@ -5973,7 +5916,6 @@ END args_ImSetParam_p1_tab
 BEGIN args_ImSetParam_p1_neg
 V args_ImSetParam_p1_neg|r|nil
 END args_ImSetParam_p1_neg
-SKIP args_ImSetParam_p1_big
 BEGIN args_ImSetParam_p2_nil
 V args_ImSetParam_p2_nil|r|nil
 END args_ImSetParam_p2_nil
@@ -6127,8 +6069,6 @@ END args_ImSetState_p1_neg
 BEGIN args_ImSetState_p1_big
 V args_ImSetState_p1_big|r|nil
 END args_ImSetState_p1_big
-SKIP args_ImSetVoiceEffect_none
-SKIP args_ImSetVoiceEffect_nil
 BEGIN args_ImSetVoiceEffect_str
 V args_ImSetVoiceEffect_str|r|nil
 END args_ImSetVoiceEffect_str
@@ -6144,7 +6084,6 @@ END args_ImSetVoiceEffect_fn
 BEGIN args_ImSetVoiceEffect_p0
 V args_ImSetVoiceEffect_p0|r|nil
 END args_ImSetVoiceEffect_p0
-SKIP args_ImSetVoiceEffect_p1_nil
 BEGIN args_ImSetVoiceEffect_p1_tab
 V args_ImSetVoiceEffect_p1_tab|r|nil
 END args_ImSetVoiceEffect_p1_tab
@@ -6322,7 +6261,6 @@ END args_ImStopSound_p1_tab
 BEGIN args_ImStopSound_p1_neg
 V args_ImStopSound_p1_neg|r|nil
 END args_ImStopSound_p1_neg
-SKIP args_ImStopSound_p1_big
 BEGIN args_ImStopVoice_none
 V args_ImStopVoice_none|r|nil
 END args_ImStopVoice_none
@@ -6377,56 +6315,6 @@ END args_IrisComplete_tab
 BEGIN args_IrisComplete_fn
 V args_IrisComplete_fn|r|1.000000
 END args_IrisComplete_fn
-SKIP args_IrisDown_none
-SKIP args_IrisDown_nil
-SKIP args_IrisDown_str
-SKIP args_IrisDown_num
-SKIP args_IrisDown_tab
-SKIP args_IrisDown_fn
-SKIP args_IrisDown_p0
-SKIP args_IrisDown_p1_nil
-SKIP args_IrisDown_p1_str
-SKIP args_IrisDown_p1_num
-SKIP args_IrisDown_p1_tab
-SKIP args_IrisDown_p1_neg
-SKIP args_IrisDown_p1_big
-SKIP args_IrisDown_p2_nil
-SKIP args_IrisDown_p2_str
-SKIP args_IrisDown_p2_num
-SKIP args_IrisDown_p2_tab
-SKIP args_IrisDown_p2_neg
-SKIP args_IrisDown_p2_big
-SKIP args_IrisDown_p3_nil
-SKIP args_IrisDown_p3_str
-SKIP args_IrisDown_p3_num
-SKIP args_IrisDown_p3_tab
-SKIP args_IrisDown_p3_neg
-SKIP args_IrisDown_p3_big
-SKIP args_IrisUp_none
-SKIP args_IrisUp_nil
-SKIP args_IrisUp_str
-SKIP args_IrisUp_num
-SKIP args_IrisUp_tab
-SKIP args_IrisUp_fn
-SKIP args_IrisUp_p0
-SKIP args_IrisUp_p1_nil
-SKIP args_IrisUp_p1_str
-SKIP args_IrisUp_p1_num
-SKIP args_IrisUp_p1_tab
-SKIP args_IrisUp_p1_neg
-SKIP args_IrisUp_p1_big
-SKIP args_IrisUp_p2_nil
-SKIP args_IrisUp_p2_str
-SKIP args_IrisUp_p2_num
-SKIP args_IrisUp_p2_tab
-SKIP args_IrisUp_p2_neg
-SKIP args_IrisUp_p2_big
-SKIP args_IrisUp_p3_nil
-SKIP args_IrisUp_p3_str
-SKIP args_IrisUp_p3_num
-SKIP args_IrisUp_p3_tab
-SKIP args_IrisUp_p3_neg
-SKIP args_IrisUp_p3_big
 BEGIN args_Is3DHardwareEnabled_none
 V args_Is3DHardwareEnabled_none|r|nil
 END args_Is3DHardwareEnabled_none
@@ -7783,7 +7671,6 @@ END args_NewObjectState_nil
 BEGIN args_NewObjectState_str
 V args_NewObjectState_str|r|userdata
 END args_NewObjectState_str
-SKIP args_NewObjectState_num
 BEGIN args_NewObjectState_tab
 V args_NewObjectState_tab|r|userdata
 END args_NewObjectState_tab
@@ -7799,12 +7686,9 @@ END args_NewObjectState_p1_nil
 BEGIN args_NewObjectState_p1_str
 V args_NewObjectState_p1_str|r|userdata
 END args_NewObjectState_p1_str
-SKIP args_NewObjectState_p1_num
 BEGIN args_NewObjectState_p1_tab
 V args_NewObjectState_p1_tab|r|userdata
 END args_NewObjectState_p1_tab
-SKIP args_NewObjectState_p1_neg
-SKIP args_NewObjectState_p1_big
 BEGIN args_NewObjectState_p2_nil
 V args_NewObjectState_p2_nil|r|userdata
 END args_NewObjectState_p2_nil
@@ -10907,15 +10791,12 @@ END args_SetActorShadowPlane_tab
 BEGIN args_SetActorShadowPlane_fn
 V args_SetActorShadowPlane_fn|r|nil
 END args_SetActorShadowPlane_fn
-SKIP args_SetActorShadowPlane_a
-SKIP args_SetActorShadowPlane_a_nil
 BEGIN args_SetActorShadowPlane_a_str
 V args_SetActorShadowPlane_a_str|r|nil
 END args_SetActorShadowPlane_a_str
 BEGIN args_SetActorShadowPlane_a_num
 V args_SetActorShadowPlane_a_num|r|nil
 END args_SetActorShadowPlane_a_num
-SKIP args_SetActorShadowPlane_a_tab
 BEGIN args_SetActorShadowPlane_p0
 V args_SetActorShadowPlane_p0|r|nil
 END args_SetActorShadowPlane_p0
@@ -10928,8 +10809,6 @@ END args_SetActorShadowPlane_p1_str
 BEGIN args_SetActorShadowPlane_p1_tab
 V args_SetActorShadowPlane_p1_tab|r|nil
 END args_SetActorShadowPlane_p1_tab
-SKIP args_SetActorShadowPlane_p2_nil
-SKIP args_SetActorShadowPlane_p2_tab
 BEGIN args_SetActorShadowPoint_none
 V args_SetActorShadowPoint_none|r|nil
 END args_SetActorShadowPoint_none
@@ -12508,31 +12387,6 @@ END args_SetSelectedActor_p1_str
 BEGIN args_SetSelectedActor_p1_tab
 V args_SetSelectedActor_p1_tab|r|nil
 END args_SetSelectedActor_p1_tab
-SKIP args_SetShadowColor_none
-SKIP args_SetShadowColor_nil
-SKIP args_SetShadowColor_str
-SKIP args_SetShadowColor_num
-SKIP args_SetShadowColor_tab
-SKIP args_SetShadowColor_fn
-SKIP args_SetShadowColor_p0
-SKIP args_SetShadowColor_p1_nil
-SKIP args_SetShadowColor_p1_str
-SKIP args_SetShadowColor_p1_num
-SKIP args_SetShadowColor_p1_tab
-SKIP args_SetShadowColor_p1_neg
-SKIP args_SetShadowColor_p1_big
-SKIP args_SetShadowColor_p2_nil
-SKIP args_SetShadowColor_p2_str
-SKIP args_SetShadowColor_p2_num
-SKIP args_SetShadowColor_p2_tab
-SKIP args_SetShadowColor_p2_neg
-SKIP args_SetShadowColor_p2_big
-SKIP args_SetShadowColor_p3_nil
-SKIP args_SetShadowColor_p3_str
-SKIP args_SetShadowColor_p3_num
-SKIP args_SetShadowColor_p3_tab
-SKIP args_SetShadowColor_p3_neg
-SKIP args_SetShadowColor_p3_big
 BEGIN args_SetSoundParameters_none
 V args_SetSoundParameters_none|r|nil
 END args_SetSoundParameters_none
@@ -12851,16 +12705,12 @@ END args_ShutUpActor_p1_str
 BEGIN args_ShutUpActor_p1_tab
 V args_ShutUpActor_p1_tab|r|nil
 END args_ShutUpActor_p1_tab
-SKIP args_SnapToPlane_none
-SKIP args_SnapToPlane_nil
 BEGIN args_SnapToPlane_str
 V args_SnapToPlane_str|r|nil
 END args_SnapToPlane_str
 BEGIN args_SnapToPlane_num
 V args_SnapToPlane_num|r|nil
 END args_SnapToPlane_num
-SKIP args_SnapToPlane_tab
-SKIP args_SnapToPlane_fn
 BEGIN args_StopActorChore_none
 V args_StopActorChore_none|r|nil
 END args_StopActorChore_none
@@ -14881,4 +14731,402 @@ END args_type_tab
 BEGIN args_type_fn
 V args_type_fn|r|"function" -4.000000
 END args_type_fn
+SKIP rest_chore_zero
+SKIP shadow_color
+BEGIN model_collide
+V model_collide|box_f0|0.000000 -1.000000 0.000000
+V model_collide|box_f15|0.000000 -0.745000 0.000000
+V model_collide|box_f30|-1.#IND00 -1.#IND00 -1.#IND00
+V model_collide|box_f45|-1.#IND00 -1.#IND00 -1.#IND00
+V model_collide|box_f60|-1.#IND00 -1.#IND00 -1.#IND00
+V model_collide|box_f75|-1.#IND00 -1.#IND00 -1.#IND00
+V model_collide|box_end|-1.#IND00 -1.#IND00 -1.#IND00
+V model_collide|box_other|0.100000 0.500000 0.000000
+V model_collide|sphere_f0|0.000000 -1.000000 0.000000
+V model_collide|sphere_f15|-0.042799 -1.362689 0.000000
+V model_collide|sphere_f30|-0.063710 -1.360967 0.000000
+V model_collide|sphere_f45|-0.087656 -1.358705 0.000000
+V model_collide|sphere_f60|-0.115063 -1.355734 0.000000
+V model_collide|sphere_f75|-0.146411 -1.351832 0.000000
+V model_collide|sphere_end|-0.182235 -1.346712 0.000000
+V model_collide|sphere_other|0.100000 0.500000 0.000000
+V model_collide|sphere_half_f0|0.000000 -1.000000 0.000000
+V model_collide|sphere_half_f15|0.000000 -0.745000 0.000000
+V model_collide|sphere_half_f30|0.000000 -0.489999 0.000000
+V model_collide|sphere_half_f45|-0.023090 -0.425931 0.000000
+V model_collide|sphere_half_f60|-0.061612 -0.419990 0.000000
+V model_collide|sphere_half_f75|-0.111692 -0.409773 0.000000
+V model_collide|sphere_half_end|-0.176177 -0.392315 0.000000
+V model_collide|sphere_half_other|0.100000 0.500000 0.000000
+END model_collide
+BEGIN hdr_ctrx_wall_sphere
+V hdr_ctrx_wall_sphere|ctrx_wall_sphere_f0|0.000000 -1.000000 0.000000
+V hdr_ctrx_wall_sphere|ctrx_wall_sphere_f15|-0.042799 -1.362689 0.000000
+V hdr_ctrx_wall_sphere|ctrx_wall_sphere_f30|-0.063710 -1.360967 0.000000
+V hdr_ctrx_wall_sphere|ctrx_wall_sphere_f45|-0.087656 -1.358705 0.000000
+V hdr_ctrx_wall_sphere|ctrx_wall_sphere_f60|-0.115063 -1.355734 0.000000
+V hdr_ctrx_wall_sphere|ctrx_wall_sphere_f75|-0.146411 -1.351832 0.000000
+V hdr_ctrx_wall_sphere|ctrx_wall_sphere_end|-0.182235 -1.346712 0.000000
+V hdr_ctrx_wall_sphere|ctrx_wall_sphere_other|0.100000 0.500000 0.000000
+END hdr_ctrx_wall_sphere
+BEGIN hdr_ctrx_wall_box
+V hdr_ctrx_wall_box|ctrx_wall_box_f0|0.000000 -1.000000 0.000000
+V hdr_ctrx_wall_box|ctrx_wall_box_f15|0.000000 -0.745000 0.000000
+V hdr_ctrx_wall_box|ctrx_wall_box_f30|-1.#IND00 -1.#IND00 -1.#IND00
+V hdr_ctrx_wall_box|ctrx_wall_box_f45|-1.#IND00 -1.#IND00 -1.#IND00
+V hdr_ctrx_wall_box|ctrx_wall_box_f60|-1.#IND00 -1.#IND00 -1.#IND00
+V hdr_ctrx_wall_box|ctrx_wall_box_f75|-1.#IND00 -1.#IND00 -1.#IND00
+V hdr_ctrx_wall_box|ctrx_wall_box_end|-1.#IND00 -1.#IND00 -1.#IND00
+V hdr_ctrx_wall_box|ctrx_wall_box_other|0.100000 0.500000 0.000000
+END hdr_ctrx_wall_box
+BEGIN hdr_ctrz_wall_sphere
+V hdr_ctrz_wall_sphere|ctrz_wall_sphere_f0|0.000000 -1.000000 0.000000
+V hdr_ctrz_wall_sphere|ctrz_wall_sphere_f15|-0.042799 -1.362689 0.000000
+V hdr_ctrz_wall_sphere|ctrz_wall_sphere_f30|-0.063710 -1.360967 0.000000
+V hdr_ctrz_wall_sphere|ctrz_wall_sphere_f45|-0.087656 -1.358705 0.000000
+V hdr_ctrz_wall_sphere|ctrz_wall_sphere_f60|-0.115063 -1.355734 0.000000
+V hdr_ctrz_wall_sphere|ctrz_wall_sphere_f75|-0.146411 -1.351832 0.000000
+V hdr_ctrz_wall_sphere|ctrz_wall_sphere_end|-0.182235 -1.346712 0.000000
+V hdr_ctrz_wall_sphere|ctrz_wall_sphere_other|0.100000 0.500000 0.000000
+END hdr_ctrz_wall_sphere
+BEGIN hdr_ctrz_wall_box
+V hdr_ctrz_wall_box|ctrz_wall_box_f0|0.000000 -1.000000 0.000000
+V hdr_ctrz_wall_box|ctrz_wall_box_f15|0.000000 -0.745000 0.000000
+V hdr_ctrz_wall_box|ctrz_wall_box_f30|-1.#IND00 -1.#IND00 -1.#IND00
+V hdr_ctrz_wall_box|ctrz_wall_box_f45|-1.#IND00 -1.#IND00 -1.#IND00
+V hdr_ctrz_wall_box|ctrz_wall_box_f60|-1.#IND00 -1.#IND00 -1.#IND00
+V hdr_ctrz_wall_box|ctrz_wall_box_f75|-1.#IND00 -1.#IND00 -1.#IND00
+V hdr_ctrz_wall_box|ctrz_wall_box_end|-1.#IND00 -1.#IND00 -1.#IND00
+V hdr_ctrz_wall_box|ctrz_wall_box_other|0.100000 0.500000 0.000000
+END hdr_ctrz_wall_box
+BEGIN hdr_ctrx_mover_sphere
+V hdr_ctrx_mover_sphere|ctrx_mover_sphere_f0|0.000000 -1.000000 0.000000
+V hdr_ctrx_mover_sphere|ctrx_mover_sphere_f15|-0.042799 -1.362689 0.000000
+V hdr_ctrx_mover_sphere|ctrx_mover_sphere_f30|-0.063710 -1.360967 0.000000
+V hdr_ctrx_mover_sphere|ctrx_mover_sphere_f45|-0.087656 -1.358705 0.000000
+V hdr_ctrx_mover_sphere|ctrx_mover_sphere_f60|-0.115063 -1.355734 0.000000
+V hdr_ctrx_mover_sphere|ctrx_mover_sphere_f75|-0.146411 -1.351832 0.000000
+V hdr_ctrx_mover_sphere|ctrx_mover_sphere_end|-0.182235 -1.346712 0.000000
+V hdr_ctrx_mover_sphere|ctrx_mover_sphere_other|0.100000 0.500000 0.000000
+END hdr_ctrx_mover_sphere
+BEGIN hdr_ctrz_mover_sphere
+V hdr_ctrz_mover_sphere|ctrz_mover_sphere_f0|0.000000 -1.000000 0.000000
+V hdr_ctrz_mover_sphere|ctrz_mover_sphere_f15|-0.042799 -1.362689 0.000000
+V hdr_ctrz_mover_sphere|ctrz_mover_sphere_f30|-0.063710 -1.360967 0.000000
+V hdr_ctrz_mover_sphere|ctrz_mover_sphere_f45|-0.087656 -1.358705 0.000000
+V hdr_ctrz_mover_sphere|ctrz_mover_sphere_f60|-0.115063 -1.355734 0.000000
+V hdr_ctrz_mover_sphere|ctrz_mover_sphere_f75|-0.146411 -1.351832 0.000000
+V hdr_ctrz_mover_sphere|ctrz_mover_sphere_end|-0.182235 -1.346712 0.000000
+V hdr_ctrz_mover_sphere|ctrz_mover_sphere_other|0.100000 0.500000 0.000000
+END hdr_ctrz_mover_sphere
+BEGIN hdr_ctrz_both_sphere
+V hdr_ctrz_both_sphere|ctrz_both_sphere_f0|0.000000 -1.000000 0.000000
+V hdr_ctrz_both_sphere|ctrz_both_sphere_f15|-0.042799 -1.362689 0.000000
+V hdr_ctrz_both_sphere|ctrz_both_sphere_f30|-0.063710 -1.360967 0.000000
+V hdr_ctrz_both_sphere|ctrz_both_sphere_f45|-0.087656 -1.358705 0.000000
+V hdr_ctrz_both_sphere|ctrz_both_sphere_f60|-0.115063 -1.355734 0.000000
+V hdr_ctrz_both_sphere|ctrz_both_sphere_f75|-0.146411 -1.351832 0.000000
+V hdr_ctrz_both_sphere|ctrz_both_sphere_end|-0.182235 -1.346712 0.000000
+V hdr_ctrz_both_sphere|ctrz_both_sphere_other|0.100000 0.500000 0.000000
+END hdr_ctrz_both_sphere
+BEGIN hdr_bbig_wall_box
+V hdr_bbig_wall_box|bbig_wall_box_f0|0.000000 -1.000000 0.000000
+V hdr_bbig_wall_box|bbig_wall_box_f15|0.000000 -0.745000 0.000000
+V hdr_bbig_wall_box|bbig_wall_box_f30|-1.#IND00 -1.#IND00 -1.#IND00
+V hdr_bbig_wall_box|bbig_wall_box_f45|-1.#IND00 -1.#IND00 -1.#IND00
+V hdr_bbig_wall_box|bbig_wall_box_f60|-1.#IND00 -1.#IND00 -1.#IND00
+V hdr_bbig_wall_box|bbig_wall_box_f75|-1.#IND00 -1.#IND00 -1.#IND00
+V hdr_bbig_wall_box|bbig_wall_box_end|-1.#IND00 -1.#IND00 -1.#IND00
+V hdr_bbig_wall_box|bbig_wall_box_other|0.100000 0.500000 0.000000
+END hdr_bbig_wall_box
+BEGIN hdr_bbig_wall_sphere
+V hdr_bbig_wall_sphere|bbig_wall_sphere_f0|0.000000 -1.000000 0.000000
+V hdr_bbig_wall_sphere|bbig_wall_sphere_f15|-0.042799 -1.362689 0.000000
+V hdr_bbig_wall_sphere|bbig_wall_sphere_f30|-0.063710 -1.360967 0.000000
+V hdr_bbig_wall_sphere|bbig_wall_sphere_f45|-0.087656 -1.358705 0.000000
+V hdr_bbig_wall_sphere|bbig_wall_sphere_f60|-0.115063 -1.355734 0.000000
+V hdr_bbig_wall_sphere|bbig_wall_sphere_f75|-0.146411 -1.351832 0.000000
+V hdr_bbig_wall_sphere|bbig_wall_sphere_end|-0.182235 -1.346712 0.000000
+V hdr_bbig_wall_sphere|bbig_wall_sphere_other|0.100000 0.500000 0.000000
+END hdr_bbig_wall_sphere
+BEGIN hdr_bbig_mover_sphere
+V hdr_bbig_mover_sphere|bbig_mover_sphere_f0|0.000000 -1.000000 0.000000
+V hdr_bbig_mover_sphere|bbig_mover_sphere_f15|-0.042799 -1.362689 0.000000
+V hdr_bbig_mover_sphere|bbig_mover_sphere_f30|-0.063710 -1.360967 0.000000
+V hdr_bbig_mover_sphere|bbig_mover_sphere_f45|-0.087656 -1.358705 0.000000
+V hdr_bbig_mover_sphere|bbig_mover_sphere_f60|-0.115063 -1.355734 0.000000
+V hdr_bbig_mover_sphere|bbig_mover_sphere_f75|-0.146411 -1.351832 0.000000
+V hdr_bbig_mover_sphere|bbig_mover_sphere_end|-0.182235 -1.346712 0.000000
+V hdr_bbig_mover_sphere|bbig_mover_sphere_other|0.100000 0.500000 0.000000
+END hdr_bbig_mover_sphere
+BEGIN hdr_bbig_wall_box_half
+V hdr_bbig_wall_box_half|bbig_wall_box_half_f0|0.000000 -1.000000 0.000000
+V hdr_bbig_wall_box_half|bbig_wall_box_half_f15|0.000000 -0.745000 0.000000
+V hdr_bbig_wall_box_half|bbig_wall_box_half_f30|0.000000 -0.489999 0.000000
+V hdr_bbig_wall_box_half|bbig_wall_box_half_f45|0.000000 -0.235000 0.000000
+V hdr_bbig_wall_box_half|bbig_wall_box_half_f60|-1.#IND00 -1.#IND00 -1.#IND00
+V hdr_bbig_wall_box_half|bbig_wall_box_half_f75|-1.#IND00 -1.#IND00 -1.#IND00
+V hdr_bbig_wall_box_half|bbig_wall_box_half_end|-1.#IND00 -1.#IND00 -1.#IND00
+V hdr_bbig_wall_box_half|bbig_wall_box_half_other|0.100000 0.500000 0.000000
+END hdr_bbig_wall_box_half
+BEGIN hdr_bside_wall_box
+V hdr_bside_wall_box|bside_wall_box_f0|0.000000 -1.000000 0.000000
+V hdr_bside_wall_box|bside_wall_box_f15|0.000000 -0.745000 0.000000
+V hdr_bside_wall_box|bside_wall_box_f30|-1.#IND00 -1.#IND00 -1.#IND00
+V hdr_bside_wall_box|bside_wall_box_f45|-1.#IND00 -1.#IND00 -1.#IND00
+V hdr_bside_wall_box|bside_wall_box_f60|-1.#IND00 -1.#IND00 -1.#IND00
+V hdr_bside_wall_box|bside_wall_box_f75|-1.#IND00 -1.#IND00 -1.#IND00
+V hdr_bside_wall_box|bside_wall_box_end|-1.#IND00 -1.#IND00 -1.#IND00
+V hdr_bside_wall_box|bside_wall_box_other|0.100000 0.500000 0.000000
+END hdr_bside_wall_box
+BEGIN hdr_bside_wall_sphere
+V hdr_bside_wall_sphere|bside_wall_sphere_f0|0.000000 -1.000000 0.000000
+V hdr_bside_wall_sphere|bside_wall_sphere_f15|-0.042799 -1.362689 0.000000
+V hdr_bside_wall_sphere|bside_wall_sphere_f30|-0.063710 -1.360967 0.000000
+V hdr_bside_wall_sphere|bside_wall_sphere_f45|-0.087656 -1.358705 0.000000
+V hdr_bside_wall_sphere|bside_wall_sphere_f60|-0.115063 -1.355734 0.000000
+V hdr_bside_wall_sphere|bside_wall_sphere_f75|-0.146411 -1.351832 0.000000
+V hdr_bside_wall_sphere|bside_wall_sphere_end|-0.182235 -1.346712 0.000000
+V hdr_bside_wall_sphere|bside_wall_sphere_other|0.100000 0.500000 0.000000
+END hdr_bside_wall_sphere
+BEGIN hdr_bside_mover_sphere
+V hdr_bside_mover_sphere|bside_mover_sphere_f0|0.000000 -1.000000 0.000000
+V hdr_bside_mover_sphere|bside_mover_sphere_f15|-0.042799 -1.362689 0.000000
+V hdr_bside_mover_sphere|bside_mover_sphere_f30|-0.063710 -1.360967 0.000000
+V hdr_bside_mover_sphere|bside_mover_sphere_f45|-0.087656 -1.358705 0.000000
+V hdr_bside_mover_sphere|bside_mover_sphere_f60|-0.115063 -1.355734 0.000000
+V hdr_bside_mover_sphere|bside_mover_sphere_f75|-0.146411 -1.351832 0.000000
+V hdr_bside_mover_sphere|bside_mover_sphere_end|-0.182235 -1.346712 0.000000
+V hdr_bside_mover_sphere|bside_mover_sphere_other|0.100000 0.500000 0.000000
+END hdr_bside_mover_sphere
+BEGIN hdr_meshx_wall_sphere
+V hdr_meshx_wall_sphere|meshx_wall_sphere_f0|0.000000 -1.000000 0.000000
+V hdr_meshx_wall_sphere|meshx_wall_sphere_f15|-0.187893 -1.193878 0.000000
+V hdr_meshx_wall_sphere|meshx_wall_sphere_f30|-0.290530 -1.142241 0.000000
+V hdr_meshx_wall_sphere|meshx_wall_sphere_f45|-0.402215 -1.076568 0.000000
+V hdr_meshx_wall_sphere|meshx_wall_sphere_f60|-0.521783 -0.993855 0.000000
+V hdr_meshx_wall_sphere|meshx_wall_sphere_f75|-0.647094 -0.890955 0.000000
+V hdr_meshx_wall_sphere|meshx_wall_sphere_end|-0.774799 -0.764882 0.000000
+V hdr_meshx_wall_sphere|meshx_wall_sphere_other|0.100000 0.500000 0.000000
+END hdr_meshx_wall_sphere
+BEGIN hdr_meshx_mover_sphere
+V hdr_meshx_mover_sphere|meshx_mover_sphere_f0|0.000000 -1.000000 0.000000
+V hdr_meshx_mover_sphere|meshx_mover_sphere_f15|0.150141 -1.285314 0.000000
+V hdr_meshx_mover_sphere|meshx_mover_sphere_f30|0.226592 -1.259938 0.000000
+V hdr_meshx_mover_sphere|meshx_mover_sphere_f45|0.312146 -1.227093 0.000000
+V hdr_meshx_mover_sphere|meshx_mover_sphere_f60|0.407154 -1.184786 0.000000
+V hdr_meshx_mover_sphere|meshx_mover_sphere_f75|0.511607 -1.130636 0.000000
+V hdr_meshx_mover_sphere|meshx_mover_sphere_end|0.624946 -1.061885 0.000000
+V hdr_meshx_mover_sphere|meshx_mover_sphere_other|0.100000 0.500000 0.000000
+END hdr_meshx_mover_sphere
+BEGIN hdr_meshx_wall_box
+V hdr_meshx_wall_box|meshx_wall_box_f0|0.000000 -1.000000 0.000000
+V hdr_meshx_wall_box|meshx_wall_box_f15|0.000000 -0.745000 0.000000
+V hdr_meshx_wall_box|meshx_wall_box_f30|-1.#IND00 -1.#IND00 -1.#IND00
+V hdr_meshx_wall_box|meshx_wall_box_f45|-1.#IND00 -1.#IND00 -1.#IND00
+V hdr_meshx_wall_box|meshx_wall_box_f60|-1.#IND00 -1.#IND00 -1.#IND00
+V hdr_meshx_wall_box|meshx_wall_box_f75|-1.#IND00 -1.#IND00 -1.#IND00
+V hdr_meshx_wall_box|meshx_wall_box_end|-1.#IND00 -1.#IND00 -1.#IND00
+V hdr_meshx_wall_box|meshx_wall_box_other|0.100000 0.500000 0.000000
+END hdr_meshx_wall_box
+BEGIN hdr_nodex_wall_sphere
+V hdr_nodex_wall_sphere|nodex_wall_sphere_f0|0.000000 -1.000000 0.000000
+V hdr_nodex_wall_sphere|nodex_wall_sphere_f15|-0.187893 -1.193878 0.000000
+V hdr_nodex_wall_sphere|nodex_wall_sphere_f30|-0.290530 -1.142241 0.000000
+V hdr_nodex_wall_sphere|nodex_wall_sphere_f45|-0.402215 -1.076568 0.000000
+V hdr_nodex_wall_sphere|nodex_wall_sphere_f60|-0.521783 -0.993855 0.000000
+V hdr_nodex_wall_sphere|nodex_wall_sphere_f75|-0.647094 -0.890955 0.000000
+V hdr_nodex_wall_sphere|nodex_wall_sphere_end|-0.774799 -0.764882 0.000000
+V hdr_nodex_wall_sphere|nodex_wall_sphere_other|0.100000 0.500000 0.000000
+END hdr_nodex_wall_sphere
+BEGIN hdr_nodex_mover_sphere
+V hdr_nodex_mover_sphere|nodex_mover_sphere_f0|0.000000 -1.000000 0.000000
+V hdr_nodex_mover_sphere|nodex_mover_sphere_f15|0.150141 -1.285314 0.000000
+V hdr_nodex_mover_sphere|nodex_mover_sphere_f30|0.226592 -1.259938 0.000000
+V hdr_nodex_mover_sphere|nodex_mover_sphere_f45|0.312146 -1.227093 0.000000
+V hdr_nodex_mover_sphere|nodex_mover_sphere_f60|0.407154 -1.184786 0.000000
+V hdr_nodex_mover_sphere|nodex_mover_sphere_f75|0.511607 -1.130636 0.000000
+V hdr_nodex_mover_sphere|nodex_mover_sphere_end|0.624946 -1.061885 0.000000
+V hdr_nodex_mover_sphere|nodex_mover_sphere_other|0.100000 0.500000 0.000000
+END hdr_nodex_mover_sphere
+BEGIN hdr_float_wall_sphere
+V hdr_float_wall_sphere|float_wall_sphere_f0|0.000000 -1.000000 0.000000
+V hdr_float_wall_sphere|float_wall_sphere_f15|-0.000998 -0.757428 -0.003993
+V hdr_float_wall_sphere|float_wall_sphere_f30|-0.023659 -0.754936 0.000000
+V hdr_float_wall_sphere|float_wall_sphere_f45|-0.051397 -0.751897 0.000000
+V hdr_float_wall_sphere|float_wall_sphere_f60|-0.085244 -0.747344 0.000000
+V hdr_float_wall_sphere|float_wall_sphere_f75|-0.126452 -0.740535 0.000000
+V hdr_float_wall_sphere|float_wall_sphere_end|-0.176450 -0.730373 0.000000
+V hdr_float_wall_sphere|float_wall_sphere_other|0.100000 0.500000 0.000000
+END hdr_float_wall_sphere
+BEGIN hdr_float_mover_sphere
+V hdr_float_mover_sphere|float_mover_sphere_f0|0.000000 -1.000000 0.000000
+V hdr_float_mover_sphere|float_mover_sphere_f15|-0.000998 -0.757428 0.003993
+V hdr_float_mover_sphere|float_mover_sphere_f30|-0.023659 -0.754936 0.000000
+V hdr_float_mover_sphere|float_mover_sphere_f45|-0.051397 -0.751897 0.000000
+V hdr_float_mover_sphere|float_mover_sphere_f60|-0.085244 -0.747344 0.000000
+V hdr_float_mover_sphere|float_mover_sphere_f75|-0.126452 -0.740535 0.000000
+V hdr_float_mover_sphere|float_mover_sphere_end|-0.176450 -0.730373 0.000000
+V hdr_float_mover_sphere|float_mover_sphere_other|0.100000 0.500000 0.000000
+END hdr_float_mover_sphere
+BEGIN hdr_float_both_sphere
+V hdr_float_both_sphere|float_both_sphere_f0|0.000000 -1.000000 0.000000
+V hdr_float_both_sphere|float_both_sphere_f15|0.000000 -0.745000 0.000000
+V hdr_float_both_sphere|float_both_sphere_f30|0.000000 -0.489999 0.000000
+V hdr_float_both_sphere|float_both_sphere_f45|-0.005207 -0.273907 0.000000
+V hdr_float_both_sphere|float_both_sphere_f60|-0.045726 -0.267310 0.000000
+V hdr_float_both_sphere|float_both_sphere_f75|-0.101052 -0.254704 0.000000
+V hdr_float_both_sphere|float_both_sphere_end|-0.175302 -0.230896 0.000000
+V hdr_float_both_sphere|float_both_sphere_other|0.100000 0.500000 0.000000
+END hdr_float_both_sphere
+BEGIN hdr_float_wall_sphere_half
+V hdr_float_wall_sphere_half|float_wall_sphere_half_f0|0.000000 -1.000000 0.000000
+V hdr_float_wall_sphere_half|float_wall_sphere_half_f15|0.000000 -0.745000 0.000000
+V hdr_float_wall_sphere_half|float_wall_sphere_half_f30|0.000000 -0.489999 0.000000
+V hdr_float_wall_sphere_half|float_wall_sphere_half_f45|0.000000 -0.235000 0.000000
+V hdr_float_wall_sphere_half|float_wall_sphere_half_f60|-0.005642 -0.007620 0.000000
+V hdr_float_wall_sphere_half|float_wall_sphere_half_f75|-0.070963 0.011161 0.000000
+V hdr_float_wall_sphere_half|float_wall_sphere_half_end|-0.169295 0.056549 0.000000
+V hdr_float_wall_sphere_half|float_wall_sphere_half_other|0.100000 0.500000 0.000000
+END hdr_float_wall_sphere_half
+BEGIN hdr_rects
+V hdr_rects|cr_box_rect|640.000000
+V hdr_rects|cr_box_head|0.000000 0.000000 1.700000
+V hdr_rects|cr_ctrx_rect|640.000000
+V hdr_rects|cr_ctrx_head|0.000000 0.000000 1.700000
+V hdr_rects|cr_ctrz_rect|640.000000
+V hdr_rects|cr_ctrz_head|0.000000 0.000000 1.700000
+V hdr_rects|cr_bbig_rect|640.000000
+V hdr_rects|cr_bbig_head|0.000000 0.000000 1.700000
+V hdr_rects|cr_bside_rect|640.000000
+V hdr_rects|cr_bside_head|0.000000 0.000000 1.700000
+V hdr_rects|cr_meshx_rect|640.000000
+V hdr_rects|cr_meshx_head|0.000000 0.000000 1.700000
+V hdr_rects|cr_nodex_rect|640.000000
+V hdr_rects|cr_nodex_head|0.000000 0.000000 1.700000
+V hdr_rects|cr_float_rect|640.000000
+V hdr_rects|cr_float_head|0.000000 0.000000 1.700000
+END hdr_rects
+SKIP font_dims_handle
+SKIP font_dims_name
+SKIP args_ActivateActorShadow_p2_big
+SKIP args_AddShadowPlane_p2_nil
+SKIP args_AddShadowPlane_p2_tab
+SKIP args_FadeInChore_p3_neg
+SKIP args_FadeOutChore_p3_neg
+SKIP args_FileFindFirst_p2_tab
+SKIP args_GetActorNodeLocation_p2_big
+SKIP args_GetCameraLookVector_p1_big
+SKIP args_GetFontDimensions_none
+SKIP args_GetFontDimensions_nil
+SKIP args_GetFontDimensions_str
+SKIP args_GetFontDimensions_num
+SKIP args_GetFontDimensions_tab
+SKIP args_GetFontDimensions_fn
+SKIP args_GetFontDimensions_f
+SKIP args_GetFontDimensions_f_nil
+SKIP args_GetFontDimensions_f_str
+SKIP args_GetFontDimensions_f_num
+SKIP args_GetFontDimensions_f_tab
+SKIP args_GetKeyLength_none
+SKIP args_GetKeyLength_nil
+SKIP args_GetKeyLength_str
+SKIP args_GetKeyLength_num
+SKIP args_GetKeyLength_tab
+SKIP args_GetKeyLength_fn
+SKIP args_ImFadeParam_p1_big
+SKIP args_ImGetParam_p1_big
+SKIP args_ImSetParam_p1_big
+SKIP args_ImSetVoiceEffect_none
+SKIP args_ImSetVoiceEffect_nil
+SKIP args_ImSetVoiceEffect_p1_nil
+SKIP args_ImStopSound_p1_big
+SKIP args_IrisDown_none
+SKIP args_IrisDown_nil
+SKIP args_IrisDown_str
+SKIP args_IrisDown_num
+SKIP args_IrisDown_tab
+SKIP args_IrisDown_fn
+SKIP args_IrisDown_p0
+SKIP args_IrisDown_p1_nil
+SKIP args_IrisDown_p1_str
+SKIP args_IrisDown_p1_num
+SKIP args_IrisDown_p1_tab
+SKIP args_IrisDown_p1_neg
+SKIP args_IrisDown_p1_big
+SKIP args_IrisDown_p2_nil
+SKIP args_IrisDown_p2_str
+SKIP args_IrisDown_p2_num
+SKIP args_IrisDown_p2_tab
+SKIP args_IrisDown_p2_neg
+SKIP args_IrisDown_p2_big
+SKIP args_IrisDown_p3_nil
+SKIP args_IrisDown_p3_str
+SKIP args_IrisDown_p3_num
+SKIP args_IrisDown_p3_tab
+SKIP args_IrisDown_p3_neg
+SKIP args_IrisDown_p3_big
+SKIP args_IrisUp_none
+SKIP args_IrisUp_nil
+SKIP args_IrisUp_str
+SKIP args_IrisUp_num
+SKIP args_IrisUp_tab
+SKIP args_IrisUp_fn
+SKIP args_IrisUp_p0
+SKIP args_IrisUp_p1_nil
+SKIP args_IrisUp_p1_str
+SKIP args_IrisUp_p1_num
+SKIP args_IrisUp_p1_tab
+SKIP args_IrisUp_p1_neg
+SKIP args_IrisUp_p1_big
+SKIP args_IrisUp_p2_nil
+SKIP args_IrisUp_p2_str
+SKIP args_IrisUp_p2_num
+SKIP args_IrisUp_p2_tab
+SKIP args_IrisUp_p2_neg
+SKIP args_IrisUp_p2_big
+SKIP args_IrisUp_p3_nil
+SKIP args_IrisUp_p3_str
+SKIP args_IrisUp_p3_num
+SKIP args_IrisUp_p3_tab
+SKIP args_IrisUp_p3_neg
+SKIP args_IrisUp_p3_big
+SKIP args_NewObjectState_num
+SKIP args_NewObjectState_p1_num
+SKIP args_NewObjectState_p1_neg
+SKIP args_NewObjectState_p1_big
+SKIP args_SetActorShadowPlane_a
+SKIP args_SetActorShadowPlane_a_nil
+SKIP args_SetActorShadowPlane_a_tab
+SKIP args_SetActorShadowPlane_p2_nil
+SKIP args_SetActorShadowPlane_p2_tab
+SKIP args_SetShadowColor_none
+SKIP args_SetShadowColor_nil
+SKIP args_SetShadowColor_str
+SKIP args_SetShadowColor_num
+SKIP args_SetShadowColor_tab
+SKIP args_SetShadowColor_fn
+SKIP args_SetShadowColor_p0
+SKIP args_SetShadowColor_p1_nil
+SKIP args_SetShadowColor_p1_str
+SKIP args_SetShadowColor_p1_num
+SKIP args_SetShadowColor_p1_tab
+SKIP args_SetShadowColor_p1_neg
+SKIP args_SetShadowColor_p1_big
+SKIP args_SetShadowColor_p2_nil
+SKIP args_SetShadowColor_p2_str
+SKIP args_SetShadowColor_p2_num
+SKIP args_SetShadowColor_p2_tab
+SKIP args_SetShadowColor_p2_neg
+SKIP args_SetShadowColor_p2_big
+SKIP args_SetShadowColor_p3_nil
+SKIP args_SetShadowColor_p3_str
+SKIP args_SetShadowColor_p3_num
+SKIP args_SetShadowColor_p3_tab
+SKIP args_SetShadowColor_p3_neg
+SKIP args_SetShadowColor_p3_big
+SKIP args_SnapToPlane_none
+SKIP args_SnapToPlane_nil
+SKIP args_SnapToPlane_tab
+SKIP args_SnapToPlane_fn
 SUMMARY 4740 tests, 255 failed

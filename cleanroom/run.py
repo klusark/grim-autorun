@@ -357,6 +357,14 @@ def original_once():
     return read_lines(log)
 
 
+def test_of(line):
+    """The test a line of a result log is about (None for START and SUMMARY)."""
+    parts = line.split(" ", 1)
+    if len(parts) < 2 or parts[0] in ("START", "SUMMARY"):
+        return None
+    return parts[1].split("|")[0].split(" ")[0]
+
+
 def main():
     if len(sys.argv) > 1 and sys.argv[1] == "compare":
         return compare.main(sys.argv[2:])
@@ -387,7 +395,18 @@ def main():
             runs.append(compare.parse(open(path).read().splitlines()))
         unstable = sorted(compare.unstable_keys(runs))
         os.makedirs(os.path.dirname(EXPECTED), exist_ok=True)
-        shutil.copyfile(os.path.join(LOGS, "original.log"), EXPECTED)
+        if a.only and os.path.exists(EXPECTED):
+            # (--only: the tests run replace theirs in the expected log, the others stay)
+            new = open(os.path.join(LOGS, "original.log")).read().splitlines()
+            ran = set(test_of(l) for l in new) - {None}
+            old = [l for l in open(EXPECTED).read().splitlines() if test_of(l) not in ran]
+            end = [l for l in old if test_of(l) is None and not l.startswith("START")]
+            old = [l for l in old if l not in end]
+            with open(EXPECTED, "w", newline="\n") as f:
+                f.write("".join(l + "\n" for l in old + [l for l in new if test_of(l) is not None] + end))
+            unstable = sorted(set(unstable) | set(k for k in read_names(UNSTABLE) if k.split("|")[0] not in ran))
+        else:
+            shutil.copyfile(os.path.join(LOGS, "original.log"), EXPECTED)
         with open(UNSTABLE, "w", newline="\n") as f:
             f.write("# test|key values that differed between %d runs of the original; not compared\n" % a.repeat)
             f.write("".join(k + "\n" for k in unstable))
