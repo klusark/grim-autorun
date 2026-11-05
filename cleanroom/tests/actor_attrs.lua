@@ -1,6 +1,9 @@
 -- Actor attributes: setters and getters, costume stacks, chores of an actor, head and looking, walking variants
 
 -- (a builtin by name: nil and a "missing" value when the engine has none, so that the gap is a difference, not an error)
+cr_nothing = function()
+end
+
 cr_fn = function(name)
 	local f = getglobal(name)
 	if type(f) ~= "function" and type(f) ~= "cfunction" then
@@ -215,12 +218,13 @@ cr_t_head_look = function()
 	SetActorHead(a, 1, 2, 2, 30, 30, 80)
 	SetActorLookRate(a, 200)
 	ActorLookAt(a, 1, 1, 1.7, 200)
-	cr_log("looking_at_once", IsActorLooking(a))
+	CR_LOOKING = cr_fn("IsActorLooking") or cr_nothing
+	cr_log("looking_at_once", CR_LOOKING(a))
 	cr_frames(10)
-	cr_log("looking_after_10", IsActorLooking(a))
+	cr_log("looking_after_10", CR_LOOKING(a))
 	ActorLookAt(a, nil)
 	cr_frames(10)
-	cr_log("looking_released", IsActorLooking(a))
+	cr_log("looking_released", CR_LOOKING(a))
 	PutActorInSet(a, nil)
 end
 cr_test("head_look", cr_t_head_look)

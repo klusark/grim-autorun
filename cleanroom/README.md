@@ -120,8 +120,10 @@ the next test after each skip is a test that leaves the engine in a bad state. L
 
 ## Determinism of the original
 
-With `simtime` every frame is 17 ms (`frame_time` checks it), and repeated runs give the same values except one: the order
-of `next()`. The original's Lua hashes strings and tables by address. LUA.DLL's own C runtime places its small-block heap
+With `simtime` every frame is 17 ms (`frame_time` checks it), and repeated runs give the same values except the order of
+`next()` and the values that are not meant to repeat (ticks, memory and disk sizes, dates, addresses). Text and speech
+end by real time, not by the game's clock, so how many frames a SayLine stays may vary (`say_line` puts back what it
+changes, so that nothing after it depends on that). The original's Lua hashes strings and tables by address. LUA.DLL's own C runtime places its small-block heap
 where Windows finds room, and that moves by multiples of 64 KB from run to run; the low bits of every address repeat.
 Two attempts did not change it, so both were dropped: ASLR off for the process (a creation flag in grimlaunch), and LUA.DLL's
 and the exe's heap calls redirected to a fixed arena from patch.dll (Lua's objects are not allocated there). The first region
@@ -130,13 +132,34 @@ Until then, tests must not depend on table order. `--save` keeps any value that 
 
 ## Differences found (ScummVM grim-actor-fixes, 2026-11-05)
 
-61 tests: 28 the same, 2 close, 31 differ. Besides the per-frame walk and turn values:
+2889 tests: 2238 the same, 3 close, 648 differ (most of them in the argument probe). Every difference is a ScummVM bug
+to look at, whether ScummVM is stricter or more permissive than the original.
+
+Argument probe (`zz_args.lua`, classified by hand from the logs):
+- 64 builtins of the original are missing in ScummVM (495 calls): among them `GetActorScale`, `GetCameraInterest`,
+  `IsActorLooking`, `GetLightPosition` / `Intensity` / `Type` / `Angles`, `IsLightOn`, `FindLight`, `PutActorAtOrigin`,
+  `WalkActorToInterest`, `SnapToPlane`, `GetSectorVertices`, `ScreenToWorld`, `GetTickCount`, `ascii`, `exp`, `log`,
+  `log10`, `atan2`, `getenv`, `rename`.
+- 21 builtins crash or hang ScummVM with arguments the original takes (45 calls, `logs/scummvm_known_crashers.txt`):
+  `UnShrinkBoxes` with any arguments, `ShrinkBoxes(1.5)`, `MakeCurrentSet` / `LockFont` / `GetImage` / `MakeTextObject` /
+  `BlastText` with a string or number of no file, `PointActorAt` and `SetActorShadowPoint` with missing coordinates,
+  `GetVisibleThings` with an argument, `SetActorCostume` / `PushActorCostume` of a missing costume, the chore builtins with a
+  number as the costume, `SetActorTurnChores` with chore -1, `WalkActorTo(actor, 1.5)`.
+- 26 builtins give different values for the same wrong arguments (74 calls), e.g. `GetActorChores`, `GetActorRect`,
+  `GetActorLookRate`, `ImGetParam`, `LocalizeString`, `PerSecond`, `ReadRegistryValue`, `FunctionName`, `format`, `strlen`,
+  `strlower`, `strupper`, `deg`, `asin`, `acos`.
+- A Lua error on ScummVM only: `ImSetVoiceEffect`, `TextFileGetLineCount`, `WalkActorVector`. On the original only:
+  `find_script` (and `date` / `tostring`, whose values vary).
+
+Hand-written tests, besides the per-frame walk and turn values:
 - The walk ends one frame's step past the target on the original (more at a higher rate), with a final yaw 2.3 degrees off.
-  After `PutActorAt` the original keeps walking.
+  After `PutActorAt` the original keeps walking. Changing the walk rate during a walk overshoots too.
 - The original eases into `TurnActorTo`; ScummVM turns at a constant rate. `WalkActorForward` into a wall slides on the
-  original and stops dead on ScummVM.
+  original and stops dead on ScummVM; a model actor walking into the outer wall stops on the original and slides on
+  ScummVM. `WalkActorToAvoiding` does not move the actor on ScummVM.
 - ScummVM does not fire the LUAV keys of a costume, with or without a model (`CR_LV` is never set); the original does,
-  at the frame times the chore keys give.
+  at the frame times the chore keys give. Turn chores are not played on ScummVM. `IsActorChoring(a, nil)` gives the chore
+  on the original, 0 on ScummVM; `GetActorChores` is nil on ScummVM. Chore fades differ.
 - `GetActorNodeLocation` on the original gives the node offsets of the model without the actor's position or turn
   (the faceless model is never drawn, which may be what updates them). ScummVM gives world positions.
 - Box collision (`SetActorCollisionMode(a, 1)`) between two faceless models gives NaN positions on the original; sphere
@@ -144,11 +167,22 @@ Until then, tests must not depend on table order. `--save` keeps any value that 
 - `MakeSectorActive` with a number does nothing on the original. A sector switched on stays on across a change of set on the
   original; ScummVM resets it. The current setup is kept across a change of set on the original; ScummVM goes back to 0.
   `GetCurrentSetup` of a set that is not current is 0 on the original and nil on ScummVM.
-- `WorldToScreen` returns whole pixels on the original; with a rolled camera ScummVM is up to 31 px off.
+- Camera: `SetCameraFOV`, `SetCameraRoll` and `SetCameraPosition` change the setup on the original and nothing on ScummVM;
+  `GetCameraLookVector` differs. `WorldToScreen` returns whole pixels on the original; with a rolled camera ScummVM is up to
+  31 px off.
 - `RotateVector` and `GetAngleBetweenVectors` are within 1e-3 (the original's sin/cos tables).
+- Text: `LockFont` of the same font gives the same handle on the original; an empty text object is 12 pixels high on the
+  original and 0 on ScummVM; wrapping at width 100 gives 94 on the original and 98 on ScummVM. `SetTextSpeed(20)` is
+  clamped to 10 on the original.
+- Primitives (`DrawLine`, `DrawRectangle`, `DrawPolygon`) are numbers on the original, userdata on ScummVM.
+  `IsMoviePlaying` / `IsFullscreenMoviePlaying` are true on ScummVM with no movie.
+- The original kills a script that runs between 100 000 and 1 000 000 loop steps without `break_here` ("Killing Lua script
+  that ran without a break_here() for a really long time!"); ScummVM lets it run.
+- `TextFileGetLine` / `TextFileGetLineCount` read the game folder on the original; ScummVM looks in the saves folder.
 - Registry: an unset value reads 96 on ScummVM (nil on the original); numbers come back as strings on the original.
 - Number text: the original's C runtime writes 3-digit exponents (`1e+015`) and `1.#INF`; `tonumber("0x10")` is nil.
-  `LocalizeString("no slashes")` gives `"//no slashes"` on the original.
+  `LocalizeString("no slashes")` gives `"//no slashes"` on the original. `FunctionName` is written differently.
+- `GetMemoryUsage` and `GetTickCount` are numbers on the original, nil on ScummVM.
 - About 87 Lua builtins exist only on the original; `sleep_for`, `pause_script`, `unpause_script` only on ScummVM.
 
 ## Not done yet

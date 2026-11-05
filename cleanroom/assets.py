@@ -102,5 +102,7 @@ def files():
 
 def loose_files():
     return {"grim.tab": F.text_table(TEXT),
+            # (three lines for TextFileGetLine; the second starts at 7)
+            "cr_lines.txt": b"line1\r\nline2\r\nline3\r\n",
             # (a file the dofile test runs)
             "cr_dofile_target.lua": F.lua_text('CR_DOFILE = "yes"\n')}

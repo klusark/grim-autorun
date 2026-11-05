@@ -1,16 +1,19 @@
 """Writes tests/zz_args.lua: every Lua builtin of the original called with wrong or missing arguments, one test per call.
 
-  python tools/gen_args.py
+  python tools/gen_args.py [log with the builtins test, default expected/original.log]
 
 The builtins are the ones the builtins test finds on the original (expected/original.log). For each one, the calls are
 f(), f(nil), f("cr"), f(1.5), f({ }), f(function); a builtin whose name holds "Actor" is also called with a real actor
-first: f(actor), f(actor, nil), f(actor, "cr"), f(actor, 1.5), f(actor, { }). What comes back is logged (up to four values).
+first: f(actor), f(actor, nil), f(actor, "cr"), f(actor, 1.5), f(actor, { }). The families (FAMILIES: text objects,
+fonts, primitives, images, object states, colours, lights, sets, sectors) get a real first argument of their kind followed
+by each wrong one, and the actor chore builtins wrong chores and costumes after a real actor. What comes back is logged (up to four values).
 The original is the reference: where ScummVM accepts what the original refuses, or the other way round, the values or the
 Lua errors differ. A call that crashes the original is found by run.py (expected/crashers.txt) and skipped on both.
 
 DENY: builtins that would end or block the run, change the runner itself or touch files outside the test folder."""
 import os
 import re
+import sys
 
 HERE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -28,10 +31,39 @@ PATTERNS = [("none", ""), ("nil", "nil"), ("str", '"cr"'), ("num", "1.5"), ("tab
 ACTOR_PATTERNS = [("a", "CR_ARGS_ACTOR"), ("a_nil", "CR_ARGS_ACTOR, nil"), ("a_str", 'CR_ARGS_ACTOR, "cr"'),
                   ("a_num", "CR_ARGS_ACTOR, 1.5"), ("a_tab", "CR_ARGS_ACTOR, { }")]
 
+# Families of builtins with a real first argument of their kind, then each wrong one. The handles are made fresh for each
+# call (cr_args_text() ...), so that a builtin that frees one cannot break the calls after it.
+FAMILIES = [
+    ("t", r"TextObject|^GetTextCharPosition$", "cr_args_text()"),
+    ("f", r"Font", "cr_args_font()"),
+    ("p", r"Primitive$", "cr_args_prim()"),
+    ("i", r"^(BlastImage|FreeImage)$", "cr_args_image()"),
+    ("o", r"^(SetObjectType|SendObjectToBack|SendObjectToFront|FreeObjectState)$", "cr_args_obj()"),
+    ("k", r"^GetColorComponents$", "cr_args_color()"),
+    ("l", r"Light", '"cr_light"'),
+    ("s", r"^(MakeCurrentSet|LockSet|UnLockSet|GetCurrentSetup)$", '"cr_flat.set"'),
+    ("e", r"^(MakeSectorActive|IsSectorActive|GetSectorVertices)$", '"floor"'),
+]
+
+
+def family_patterns(name):
+    out = []
+    for key, rx, first in FAMILIES:
+        if re.search(rx, name):
+            out += [(key, first), (key + "_nil", first + ", nil"), (key + "_str", first + ', "cr"'),
+                    (key + "_num", first + ", 1.5"), (key + "_tab", first + ", { }")]
+    if "Chore" in name and "Actor" in name:
+        a = "CR_ARGS_ACTOR"
+        out += [("c_ok", a + ', 0, "cr_box.cos"'), ("c_nil", a + ", 0, nil"), ("c_str", a + ', 0, "cr"'),
+                ("c_num", a + ", 0, 1.5"), ("c_tab", a + ", 0, { }"), ("c_chore_big", a + ', 99, "cr_box.cos"'),
+                ("c_chore_neg", a + ', -1, "cr_box.cos"'), ("c_chore_str", a + ', "cr", "cr_box.cos"')]
+    return out
+
 
 def builtins():
     names = []
-    for l in open(os.path.join(HERE, "expected", "original.log"), encoding="latin-1"):
+    log = sys.argv[1] if len(sys.argv) > 1 else os.path.join(HERE, "expected", "original.log")
+    for l in open(log, encoding="latin-1"):
         m = re.match(r"^V builtins\|fn_([A-Za-z_0-9]+)\|", l)
         if m:
             names.append(m.group(1))
@@ -55,10 +87,30 @@ def main():
            '\tcr_log("actor", type(CR_ARGS_ACTOR))',
            "end",
            'cr_test("args_setup", cr_t_args_setup)',
+           "",
+           "-- (fresh handles for the families of tools/gen_args.py)",
+           "cr_args_font = function()",
+           '\treturn LockFont("cr_font.laf")',
+           "end",
+           "cr_args_text = function()",
+           '\treturn MakeTextObject("abc", { font = cr_args_font(), x = 10, y = 20 })',
+           "end",
+           "cr_args_prim = function()",
+           "\treturn DrawLine(1, 2, 30, 40, { color = MakeColor(1, 2, 3) })",
+           "end",
+           "cr_args_image = function()",
+           '\treturn GetImage("cr_obj.bm")',
+           "end",
+           "cr_args_obj = function()",
+           '\treturn NewObjectState(0, 1, "cr_obj.bm", nil, TRUE)',
+           "end",
+           "cr_args_color = function()",
+           "\treturn MakeColor(10, 20, 30)",
+           "end",
            ""]
     n = 0
     for name in builtins():
-        pats = PATTERNS + (ACTOR_PATTERNS if "Actor" in name else [])
+        pats = PATTERNS + (ACTOR_PATTERNS if "Actor" in name else []) + family_patterns(name)
         for key, args in pats:
             n += 1
             fn = "cr_t_args_%d" % n

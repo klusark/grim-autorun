@@ -1,4 +1,9 @@
 # tests that crash the original (found by run.py); skipped on both engines
+args_GetFontDimensions_f
+args_GetFontDimensions_f_nil
+args_GetFontDimensions_f_num
+args_GetFontDimensions_f_str
+args_GetFontDimensions_f_tab
 args_GetFontDimensions_fn
 args_GetFontDimensions_nil
 args_GetFontDimensions_none

@@ -97,7 +97,9 @@ cr_t_blast_print = function()
 end
 cr_test("blast_print", cr_t_blast_print)
 
--- (SayLine without a voice file: the text is shown for a time that depends on its length and the text speed)
+-- (SayLine without a voice file: the text is shown for a time that depends on its length and the text speed. The original
+-- ends it by real time, not by the game's clock, so with simtime the frame counts vary from run to run (unstable.txt);
+-- everything the test changes is put back in cr_t_say_line_restore, which runs as its own test right after it)
 cr_t_say_line = function()
 	local a = cr_attr_actor("cr_talker")
 	SetSayLineDefaults({ font = CR_FONT })
@@ -129,3 +131,12 @@ cr_t_say_line = function()
 	PutActorInSet(a, nil)
 end
 cr_test("say_line", cr_t_say_line)
+
+cr_t_say_line_restore = function()
+	ShutUpActor(nil)
+	ExpireText()
+	SetTextSpeed(7)
+	cr_frames(1)
+	cr_log("speed", GetTextSpeed())
+end
+cr_test("say_line_restore", cr_t_say_line_restore)
