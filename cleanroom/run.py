@@ -2,14 +2,18 @@
 file of the game's data. See README.md.
 
   python run.py build                      writes the data into build/ (loose files)
-  python run.py scummvm [--only T1,T2]     runs ScummVM, compares with expected/original.log
+  python run.py scummvm [--only T1,T2]     runs ScummVM with each of its renderers, compares each with expected/original.log
+                   [--renderer R,R]        only these renderers (opengl, opengl_shaders, software; CR_RENDERERS too)
   python run.py original [--only T]        runs the original exe through grimlaunch.exe, compares with the expected log
   python run.py original --save            ... and makes the run the new expected log
   python run.py both                       both engines, compared with each other
   python run.py compare A.log B.log        compares two result logs
 
 A test that crashes or hangs an engine is found and skipped (README.md). ScummVM's are kept in
-logs/scummvm_known_crashers.txt, skipped and reported on the next runs; --fresh runs them again.
+logs/scummvm_known_crashers_<renderer>.txt, skipped and reported on the next runs; --fresh runs them again.
+
+ScummVM runs every test once with each renderer of Grim (RENDERERS: OpenGL, OpenGL with shaders, the software TinyGL):
+logs/scummvm_<renderer>.log and logs/scummvm_<renderer>_raw.log; logs/scummvm.log is the first renderer's.
 
 Results go to logs/<engine>.log (only the CR lines, normalised) and logs/<engine>_raw.log (the whole engine log).
 Environment: SCUMMVM (scummvm.exe), GRIM_INSTALL (the folder the original exe and its DLLs are copied from, default
@@ -78,9 +82,17 @@ def lint():
 def build(only=None, skip=()):
     """Writes the data as loose files into build/ (no archive: both engines read loose files from the game folder);
     returns the build folder. build/cr_manifest.txt lists them, so that a run folder can drop files of an older build."""
-    if os.path.isdir(BUILD):
-        shutil.rmtree(BUILD)
-    os.makedirs(BUILD)
+    # (Windows may hold a file of the folder for a moment after an engine that crashed: retry for a few seconds)
+    for attempt in range(20):
+        try:
+            if os.path.isdir(BUILD):
+                shutil.rmtree(BUILD)
+            os.makedirs(BUILD)
+            break
+        except OSError:
+            if attempt == 19:
+                raise
+            time.sleep(0.5)
     files = assets.files()
     files.update(assets.loose_files())
     tests = sorted(f for f in os.listdir(os.path.join(HERE, "tests")) if f.endswith(".lua"))
@@ -140,7 +152,14 @@ def unfinished(lines):
     return cur
 
 
-SVM_KNOWN = os.path.join(LOGS, "scummvm_known_crashers.txt")
+# The renderers of ScummVM's Grim engine (the "renderer" setting: Graphics::Renderer::parseTypeCode), all run each time
+RENDERERS = [r for r in os.environ.get("CR_RENDERERS", "opengl,opengl_shaders,software").split(",") if r]
+RENDERER = RENDERERS[0]
+
+
+def svm_known():
+    """The tests that crashed or hung ScummVM with the current renderer."""
+    return os.path.join(LOGS, "scummvm_known_crashers_%s.txt" % RENDERER)
 
 
 def run_engine(engine, only=None, fresh=False):
@@ -148,7 +167,7 @@ def run_engine(engine, only=None, fresh=False):
     The original's crashers are kept in expected/crashers.txt (both engines skip them: there is no reference); ScummVM's are
     returned (bugs). Writes logs/<engine>.log; returns (lines, ScummVM's crashers)."""
     skip = read_names(CRASHERS)
-    known = set() if fresh or engine != "scummvm" else read_names(SVM_KNOWN) - skip
+    known = set() if fresh or engine != "scummvm" else read_names(svm_known()) - skip
     skip |= known
     new = []
     once = original_once if engine == "original" else scummvm_once
@@ -192,14 +211,14 @@ def run_engine(engine, only=None, fresh=False):
         f.write("\n".join(lines) + "\n")
     print("%s: %d result lines in %s" % (engine, len(lines), out))
     if engine == "scummvm":
-        with open(SVM_KNOWN, "w", newline="\n") as f:
+        with open(svm_known(), "w", newline="\n") as f:
             f.write("".join(n + "\n" for n in sorted(known | set(new))))
     return lines, (sorted(known) + new if engine == "scummvm" else [])
 
 
 def compare_with(reference, engine, crashed):
     rc = compare.main([reference, os.path.join(LOGS, engine + ".log"), "--unstable", UNSTABLE])
-    with open(os.path.join(LOGS, "scummvm_crashers.txt"), "w") as f:
+    with open(os.path.join(LOGS, "scummvm_crashers_%s.txt" % RENDERER), "w") as f:
         f.write("".join(n + "\n" for n in crashed))
     if crashed:
         print("crashed or hung ScummVM (a bug): %s" % ", ".join(crashed))
@@ -227,7 +246,7 @@ def scummvm_once():
                 "updates_check=0\n\n"
                 "[cleanroom]\ngameid=grim\nengineid=grim\ndescription=Grim engine test data\nextra=Test data\n"
                 "path=%s\\\nlanguage=en\nplatform=windows\ncheck_gamedata=false\nfullscreen=false\n"
-                "speech_mute=true\nsim_frame_ms=17\n" % d)
+                "speech_mute=true\nsim_frame_ms=17\nrenderer=%s\n" % (d, RENDERER))
     raw = os.path.join(LOGS, "scummvm_raw.log")
     os.makedirs(LOGS, exist_ok=True)
     if os.path.exists(raw):
@@ -367,15 +386,75 @@ def test_of(line):
     return parts[1].split("|")[0].split(" ")[0]
 
 
+def renderer_diff(r0, r1):
+    """Prints the tests whose values differ between two renderers' runs (beyond 1e-6)."""
+    def load(r):
+        return compare.parse(open(os.path.join(LOGS, "scummvm_%s.log" % r), encoding="latin-1").read().splitlines())[1]
+    t0, t1 = load(r0), load(r1)
+    unstable = compare.load_unstable(UNSTABLE)
+    diff = [n for n in t0 if n in t1 and
+            compare.diff_values(t0[n]["values"], t1[n]["values"], 1e-6, n, unstable, 1e-3)]
+    print("---- %s against %s: %d of %d tests differ%s" % (r1, r0, len(diff), len(t0), (": " + ", ".join(diff[:40]) +
+                                                                                       (" ..." if len(diff) > 40 else "")) if diff else ""))
+
+
+def run_scummvm_all(reference, only, fresh, renderers):
+    """Runs the tests on ScummVM once with each renderer and compares each run with the reference; the logs of each are
+    kept as logs/scummvm_<renderer>.log and _raw.log. Returns 0 when every renderer matches."""
+    global RENDERER
+    rcs = []
+    for r in renderers:
+        RENDERER = r
+        print("==== scummvm, renderer %s" % r)
+        _, crashed = run_engine("scummvm", only, fresh)
+        for suffix in (".log", "_raw.log"):
+            src = os.path.join(LOGS, "scummvm" + suffix)
+            if os.path.exists(src):
+                shutil.copyfile(src, os.path.join(LOGS, "scummvm_%s%s" % (r, suffix)))
+        rcs.append((r, compare_with(reference, "scummvm", crashed)))
+        # (what the reference has that this renderer gives differently, against the first renderer: a difference between
+        # the renderers themselves)
+        if r != renderers[0]:
+            renderer_diff(renderers[0], r)
+    for suffix in (".log", "_raw.log"):
+        src = os.path.join(LOGS, "scummvm_%s%s" % (renderers[0], suffix))
+        if os.path.exists(src):
+            shutil.copyfile(src, os.path.join(LOGS, "scummvm" + suffix))
+    RENDERER = renderers[0]
+    print("==== scummvm renderers: " + ", ".join("%s %s" % (r, "same" if rc == 0 else "differs") for r, rc in rcs))
+    return max(rc for _, rc in rcs) if rcs else 0
+
+
+def lock_folder():
+    """Waits until no other run.py works in this folder (they share build/, run/ and logs/: two at once spoil each other's
+    runs), then holds the lock until this process ends (Windows releases it when the process dies)."""
+    import msvcrt
+    os.makedirs(LOGS, exist_ok=True)
+    f = open(os.path.join(LOGS, "run.lock"), "a+")
+    warned = False
+    while True:
+        try:
+            f.seek(0)
+            msvcrt.locking(f.fileno(), msvcrt.LK_NBLCK, 1)
+            return f
+        except OSError:
+            if not warned:
+                print("run.py: another run.py is running in this folder; waiting for it")
+                warned = True
+            time.sleep(2)
+
+
 def main():
     if len(sys.argv) > 1 and sys.argv[1] == "compare":
         return compare.main(sys.argv[2:])
+    _lock = lock_folder()  # noqa: F841 (held until the process ends)
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("what", choices=["build", "scummvm", "original", "both", "compare"])
     ap.add_argument("logs", nargs="*")
     ap.add_argument("--only", help="run one test")
     ap.add_argument("--save", action="store_true", help="original: the run becomes expected/original.log")
     ap.add_argument("--repeat", type=int, default=3, help="original --save: runs, to find the unstable values")
+    ap.add_argument("--renderer", help="scummvm: only these renderers (comma separated; default: %s)" % ",".join(RENDERERS))
     ap.add_argument("--fresh", action="store_true",
                     help="scummvm: run the tests that crashed or hung ScummVM before again (logs/scummvm_known_crashers.txt)")
     a = ap.parse_args()
@@ -384,9 +463,9 @@ def main():
     if a.what == "build":
         build(a.only, read_names(CRASHERS))
         return 0 if lint() else 2
+    renderers = a.renderer.split(",") if a.renderer else RENDERERS
     if a.what == "scummvm":
-        _, crashed = run_engine("scummvm", a.only, a.fresh)
-        return compare_with(EXPECTED, "scummvm", crashed)
+        return run_scummvm_all(EXPECTED, a.only, a.fresh, renderers)
     if a.what == "original" and a.save:
         # (the reference must repeat itself: the values that differ between runs are kept in unstable.txt and not compared)
         runs = []
@@ -419,8 +498,7 @@ def main():
         return compare.main([EXPECTED, os.path.join(LOGS, "original.log"), "--unstable", UNSTABLE])
     run_engine("original", a.only)
     shutil.copyfile(os.path.join(LOGS, "original.log"), os.path.join(LOGS, "original_both.log"))
-    _, crashed = run_engine("scummvm", a.only, a.fresh)
-    return compare_with(os.path.join(LOGS, "original_both.log"), "scummvm", crashed)
+    return run_scummvm_all(os.path.join(LOGS, "original_both.log"), a.only, a.fresh, renderers)
 
 if __name__ == "__main__":
     sys.exit(main())
