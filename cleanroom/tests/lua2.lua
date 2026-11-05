@@ -1,4 +1,4 @@
--- More of the interpreter: dostring, call, foreach, tag methods, script handles
+-- More of the interpreter: dostring, call, foreach, tag methods, script handles  -- games: grim emi
 
 cr_t_dostring = function()
 	cr_log("value", dostring("return 1 + 2"))

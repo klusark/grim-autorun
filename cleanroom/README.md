@@ -31,10 +31,99 @@ by address. `chore_short` once differed in one run out of seven, so it may need 
   `run.py` does not start if a `GRIMFANDANGO.exe` is running already, and it kills only the process it started.
 - **ScummVM:** a build with `scummvm/grim-test-data.patch` (a detection entry for the marker file `grimtestdata.txt`,
   flag `GF_TESTDATA`: no `gfupd101.exe`, no `grim-patch.lab`, no md5 check, loose files and the folder's own LABs;
-  `PrintDebug("CRSNAP:<file>")` saves a picture of the screen).
+  `PrintDebug("CRSNAP:<file>")` saves a picture of the screen; an `error()` ends ScummVM at once, with its message in the
+  log, instead of opening the debugger and waiting there).
   `scummvm/build.sh` builds it in the worktree `~/scummvm-cleanroom` (`git worktree add --detach ../scummvm-cleanroom
   <branch>` and `git apply` the patch first). `SCUMMVM=` selects another exe. Without `--sim-fps` (branches without the
   autorun options) the frame times are real ones and the per-frame values do not match.
+- **No windows on the screen:** ScummVM and Grim's original run on a desktop of their own (`tools/offscreen.c`, built into
+  `run/offscreen.exe`): they draw as before (OpenGL, DirectDraw), but nothing shows and they cannot take the focus. The
+  program and what it starts are in a job that ends with `offscreen.exe`, so killing a run that hangs kills them all. EMI's
+  original cannot start Direct3D on another desktop, so it runs on the user's desktop with grimlaunch's `offscreen` patch:
+  its window opens at -20000,-20000, without a taskbar button, and never takes the focus. `CR_VISIBLE=1` shows them all.
+
+## Escape from Monkey Island
+
+```sh
+python run.py original --game emi --save   # the original Monkey4.exe v1.1: expected/emi_original.log
+python run.py scummvm --game emi           # ScummVM's EMI against it
+```
+
+The same runner runs on EMI. A test file runs on a game when the end of its first line says so: `-- games: grim emi` (no tag:
+Grim only). The tag goes on the first line so that no line number of the file changes, because some results hold them
+(`script_names`). Inside a shared file, `CR_GAME` (`"grim"` or `"emi"`) guards the parts that need one game's data. Each
+game's original is its own reference, so "shared" means the same test source, not the same values. The EMI runs use
+`build_emi/`, `run/emi/`, `logs/emi/` and `expected/emi_*`.
+
+- **The original:** `run.py` copies `Monkey4.exe`, the Miles dlls and filters and `binkw32.dll` from `EMI_INSTALL`
+  (default `C:\GOG Games\Escape from Monkey Island`). No `.m4b` is copied. The copy has no Windows compatibility setting,
+  because GOG's 640x480 one is keyed on the install path. `grimlaunch.exe` applies these EMI patches:
+  - `debuglog`: the release exe builds `PrintDebug`'s text and drops it; the hook appends it to `grimdebug.log`.
+  - `datadir`: "Install Path" is the exe's folder, so the run never reads the install's archives.
+  - `nocd`: no disc check.
+  - `simtime`: every frame is 17 ms, through the exe's own fixed-step branch of the frame time.
+  - `nopause`: the game keeps running when its window is not the active one. Without it, a game started behind other
+    windows stops at once (no frames, and the clock of `sleep_for` stands still) and the run looks hung.
+  - `windowed`: adds the game's `-w` switch.
+- **The data:** one archive, `local.m4b` (`formats.lab_emi`: LABN with the name table xor 0x96). It holds `_system.lua`,
+  the tests (text Lua, which the exe's parser reads), `script.tab` (`formats.text_table_emi`) and `assets_emi.py`'s files.
+  ScummVM detects the folder by the loose marker `emitestdata.txt`. The original opens its fixed list of archives
+  (`local`, `patch`, `lip`, `voiceAll`, `sfx`, `artAll`, `i9n`) and logs the missing ones through OutputDebugString
+  without stopping.
+- **Sets:** binary `.setb` (`formats.set_binary`, the layout of the game's own sets, checked against `mel.setb`). A test
+  calls `MakeCurrentSet("cr_flat.set")`, and both engines look for `cr_flat.setb`. The original falls back to a text
+  `.set`, but only in its own text format, which has no colormaps and no `zbuffer` line; ScummVM reads only Grim's text
+  format. The sets are Grim's (`assets.SETS`) turned over, because EMI's world has y up: the original finds a point's
+  sector in the x-z plane. A Grim point (x, y, z) is the EMI point (x, z, y). The setups have no rotation yet (the
+  quaternion of an EMI camera is not worked out).
+- **Backgrounds:** `.til` (`formats.til`: 256x256 tiles, gzipped like the game's). The original must have them:
+  - without a background it crashes drawing the set (0x420a40);
+  - a `.tga` background loads, but leaves its resource list broken, and about one run in three later hangs inside
+    `MakeCurrentSet`, walking that list without end (0x45d3e1);
+  - it also loads `pixeltest.til`, `dfltroom.til` and `default.tga` at start, so the archive has them.
+- **ScummVM:** `grim-test-data.patch` also has a `monkey4` "Test data" entry: no `MonkeyUpdate.exe`, no
+  `monkey4-patch.m4b`, only the folder's own `.m4b`, and no music-table dialog. ScummVM stops without `script.tab` and
+  shows that dialog without the music tables; the original does neither.
+
+What runs on EMI (2245 tests):
+- **Shared with Grim:** the interpreter tests `core`, `lang`, `lua2`, `lua3`, `lua4` and `timing` (`frame_time` without
+  its set changes: a set that does not exist crashes Monkey4.exe).
+- **EMI only, written for EMI's coordinates:**
+  - `emi_sets`: points and sectors, the edge tolerance, ramps, types, active sectors, setups, set changes, and a floor
+    in Grim's x-y plane.
+  - `emi_actors`: actors without a costume, placed, turned, walking (with and without following the boxes, around the
+    L), stopped, walking forward, in the overworld.
+  - `emi_engine`: sort order, time scale, look rate and FOV, alpha, the puck, angles, camera, overworld, layers, text,
+    sound groups.
+  - `zz_args_emi`: generated by `tools/gen_args.py --game emi` from the builtins Monkey4.exe has. It holds every builtin
+    with no, nil, string, number, table and function arguments, an actor first for the actor builtins, and the set,
+    sector, light and colour families. 28 of these calls crash the original (`expected/emi_crashers.txt`).
+
+ScummVM's EMI on 2026-11-05 (opengl), before `zz_args_emi`: 24 of 73 tests differed. The main differences:
+- **Builtins:** 139 names exist on one engine and not the other. ScummVM lacks `GetActorFOV`, `GetLayerFrame`,
+  `GetGroupVolume` and `GetPhysicalBytes`, among others. It has `Is3DHardwareEnabled` and `EnableDebugKeys`, which
+  Monkey4.exe does not.
+- **Sectors:**
+  - The original's edge tolerance reaches 1.9e-5 or more past an edge.
+  - Its `GetSectorName` gives the name where ScummVM gives nil.
+  - A floor in the x-y plane holds every point with z = 0 on the original.
+- **Actors:**
+  - On the original, `SetActorRot` starts a turn towards the yaw (`IsActorTurning` is 1 right after it, and the yaw
+    still reads 0); ScummVM sets the yaw at once.
+  - The default walk rate is 0.122 against 0.091, the turn rate 135 against 100.
+  - Without following the boxes the original does not walk; ScummVM walks off the floor.
+  - `TurnActorTo` and `PointActorAt` do not turn on the original; ScummVM turns for ever.
+  - `WalkActorForward` starts a frame earlier on ScummVM, and the walk around the corner of the L differs.
+- **Camera and the rest:** `SetCameraFOV` and `SetCameraPosition` do nothing on ScummVM, and the time scale does not
+  speed up a walk. `LocalizeString("plain")` gives `"//plain"`. The default speech mode and text speed differ.
+- **The interpreter:** number text (`1.#INF`, three-digit exponents), `tonumber` of a hex string, `ascii`, function
+  names, and `sleep_for` (7 frames against 8).
+
+Not done: EMI models, costumes and chores (`.meshb`, `.animb`, EMI's `.cos`), the rotation of a setup's camera, and sharing
+Grim's set, actor and walk tests (they need Grim's points turned over and EMI's sets).
+
+`args_collectgarbage_none|r` is in `expected/unstable.txt` by hand: the count `collectgarbage()` returns changes with
+every edit to the test sources. A full `--save` writes the file again without it.
 
 ## How it works
 

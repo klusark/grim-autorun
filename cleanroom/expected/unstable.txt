@@ -27,3 +27,4 @@ args_date_none|r
 args_tostring_fn|r
 args_tostring_tab|r
 next_order|order
+args_collectgarbage_none|r

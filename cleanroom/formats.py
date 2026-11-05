@@ -27,11 +27,52 @@ def lab(members):
     return b"LABN" + struct.pack("<III", 0x00010000, len(names), len(strtab)) + entries + strtab + body
 
 
+def lab_emi(members):
+    """An EMI archive (.m4b) from a {name: bytes} dict: LABN, version 0x10000, the count, the size of the name table and its offset
+    plus 0x13d0f, then the entries (name offset, start, size, 0) at 20, then the name table (each byte but the zeros xor 0x96), then
+    the files (ScummVM lab.cpp parseMonkey4FileTable; the layout of the game's own archives)."""
+    names = sorted(members)
+    strtab = b""
+    offs = []
+    for n in names:
+        offs.append(len(strtab))
+        strtab += n.encode("ascii") + b"\0"
+    table_at = 20 + 16 * len(names)
+    pos = table_at + len(strtab)
+    entries = b""
+    body = b""
+    for n, o in zip(names, offs):
+        d = members[n]
+        entries += struct.pack("<IIII", o, pos, len(d), 0)
+        body += d
+        pos += len(d)
+    coded = bytes(b ^ 0x96 if b else 0 for b in strtab)
+    return b"LABN" + struct.pack("<IIII", 0x00010000, len(names), len(strtab), table_at + 0x13d0f) + entries + coded + body
+
+
 def text_table(entries):
     """grim.tab: 'RCNE' and the lines 'id<TAB>text<CR><LF>' xor 0xdd. Both engines stop at the first empty line, which
     ends the table. The ids are written without the slashes the scripts put round them (/id/)."""
     plain = b"".join(("%s\t%s\r\n" % (k, v)).encode("latin-1") for k, v in entries) + b"\r\n"
     return b"RCNE" + bytes(c ^ 0xDD for c in plain)
+
+
+def text_table_emi(entries):
+    """EMI's script.tab: 'RCNE' and the lines 'id<TAB>text<CR><LF>', each byte xor a key from the C runtime's rand() sequence started
+    at 0x16 (next = next * 0x343fd + 0x269ec3, key = ((next >> 16) & 0x7fff) / 32767 * 254 + 1, as a float; ScummVM localize.cpp).
+    EMI skips empty lines instead of stopping at them."""
+    plain = b"".join(("%s\t%s\r\n" % (k, v)).encode("latin-1") for k, v in entries)
+    out = bytearray(b"RCNE")
+    nxt = 0x16
+    for c in plain:
+        nxt = (nxt * 0x343FD + 0x269EC3) & 0xFFFFFFFF
+        q = _f32(_f32(_f32(((nxt >> 16) & 0x7FFF) / 32767.0) * 254) + 1)   # (in single precision, as the reader does)
+        out.append(c ^ (int(q) & 0xFF))
+    return bytes(out)
+
+
+def _f32(x):
+    return struct.unpack("<f", struct.pack("<f", x))[0]
 
 
 def _bm_header(fmt, num_images):
@@ -97,6 +138,98 @@ def set_file(colormaps, setups, lights, sectors):
             out += ["\t%s\t%f\t%f\t%f" % (("vertices:" if j == 0 else "         "), p[0], p[1], p[2])]
         out += ["", ""]
     return ("\r\n".join(out) + "\r\n").encode("ascii")
+
+
+def tga(width, height, pixels, bpp=24):
+    """An uncompressed true-colour .tga, rows from the top (descriptor bit 5); pixels: (r, g, b) or (r, g, b, a) tuples."""
+    desc = 0x20 | (8 if bpp == 32 else 0)
+    out = bytearray(struct.pack("<BBBHHBHHHHBB", 0, 0, 2, 0, 0, 0, 0, 0, width, height, bpp, desc))
+    for p in pixels:
+        out += bytes((p[2], p[1], p[0]) + ((p[3] if len(p) > 3 else 255,) if bpp == 32 else ()))
+    return bytes(out)
+
+
+def til(width, height, pixels, compress=True):
+    """EMI's tiled bitmap (.til), the format of its backgrounds (ScummVM bitmap.cpp BitmapData::loadTile; the layout of the game's
+    own files): 'TIL0', the offset of the bitmap part, the counts of the coordinates, layers and polygons, 16 zero bytes, the
+    coordinates (screen x and y from -1 to 1, then u and v), the layers (first polygon, count), the polygons (tile, first
+    coordinate, count). Then a 128-byte 'BM  F' header (the number of tiles at 16, 2 and the bits per pixel 32 at 32, the bits
+    and shifts of r g b at 40) and the tiles: width, height (256, 256), then 256 x 256 pixels of 4 bytes, a b g r (r in the top
+    byte). The image is cut into tiles of 256 x 256 from the top left. pixels: (r, g, b) tuples, rows from the top. The game's
+    files are gzipped; compress=False writes it plain."""
+    import gzip
+    T = 256
+    coords, polys, tiles = [], [], []
+    for ty in range(0, height, T):
+        for tx in range(0, width, T):
+            w, h = min(T, width - tx), min(T, height - ty)
+            x0, x1 = tx / (width / 2.0) - 1, (tx + w) / (width / 2.0) - 1
+            y0, y1 = 1 - ty / (height / 2.0), 1 - (ty + h) / (height / 2.0)
+            u1, v1 = w / float(T), h / float(T)
+            polys.append((len(tiles), len(coords), 4))
+            coords += [(x0, y0, 0.0, 0.0), (x1, y0, u1, 0.0), (x1, y1, u1, v1), (x0, y1, 0.0, v1)]
+            tile = bytearray(T * T * 4)
+            for y in range(h):
+                row = pixels[(ty + y) * width + tx:(ty + y) * width + tx + w]
+                tile[y * T * 4:y * T * 4 + w * 4] = b"".join(bytes((255, b, g, r)) for r, g, b in row)
+            tiles.append(bytes(tile))
+    head = b"TIL0" + struct.pack("<IIII", 0, len(coords), 1, len(polys)) + b"\0" * 16
+    body = b"".join(struct.pack("<4f", *c) for c in coords) + struct.pack("<II", 0, len(polys))
+    body += b"".join(struct.pack("<III", *p) for p in polys)
+    bmoff = len(head) + len(body)
+    head = head[:4] + struct.pack("<I", bmoff) + head[8:]
+    bm = bytearray(128)
+    bm[0:5] = b"BM  F"
+    struct.pack_into("<I", bm, 16, len(tiles))
+    struct.pack_into("<IIIIIIII", bm, 32, 2, 32, 8, 8, 8, 24, 16, 8)
+    data = head + body + bytes(bm) + b"".join(struct.pack("<II", T, T) + t for t in tiles)
+    return gzip.compress(data, mtime=0) if compress else data
+
+
+def checker_rgb(width, height, cell, c0, c1):
+    """A checker board of two (r, g, b) colours."""
+    return [c0 if ((x // cell) + (y // cell)) % 2 == 0 else c1 for y in range(height) for x in range(width)]
+
+
+SECTOR_TYPES = {"walk": 0x1000, "funnel": 0x1100, "camera": 0x2000, "special": 0x4000, "chernobyl": 0x8000, "hot": 0x8000}
+LIGHT_TYPES = {"omni": 1, "spot": 2, "direct": 3, "ambient": 4}
+
+
+def _fixed(s, n):
+    b = s.encode("ascii")
+    assert len(b) < n, s
+    return b + b"\0" * (n - len(b))
+
+
+def _counted(s):
+    b = s.encode("ascii") + b"\0"
+    return struct.pack("<I", len(b)) + b
+
+
+def set_binary(setups, lights, sectors, shadows=()):
+    """EMI's binary .setb (ScummVM set.cpp Set::loadBinary; the original prefers it to a text .set). The same arguments as
+    set_file, without colormaps or z-buffers. A setup is: name[128], background (counted string), position, a rotation
+    quaternion (x y z w), fov, nclip, fclip; its "rotation" key (default no rotation) is the quaternion. A light: name[32],
+    position, quaternion, type, intensity, 0, colour (3 ints), falloff near and far, umbra and penumbra (radians). A sector:
+    the vertices, name (counted), id, a visible byte, type, the sort planes (none), height. Then the shadows (none)."""
+    f = lambda *v: struct.pack("<%df" % len(v), *v)
+    out = struct.pack("<I", len(setups))
+    for s in setups:
+        out += _fixed(s["name"], 128) + _counted(s.get("background", "")) + f(*s["position"])
+        out += f(*s.get("rotation", (0.0, 0.0, 0.0, 1.0))) + f(s.get("fov", 50.0), s.get("nclip", 0.01), s.get("fclip", 100.0))
+    out += struct.pack("<I", len(lights))
+    for l in lights:
+        out += _fixed(l["name"], 32) + f(*l["position"]) + f(*l.get("rotation", (0.0, 0.0, 0.0, 1.0)))
+        out += struct.pack("<if", LIGHT_TYPES[l.get("type", "omni")], l.get("intensity", 1.0)) + struct.pack("<i", 0)
+        out += struct.pack("<3i", *l.get("color", (255, 255, 255)))
+        out += f(l.get("falloff_near", 0.0), l.get("falloff_far", 100.0), l.get("umbra", 0.0), l.get("penumbra", 0.0))
+    out += struct.pack("<I", len(sectors))
+    for i, (name, typ, visible, height, pts) in enumerate(sectors):
+        out += struct.pack("<I", len(pts)) + b"".join(f(*p) for p in pts)
+        out += _counted(name) + struct.pack("<IBII", i, 1 if visible else 0, SECTOR_TYPES[typ], 0) + f(height)
+    out += struct.pack("<I", len(shadows))
+    assert not shadows
+    return out
 
 
 def lua_text(src):

@@ -12,7 +12,8 @@ import os
 import re
 import sys
 
-LINE = re.compile(r"(?:\bDEBUG|Debug:) CR (.*?)\s*$")
+# (patch.dll writes "DEBUG CR ...", ScummVM "Debug: CR ..."; EMI's grimlaunch hook writes PrintDebug's text as it is)
+LINE = re.compile(r"(?:\bDEBUG |Debug: |^)CR (.*?)\s*$")
 TOKEN = re.compile(r'"[^"]*"|\S+')
 
 
