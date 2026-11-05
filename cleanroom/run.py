@@ -6,6 +6,7 @@ file of the game's data. See README.md.
                    [--renderer R,R]        only these renderers (opengl, opengl_shaders, software; CR_RENDERERS too)
   python run.py original [--only T]        runs the original exe through grimlaunch.exe, compares with the expected log
   python run.py original --save            ... and makes the run the new expected log
+  python run.py remastered [--only T]      runs the Grim Fandango Remastered exe (debuglog patch only), compares with the expected log
   python run.py both                       both engines, compared with each other
   python run.py compare A.log B.log        compares two result logs
 
@@ -42,11 +43,14 @@ UNSTABLE = os.path.join(HERE, "expected", "unstable.txt")
 # (a build with scummvm/grim-test-data.patch: scummvm/build.sh makes it in ~/scummvm-cleanroom)
 SCUMMVM = os.environ.get("SCUMMVM", r"C:\msys64\home\Joel\scummvm-cleanroom\build\scummvm.exe")
 GRIM_INSTALL = os.environ.get("GRIM_INSTALL", r"C:\GOG Games\GRIMDATA")
+REMASTERED_INSTALL = os.environ.get("REMASTERED_INSTALL", "C:/Program Files (x86)/Steam/steamapps/common/Grim Fandango Remastered")
 TIMEOUT = int(os.environ.get("CR_TIMEOUT", "120"))
 
 # The program files of the original (not data): the exe, its DLLs and the two small files iMUSE and the HMI driver read
 PROGRAM_FILES = ["GRIMFANDANGO.exe", "LUA.DLL", "IMUSE.DLL", "CHORE.DLL", "NULLMUSE.DLL", "HMIFXFP.DLL", "HMIFXLIB.DLL",
                  "HMILIBS.INI", "IMUSE.PSL", "grimdlg.dll"]
+# The Remastered: the exe and the dlls it loads (the game's data are not copied; the Lua is the same 3.1)
+REMASTERED_FILES = ["GrimFandango.exe", "Lua.dll", "SDL2.dll", "chore.dll", "steam_api.dll", "controllerdef.txt", "icon.png", "x86"]   # (x86: the shaders)
 MINGW32 = r"C:\msys64\mingw32\bin"
 UCRT64 = r"C:\msys64\ucrt64\bin"
 
@@ -170,7 +174,7 @@ def run_engine(engine, only=None, fresh=False):
     known = set() if fresh or engine != "scummvm" else read_names(svm_known()) - skip
     skip |= known
     new = []
-    once = original_once if engine == "original" else scummvm_once
+    once = {"original": original_once, "remastered": remastered_once}.get(engine, scummvm_once)
     lines = []
     suspect = None
     for _ in range(400):
@@ -304,18 +308,9 @@ def newer(target, sources):
     return os.path.exists(target) and all(os.path.getmtime(target) >= os.path.getmtime(s) for s in sources)
 
 
-def prepare_original(d):
-    """The run folder of the original: the program files from the install, patch.dll and grimlaunch.exe built from the
-    sources of this repository (an old grimlaunch.exe lacks the windowed patch and takes the whole screen), grim.ini
-    pointing at the folder itself, the data."""
-    os.makedirs(d, exist_ok=True)
-    for f in PROGRAM_FILES:
-        dst = os.path.join(d, f)
-        if not os.path.exists(dst):
-            src = os.path.join(GRIM_INSTALL, f)
-            if not os.path.exists(src):
-                sys.exit("original: %s is missing (set GRIM_INSTALL to the folder of GRIMFANDANGO.exe)" % src)
-            shutil.copyfile(src, dst)
+def prepare_tools(d):
+    """patch.dll and grimlaunch.exe, built from the sources of this repository (an old grimlaunch.exe lacks the windowed patch
+    and takes the whole screen), when they are older than the sources."""
     pdir = os.path.join(ROOT, "patches")
     dll_src = [os.path.join(pdir, "patch", "patch.c"), os.path.join(pdir, "patch", "config.c")]
     dll = os.path.join(d, "patch.dll")
@@ -330,6 +325,20 @@ def prepare_original(d):
         env = dict(os.environ, PATH=UCRT64 + os.pathsep + os.environ.get("PATH", ""))
         subprocess.run([os.path.join(UCRT64, "g++.exe"), "-O2", "-static", "-o", launcher] + launcher_src, check=True, env=env)
         print("original: built grimlaunch.exe")
+
+
+def prepare_original(d):
+    """The run folder of the original: the program files from the install, the tools, grim.ini pointing at the folder itself,
+    the data."""
+    os.makedirs(d, exist_ok=True)
+    for f in PROGRAM_FILES:
+        dst = os.path.join(d, f)
+        if not os.path.exists(dst):
+            src = os.path.join(GRIM_INSTALL, f)
+            if not os.path.exists(src):
+                sys.exit("original: %s is missing (set GRIM_INSTALL to the folder of GRIMFANDANGO.exe)" % src)
+            shutil.copyfile(src, dst)
+    prepare_tools(d)
     # good_times skips the CD check (Grim_Init); the display values are the ones the install uses
     with open(os.path.join(d, "grim.ini"), "w", newline="\r\n") as f:
         f.write("[Grim]\nGrimDataDir=%s\\\ngood_times=TRUE\nTextAllowed=true\nExperimentalDisplay=0\n"
@@ -346,18 +355,40 @@ def kill_own_original(d):
             subprocess.run(["taskkill", "/F", "/PID", pid], capture_output=True)
 
 
-def original_once():
-    """One run of the original; returns the CR lines."""
-    if original_running():
+def prepare_remastered(d):
+    """The run folder of the Remastered: its exe and dlls, the tools, the data. It has no grim.ini (no registry settings)."""
+    os.makedirs(d, exist_ok=True)
+    for f in REMASTERED_FILES:
+        dst = os.path.join(d, f)
+        if not os.path.exists(dst):
+            src = os.path.join(REMASTERED_INSTALL, f)
+            if not os.path.exists(src):
+                sys.exit("remastered: %s is missing (set REMASTERED_INSTALL to the folder of its GrimFandango.exe)" % src)
+            if os.path.isdir(src):
+                shutil.copytree(src, dst)
+            else:
+                shutil.copyfile(src, dst)
+    prepare_tools(d)
+    copy_data(d)
+
+
+def remastered_once():
+    return original_once("remastered")
+
+
+def original_once(which="original"):
+    """One run of the original (or the Remastered); returns the CR lines."""
+    exe = "GrimFandango.exe" if which == "remastered" else "GRIMFANDANGO.exe"
+    if which == "original" and original_running():
         sys.exit("original: the GRIMFANDANGO.exe of %s is running (maybe a game being played); not started" % GRIM_INSTALL)
-    d = os.path.join(RUN, "original")
+    d = os.path.join(RUN, which)
     kill_own_original(d)
-    prepare_original(d)
+    (prepare_remastered if which == "remastered" else prepare_original)(d)
     log = os.path.join(d, "grimdebug.log")
     if os.path.exists(log):
         os.remove(log)
     t = time.time()
-    p = subprocess.Popen([os.path.join(d, "grimlaunch.exe"), "GRIMFANDANGO.exe"], cwd=d, stdout=subprocess.DEVNULL,
+    p = subprocess.Popen([os.path.join(d, "grimlaunch.exe"), exe], cwd=d, stdout=subprocess.DEVNULL,
                          stderr=subprocess.DEVNULL, env=dict(os.environ, GRIM_INI=os.path.join(d, "grim.ini")))
     # (a run that writes nothing to grimdebug.log for CR_STALL seconds hangs: it is killed, and so is every game started from
     # our run folder; copies elsewhere, a game being played or other tools' builds, are not touched)
@@ -372,9 +403,9 @@ def original_once():
             kill_own_original(d)
             p.kill()
             break
-    print("original: %.1f s" % (time.time() - t))
+    print("%s: %.1f s" % (which, time.time() - t))
     if os.path.exists(log):
-        shutil.copyfile(log, os.path.join(LOGS, "original_raw.log"))
+        shutil.copyfile(log, os.path.join(LOGS, which + "_raw.log"))
     return read_lines(log)
 
 
@@ -449,7 +480,7 @@ def main():
         return compare.main(sys.argv[2:])
     _lock = lock_folder()  # noqa: F841 (held until the process ends)
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("what", choices=["build", "scummvm", "original", "both", "compare"])
+    ap.add_argument("what", choices=["build", "scummvm", "original", "remastered", "both", "compare"])
     ap.add_argument("logs", nargs="*")
     ap.add_argument("--only", help="run one test")
     ap.add_argument("--save", action="store_true", help="original: the run becomes expected/original.log")
@@ -493,6 +524,9 @@ def main():
             f.write("".join(k + "\n" for k in unstable))
         print("saved %s (%d unstable values: %s)" % (EXPECTED, len(unstable), ", ".join(unstable) or "none"))
         return 0
+    if a.what == "remastered":
+        run_engine("remastered", a.only)
+        return compare.main([EXPECTED, os.path.join(LOGS, "remastered.log"), "--unstable", UNSTABLE])
     if a.what == "original":
         run_engine("original", a.only)
         return compare.main([EXPECTED, os.path.join(LOGS, "original.log"), "--unstable", UNSTABLE])

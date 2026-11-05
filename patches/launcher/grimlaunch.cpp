@@ -1,9 +1,10 @@
-// Starts the original Grim Fandango v1.01 exe (GRIMFANDANGO.EXE) or Escape from Monkey Island v1.1 exe (Monkey4.exe, or the patched
-// Monkey4_f12.exe) suspended, applies the patches to the process in memory and resumes it. The game is recognized from the exe's bytes.
+// Starts the original Grim Fandango v1.01 exe (GRIMFANDANGO.EXE), the Grim Fandango Remastered exe (GrimFandango.exe, debuglog only) or
+// the Escape from Monkey Island v1.1 exe (Monkey4.exe, or the patched Monkey4_f12.exe) suspended, applies the patches to the process in memory and resumes it. The game is recognized from the exe's bytes.
 // No debugger is attached and the exe on disk is not changed.
 //
 // Grim patches (on by default unless marked):
-//   debuglog   PrintDebug / PrintWarning / PrintError append to grimdebug.log next to the exe (patch.dll)
+//   debuglog   PrintDebug / PrintWarning / PrintError append to grimdebug.log next to the exe (patch.dll); also for the Remastered
+//              (whose windowed patch keeps its SDL window a window instead of borderless over the desktop)
 //   framelimit 60 fps limiter (patch.dll)                                                       (off)
 //   simtime    fixed frame time, --simtime-ms N (default 17)
 //   config     the game reads its settings from grim.ini next to the exe instead of the registry (patch.dll)
@@ -44,18 +45,19 @@
 #include <string>
 #include <vector>
 
-// v1.01 import table slots of kernel32's LoadLibraryA and GetProcAddress
-static const DWORD IAT_LOADLIBRARYA = 0x4d7154;
-static const DWORD IAT_GETPROCADDRESS = 0x4d7158;
+// import table slots of kernel32's LoadLibraryA and GetProcAddress (v1.01; the Remastered's are set in main, with its load address)
+static DWORD g_iatLoadLibraryA = 0x4d7154;
+static DWORD g_iatGetProcAddress = 0x4d7158;
 static const char DLL_NAME[] = "patch.dll";
 
-static const DWORD ARENA = 0x5F000000;   // the code and strings the launcher puts into the process; lua.dll and the system dlls stay clear
+static const DWORD ARENA_WANTED = 0x5F000000;   // the code and strings the launcher puts into the process; lua.dll and the system dlls stay clear
 static const DWORD ARENA_SIZE = 0x10000;
+static DWORD g_arena = ARENA_WANTED;
 
 static const char REG_KEY[] = "SOFTWARE\\LucasArts Entertainment Company LLC\\Grim Fandango\\v1.0";
 
 static HANDLE g_proc;
-static DWORD g_next = ARENA;
+static DWORD g_next = ARENA_WANTED;
 static std::map<std::string, DWORD> g_strings;
 static int g_simtimeMs = 17;
 
@@ -104,7 +106,7 @@ static void expect(DWORD va, const std::string &expected, const char *what) {
 // the code cave, handed out front to back
 static DWORD alloc(size_t size, unsigned align = 16) {
 	DWORD va = (g_next + align - 1) & ~(align - 1);
-	if (va + size > ARENA + ARENA_SIZE)
+	if (va + size > g_arena + ARENA_SIZE)
 		die("the patch memory in the process is full");
 	g_next = va + size;
 	return va;
@@ -127,11 +129,11 @@ static DWORD loaderStub(const char *exportName, DWORD then = 0) {
 	auto build = [&](DWORD va) {
 		std::string c;
 		c += '\x68'; c += le32(dll);                                // push "patch.dll"
-		c += "\xFF\x15"; c += le32(IAT_LOADLIBRARYA);                // call [LoadLibraryA]
+		c += "\xFF\x15"; c += le32(g_iatLoadLibraryA);                // call [LoadLibraryA]
 		c += "\x85\xC0\x74"; c += '\0';                              // test eax,eax; jz fail
 		size_t jz1 = c.size() - 1;
 		c += '\x68'; c += le32(fn); c += '\x50';                     // push export name; push eax
-		c += "\xFF\x15"; c += le32(IAT_GETPROCADDRESS);              // call [GetProcAddress]
+		c += "\xFF\x15"; c += le32(g_iatGetProcAddress);              // call [GetProcAddress]
 		c += "\x85\xC0\x74"; c += '\0';                              // test eax,eax; jz fail
 		size_t jz2 = c.size() - 1;
 		size_t fail;
@@ -257,15 +259,23 @@ static bool writeIniFromRegistry(const std::string &path) {
 
 // ---- the patches ----
 
+enum Game { GRIM = 1, EMI = 2, REMASTERED = 4 };
+static Game g_game;
+static DWORD g_delta;   // the load address of the exe minus the one it was linked for (the Remastered is not fixed to it)
+
 static void patchDebuglog() {
-	static const DWORD NOOP_BUILTIN = 0x0049DDD0;
-	static const struct { DWORD slot; const char *fn; } SLOTS[] = {
-		{0x004EAB8C, "GrimLogError"}, {0x004EAB94, "GrimLogWarning"}, {0x004EAB9C, "GrimLogDebug"},
+	// v1.01: the three builtins are the same do-nothing function. The Remastered keeps three functions that read the argument
+	// (isnil, isstring, getstring) and drop it. Either way the table slot of the builtin is pointed at the logger.
+	static const struct { DWORD slot, builtin; const char *fn; } GRIM_SLOTS[] = {
+		{0x004EAB8C, 0x0049DDD0, "GrimLogError"}, {0x004EAB94, 0x0049DDD0, "GrimLogWarning"}, {0x004EAB9C, 0x0049DDD0, "GrimLogDebug"},
+	}, REMASTERED_SLOTS[] = {
+		{0x005C8A54, 0x0044B7A0, "GrimLogError"}, {0x005C8A5C, 0x0044B760, "GrimLogWarning"}, {0x005C8A64, 0x0044B7E0, "GrimLogDebug"},
 	};
-	for (auto &s : SLOTS)
-		expect(s.slot, le32(NOOP_BUILTIN), "a logging builtin");
-	for (auto &s : SLOTS)
-		write(s.slot, le32(loaderStub(s.fn)));
+	const auto *slots = g_game == REMASTERED ? REMASTERED_SLOTS : GRIM_SLOTS;
+	for (int k = 0; k < 3; k++)
+		expect(slots[k].slot + g_delta, le32(slots[k].builtin + g_delta), "a logging builtin");
+	for (int k = 0; k < 3; k++)
+		write(slots[k].slot + g_delta, le32(loaderStub(slots[k].fn)));
 }
 
 static void patchFramelimit() {
@@ -308,6 +318,42 @@ static void patchWindowed() {
 	write(0x00476297, bytes({0x6a, 0x08}));
 	write(0x004ac2d5, bytes({0x68}) + le32(480));                                            // push 480
 	write(0x004ac2da, bytes({0x68}) + le32(640));                                            // push 640
+}
+
+// The Remastered's SetFullscreen(int on) (0x4e85b0) makes the SDL window borderless over the desktop; the setting is read from its
+// own saved settings. The argument is loaded into esi at 0x4e85c8 (mov esi,[ebp+8]); it is zeroed instead, so the window stays a window.
+static void patchRemasteredWindowed() {
+	expect(0x004E85C8 + g_delta, bytes({0x8b, 0x75, 0x08}), "SetFullscreen's argument");
+	write(0x004E85C8 + g_delta, bytes({0x31, 0xf6, 0x90}));   // xor esi,esi; nop
+}
+
+// The Remastered measures time with SDL_GetTicks and, for the GetTime builtin, GetTickCount. Both now read a clock in the process that
+// moves only when the game does something with time: SDL_GL_SwapWindow (once a frame) adds the frame time (--simtime-ms, 17), and
+// SDL_Delay adds the milliseconds it was asked to wait and returns at once. With vsync off (SDL_GL_SetSwapInterval does nothing), a run
+// takes as long as the frames take to draw, and the game sees the same time on every run. The clock is read through the thunks the
+// game calls (jmp [import]) because the imports are not bound yet; the swap and delay stubs jump on through the bound import slots.
+static void patchRemasteredSimtime() {
+	static const DWORD THUNK_GETTICKS = 0x0054CDBE, THUNK_DELAY = 0x0054CDE2, THUNK_SWAP = 0x0054CE12, THUNK_INTERVAL = 0x0054CE18;
+	static const DWORD IAT_DELAY = 0x005714A0, IAT_SWAP = 0x00571480, CALL_GETTICKCOUNT = 0x00451434, IAT_GETTICKCOUNT = 0x00571054;
+	auto thunk = [&](DWORD iat) { return bytes({0xff, 0x25}) + le32(iat + g_delta); };   // jmp [import]
+	expect(THUNK_GETTICKS + g_delta, thunk(0x005714B8), "the SDL_GetTicks thunk");
+	expect(THUNK_DELAY + g_delta, thunk(IAT_DELAY), "the SDL_Delay thunk");
+	expect(THUNK_SWAP + g_delta, thunk(IAT_SWAP), "the SDL_GL_SwapWindow thunk");
+	expect(THUNK_INTERVAL + g_delta, thunk(0x0057147C), "the SDL_GL_SetSwapInterval thunk");
+	expect(CALL_GETTICKCOUNT + g_delta, bytes({0xff, 0x15}) + le32(IAT_GETTICKCOUNT + g_delta), "the GetTime builtin's call");
+	DWORD clock = alloc(4, 4);
+	write(clock, le32(1000));
+	DWORD ticks = alloc(6, 1);
+	write(ticks, bytes({0xa1}) + le32(clock) + bytes({0xc3}));                                                  // mov eax,[clock]; ret
+	DWORD swap = alloc(16, 1);
+	write(swap, bytes({0x81, 0x05}) + le32(clock) + le32(g_simtimeMs) + bytes({0xff, 0x25}) + le32(IAT_SWAP + g_delta));   // add [clock],ms; jmp [swap]
+	DWORD delay = alloc(16, 1);
+	write(delay, bytes({0x8b, 0x44, 0x24, 0x04, 0x01, 0x05}) + le32(clock) + bytes({0xc3}));                  // mov eax,[esp+4]; add [clock],eax; ret
+	write(THUNK_GETTICKS + g_delta, jmp(THUNK_GETTICKS + g_delta, ticks));
+	write(THUNK_SWAP + g_delta, jmp(THUNK_SWAP + g_delta, swap));
+	write(THUNK_DELAY + g_delta, jmp(THUNK_DELAY + g_delta, delay));
+	write(THUNK_INTERVAL + g_delta, bytes({0x33, 0xc0, 0xc3}));                                               // xor eax,eax; ret
+	write(CALL_GETTICKCOUNT + g_delta, bytes({0xe8}) + le32(ticks - (CALL_GETTICKCOUNT + g_delta + 5)) + bytes({0x90}));   // call ticks; nop
 }
 
 // ---- EMI (Monkey4.exe v1.1) ----
@@ -358,10 +404,8 @@ static void patchEmiUndo640() {
 	write(EMI_ENTRY, jmp(EMI_ENTRY, va));
 }
 
-enum Game { GRIM = 1, EMI = 2 };
-
 static const struct { const char *name; void (*apply)(); bool def; int games; } PATCHES[] = {
-	{"debuglog", patchDebuglog, true, GRIM},
+	{"debuglog", patchDebuglog, true, GRIM | REMASTERED},
 	{"framelimit", patchFramelimit, false, GRIM},
 	{"simtime", patchSimtime, true, GRIM},
 	{"config", patchConfig, true, GRIM},
@@ -369,6 +413,8 @@ static const struct { const char *name; void (*apply)(); bool def; int games; } 
 	{"undo640", patchEmiUndo640, true, EMI},   // only when the exe has the 640x480 compatibility setting
 	{"windowed", patchWindowed, true, GRIM},   // and the game's own -w switch, added to its command line in main
 	{"windowed", nullptr, true, EMI},          // the -w switch only
+	{"windowed", patchRemasteredWindowed, true, REMASTERED},
+	{"simtime", patchRemasteredSimtime, true, REMASTERED},
 };
 
 // ---- which game: bytes of the exe on disk, read through its section table ----
@@ -403,13 +449,20 @@ static bool fileBytes(const std::string &exe, DWORD va, size_t n, std::string &o
 	return false;
 }
 
+// GrimFandango.exe of the Remastered: the PrintDebug builtin (0x44b7e0) and its slot in the builtin table (0x5c8a64)
+static const DWORD RM_PRINTDEBUG = 0x0044B7E0, RM_PRINTDEBUG_SLOT = 0x005C8A64;
+static const DWORD RM_IAT_LOADLIBRARYA = 0x005710F8, RM_IAT_GETPROCADDRESS = 0x00571034;
+
 static Game detectGame(const std::string &exe) {
 	std::string b;
+	if (fileBytes(exe, RM_PRINTDEBUG, 9, b) && b == bytes({0x56, 0x6a, 0x01, 0xff, 0x15, 0x50, 0x11, 0x57, 0x00}) &&
+	    fileBytes(exe, RM_PRINTDEBUG_SLOT, 4, b) && b == le32(RM_PRINTDEBUG))
+		return REMASTERED;
 	if (fileBytes(exe, 0x00401721, 5, b) && b == bytes({0xa1, 0x48, 0x5a, 0x4f, 0x00}))
 		return GRIM;
 	if (fileBytes(exe, EMI_KEY_CHECK, 5, b) && (b == bytes({0x83, 0xf8, 0x44, 0x77, 0xb0}) || b == jmp(EMI_KEY_CHECK, EMI_F12_CAVE)))
 		return EMI;
-	fprintf(stderr, "%s is neither the Grim Fandango v1.01 exe nor the EMI v1.1 exe\n", exe.c_str());
+	fprintf(stderr, "%s is neither the Grim Fandango v1.01 exe, the Remastered exe nor the EMI v1.1 exe\n", exe.c_str());
 	exit(1);
 }
 
@@ -479,7 +532,7 @@ int main(int argc, char **argv) {
 		}
 	}
 	if (i >= argc) {
-		fprintf(stderr, "usage: grimlaunch [--with a,b|all] [--only a,b] [--skip a,b] [--simtime-ms N] [--no-ini] <GRIMFANDANGO.exe|Monkey4_f12.exe> [game arguments...]\n");
+		fprintf(stderr, "usage: grimlaunch [--with a,b|all] [--only a,b] [--skip a,b] [--simtime-ms N] [--no-ini] <GRIMFANDANGO.exe|GrimFandango.exe|Monkey4_f12.exe> [game arguments...]\n");
 		return 2;
 	}
 	for (auto *list : {&with, &only, &skip})
@@ -488,7 +541,7 @@ int main(int argc, char **argv) {
 			for (auto &p : PATCHES)
 				known |= n == p.name;
 			if (!known) {
-				fprintf(stderr, "no patch %s (Grim: debuglog, framelimit, simtime, config, windowed; EMI: f11, undo640, windowed)\n", n.c_str());
+				fprintf(stderr, "no patch %s (Grim: debuglog, framelimit, simtime, config, windowed; Remastered: debuglog; EMI: f11, undo640, windowed)\n", n.c_str());
 				return 2;
 			}
 		}
@@ -499,7 +552,8 @@ int main(int argc, char **argv) {
 	std::string dir = exe;
 	dir.erase(dir.find_last_of('\\'));
 	Game game = detectGame(exe);
-	printf("%s\n", game == GRIM ? "Grim Fandango v1.01" : "Escape from Monkey Island v1.1");
+	g_game = game;
+	printf("%s\n", game == GRIM ? "Grim Fandango v1.01" : game == REMASTERED ? "Grim Fandango Remastered" : "Escape from Monkey Island v1.1");
 	fflush(stdout);
 	auto enabled = [&](const char *name, bool def) {
 		bool forGame = false;
@@ -513,7 +567,7 @@ int main(int argc, char **argv) {
 		cmd += std::string(" ") + argv[a];
 		hasW |= !strcmp(argv[a], "-w");
 	}
-	if (enabled("windowed", true) && !hasW)
+	if (enabled("windowed", true) && !hasW && game != REMASTERED)
 		cmd += " -w";
 	{
 		std::string layers = compatLayers(exe), upper = layers;
@@ -549,8 +603,26 @@ int main(int argc, char **argv) {
 	if (!CreateProcessA(nullptr, &cmd[0], nullptr, nullptr, FALSE, CREATE_SUSPENDED, nullptr, dir.c_str(), &si, &pi))
 		die("CreateProcess");
 	g_proc = pi.hProcess;
-	if (VirtualAllocEx(g_proc, (LPVOID)(ULONG_PTR)ARENA, ARENA_SIZE, MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE) != (LPVOID)(ULONG_PTR)ARENA)
+	if (game == REMASTERED) {
+		// ASLR: the exe was mapped and relocated at a load address of the system's choosing, so the addresses move by the difference
+		typedef LONG(NTAPI * QueryInfoFn)(HANDLE, ULONG, PVOID, ULONG, PULONG);
+		QueryInfoFn query = (QueryInfoFn)GetProcAddress(GetModuleHandleA("ntdll.dll"), "NtQueryInformationProcess");
+		ULONG_PTR peb = 0;
+		if (!query || query(g_proc, 26 /* ProcessWow64Information: the 32-bit PEB */, &peb, sizeof peb, nullptr) || !peb)
+			die("cannot find the PEB of the game");
+		DWORD loaded = *(const DWORD *)read((DWORD)peb + 8, 4).data();   // PEB.ImageBaseAddress
+		g_delta = loaded - 0x00400000;
+		g_iatLoadLibraryA = RM_IAT_LOADLIBRARYA + g_delta;
+		g_iatGetProcAddress = RM_IAT_GETPROCADDRESS + g_delta;
+		printf("load address 0x%lx\n", (unsigned long)loaded);
+	}
+	// (the Remastered can be loaded anywhere, so its arena goes wherever the system puts it)
+	LPVOID arena = VirtualAllocEx(g_proc, (LPVOID)(ULONG_PTR)ARENA_WANTED, ARENA_SIZE, MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE);
+	if (!arena && game == REMASTERED)
+		arena = VirtualAllocEx(g_proc, nullptr, ARENA_SIZE, MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE);
+	if (!arena || (ULONG_PTR)arena > 0xFFFF0000)
 		die("could not allocate the patch memory in the process");
+	g_arena = g_next = (DWORD)(ULONG_PTR)arena;
 
 	for (auto &p : PATCHES)
 		if ((p.games & game) && enabled(p.name, p.def) && (p.apply != patchEmiUndo640 || g_layer640)) {
