@@ -14731,8 +14731,6 @@ END args_type_tab
 BEGIN args_type_fn
 V args_type_fn|r|"function" -4.000000
 END args_type_fn
-SKIP rest_chore_zero
-SKIP shadow_color
 BEGIN model_collide
 V model_collide|box_f0|0.000000 -1.000000 0.000000
 V model_collide|box_f15|0.000000 -0.745000 0.000000
@@ -15007,6 +15005,251 @@ V hdr_rects|cr_nodex_head|0.000000 0.000000 1.700000
 V hdr_rects|cr_float_rect|640.000000
 V hdr_rects|cr_float_head|0.000000 0.000000 1.700000
 END hdr_rects
+SKIP rest_chore_zero
+BEGIN cm_forward_m0_w0
+V cm_forward_m0_w0|cm_forward_m0_w0_f0|0.200000 -1.500000 0.000000
+V cm_forward_m0_w0|cm_forward_m0_w0_f20|0.083681 -1.180517 0.000000
+V cm_forward_m0_w0|cm_forward_m0_w0_f40|-0.032637 -0.861033 0.000000
+V cm_forward_m0_w0|cm_forward_m0_w0_f60|-0.148956 -0.541548 0.000000
+V cm_forward_m0_w0|cm_forward_m0_w0_f80|-0.265274 -0.222064 0.000000
+V cm_forward_m0_w0|cm_forward_m0_w0_end|-0.381593 0.097419 0.000000
+V cm_forward_m0_w0|cm_forward_m0_w0_walking|nil
+END cm_forward_m0_w0
+BEGIN cm_forward_m1_w0
+V cm_forward_m1_w0|cm_forward_m1_w0_f0|0.200000 -1.500000 0.000000
+V cm_forward_m1_w0|cm_forward_m1_w0_f20|0.083681 -1.180517 0.000000
+V cm_forward_m1_w0|cm_forward_m1_w0_f40|-0.032637 -0.861033 0.000000
+V cm_forward_m1_w0|cm_forward_m1_w0_f60|-0.148956 -0.541548 0.000000
+V cm_forward_m1_w0|cm_forward_m1_w0_f80|-0.265274 -0.222064 0.000000
+V cm_forward_m1_w0|cm_forward_m1_w0_end|-0.381593 0.097419 0.000000
+V cm_forward_m1_w0|cm_forward_m1_w0_walking|nil
+END cm_forward_m1_w0
+BEGIN cm_forward_m2_w0
+V cm_forward_m2_w0|cm_forward_m2_w0_f0|0.200000 -1.500000 0.000000
+V cm_forward_m2_w0|cm_forward_m2_w0_f20|0.083681 -1.180517 0.000000
+V cm_forward_m2_w0|cm_forward_m2_w0_f40|-0.032637 -0.861033 0.000000
+V cm_forward_m2_w0|cm_forward_m2_w0_f60|-0.148956 -0.541548 0.000000
+V cm_forward_m2_w0|cm_forward_m2_w0_f80|-0.265274 -0.222064 0.000000
+V cm_forward_m2_w0|cm_forward_m2_w0_end|-0.381593 0.097419 0.000000
+V cm_forward_m2_w0|cm_forward_m2_w0_walking|nil
+END cm_forward_m2_w0
+BEGIN cm_forward_m0_w1
+V cm_forward_m0_w1|cm_forward_m0_w1_f0|0.200000 -1.500000 0.000000
+V cm_forward_m0_w1|cm_forward_m0_w1_f20|0.083681 -1.180517 0.000000
+V cm_forward_m0_w1|cm_forward_m0_w1_f40|-0.032637 -0.861033 0.000000
+V cm_forward_m0_w1|cm_forward_m0_w1_f60|-0.148956 -0.541548 0.000000
+V cm_forward_m0_w1|cm_forward_m0_w1_f80|-0.273371 -0.233635 0.000000
+V cm_forward_m0_w1|cm_forward_m0_w1_end|-0.512649 -0.089869 0.000000
+V cm_forward_m0_w1|cm_forward_m0_w1_walking|nil
+END cm_forward_m0_w1
+BEGIN cm_forward_m1_w1
+V cm_forward_m1_w1|cm_forward_m1_w1_f0|0.200000 -1.500000 0.000000
+V cm_forward_m1_w1|cm_forward_m1_w1_f20|0.083681 -1.180517 0.000000
+V cm_forward_m1_w1|cm_forward_m1_w1_f40|-0.032637 -0.861033 0.000000
+V cm_forward_m1_w1|cm_forward_m1_w1_f60|-0.148956 -0.541548 0.000000
+V cm_forward_m1_w1|cm_forward_m1_w1_f80|-0.273371 -0.233635 0.000000
+V cm_forward_m1_w1|cm_forward_m1_w1_end|-0.512649 -0.089869 0.000000
+V cm_forward_m1_w1|cm_forward_m1_w1_walking|nil
+END cm_forward_m1_w1
+BEGIN cm_forward_m2_w1
+V cm_forward_m2_w1|cm_forward_m2_w1_f0|0.200000 -1.500000 0.000000
+V cm_forward_m2_w1|cm_forward_m2_w1_f20|0.083681 -1.180517 0.000000
+V cm_forward_m2_w1|cm_forward_m2_w1_f40|-0.032637 -0.861033 0.000000
+V cm_forward_m2_w1|cm_forward_m2_w1_f60|-0.148956 -0.541548 0.000000
+V cm_forward_m2_w1|cm_forward_m2_w1_f80|-0.273371 -0.233635 0.000000
+V cm_forward_m2_w1|cm_forward_m2_w1_end|-0.512649 -0.089869 0.000000
+V cm_forward_m2_w1|cm_forward_m2_w1_walking|nil
+END cm_forward_m2_w1
+BEGIN cm_forward_m0_w2
+V cm_forward_m0_w2|cm_forward_m0_w2_f0|0.200000 -1.500000 0.000000
+V cm_forward_m0_w2|cm_forward_m0_w2_f20|0.083681 -1.180517 0.000000
+V cm_forward_m0_w2|cm_forward_m0_w2_f40|-0.032637 -0.861033 0.000000
+V cm_forward_m0_w2|cm_forward_m0_w2_f60|-0.148956 -0.541548 0.000000
+V cm_forward_m0_w2|cm_forward_m0_w2_f80|-0.349590 -0.460444 0.000000
+V cm_forward_m0_w2|cm_forward_m0_w2_end|-0.573539 -0.279013 0.000000
+V cm_forward_m0_w2|cm_forward_m0_w2_walking|nil
+END cm_forward_m0_w2
+BEGIN cm_forward_m1_w2
+V cm_forward_m1_w2|cm_forward_m1_w2_f0|0.200000 -1.500000 0.000000
+V cm_forward_m1_w2|cm_forward_m1_w2_f20|0.083681 -1.180517 0.000000
+V cm_forward_m1_w2|cm_forward_m1_w2_f40|-0.032637 -0.861033 0.000000
+V cm_forward_m1_w2|cm_forward_m1_w2_f60|-0.148956 -0.541548 0.000000
+V cm_forward_m1_w2|cm_forward_m1_w2_f80|-0.349590 -0.460444 0.000000
+V cm_forward_m1_w2|cm_forward_m1_w2_end|-0.573539 -0.279013 0.000000
+V cm_forward_m1_w2|cm_forward_m1_w2_walking|nil
+END cm_forward_m1_w2
+BEGIN cm_forward_m2_w2
+V cm_forward_m2_w2|cm_forward_m2_w2_f0|0.200000 -1.500000 0.000000
+V cm_forward_m2_w2|cm_forward_m2_w2_f20|0.083681 -1.180517 0.000000
+V cm_forward_m2_w2|cm_forward_m2_w2_f40|-0.032637 -0.861033 0.000000
+V cm_forward_m2_w2|cm_forward_m2_w2_f60|-0.148956 -0.541548 0.000000
+V cm_forward_m2_w2|cm_forward_m2_w2_f80|-0.349590 -0.460444 0.000000
+V cm_forward_m2_w2|cm_forward_m2_w2_end|-0.573539 -0.279013 0.000000
+V cm_forward_m2_w2|cm_forward_m2_w2_walking|nil
+END cm_forward_m2_w2
+BEGIN cm_to_m0_w0
+V cm_to_m0_w0|cm_to_m0_w0_f0|0.200000 -1.500000 0.000000
+V cm_to_m0_w0|cm_to_m0_w0_f20|0.145737 -1.164359 0.000000
+V cm_to_m0_w0|cm_to_m0_w0_f40|0.091503 -0.828712 0.000000
+V cm_to_m0_w0|cm_to_m0_w0_f60|0.037275 -0.493064 0.000000
+V cm_to_m0_w0|cm_to_m0_w0_f80|-0.016925 -0.157412 0.000000
+V cm_to_m0_w0|cm_to_m0_w0_end|-0.071105 0.178243 0.000000
+V cm_to_m0_w0|cm_to_m0_w0_walking|1.000000
+END cm_to_m0_w0
+BEGIN cm_to_m1_w0
+V cm_to_m1_w0|cm_to_m1_w0_f0|0.200000 -1.500000 0.000000
+V cm_to_m1_w0|cm_to_m1_w0_f20|0.145737 -1.164359 0.000000
+V cm_to_m1_w0|cm_to_m1_w0_f40|0.091503 -0.828712 0.000000
+V cm_to_m1_w0|cm_to_m1_w0_f60|0.037275 -0.493064 0.000000
+V cm_to_m1_w0|cm_to_m1_w0_f80|-0.016925 -0.157412 0.000000
+V cm_to_m1_w0|cm_to_m1_w0_end|-0.071105 0.178243 0.000000
+V cm_to_m1_w0|cm_to_m1_w0_walking|1.000000
+END cm_to_m1_w0
+BEGIN cm_to_m2_w0
+V cm_to_m2_w0|cm_to_m2_w0_f0|0.200000 -1.500000 0.000000
+V cm_to_m2_w0|cm_to_m2_w0_f20|0.145737 -1.164359 0.000000
+V cm_to_m2_w0|cm_to_m2_w0_f40|0.091503 -0.828712 0.000000
+V cm_to_m2_w0|cm_to_m2_w0_f60|0.037275 -0.493064 0.000000
+V cm_to_m2_w0|cm_to_m2_w0_f80|-0.016925 -0.157412 0.000000
+V cm_to_m2_w0|cm_to_m2_w0_end|-0.071105 0.178243 0.000000
+V cm_to_m2_w0|cm_to_m2_w0_walking|1.000000
+END cm_to_m2_w0
+BEGIN cm_to_m0_w1
+V cm_to_m0_w1|cm_to_m0_w1_f0|0.200000 -1.500000 0.000000
+V cm_to_m0_w1|cm_to_m0_w1_f20|0.145737 -1.164359 0.000000
+V cm_to_m0_w1|cm_to_m0_w1_f40|0.091503 -0.828712 0.000000
+V cm_to_m0_w1|cm_to_m0_w1_f60|0.037275 -0.493064 0.000000
+V cm_to_m0_w1|cm_to_m0_w1_f80|-0.080633 -0.246309 0.000000
+V cm_to_m0_w1|cm_to_m0_w1_end|-0.414674 -0.309681 0.000000
+V cm_to_m0_w1|cm_to_m0_w1_walking|1.000000
+END cm_to_m0_w1
+BEGIN cm_to_m1_w1
+V cm_to_m1_w1|cm_to_m1_w1_f0|0.200000 -1.500000 0.000000
+V cm_to_m1_w1|cm_to_m1_w1_f20|0.145737 -1.164359 0.000000
+V cm_to_m1_w1|cm_to_m1_w1_f40|0.091503 -0.828712 0.000000
+V cm_to_m1_w1|cm_to_m1_w1_f60|0.037275 -0.493064 0.000000
+V cm_to_m1_w1|cm_to_m1_w1_f80|-0.080633 -0.246309 0.000000
+V cm_to_m1_w1|cm_to_m1_w1_end|-0.414674 -0.309681 0.000000
+V cm_to_m1_w1|cm_to_m1_w1_walking|1.000000
+END cm_to_m1_w1
+BEGIN cm_to_m2_w1
+V cm_to_m2_w1|cm_to_m2_w1_f0|0.200000 -1.500000 0.000000
+V cm_to_m2_w1|cm_to_m2_w1_f20|0.145737 -1.164359 0.000000
+V cm_to_m2_w1|cm_to_m2_w1_f40|0.091503 -0.828712 0.000000
+V cm_to_m2_w1|cm_to_m2_w1_f60|0.037275 -0.493064 0.000000
+V cm_to_m2_w1|cm_to_m2_w1_f80|-0.080633 -0.246309 0.000000
+V cm_to_m2_w1|cm_to_m2_w1_end|-0.414674 -0.309681 0.000000
+V cm_to_m2_w1|cm_to_m2_w1_walking|1.000000
+END cm_to_m2_w1
+BEGIN cm_to_m0_w2
+V cm_to_m0_w2|cm_to_m0_w2_f0|0.200000 -1.500000 0.000000
+V cm_to_m0_w2|cm_to_m0_w2_f20|0.145737 -1.164359 0.000000
+V cm_to_m0_w2|cm_to_m0_w2_f40|0.091503 -0.828712 0.000000
+V cm_to_m0_w2|cm_to_m0_w2_f60|0.040330 -0.546173 0.000000
+V cm_to_m0_w2|cm_to_m0_w2_f80|-0.001352 -0.547260 0.000000
+V cm_to_m0_w2|cm_to_m0_w2_end|-0.057649 -0.545035 0.000000
+V cm_to_m0_w2|cm_to_m0_w2_walking|1.000000
+END cm_to_m0_w2
+BEGIN cm_to_m1_w2
+V cm_to_m1_w2|cm_to_m1_w2_f0|0.200000 -1.500000 0.000000
+V cm_to_m1_w2|cm_to_m1_w2_f20|0.145737 -1.164359 0.000000
+V cm_to_m1_w2|cm_to_m1_w2_f40|0.091503 -0.828712 0.000000
+V cm_to_m1_w2|cm_to_m1_w2_f60|0.040330 -0.546173 0.000000
+V cm_to_m1_w2|cm_to_m1_w2_f80|-0.001352 -0.547260 0.000000
+V cm_to_m1_w2|cm_to_m1_w2_end|-0.057649 -0.545035 0.000000
+V cm_to_m1_w2|cm_to_m1_w2_walking|1.000000
+END cm_to_m1_w2
+BEGIN cm_to_m2_w2
+V cm_to_m2_w2|cm_to_m2_w2_f0|0.200000 -1.500000 0.000000
+V cm_to_m2_w2|cm_to_m2_w2_f20|0.145737 -1.164359 0.000000
+V cm_to_m2_w2|cm_to_m2_w2_f40|0.091503 -0.828712 0.000000
+V cm_to_m2_w2|cm_to_m2_w2_f60|0.040330 -0.546173 0.000000
+V cm_to_m2_w2|cm_to_m2_w2_f80|-0.001352 -0.547260 0.000000
+V cm_to_m2_w2|cm_to_m2_w2_end|-0.057649 -0.545035 0.000000
+V cm_to_m2_w2|cm_to_m2_w2_walking|1.000000
+END cm_to_m2_w2
+BEGIN cm_forward_s1_m0_w0
+V cm_forward_s1_m0_w0|cm_forward_s1_m0_w0_f0|0.200000 -1.900000 0.000000
+V cm_forward_s1_m0_w0|cm_forward_s1_m0_w0_f20|0.083681 -1.580517 0.000000
+V cm_forward_s1_m0_w0|cm_forward_s1_m0_w0_f40|-0.032637 -1.261033 0.000000
+V cm_forward_s1_m0_w0|cm_forward_s1_m0_w0_f60|-0.148956 -0.941550 0.000000
+V cm_forward_s1_m0_w0|cm_forward_s1_m0_w0_f80|-0.265274 -0.622065 0.000000
+V cm_forward_s1_m0_w0|cm_forward_s1_m0_w0_end|-0.381593 -0.302581 0.000000
+V cm_forward_s1_m0_w0|cm_forward_s1_m0_w0_walking|nil
+END cm_forward_s1_m0_w0
+BEGIN cm_forward_s1_m1_w0
+V cm_forward_s1_m1_w0|cm_forward_s1_m1_w0_f0|0.200000 -1.900000 0.000000
+V cm_forward_s1_m1_w0|cm_forward_s1_m1_w0_f20|0.083681 -1.580517 0.000000
+V cm_forward_s1_m1_w0|cm_forward_s1_m1_w0_f40|-0.032637 -1.261033 0.000000
+V cm_forward_s1_m1_w0|cm_forward_s1_m1_w0_f60|-0.148956 -0.941550 0.000000
+V cm_forward_s1_m1_w0|cm_forward_s1_m1_w0_f80|-0.265274 -0.622065 0.000000
+V cm_forward_s1_m1_w0|cm_forward_s1_m1_w0_end|-0.381593 -0.302581 0.000000
+V cm_forward_s1_m1_w0|cm_forward_s1_m1_w0_walking|nil
+END cm_forward_s1_m1_w0
+BEGIN cm_forward_s1_m2_w0
+V cm_forward_s1_m2_w0|cm_forward_s1_m2_w0_f0|0.200000 -1.900000 0.000000
+V cm_forward_s1_m2_w0|cm_forward_s1_m2_w0_f20|0.083681 -1.580517 0.000000
+V cm_forward_s1_m2_w0|cm_forward_s1_m2_w0_f40|-0.032637 -1.261033 0.000000
+V cm_forward_s1_m2_w0|cm_forward_s1_m2_w0_f60|-0.148956 -0.941550 0.000000
+V cm_forward_s1_m2_w0|cm_forward_s1_m2_w0_f80|-0.265274 -0.622065 0.000000
+V cm_forward_s1_m2_w0|cm_forward_s1_m2_w0_end|-0.381593 -0.302581 0.000000
+V cm_forward_s1_m2_w0|cm_forward_s1_m2_w0_walking|nil
+END cm_forward_s1_m2_w0
+BEGIN cm_forward_s1_m0_w1
+V cm_forward_s1_m0_w1|cm_forward_s1_m0_w1_f0|0.200000 -1.900000 0.000000
+V cm_forward_s1_m0_w1|cm_forward_s1_m0_w1_f20|0.083681 -1.580517 0.000000
+V cm_forward_s1_m0_w1|cm_forward_s1_m0_w1_f40|-0.032637 -1.261033 0.000000
+V cm_forward_s1_m0_w1|cm_forward_s1_m0_w1_f60|-0.148956 -0.941550 0.000000
+V cm_forward_s1_m0_w1|cm_forward_s1_m0_w1_f80|-0.448622 -0.884083 0.000000
+V cm_forward_s1_m0_w1|cm_forward_s1_m0_w1_end|-0.788500 -0.884083 0.000000
+V cm_forward_s1_m0_w1|cm_forward_s1_m0_w1_walking|nil
+END cm_forward_s1_m0_w1
+BEGIN cm_forward_s1_m1_w1
+V cm_forward_s1_m1_w1|cm_forward_s1_m1_w1_f0|0.200000 -1.900000 0.000000
+V cm_forward_s1_m1_w1|cm_forward_s1_m1_w1_f20|0.083681 -1.580517 0.000000
+V cm_forward_s1_m1_w1|cm_forward_s1_m1_w1_f40|-0.032637 -1.261033 0.000000
+V cm_forward_s1_m1_w1|cm_forward_s1_m1_w1_f60|-0.148956 -0.941550 0.000000
+V cm_forward_s1_m1_w1|cm_forward_s1_m1_w1_f80|-0.448622 -0.884083 0.000000
+V cm_forward_s1_m1_w1|cm_forward_s1_m1_w1_end|-0.788500 -0.884083 0.000000
+V cm_forward_s1_m1_w1|cm_forward_s1_m1_w1_walking|nil
+END cm_forward_s1_m1_w1
+BEGIN cm_forward_s1_m2_w1
+V cm_forward_s1_m2_w1|cm_forward_s1_m2_w1_f0|0.200000 -1.900000 0.000000
+V cm_forward_s1_m2_w1|cm_forward_s1_m2_w1_f20|0.083681 -1.580517 0.000000
+V cm_forward_s1_m2_w1|cm_forward_s1_m2_w1_f40|-0.032637 -1.261033 0.000000
+V cm_forward_s1_m2_w1|cm_forward_s1_m2_w1_f60|-0.148956 -0.941550 0.000000
+V cm_forward_s1_m2_w1|cm_forward_s1_m2_w1_f80|-0.448622 -0.884083 0.000000
+V cm_forward_s1_m2_w1|cm_forward_s1_m2_w1_end|-0.788500 -0.884083 0.000000
+V cm_forward_s1_m2_w1|cm_forward_s1_m2_w1_walking|nil
+END cm_forward_s1_m2_w1
+BEGIN cm_forward_s1_m0_w2
+V cm_forward_s1_m0_w2|cm_forward_s1_m0_w2_f0|0.200000 -1.900000 0.000000
+V cm_forward_s1_m0_w2|cm_forward_s1_m0_w2_f20|0.088221 -1.666070 0.000000
+V cm_forward_s1_m0_w2|cm_forward_s1_m0_w2_f40|-0.022621 -1.668017 0.000000
+V cm_forward_s1_m0_w2|cm_forward_s1_m0_w2_f60|-0.153960 -1.661799 0.000000
+V cm_forward_s1_m0_w2|cm_forward_s1_m0_w2_f80|-0.307920 -1.642603 0.000000
+V cm_forward_s1_m0_w2|cm_forward_s1_m0_w2_end|-0.485548 -1.603952 0.000000
+V cm_forward_s1_m0_w2|cm_forward_s1_m0_w2_walking|nil
+END cm_forward_s1_m0_w2
+BEGIN cm_forward_s1_m1_w2
+V cm_forward_s1_m1_w2|cm_forward_s1_m1_w2_f0|0.200000 -1.900000 0.000000
+V cm_forward_s1_m1_w2|cm_forward_s1_m1_w2_f20|0.088221 -1.666070 0.000000
+V cm_forward_s1_m1_w2|cm_forward_s1_m1_w2_f40|-0.022621 -1.668017 0.000000
+V cm_forward_s1_m1_w2|cm_forward_s1_m1_w2_f60|-0.153960 -1.661799 0.000000
+V cm_forward_s1_m1_w2|cm_forward_s1_m1_w2_f80|-0.307920 -1.642603 0.000000
+V cm_forward_s1_m1_w2|cm_forward_s1_m1_w2_end|-0.485548 -1.603952 0.000000
+V cm_forward_s1_m1_w2|cm_forward_s1_m1_w2_walking|nil
+END cm_forward_s1_m1_w2
+BEGIN cm_forward_s1_m2_w2
+V cm_forward_s1_m2_w2|cm_forward_s1_m2_w2_f0|0.200000 -1.900000 0.000000
+V cm_forward_s1_m2_w2|cm_forward_s1_m2_w2_f20|0.088221 -1.666070 0.000000
+V cm_forward_s1_m2_w2|cm_forward_s1_m2_w2_f40|-0.022621 -1.668017 0.000000
+V cm_forward_s1_m2_w2|cm_forward_s1_m2_w2_f60|-0.153960 -1.661799 0.000000
+V cm_forward_s1_m2_w2|cm_forward_s1_m2_w2_f80|-0.307920 -1.642603 0.000000
+V cm_forward_s1_m2_w2|cm_forward_s1_m2_w2_end|-0.485548 -1.603952 0.000000
+V cm_forward_s1_m2_w2|cm_forward_s1_m2_w2_walking|nil
+END cm_forward_s1_m2_w2
+SKIP shadow_color
 SKIP font_dims_handle
 SKIP font_dims_name
 SKIP args_ActivateActorShadow_p2_big
