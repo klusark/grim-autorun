@@ -134,19 +134,35 @@ def costume(components, chores):
     return ("\r\n".join(out) + "\r\n").encode("ascii")
 
 
-def model3do(name, meshes, nodes):
+def model3do(name, meshes, nodes, header=None):
     """A binary .3do (LDOM) without materials or faces: what a model gives an actor besides its picture (the bounding box
     and radius for collisions and GetActorRect, the hierarchy for chores and keyframes).
     meshes: [(name, [(x, y, z), ...])]; nodes: [(name, mesh index or -1, parent index or -1, pos, pivot, (pitch, yaw, roll))],
-    a parent before its children."""
+    a parent before its children.
+    header: values for the end of the file instead of the ones from the vertices (radius, lo, hi, centre, insert), to tell an
+    engine that reads them from one that works them out from the mesh. The original ignores them: rdModel3_LoadPostProcess
+    works out the box from the vertices through the node transforms, the centre as its middle and the radius as half its
+    diagonal. The default header is that (translations only: the nodes of a mesh may not be rotated or have a pivot)."""
     f = lambda *v: struct.pack("<%df" % len(v), *v)
     u = lambda *v: struct.pack("<%dI" % len(v), *v)
     s32 = lambda t, n: t.encode("ascii")[:n - 1].ljust(n, b"\0")
-    allv = [v for _, vs in meshes for v in vs] or [(0.0, 0.0, 0.0)]
+    def offset(i):
+        o = (0.0, 0.0, 0.0)
+        while i >= 0:
+            o = tuple(o[k] + nodes[i][3][k] for k in range(3))
+            i = nodes[i][2]
+        return o
+    allv = []
+    for i, n in enumerate(nodes):
+        if n[1] >= 0:
+            assert tuple(n[4]) == (0, 0, 0) and tuple(n[5]) == (0, 0, 0), "a mesh node with a pivot or rotation"
+            o = offset(i)
+            allv += [tuple(v[k] + o[k] for k in range(3)) for v in meshes[n[1]][1]]
+    allv = allv or [(0.0, 0.0, 0.0)]
     lo = tuple(min(v[i] for v in allv) for i in range(3))
     hi = tuple(max(v[i] for v in allv) for i in range(3))
     centre = tuple((lo[i] + hi[i]) / 2 for i in range(3))
-    radius = max(sum((v[i] - centre[i]) ** 2 for i in range(3)) ** 0.5 for v in allv)
+    radius = sum((hi[i] - lo[i]) ** 2 for i in range(3)) ** 0.5 / 2
     out = b"LDOM" + u(0) + s32(name, 32) + u(0) + u(1) + u(len(meshes))
     for mname, verts in meshes:
         mr = max([sum(c * c for c in v) ** 0.5 for v in verts] or [0.0])
@@ -174,7 +190,9 @@ def model3do(name, meshes, nodes):
         for link in (parent, child, sibling):
             if link >= 0:
                 out += u(link)
-    out += f(radius) + f(*lo) + f(*hi) + f(*centre) + f(0.0, 0.0, 0.0)
+    h = dict(radius=radius, lo=lo, hi=hi, centre=centre, insert=(0.0, 0.0, 0.0))
+    h.update(header or {})
+    out += f(h["radius"]) + f(*h["lo"]) + f(*h["hi"]) + f(*h["centre"]) + f(*h["insert"])
     return out
 
 

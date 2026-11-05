@@ -67,10 +67,35 @@ BOX_MODEL = ("cr_box.3do", [("body", F.box(0.4, 0.3, 1.8))],
 BOX_COSTUME = ([("MMDL", -1, "cr_box.3do"), ("LUAV", -1, "CR_LV")],
                [(name, length, [(1, keys) for _, keys in tracks]) for name, length, tracks in LUAV_COSTUME[1]])
 
+# The body box again, with a header (radius, bounding box, centre) that is not the one of its vertices. The original works
+# them out from the mesh (rdModel3_LoadPostProcess) whatever the header says; ScummVM since dc7e5c2 reads the header (and
+# before it put the sphere at the actor's feet, half the box height up for the actor that moves only)
+HEADER_MODELS = {
+    # the centre 0.5 m to the side (+x) and 0.2 m up
+    "cr_ctrx": dict(centre=(0.5, 0.0, 0.2)),
+    # the centre 3 m up: far above another actor's centre
+    "cr_ctrz": dict(centre=(0.0, 0.0, 3.0)),
+    # a bounding box 2 x 2 m and a radius of 1 m, the centre where the mesh has it
+    "cr_bbig": dict(radius=1.0, lo=(-1.0, -1.0, 0.0), hi=(1.0, 1.0, 1.8)),
+    # the centre and the bounding box off to -x, the radius small
+    "cr_bside": dict(radius=0.3, lo=(-1.2, -0.15, 0.0), hi=(-0.8, 0.15, 1.8), centre=(-1.0, 0.0, 0.9)),
+}
+
 
 def files():
     out = {}
     out["cr_box.3do"] = F.model3do(*BOX_MODEL)
+    for m, h in HEADER_MODELS.items():
+        out[m + ".3do"] = F.model3do(m + ".3do", BOX_MODEL[1], BOX_MODEL[2], h)
+    # with the header the original works out: a box off the actor's origin, by its vertices or by its node, and one that
+    # floats 1 m up (the centres that dc7e5c2 put where the original has them)
+    out["cr_meshx.3do"] = F.model3do("cr_meshx.3do", [("body", [(x + 0.5, y, z) for x, y, z in F.box(0.4, 0.3, 1.8)])],
+                                     BOX_MODEL[2])
+    out["cr_nodex.3do"] = F.model3do("cr_nodex.3do", BOX_MODEL[1],
+                                     [BOX_MODEL[2][0], ("body", 0, 0, (0.5, 0, 0), (0, 0, 0), (0, 0, 0))] + BOX_MODEL[2][2:])
+    out["cr_float.3do"] = F.model3do("cr_float.3do", [("body", F.box(0.4, 0.3, 0.6, 1.0))], BOX_MODEL[2])
+    for m in list(HEADER_MODELS) + ["cr_meshx", "cr_nodex", "cr_float"]:
+        out[m + ".cos"] = F.costume([("MMDL", -1, m + ".3do"), ("LUAV", -1, "CR_LV")], BOX_COSTUME[1])
     # a small bitmap of its own for object states and images: the original frees a bitmap with the object state that used
     # it, and a set whose background it was crashes when loaded afterwards
     out["cr_obj.bm"] = F.bitmap(64, 48, F.checker(64, 48, 8, (200, 50, 50), (50, 50, 200)))

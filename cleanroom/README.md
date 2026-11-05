@@ -10,6 +10,7 @@ python run.py original --save    # run the original 3 times (--repeat N), keep i
 python run.py scummvm            # run on ScummVM and compare with expected/original.log
 python run.py both               # run both and compare them with each other
 python run.py scummvm --only chore_keys      # one test
+python run.py original --save --only a,b     # new or changed tests: only theirs are replaced in the expected log
 python run.py compare logs/original.log logs/scummvm.log --all
 ```
 
@@ -50,7 +51,7 @@ run from source text (the exe has the Lua 3.1 parser).
 |---|---|
 | `run.py` | build, run either engine, compare |
 | `compare.py` | extracts the CR lines from an engine log, compares two runs (`--tol`, default 1e-6) |
-| `formats.py` | writers: LAB, grim.tab (RCNE), .bm/.zbm (raw, RGB565), .cmp, text .set, text .cos, binary .3do (no faces) |
+| `formats.py` | writers: LAB, grim.tab (RCNE), .bm/.zbm (raw, RGB565), .cmp, text .set, text .cos, binary .3do (no faces; a header of your own if asked) |
 | `assets.py` | the data: three sets (`cr_flat`, `cr_edge`, `cr_stair`), backgrounds, the text table, `cr_luav.cos` |
 | `lua/_system.lua` | the runner (`cr_test`, `cr_log`, `cr_frames`, `cr_until`) |
 | `tests/*.lua` | the tests |
@@ -180,6 +181,22 @@ Hand-written tests, besides the per-frame walk and turn values:
   (the faceless model is never drawn, which may be what updates them). ScummVM gives world positions.
 - Box collision (`SetActorCollisionMode(a, 1)`) between two faceless models gives NaN positions on the original; sphere
   collision matches ScummVM to 1e-6.
+- Model header (`model_header.lua`, ScummVM commit dc7e5c2 "Fix collision handling for box models"). The end of a binary
+  .3do has a radius, a bounding box, a centre and an insert offset. The original reads them and then throws them away:
+  `rdModel3_LoadPostProcess` (0x40c090) works out the box from the vertices through the node transforms, the centre as
+  the middle of the box and the radius as half its diagonal (`rdModel3_CalcBoundingBoxes`). The sphere of each actor in a
+  collision is at its model's centre (`Collision_TestActorAgainstOthers`, 0x4939f0). Results, against the original:
+
+  | tests | before dc7e5c2 | with dc7e5c2 |
+  |---|---|---|
+  | `model_collide` (box at the origin) | sphere stops elsewhere (the moving actor's sphere half the box up, the other's at its feet) | same (1e-6) |
+  | `hdr_meshx_*`, `hdr_nodex_*` sphere (box 0.5 m to the side, by vertex or by node) | differ | within 1e-3 |
+  | `hdr_ctrx`, `ctrz`, `bbig`, `bside` (header unlike the mesh) | differ | differ: ScummVM uses the header's centre, box and radius; the original gives what it gives for `cr_box` |
+  | `hdr_float_*` (box from 1 m up) | differ | the mover is left up to 0.013 m off the floor; the original puts it back on the floor |
+
+  So dc7e5c2 puts the spheres where the original has them for real models, whose header matches their mesh. Two
+  differences remain. ScummVM should work the box, the centre and the radius out from the mesh as the original does, not
+  read them from the file. And it should not leave the actor off the floor after a sphere push with a z part.
 - `MakeSectorActive` with a number does nothing on the original. A sector switched on stays on across a change of set on the
   original; ScummVM resets it. The current setup is kept across a change of set on the original; ScummVM goes back to 0.
   `GetCurrentSetup` of a set that is not current is 0 on the original and nil on ScummVM.
