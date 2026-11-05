@@ -50,7 +50,7 @@ run from source text (the exe has the Lua 3.1 parser).
 |---|---|
 | `run.py` | build, run either engine, compare |
 | `compare.py` | extracts the CR lines from an engine log, compares two runs (`--tol`, default 1e-6) |
-| `formats.py` | writers: LAB, grim.tab (RCNE), .bm/.zbm (raw, RGB565), .cmp, text .set, text .cos |
+| `formats.py` | writers: LAB, grim.tab (RCNE), .bm/.zbm (raw, RGB565), .cmp, text .set, text .cos, binary .3do (no faces) |
 | `assets.py` | the data: three sets (`cr_flat`, `cr_edge`, `cr_stair`), backgrounds, the text table, `cr_luav.cos` |
 | `lua/_system.lua` | the runner (`cr_test`, `cr_log`, `cr_frames`, `cr_until`) |
 | `tests/*.lua` | the tests |
@@ -58,6 +58,7 @@ run from source text (the exe has the Lua 3.1 parser).
 | `expected/unstable.txt` | values the original does not repeat run to run (not compared) |
 | `scummvm/` | the engine patch and its build script |
 | `tools/labls.py` | lists the members of a LAB (to look at the layout of the game's formats; nothing is copied) |
+| `tools/read3do.py` | prints the structure of a binary .3do (checks what `formats.model3do` writes) |
 
 ## Writing a test
 
@@ -87,6 +88,9 @@ Original-only traps found so far:
 - `SetSelectedActor` on an actor without a costume crashes the original.
 - `GetAngleBetweenActors(a, b)` crashes when `a` does not follow the boxes (it reads the walker's heading).
 - There is no `sleep_for`.
+- Costume tags are compared letter for letter: `'MMDL'`, `'KEYF'`, `'MESH'`, `'MODL'` upper case, `'luav'`, `'cmap'`, `'imls'`
+  lower case, as the game's costumes write them (`formats.COSTUME_TAGS`). A costume with `'mmdl'` does not load
+  (`GetActorCostume` is nil). ScummVM upper-cases the tags and loads it.
 
 ## Determinism of the original
 
@@ -100,12 +104,17 @@ Until then, tests must not depend on table order. `--save` keeps any value that 
 
 ## Differences found (ScummVM grim-actor-fixes, 2026-11-05)
 
-58 tests: 28 the same, 2 close, 28 differ. Besides the per-frame walk and turn values:
+61 tests: 28 the same, 2 close, 31 differ. Besides the per-frame walk and turn values:
 - The walk ends one frame's step past the target on the original (more at a higher rate), with a final yaw 2.3 degrees off.
   After `PutActorAt` the original keeps walking.
 - The original eases into `TurnActorTo`; ScummVM turns at a constant rate. `WalkActorForward` into a wall slides on the
   original and stops dead on ScummVM.
-- ScummVM does not fire the LUAV keys of a costume without a model (`CR_LV` is never set); the original does.
+- ScummVM does not fire the LUAV keys of a costume, with or without a model (`CR_LV` is never set); the original does,
+  at the frame times the chore keys give.
+- `GetActorNodeLocation` on the original gives the node offsets of the model without the actor's position or turn
+  (the faceless model is never drawn, which may be what updates them). ScummVM gives world positions.
+- Box collision (`SetActorCollisionMode(a, 1)`) between two faceless models gives NaN positions on the original; sphere
+  collision matches ScummVM to 1e-6.
 - `MakeSectorActive` with a number does nothing on the original. A sector switched on stays on across a change of set on the
   original; ScummVM resets it. The current setup is kept across a change of set on the original; ScummVM goes back to 0.
   `GetCurrentSetup` of a set that is not current is 0 on the original and nil on ScummVM.
@@ -118,5 +127,6 @@ Until then, tests must not depend on table order. `--save` keeps any value that 
 
 ## Not done yet
 
-Models (.3do), materials (.mat), keyframes (.key) and sounds have no writer yet. Walk chores, collision boxes and anything
-that is drawn need them. Text objects and fonts (.laf) are not covered either.
+Models are written without faces (`formats.model3do`): no materials (.mat), so nothing is drawn. Faces and a material
+writer come next: box collision and node positions probably need a model that is drawn. Keyframes (.key, for walk chores),
+sounds, text objects and fonts (.laf) have no writer yet.

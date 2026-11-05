@@ -103,10 +103,12 @@ def lua_text(src):
     return src.replace("\r\n", "\n").replace("\n", "\r\n").encode("latin-1")
 
 
-# (the class word and the description the game's own costumes give each tag)
-COSTUME_TAGS = {"LUAV": ("int", "Lua Variable"), "MMDL": ("fs", "MAIN RDroid Thing (.3DO)"),
-                "MODL": ("fs", "RDroid Thing (.3DO)"), "KEYF": ("fs", "RDroid Keyframe (.KEY)"),
-                "CMAP": ("fs", "RDroid Colormap")}
+# (each tag as the game's costumes write it: the original compares the four letters exactly, MMDL and mmdl are not the same;
+# the class word and the description are the ones of the game's costumes)
+COSTUME_TAGS = {"LUAV": ("luav", "int", "Lua Variable"), "MMDL": ("MMDL", "fs", "MAIN RDroid Thing (.3DO)"),
+                "MODL": ("MODL", "fs", "RDroid Thing (.3DO)"), "KEYF": ("KEYF", "fs", "RDroid Keyframe (.KEY)"),
+                "CMAP": ("cmap", "fs", "RDroid Colormap"), "MESH": ("MESH", "fs", "RDroid Thing Mesh"),
+                "IMLS": ("imls", "fs", "iMuse Resident Sound FX")}
 
 
 def costume(components, chores):
@@ -117,7 +119,7 @@ def costume(components, chores):
         if tag not in tags:
             tags.append(tag)
     out = ["costume v0.1", "", "", "section tags", "\tnumtags %d" % len(tags), ""]
-    out += ["\t%d\t'%s'\t%s\t\t%s" % ((i, t.lower()) + COSTUME_TAGS[t]) for i, t in enumerate(tags)]
+    out += ["\t%d\t'%s'\t%s\t\t%s" % ((i,) + COSTUME_TAGS[t]) for i, t in enumerate(tags)]
     out += ["", "", "section components", "\tnumcomponents %d" % len(components), ""]
     out += ["\t%d\t%d\t\t0\t\t%d\t\t\t%s" % (i, tags.index(t), parent, name) for i, (t, parent, name) in enumerate(components)]
     out += ["", "", "section chores", "\tnumchores %d" % len(chores), ""]
@@ -130,3 +132,52 @@ def costume(components, chores):
             out += ["\t\t%d\t\t\t%d" % k for k in keys]
             out += [""]
     return ("\r\n".join(out) + "\r\n").encode("ascii")
+
+
+def model3do(name, meshes, nodes):
+    """A binary .3do (LDOM) without materials or faces: what a model gives an actor besides its picture (the bounding box
+    and radius for collisions and GetActorRect, the hierarchy for chores and keyframes).
+    meshes: [(name, [(x, y, z), ...])]; nodes: [(name, mesh index or -1, parent index or -1, pos, pivot, (pitch, yaw, roll))],
+    a parent before its children."""
+    f = lambda *v: struct.pack("<%df" % len(v), *v)
+    u = lambda *v: struct.pack("<%dI" % len(v), *v)
+    s32 = lambda t, n: t.encode("ascii")[:n - 1].ljust(n, b"\0")
+    allv = [v for _, vs in meshes for v in vs] or [(0.0, 0.0, 0.0)]
+    lo = tuple(min(v[i] for v in allv) for i in range(3))
+    hi = tuple(max(v[i] for v in allv) for i in range(3))
+    centre = tuple((lo[i] + hi[i]) / 2 for i in range(3))
+    radius = max(sum((v[i] - centre[i]) ** 2 for i in range(3)) ** 0.5 for v in allv)
+    out = b"LDOM" + u(0) + s32(name, 32) + u(0) + u(1) + u(len(meshes))
+    for mname, verts in meshes:
+        mr = max([sum(c * c for c in v) ** 0.5 for v in verts] or [0.0])
+        out += s32(mname, 32) + u(0) + u(4, 3, 0, len(verts), 0, 0)
+        out += b"".join(f(*v) for v in verts)            # vertices
+        out += b"".join(f(1.0) for _ in verts)           # vertex intensities
+        out += u(*([0] * len(verts))) if verts else b""  # (skipped by the readers)
+        out += b"".join(f(0.0, 0.0, 1.0) for _ in verts)  # vertex normals
+        out += u(0, 0) + f(mr) + b"\0" * 24             # shadow, -, radius, -
+    children = [[j for j, n in enumerate(nodes) if n[2] == i] for i in range(len(nodes))]
+    depth = []
+    for i, n in enumerate(nodes):
+        depth.append(0 if n[2] < 0 else depth[n[2]] + 1)
+    out += u(0) + u(len(nodes))
+    for i, (nname, mesh, parent, pos, pivot, rot) in enumerate(nodes):
+        sibs = children[parent] if parent >= 0 else [j for j, n in enumerate(nodes) if n[2] < 0]
+        k = sibs.index(i)
+        sibling = sibs[k + 1] if k + 1 < len(sibs) else -1
+        child = children[i][0] if children[i] else -1
+        # (the parent, child and sibling words are pointers in the original's memory: nonzero means "an index follows")
+        out += s32(nname, 64) + u(0, 0, 1) + struct.pack("<i", mesh) + u(depth[i], 1 if parent >= 0 else 0,
+                                                                         len(children[i]), 1 if child >= 0 else 0,
+                                                                         1 if sibling >= 0 else 0)
+        out += f(*pivot) + f(*pos) + f(*rot) + b"\0" * 48
+        for link in (parent, child, sibling):
+            if link >= 0:
+                out += u(link)
+    out += f(radius) + f(*lo) + f(*hi) + f(*centre) + f(0.0, 0.0, 0.0)
+    return out
+
+
+def box(sx, sy, sz, z0=0.0):
+    """The 8 corners of a box centred on the z axis, from z0 up."""
+    return [(x, y, z) for x in (-sx / 2, sx / 2) for y in (-sy / 2, sy / 2) for z in (z0, z0 + sz)]
