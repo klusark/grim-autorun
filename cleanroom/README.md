@@ -53,8 +53,8 @@ run from source text (the exe has the Lua 3.1 parser).
 | `run.py` | build, run either engine, compare |
 | `compare.py` | extracts the CR lines from an engine log, compares two runs (`--tol`, default 1e-6) |
 | `snaps.py` | pictures of the screen (`cr_snap`): reads the .bmp files and logs the box of the bright pixels |
-| `formats.py` | writers: LAB, grim.tab (RCNE), .bm/.zbm (raw, RGB565), .cmp, text .set, text .cos, binary and text .3do (no faces; a header or radius of your own if asked; `model_bounds` works out the box as the original does) |
-| `assets.py` | the data: three sets (`cr_flat`, `cr_edge`, `cr_stair`), backgrounds, the text table, `cr_luav.cos` |
+| `formats.py` | writers: LAB, grim.tab (RCNE), .bm/.zbm (raw, RGB565), .cmp, text .set, text .cos, binary and text .3do (text models may have faces with materials; a header or radius of your own if asked; `model_bounds` works out the box as the original does), .mat (8-bit, one texture a cel), text .key |
+| `assets.py` | the data: the sets (`cr_flat`, `cr_edge`, `cr_stair`, `cr_open`: cr_flat with a far z-buffer, where models are drawn; `cr_ell`: an L of floors), backgrounds, the text table, costumes, drawn models, a keyframe, `cr_extra.lab` |
 | `lua/_system.lua` | the runner (`cr_test`, `cr_log`, `cr_frames`, `cr_until`, `cr_snap`) |
 | `tests/*.lua` | the tests |
 | `expected/original.log` | the original's results, the reference for ScummVM runs |
@@ -107,6 +107,27 @@ Original-only traps found so far:
 - `IrisUp` / `IrisDown` without a running iris never return. `NextSetup` / `PreviousSetup` in a set with one setup and
   `MakeCurrentSetup` of a setup that does not exist crash.
 - The rest of the crashes with wrong arguments are listed in `expected/crashers.txt` (found by the argument probe).
+
+## Coverage of ScummVM
+
+A gcov build of the cleanroom worktree measures which lines of engines/grim the tests run:
+
+```sh
+mkdir ~/scummvm-cleanroom/build-cov && cd ~/scummvm-cleanroom/build-cov
+CXX="ccache g++" CC="ccache gcc" CXXFLAGS="--coverage -O0 -g" LDFLAGS="--coverage" \
+    ../configure --disable-all-engines --enable-engines=grim,monkey4
+sed -i 's/^CXXFLAGS := \(.*\)$/CXXFLAGS := \1 -DCR_GCOV/' config.mk   # Exit() writes the counters (see below)
+make -j16
+find . -name '*.gcda' -delete
+SCUMMVM='C:\msys64\home\Joel\scummvm-cleanroom\build-cov\scummvm.exe' CR_TIMEOUT=1500 python run.py scummvm
+python ~/grimL_ar/tools/covreport.py <outdir> 'C:\msys64\home\Joel\scummvm-cleanroom\build-cov' 'C:\msys64\home\Joel\scummvm-cleanroom'
+```
+
+`SCUMMVM` must be a Windows path. After the whole suite ScummVM crashes on the way out (0xC0000005 after `exit()`), which
+loses the counters: with `-DCR_GCOV` the test patch calls `__gcov_dump()` in `Exit()` first. 2026-11-05: 42.3% of the lines
+(11596 of 27397, without lua, emi, remastered, tinygl), from 38.5% before the drawn models, keyframes, the costume
+components, the archive, paths, heads and shadows. What is left is mostly sound and movies (no data of ours yet), the
+shader renderer (the tests use `gfx_mode=opengl`), saving and loading, and the debugger.
 
 ## Wrong arguments and coverage
 
@@ -242,6 +263,29 @@ Hand-written tests, besides the per-frame walk and turn values:
   the screen into six at the left; the original keeps it on one line (11 to 627). The off-screen position matches, except
   at the corners (a few pixels). A model without faces is never drawn: both use the off-screen position for an actor with
   such a costume, so the placement above a drawn actor is not tested yet.
+- Drawn models (`draw.lua`, `keyframe.lua`, `head.lua`, `shadow.lua`, `sight.lua`; text models with faces and an 8-bit
+  material, drawn without lighting in `cr_open`). A z-buffer of 0xffff hides every model on both engines; the backgrounds
+  of the other sets keep it (`ScreenToWorld` reads the z-buffer: points on the floor there, NaN in `cr_open`, and the
+  depth of the set before for a frame or two after `MakeCurrentSet`; ScummVM has no `ScreenToWorld`). In a material the
+  second word of the texture format is the bits a pixel: 0 crashes the original.
+  - A drawn box is at the same place on both engines, its top left corner 1 pixel further down and right on the original.
+    `GetActorRect` gives x, y, width, height on the original and x0, y0, x1, y1 (1 or 2 pixels larger) on ScummVM.
+  - The line of a drawn actor is above the rectangle it was drawn in on both, 2 pixels lower on the original.
+  - The components (material cel, mesh shown or hidden, sprite, bitmap) do the same on both.
+  - Keyframes: the box moves the same way on the screen, but `GetActorNodeLocation` on the original stays at the rest
+    position while the keyframe plays; ScummVM gives the animated position. A Lua Variable track in a costume that also has
+    a model never sets its variable on ScummVM (it does in a costume of only a Lua Variable). `GetActorChores` is a table
+    on the original, nil on ScummVM.
+  - Heads (`SetActorHead`, `ActorLookAt`): the head turns differently. Looking at a point in front of or behind the actor the
+    original does not move the head at all; ScummVM pitches and turns it. To the side both turn it, by different angles.
+  - Shadows set up as the game's scripts do (`SetActiveShadow`, `SetActorShadowPoint`, `SetActorShadowPlane`,
+    `AddShadowPlane` on a special sector `shadow1`, `ActivateActorShadow`): the original draws none; ScummVM draws them,
+    bright (not in the shadow colour).
+- Archives (`lab.lua`, `cr_extra.lab` in the game folder): the same on both; a file that is both loose and in the archive
+  is read loose.
+- Paths (`paths.lua`, `cr_ell`): the walk round the corner of an L takes the same way, but the original stops about 3 cm
+  past the point it was sent to. Walking forward at 45 degrees into the edge of the floor, the original stops at x = -0.90
+  and ScummVM slides along the edge to the corner (x = -2).
 - `MakeSectorActive` with a number does nothing on the original. A sector switched on stays on across a change of set on the
   original; ScummVM resets it. The current setup is kept across a change of set on the original; ScummVM goes back to 0.
   `GetCurrentSetup` of a set that is not current is 0 on the original and nil on ScummVM.
@@ -268,6 +312,6 @@ Hand-written tests, besides the per-frame walk and turn values:
 The builtins no test calls are the ones left out on purpose: the dialogs, Load/Save, SetGamma, execute, debug-only ones
 (`TEST`, `quiet`, `vfx`, `debug`, `SpewStartup`) and the CD helpers.
 
-Models are written without faces (`formats.model3do`): no materials (.mat), so nothing is drawn. Faces and a material
-writer come next: box collision and node positions probably need a model that is drawn. Keyframes (.key, for walk chores),
-sounds, text objects and fonts (.laf) have no writer yet.
+Binary models are written without faces (`formats.model3do`); text models can have faces (`formats.model3do_text`).
+Sounds (.imu, .wav), movies (.snm), lip sync (.lip), compressed bitmaps (codec 3) and binary keyframes have no writer
+yet.
