@@ -20,6 +20,7 @@
 //   nopause    the game goes on when its window is not the active one (it stops otherwise)
 //   offscreen  the window opens 20000 pixels off the screen and never takes the focus (for unattended runs)    (off)
 //   f11        F11 runs lua_dofile("grimpatch.bin")
+//   debugmode  the game's own debug switches (see patchEmiDebugmode): -log (debug.log of its engine messages) and -fps (the Ctrl+Backspace+F hotkey)    (off)
 //   undo640    puts the desktop mode back first thing, when the exe has the 640x480 compatibility setting (below)
 //   windowed   the game's own -w switch is added to the command line unless you pass it
 //
@@ -522,6 +523,22 @@ static void patchEmiDatadir() {
 	write(READ_INSTALL_PATH, jmp(READ_INSTALL_PATH, va));
 }
 
+// The release exe keeps two debug switches of its command line (parsed at 0x407640), both only set by an option and never read from anywhere else:
+//   -log (byte 0x4d4eec): the engine's log functions (0x4056a0 ff.: the "S:", "D:" ... messages, e.g. "Opening Bundle: ...") also write to
+//        debug.log in the game folder (opened by 0x407310 at start up, written by 0x407d10);
+//   -fps (byte 0x4d4eee): enables the hotkey Ctrl+Backspace+F (WndProc 0x406915), which toggles bit 0x20 of the flags at 0x4c44d0.
+// Both bytes are set here. A debug window is meant for -log together with -w: 0x407bd0 then loads DebugLog.dll (not shipped) and keeps
+// its _ShowDebugLog as the log callback at 0x4d4e88, which stays 0 when the dll is missing and the first log message calls it. The jump
+// at 0x407bee (je to the default callback, a function returning 0) is made unconditional, so the callback is always set and no dll is needed.
+// (ToggleDebugDraw and the other debug builtins of the Lua table, and the Backspace+C / Backspace+L hotkeys, are stubs in the release.)
+static void patchEmiDebugmode() {
+	static const DWORD LOG = 0x004d4eec, FPS = 0x004d4eee, CALLBACK_JUMP = 0x00407bec;
+	expect(CALLBACK_JUMP, bytes({0x84, 0xc0, 0x74, 0x63}), "the EMI log callback choice");   // test al,al; je default
+	write(LOG, bytes({0x01}));
+	write(FPS, bytes({0x01}));
+	write(CALLBACK_JUMP + 2, bytes({0xeb}));                                                    // jmp default
+}
+
 static const struct { const char *name; void (*apply)(); bool def; int games; } PATCHES[] = {
 	{"debuglog", patchDebuglog, true, GRIM | REMASTERED},
 	{"framelimit", patchFramelimit, false, GRIM},
@@ -530,6 +547,7 @@ static const struct { const char *name; void (*apply)(); bool def; int games; } 
 	{"debuglog", patchEmiDebuglog, true, EMI},
 	{"datadir", patchEmiDatadir, true, EMI},
 	{"nocd", patchEmiNocd, true, EMI},
+	{"debugmode", patchEmiDebugmode, false, EMI},
 	{"simtime", patchEmiSimtime, true, EMI},
 	{"nopause", patchEmiNopause, true, EMI},
 	{"offscreen", patchEmiOffscreen, false, EMI},
@@ -708,7 +726,7 @@ int main(int argc, char **argv) {
 			for (auto &p : PATCHES)
 				known |= n == p.name;
 			if (!known) {
-				fprintf(stderr, "no patch %s (Grim: debuglog, framelimit, simtime, config, windowed; Remastered: debuglog, windowed, simtime; EMI: debuglog, datadir, nocd, simtime, nopause, offscreen, f11, undo640, windowed)\n", n.c_str());
+				fprintf(stderr, "no patch %s (Grim: debuglog, framelimit, simtime, config, windowed; Remastered: debuglog, windowed, simtime; EMI: debuglog, datadir, nocd, debugmode, simtime, nopause, offscreen, f11, undo640, windowed)\n", n.c_str());
 				return 2;
 			}
 		}
