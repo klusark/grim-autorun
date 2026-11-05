@@ -248,9 +248,9 @@ def scummvm_once():
         f.write("[scummvm]\nconfirm_exit=false\nfullscreen=false\ngfx_mode=opengl\n"
                 # (no first-run question about update checks: it would wait for a click)
                 "updates_check=0\n\n"
-                "[cleanroom]\ngameid=grim\nengineid=grim\ndescription=Grim engine test data\nextra=Test data\n"
+                "[cleanroom]\ngameid=grim\nengineid=grim\ndescription=Grim engine test data, renderer %s\nextra=Test data\n"
                 "path=%s\\\nlanguage=en\nplatform=windows\ncheck_gamedata=false\nfullscreen=false\n"
-                "speech_mute=true\nsim_frame_ms=17\nrenderer=%s\n" % (d, RENDERER))
+                "speech_mute=true\nsim_frame_ms=17\nrenderer=%s\n" % (RENDERER, d, RENDERER))
     raw = os.path.join(LOGS, "scummvm_raw.log")
     os.makedirs(LOGS, exist_ok=True)
     if os.path.exists(raw):
@@ -470,7 +470,7 @@ def lock_folder():
             return f
         except OSError:
             if not warned:
-                print("run.py: another run.py is running in this folder; waiting for it")
+                print("run.py: another run.py is running in this folder; waiting for it", flush=True)
                 warned = True
             time.sleep(2)
 
