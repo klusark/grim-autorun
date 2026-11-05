@@ -263,6 +263,11 @@ Hand-written tests, besides the per-frame walk and turn values:
   the screen into six at the left; the original keeps it on one line (11 to 627). The off-screen position matches, except
   at the corners (a few pixels). A model without faces is never drawn: both use the off-screen position for an actor with
   such a costume, so the placement above a drawn actor is not tested yet.
+- Renderers: `run.py scummvm` runs every test with each of Grim's renderers (`opengl`, `opengl_shaders`, `software`
+  TinyGL; `--renderer` picks some), one log each (`logs/scummvm_<renderer>.log`). 2026-11-05: 3950, 3953 and 3954 tests the
+  same as the original. With shaders, `WorldToScreen` is wrong (nil for points on the floor, the centre of the screen for
+  one 3 m up) and so is every line placed by the position of an actor. TinyGL draws a model 1 pixel larger on each side
+  than the other two, and `Is3DHardwareEnabled` is nil there, as the first value on the original.
 - Drawn models (`draw.lua`, `keyframe.lua`, `head.lua`, `shadow.lua`, `sight.lua`; text models with faces and an 8-bit
   material, drawn without lighting in `cr_open`). A z-buffer of 0xffff hides every model on both engines; the backgrounds
   of the other sets keep it (`ScreenToWorld` reads the z-buffer: points on the floor there, NaN in `cr_open`, and the
