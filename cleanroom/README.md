@@ -25,7 +25,7 @@ by address. `chore_short` once differed in one run out of seven, so it may need 
 - **The original:** the program files of the install (`GRIMFANDANGO.exe`, `LUA.DLL`, `IMUSE.DLL`, `CHORE.DLL`, the HMI
   and NULLMUSE dlls, `HMILIBS.INI`, `IMUSE.PSL`, `grimdlg.dll`). `run.py` copies them from `GRIM_INSTALL`
   (default `C:\GOG Games\GRIMDATA`) into `run/original/`, once. No LAB, `GRIM.TAB` or other data file is copied.
-  `patch.dll` and `grimlaunch.exe` are built from `../patches` into the run folder whenever the sources are newer.
+  `patch.dll` and `grimlaunch.exe` are built from `../launcher` into the run folder whenever the sources are newer.
   The game is started only through `grimlaunch.exe` (debuglog, simtime, config and windowed patches). `grim.ini` points
   `GrimDataDir` at the run folder and sets `good_times` (no CD check).
   `run.py` does not start if a `GRIMFANDANGO.exe` is running already, and it kills only the process it started.
