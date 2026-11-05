@@ -42,6 +42,10 @@ def parse(lines):
             # (a key logged again in the same test is numbered: key, key#2, ...)
             n = sum(1 for k, _ in t["values"] if k == key or k.startswith(key + "#"))
             t["values"].append((key if n == 0 else "%s#%d" % (key, n + 1), TOKEN.findall(vals)))
+        elif word == "SKIP":
+            if rest not in tests:
+                order.append(rest)
+            tests[rest] = {"status": "skipped", "values": [], "error": None}
         elif word in ("END", "FAILED", "TIMEOUT"):
             t = tests.get(rest)
             # (TIMEOUT comes before FAILED and is the one kept)
