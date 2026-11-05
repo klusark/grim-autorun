@@ -109,7 +109,7 @@ index 3bd29bd1803..e9f9fe5ae5f 100644
  	void setMode(EngineMode mode);
  	EngineMode getMode() { return _mode; }
 diff --git a/engines/grim/lua_v1.cpp b/engines/grim/lua_v1.cpp
-index c577f59f1a8..752c6fdaa08 100644
+index c577f59f1a8..ae231bacf9a 100644
 --- a/engines/grim/lua_v1.cpp
 +++ b/engines/grim/lua_v1.cpp
 @@ -78,6 +78,13 @@ void Lua_V1::new_dofile() {
@@ -126,6 +126,23 @@ index c577f59f1a8..752c6fdaa08 100644
  	if (!Debug::isChannelEnabled(Debug::Scripts))
  		return;
  	Common::String msg("Debug: ");
+@@ -516,7 +523,16 @@ void Lua_V1::GetControlState() {
+ 	}
+ }
+ 
++#ifdef CR_GCOV
++// (a coverage build of the engine tests, grim_tools/cleanroom, built with -DCR_GCOV: the counters are written before the
++// engine quits, as it may crash on the way out)
++extern "C" void __gcov_dump(void);
++#endif
++
+ void Lua_V1::Exit() {
++#ifdef CR_GCOV
++	__gcov_dump();
++#endif
+ 	g_grim->quitGame();
+ }
+ 
 diff --git a/engines/grim/resource.cpp b/engines/grim/resource.cpp
 index 3fe51625f63..7f11d6ea313 100644
 --- a/engines/grim/resource.cpp

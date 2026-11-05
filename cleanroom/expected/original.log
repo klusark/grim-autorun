@@ -1,4 +1,4 @@
-START 4740 tests
+START 4907 tests
 BEGIN attr_scale
 V attr_scale|scale|2.000000
 V attr_scale|scale_half|0.500000
@@ -229,6 +229,249 @@ V chore_loop|after_stop|nil
 V chore_loop|completed|3.000000
 V chore_loop|completed_next|3.000000
 END chore_loop
+BEGIN cm_forward_m0_w0
+V cm_forward_m0_w0|cm_forward_m0_w0_f0|0.200000 -1.500000 0.000000
+V cm_forward_m0_w0|cm_forward_m0_w0_f20|0.083681 -1.180517 0.000000
+V cm_forward_m0_w0|cm_forward_m0_w0_f40|-0.032637 -0.861033 0.000000
+V cm_forward_m0_w0|cm_forward_m0_w0_f60|-0.148956 -0.541548 0.000000
+V cm_forward_m0_w0|cm_forward_m0_w0_f80|-0.265274 -0.222064 0.000000
+V cm_forward_m0_w0|cm_forward_m0_w0_end|-0.381593 0.097419 0.000000
+V cm_forward_m0_w0|cm_forward_m0_w0_walking|nil
+END cm_forward_m0_w0
+BEGIN cm_forward_m1_w0
+V cm_forward_m1_w0|cm_forward_m1_w0_f0|0.200000 -1.500000 0.000000
+V cm_forward_m1_w0|cm_forward_m1_w0_f20|0.083681 -1.180517 0.000000
+V cm_forward_m1_w0|cm_forward_m1_w0_f40|-0.032637 -0.861033 0.000000
+V cm_forward_m1_w0|cm_forward_m1_w0_f60|-0.148956 -0.541548 0.000000
+V cm_forward_m1_w0|cm_forward_m1_w0_f80|-0.265274 -0.222064 0.000000
+V cm_forward_m1_w0|cm_forward_m1_w0_end|-0.381593 0.097419 0.000000
+V cm_forward_m1_w0|cm_forward_m1_w0_walking|nil
+END cm_forward_m1_w0
+BEGIN cm_forward_m2_w0
+V cm_forward_m2_w0|cm_forward_m2_w0_f0|0.200000 -1.500000 0.000000
+V cm_forward_m2_w0|cm_forward_m2_w0_f20|0.083681 -1.180517 0.000000
+V cm_forward_m2_w0|cm_forward_m2_w0_f40|-0.032637 -0.861033 0.000000
+V cm_forward_m2_w0|cm_forward_m2_w0_f60|-0.148956 -0.541548 0.000000
+V cm_forward_m2_w0|cm_forward_m2_w0_f80|-0.265274 -0.222064 0.000000
+V cm_forward_m2_w0|cm_forward_m2_w0_end|-0.381593 0.097419 0.000000
+V cm_forward_m2_w0|cm_forward_m2_w0_walking|nil
+END cm_forward_m2_w0
+BEGIN cm_forward_m0_w1
+V cm_forward_m0_w1|cm_forward_m0_w1_f0|0.200000 -1.500000 0.000000
+V cm_forward_m0_w1|cm_forward_m0_w1_f20|0.083681 -1.180517 0.000000
+V cm_forward_m0_w1|cm_forward_m0_w1_f40|-0.032637 -0.861033 0.000000
+V cm_forward_m0_w1|cm_forward_m0_w1_f60|-0.148956 -0.541548 0.000000
+V cm_forward_m0_w1|cm_forward_m0_w1_f80|-0.273371 -0.233635 0.000000
+V cm_forward_m0_w1|cm_forward_m0_w1_end|-0.512649 -0.089869 0.000000
+V cm_forward_m0_w1|cm_forward_m0_w1_walking|nil
+END cm_forward_m0_w1
+BEGIN cm_forward_m1_w1
+V cm_forward_m1_w1|cm_forward_m1_w1_f0|0.200000 -1.500000 0.000000
+V cm_forward_m1_w1|cm_forward_m1_w1_f20|0.083681 -1.180517 0.000000
+V cm_forward_m1_w1|cm_forward_m1_w1_f40|-0.032637 -0.861033 0.000000
+V cm_forward_m1_w1|cm_forward_m1_w1_f60|-0.148956 -0.541548 0.000000
+V cm_forward_m1_w1|cm_forward_m1_w1_f80|-0.273371 -0.233635 0.000000
+V cm_forward_m1_w1|cm_forward_m1_w1_end|-0.512649 -0.089869 0.000000
+V cm_forward_m1_w1|cm_forward_m1_w1_walking|nil
+END cm_forward_m1_w1
+BEGIN cm_forward_m2_w1
+V cm_forward_m2_w1|cm_forward_m2_w1_f0|0.200000 -1.500000 0.000000
+V cm_forward_m2_w1|cm_forward_m2_w1_f20|0.083681 -1.180517 0.000000
+V cm_forward_m2_w1|cm_forward_m2_w1_f40|-0.032637 -0.861033 0.000000
+V cm_forward_m2_w1|cm_forward_m2_w1_f60|-0.148956 -0.541548 0.000000
+V cm_forward_m2_w1|cm_forward_m2_w1_f80|-0.273371 -0.233635 0.000000
+V cm_forward_m2_w1|cm_forward_m2_w1_end|-0.512649 -0.089869 0.000000
+V cm_forward_m2_w1|cm_forward_m2_w1_walking|nil
+END cm_forward_m2_w1
+BEGIN cm_forward_m0_w2
+V cm_forward_m0_w2|cm_forward_m0_w2_f0|0.200000 -1.500000 0.000000
+V cm_forward_m0_w2|cm_forward_m0_w2_f20|0.083681 -1.180517 0.000000
+V cm_forward_m0_w2|cm_forward_m0_w2_f40|-0.032637 -0.861033 0.000000
+V cm_forward_m0_w2|cm_forward_m0_w2_f60|-0.148956 -0.541548 0.000000
+V cm_forward_m0_w2|cm_forward_m0_w2_f80|-0.349590 -0.460444 0.000000
+V cm_forward_m0_w2|cm_forward_m0_w2_end|-0.573539 -0.279013 0.000000
+V cm_forward_m0_w2|cm_forward_m0_w2_walking|nil
+END cm_forward_m0_w2
+BEGIN cm_forward_m1_w2
+V cm_forward_m1_w2|cm_forward_m1_w2_f0|0.200000 -1.500000 0.000000
+V cm_forward_m1_w2|cm_forward_m1_w2_f20|0.083681 -1.180517 0.000000
+V cm_forward_m1_w2|cm_forward_m1_w2_f40|-0.032637 -0.861033 0.000000
+V cm_forward_m1_w2|cm_forward_m1_w2_f60|-0.148956 -0.541548 0.000000
+V cm_forward_m1_w2|cm_forward_m1_w2_f80|-0.349590 -0.460444 0.000000
+V cm_forward_m1_w2|cm_forward_m1_w2_end|-0.573539 -0.279013 0.000000
+V cm_forward_m1_w2|cm_forward_m1_w2_walking|nil
+END cm_forward_m1_w2
+BEGIN cm_forward_m2_w2
+V cm_forward_m2_w2|cm_forward_m2_w2_f0|0.200000 -1.500000 0.000000
+V cm_forward_m2_w2|cm_forward_m2_w2_f20|0.083681 -1.180517 0.000000
+V cm_forward_m2_w2|cm_forward_m2_w2_f40|-0.032637 -0.861033 0.000000
+V cm_forward_m2_w2|cm_forward_m2_w2_f60|-0.148956 -0.541548 0.000000
+V cm_forward_m2_w2|cm_forward_m2_w2_f80|-0.349590 -0.460444 0.000000
+V cm_forward_m2_w2|cm_forward_m2_w2_end|-0.573539 -0.279013 0.000000
+V cm_forward_m2_w2|cm_forward_m2_w2_walking|nil
+END cm_forward_m2_w2
+BEGIN cm_to_m0_w0
+V cm_to_m0_w0|cm_to_m0_w0_f0|0.200000 -1.500000 0.000000
+V cm_to_m0_w0|cm_to_m0_w0_f20|0.145737 -1.164359 0.000000
+V cm_to_m0_w0|cm_to_m0_w0_f40|0.091503 -0.828712 0.000000
+V cm_to_m0_w0|cm_to_m0_w0_f60|0.037275 -0.493064 0.000000
+V cm_to_m0_w0|cm_to_m0_w0_f80|-0.016925 -0.157412 0.000000
+V cm_to_m0_w0|cm_to_m0_w0_end|-0.071105 0.178243 0.000000
+V cm_to_m0_w0|cm_to_m0_w0_walking|1.000000
+END cm_to_m0_w0
+BEGIN cm_to_m1_w0
+V cm_to_m1_w0|cm_to_m1_w0_f0|0.200000 -1.500000 0.000000
+V cm_to_m1_w0|cm_to_m1_w0_f20|0.145737 -1.164359 0.000000
+V cm_to_m1_w0|cm_to_m1_w0_f40|0.091503 -0.828712 0.000000
+V cm_to_m1_w0|cm_to_m1_w0_f60|0.037275 -0.493064 0.000000
+V cm_to_m1_w0|cm_to_m1_w0_f80|-0.016925 -0.157412 0.000000
+V cm_to_m1_w0|cm_to_m1_w0_end|-0.071105 0.178243 0.000000
+V cm_to_m1_w0|cm_to_m1_w0_walking|1.000000
+END cm_to_m1_w0
+BEGIN cm_to_m2_w0
+V cm_to_m2_w0|cm_to_m2_w0_f0|0.200000 -1.500000 0.000000
+V cm_to_m2_w0|cm_to_m2_w0_f20|0.145737 -1.164359 0.000000
+V cm_to_m2_w0|cm_to_m2_w0_f40|0.091503 -0.828712 0.000000
+V cm_to_m2_w0|cm_to_m2_w0_f60|0.037275 -0.493064 0.000000
+V cm_to_m2_w0|cm_to_m2_w0_f80|-0.016925 -0.157412 0.000000
+V cm_to_m2_w0|cm_to_m2_w0_end|-0.071105 0.178243 0.000000
+V cm_to_m2_w0|cm_to_m2_w0_walking|1.000000
+END cm_to_m2_w0
+BEGIN cm_to_m0_w1
+V cm_to_m0_w1|cm_to_m0_w1_f0|0.200000 -1.500000 0.000000
+V cm_to_m0_w1|cm_to_m0_w1_f20|0.145737 -1.164359 0.000000
+V cm_to_m0_w1|cm_to_m0_w1_f40|0.091503 -0.828712 0.000000
+V cm_to_m0_w1|cm_to_m0_w1_f60|0.037275 -0.493064 0.000000
+V cm_to_m0_w1|cm_to_m0_w1_f80|-0.080633 -0.246309 0.000000
+V cm_to_m0_w1|cm_to_m0_w1_end|-0.414674 -0.309681 0.000000
+V cm_to_m0_w1|cm_to_m0_w1_walking|1.000000
+END cm_to_m0_w1
+BEGIN cm_to_m1_w1
+V cm_to_m1_w1|cm_to_m1_w1_f0|0.200000 -1.500000 0.000000
+V cm_to_m1_w1|cm_to_m1_w1_f20|0.145737 -1.164359 0.000000
+V cm_to_m1_w1|cm_to_m1_w1_f40|0.091503 -0.828712 0.000000
+V cm_to_m1_w1|cm_to_m1_w1_f60|0.037275 -0.493064 0.000000
+V cm_to_m1_w1|cm_to_m1_w1_f80|-0.080633 -0.246309 0.000000
+V cm_to_m1_w1|cm_to_m1_w1_end|-0.414674 -0.309681 0.000000
+V cm_to_m1_w1|cm_to_m1_w1_walking|1.000000
+END cm_to_m1_w1
+BEGIN cm_to_m2_w1
+V cm_to_m2_w1|cm_to_m2_w1_f0|0.200000 -1.500000 0.000000
+V cm_to_m2_w1|cm_to_m2_w1_f20|0.145737 -1.164359 0.000000
+V cm_to_m2_w1|cm_to_m2_w1_f40|0.091503 -0.828712 0.000000
+V cm_to_m2_w1|cm_to_m2_w1_f60|0.037275 -0.493064 0.000000
+V cm_to_m2_w1|cm_to_m2_w1_f80|-0.080633 -0.246309 0.000000
+V cm_to_m2_w1|cm_to_m2_w1_end|-0.414674 -0.309681 0.000000
+V cm_to_m2_w1|cm_to_m2_w1_walking|1.000000
+END cm_to_m2_w1
+BEGIN cm_to_m0_w2
+V cm_to_m0_w2|cm_to_m0_w2_f0|0.200000 -1.500000 0.000000
+V cm_to_m0_w2|cm_to_m0_w2_f20|0.145737 -1.164359 0.000000
+V cm_to_m0_w2|cm_to_m0_w2_f40|0.091503 -0.828712 0.000000
+V cm_to_m0_w2|cm_to_m0_w2_f60|0.040330 -0.546173 0.000000
+V cm_to_m0_w2|cm_to_m0_w2_f80|-0.001352 -0.547260 0.000000
+V cm_to_m0_w2|cm_to_m0_w2_end|-0.057649 -0.545035 0.000000
+V cm_to_m0_w2|cm_to_m0_w2_walking|1.000000
+END cm_to_m0_w2
+BEGIN cm_to_m1_w2
+V cm_to_m1_w2|cm_to_m1_w2_f0|0.200000 -1.500000 0.000000
+V cm_to_m1_w2|cm_to_m1_w2_f20|0.145737 -1.164359 0.000000
+V cm_to_m1_w2|cm_to_m1_w2_f40|0.091503 -0.828712 0.000000
+V cm_to_m1_w2|cm_to_m1_w2_f60|0.040330 -0.546173 0.000000
+V cm_to_m1_w2|cm_to_m1_w2_f80|-0.001352 -0.547260 0.000000
+V cm_to_m1_w2|cm_to_m1_w2_end|-0.057649 -0.545035 0.000000
+V cm_to_m1_w2|cm_to_m1_w2_walking|1.000000
+END cm_to_m1_w2
+BEGIN cm_to_m2_w2
+V cm_to_m2_w2|cm_to_m2_w2_f0|0.200000 -1.500000 0.000000
+V cm_to_m2_w2|cm_to_m2_w2_f20|0.145737 -1.164359 0.000000
+V cm_to_m2_w2|cm_to_m2_w2_f40|0.091503 -0.828712 0.000000
+V cm_to_m2_w2|cm_to_m2_w2_f60|0.040330 -0.546173 0.000000
+V cm_to_m2_w2|cm_to_m2_w2_f80|-0.001352 -0.547260 0.000000
+V cm_to_m2_w2|cm_to_m2_w2_end|-0.057649 -0.545035 0.000000
+V cm_to_m2_w2|cm_to_m2_w2_walking|1.000000
+END cm_to_m2_w2
+BEGIN cm_forward_s1_m0_w0
+V cm_forward_s1_m0_w0|cm_forward_s1_m0_w0_f0|0.200000 -1.900000 0.000000
+V cm_forward_s1_m0_w0|cm_forward_s1_m0_w0_f20|0.083681 -1.580517 0.000000
+V cm_forward_s1_m0_w0|cm_forward_s1_m0_w0_f40|-0.032637 -1.261033 0.000000
+V cm_forward_s1_m0_w0|cm_forward_s1_m0_w0_f60|-0.148956 -0.941550 0.000000
+V cm_forward_s1_m0_w0|cm_forward_s1_m0_w0_f80|-0.265274 -0.622065 0.000000
+V cm_forward_s1_m0_w0|cm_forward_s1_m0_w0_end|-0.381593 -0.302581 0.000000
+V cm_forward_s1_m0_w0|cm_forward_s1_m0_w0_walking|nil
+END cm_forward_s1_m0_w0
+BEGIN cm_forward_s1_m1_w0
+V cm_forward_s1_m1_w0|cm_forward_s1_m1_w0_f0|0.200000 -1.900000 0.000000
+V cm_forward_s1_m1_w0|cm_forward_s1_m1_w0_f20|0.083681 -1.580517 0.000000
+V cm_forward_s1_m1_w0|cm_forward_s1_m1_w0_f40|-0.032637 -1.261033 0.000000
+V cm_forward_s1_m1_w0|cm_forward_s1_m1_w0_f60|-0.148956 -0.941550 0.000000
+V cm_forward_s1_m1_w0|cm_forward_s1_m1_w0_f80|-0.265274 -0.622065 0.000000
+V cm_forward_s1_m1_w0|cm_forward_s1_m1_w0_end|-0.381593 -0.302581 0.000000
+V cm_forward_s1_m1_w0|cm_forward_s1_m1_w0_walking|nil
+END cm_forward_s1_m1_w0
+BEGIN cm_forward_s1_m2_w0
+V cm_forward_s1_m2_w0|cm_forward_s1_m2_w0_f0|0.200000 -1.900000 0.000000
+V cm_forward_s1_m2_w0|cm_forward_s1_m2_w0_f20|0.083681 -1.580517 0.000000
+V cm_forward_s1_m2_w0|cm_forward_s1_m2_w0_f40|-0.032637 -1.261033 0.000000
+V cm_forward_s1_m2_w0|cm_forward_s1_m2_w0_f60|-0.148956 -0.941550 0.000000
+V cm_forward_s1_m2_w0|cm_forward_s1_m2_w0_f80|-0.265274 -0.622065 0.000000
+V cm_forward_s1_m2_w0|cm_forward_s1_m2_w0_end|-0.381593 -0.302581 0.000000
+V cm_forward_s1_m2_w0|cm_forward_s1_m2_w0_walking|nil
+END cm_forward_s1_m2_w0
+BEGIN cm_forward_s1_m0_w1
+V cm_forward_s1_m0_w1|cm_forward_s1_m0_w1_f0|0.200000 -1.900000 0.000000
+V cm_forward_s1_m0_w1|cm_forward_s1_m0_w1_f20|0.083681 -1.580517 0.000000
+V cm_forward_s1_m0_w1|cm_forward_s1_m0_w1_f40|-0.032637 -1.261033 0.000000
+V cm_forward_s1_m0_w1|cm_forward_s1_m0_w1_f60|-0.148956 -0.941550 0.000000
+V cm_forward_s1_m0_w1|cm_forward_s1_m0_w1_f80|-0.448622 -0.884083 0.000000
+V cm_forward_s1_m0_w1|cm_forward_s1_m0_w1_end|-0.788500 -0.884083 0.000000
+V cm_forward_s1_m0_w1|cm_forward_s1_m0_w1_walking|nil
+END cm_forward_s1_m0_w1
+BEGIN cm_forward_s1_m1_w1
+V cm_forward_s1_m1_w1|cm_forward_s1_m1_w1_f0|0.200000 -1.900000 0.000000
+V cm_forward_s1_m1_w1|cm_forward_s1_m1_w1_f20|0.083681 -1.580517 0.000000
+V cm_forward_s1_m1_w1|cm_forward_s1_m1_w1_f40|-0.032637 -1.261033 0.000000
+V cm_forward_s1_m1_w1|cm_forward_s1_m1_w1_f60|-0.148956 -0.941550 0.000000
+V cm_forward_s1_m1_w1|cm_forward_s1_m1_w1_f80|-0.448622 -0.884083 0.000000
+V cm_forward_s1_m1_w1|cm_forward_s1_m1_w1_end|-0.788500 -0.884083 0.000000
+V cm_forward_s1_m1_w1|cm_forward_s1_m1_w1_walking|nil
+END cm_forward_s1_m1_w1
+BEGIN cm_forward_s1_m2_w1
+V cm_forward_s1_m2_w1|cm_forward_s1_m2_w1_f0|0.200000 -1.900000 0.000000
+V cm_forward_s1_m2_w1|cm_forward_s1_m2_w1_f20|0.083681 -1.580517 0.000000
+V cm_forward_s1_m2_w1|cm_forward_s1_m2_w1_f40|-0.032637 -1.261033 0.000000
+V cm_forward_s1_m2_w1|cm_forward_s1_m2_w1_f60|-0.148956 -0.941550 0.000000
+V cm_forward_s1_m2_w1|cm_forward_s1_m2_w1_f80|-0.448622 -0.884083 0.000000
+V cm_forward_s1_m2_w1|cm_forward_s1_m2_w1_end|-0.788500 -0.884083 0.000000
+V cm_forward_s1_m2_w1|cm_forward_s1_m2_w1_walking|nil
+END cm_forward_s1_m2_w1
+BEGIN cm_forward_s1_m0_w2
+V cm_forward_s1_m0_w2|cm_forward_s1_m0_w2_f0|0.200000 -1.900000 0.000000
+V cm_forward_s1_m0_w2|cm_forward_s1_m0_w2_f20|0.088221 -1.666070 0.000000
+V cm_forward_s1_m0_w2|cm_forward_s1_m0_w2_f40|-0.022621 -1.668017 0.000000
+V cm_forward_s1_m0_w2|cm_forward_s1_m0_w2_f60|-0.153960 -1.661799 0.000000
+V cm_forward_s1_m0_w2|cm_forward_s1_m0_w2_f80|-0.307920 -1.642603 0.000000
+V cm_forward_s1_m0_w2|cm_forward_s1_m0_w2_end|-0.485548 -1.603952 0.000000
+V cm_forward_s1_m0_w2|cm_forward_s1_m0_w2_walking|nil
+END cm_forward_s1_m0_w2
+BEGIN cm_forward_s1_m1_w2
+V cm_forward_s1_m1_w2|cm_forward_s1_m1_w2_f0|0.200000 -1.900000 0.000000
+V cm_forward_s1_m1_w2|cm_forward_s1_m1_w2_f20|0.088221 -1.666070 0.000000
+V cm_forward_s1_m1_w2|cm_forward_s1_m1_w2_f40|-0.022621 -1.668017 0.000000
+V cm_forward_s1_m1_w2|cm_forward_s1_m1_w2_f60|-0.153960 -1.661799 0.000000
+V cm_forward_s1_m1_w2|cm_forward_s1_m1_w2_f80|-0.307920 -1.642603 0.000000
+V cm_forward_s1_m1_w2|cm_forward_s1_m1_w2_end|-0.485548 -1.603952 0.000000
+V cm_forward_s1_m1_w2|cm_forward_s1_m1_w2_walking|nil
+END cm_forward_s1_m1_w2
+BEGIN cm_forward_s1_m2_w2
+V cm_forward_s1_m2_w2|cm_forward_s1_m2_w2_f0|0.200000 -1.900000 0.000000
+V cm_forward_s1_m2_w2|cm_forward_s1_m2_w2_f20|0.088221 -1.666070 0.000000
+V cm_forward_s1_m2_w2|cm_forward_s1_m2_w2_f40|-0.022621 -1.668017 0.000000
+V cm_forward_s1_m2_w2|cm_forward_s1_m2_w2_f60|-0.153960 -1.661799 0.000000
+V cm_forward_s1_m2_w2|cm_forward_s1_m2_w2_f80|-0.307920 -1.642603 0.000000
+V cm_forward_s1_m2_w2|cm_forward_s1_m2_w2_end|-0.485548 -1.603952 0.000000
+V cm_forward_s1_m2_w2|cm_forward_s1_m2_w2_walking|nil
+END cm_forward_s1_m2_w2
 BEGIN numbers
 V numbers|arith|3.500000 1024.000000 -2.333333 1.#INF00
 V numbers|tostring|"0.333333" "100" "1e+015" "-0.5"
@@ -254,7 +497,7 @@ V strings|concat|"a12.5" "10"
 V strings|ascii|65.000000
 END strings
 BEGIN next_order
-V next_order|order|"velasco,manny,98,lupe,7,56,glottis,49,14,salvador,63,112,chepito,21,126,70,119,105,28,77,olivia,meche,35,eva,84,133,42,91,domino,140,"
+V next_order|order|"49,98,140,7,meche,56,105,olivia,14,manny,eva,112,21,70,salvador,domino,63,28,velasco,77,126,lupe,119,35,84,glottis,133,42,91,chepito,"
 V next_order|globals_counted|1.000000
 END next_order
 BEGIN tasks
@@ -1071,6 +1314,686 @@ V model_nodes|arm_yaw90|0.300000 0.100000 1.200000
 V model_nodes|arm_tilted|0.300000 0.100000 1.200000
 V model_nodes|rect|640.000000
 END model_nodes
+BEGIN model_collide
+V model_collide|box_f0|0.000000 -1.000000 0.000000
+V model_collide|box_f15|0.000000 -0.745000 0.000000
+V model_collide|box_f30|-1.#IND00 -1.#IND00 -1.#IND00
+V model_collide|box_f45|-1.#IND00 -1.#IND00 -1.#IND00
+V model_collide|box_f60|-1.#IND00 -1.#IND00 -1.#IND00
+V model_collide|box_f75|-1.#IND00 -1.#IND00 -1.#IND00
+V model_collide|box_end|-1.#IND00 -1.#IND00 -1.#IND00
+V model_collide|box_other|0.100000 0.500000 0.000000
+V model_collide|sphere_f0|0.000000 -1.000000 0.000000
+V model_collide|sphere_f15|-0.042799 -1.362689 0.000000
+V model_collide|sphere_f30|-0.063710 -1.360967 0.000000
+V model_collide|sphere_f45|-0.087656 -1.358705 0.000000
+V model_collide|sphere_f60|-0.115063 -1.355734 0.000000
+V model_collide|sphere_f75|-0.146411 -1.351832 0.000000
+V model_collide|sphere_end|-0.182235 -1.346712 0.000000
+V model_collide|sphere_other|0.100000 0.500000 0.000000
+V model_collide|sphere_half_f0|0.000000 -1.000000 0.000000
+V model_collide|sphere_half_f15|0.000000 -0.745000 0.000000
+V model_collide|sphere_half_f30|0.000000 -0.489999 0.000000
+V model_collide|sphere_half_f45|-0.023090 -0.425931 0.000000
+V model_collide|sphere_half_f60|-0.061612 -0.419990 0.000000
+V model_collide|sphere_half_f75|-0.111692 -0.409773 0.000000
+V model_collide|sphere_half_end|-0.176177 -0.392315 0.000000
+V model_collide|sphere_half_other|0.100000 0.500000 0.000000
+END model_collide
+BEGIN mf_cr_box_wall_box
+V mf_cr_box_wall_box|cr_box_wall_box_f0|0.500000 -1.900000 0.000000
+V mf_cr_box_wall_box|cr_box_wall_box_f40|0.267363 -1.261033 0.000000
+V mf_cr_box_wall_box|cr_box_wall_box_f80|0.034726 -0.622065 0.000000
+V mf_cr_box_wall_box|cr_box_wall_box_f120|-0.449086 -0.342044 0.000000
+V mf_cr_box_wall_box|cr_box_wall_box_end|-0.759969 0.185104 0.000000
+END mf_cr_box_wall_box
+BEGIN mf_cr_box_wall_sphere
+V mf_cr_box_wall_sphere|cr_box_wall_sphere_f0|0.500000 -1.900000 0.000000
+V mf_cr_box_wall_sphere|cr_box_wall_sphere_f40|0.267363 -1.261033 0.000000
+V mf_cr_box_wall_sphere|cr_box_wall_sphere_f80|0.041386 -0.733160 0.000000
+V mf_cr_box_wall_sphere|cr_box_wall_sphere_f120|-0.249434 -0.700157 0.000000
+V mf_cr_box_wall_sphere|cr_box_wall_sphere_end|-0.686349 -0.433582 0.000000
+END mf_cr_box_wall_sphere
+BEGIN mf_cr_tbox_wall_box
+V mf_cr_tbox_wall_box|cr_tbox_wall_box_f0|0.500000 -1.900000 0.000000
+V mf_cr_tbox_wall_box|cr_tbox_wall_box_f40|0.267363 -1.261033 0.000000
+V mf_cr_tbox_wall_box|cr_tbox_wall_box_f80|0.034726 -0.622065 0.000000
+V mf_cr_tbox_wall_box|cr_tbox_wall_box_f120|-0.449086 -0.342044 0.000000
+V mf_cr_tbox_wall_box|cr_tbox_wall_box_end|-0.759969 0.185104 0.000000
+END mf_cr_tbox_wall_box
+BEGIN mf_cr_tbox_wall_sphere
+V mf_cr_tbox_wall_sphere|cr_tbox_wall_sphere_f0|0.500000 -1.900000 0.000000
+V mf_cr_tbox_wall_sphere|cr_tbox_wall_sphere_f40|0.267363 -1.261033 0.000000
+V mf_cr_tbox_wall_sphere|cr_tbox_wall_sphere_f80|0.041386 -0.733160 0.000000
+V mf_cr_tbox_wall_sphere|cr_tbox_wall_sphere_f120|-0.249434 -0.700157 0.000000
+V mf_cr_tbox_wall_sphere|cr_tbox_wall_sphere_end|-0.686349 -0.433582 0.000000
+END mf_cr_tbox_wall_sphere
+BEGIN mf_cr_trad_wall_box
+V mf_cr_trad_wall_box|cr_trad_wall_box_f0|0.500000 -1.900000 0.000000
+V mf_cr_trad_wall_box|cr_trad_wall_box_f40|0.267363 -1.261033 0.000000
+V mf_cr_trad_wall_box|cr_trad_wall_box_f80|0.034726 -0.622065 0.000000
+V mf_cr_trad_wall_box|cr_trad_wall_box_f120|-0.449086 -0.342044 0.000000
+V mf_cr_trad_wall_box|cr_trad_wall_box_end|-0.759969 0.185104 0.000000
+END mf_cr_trad_wall_box
+BEGIN mf_cr_trad_wall_sphere
+V mf_cr_trad_wall_sphere|cr_trad_wall_sphere_f0|0.500000 -1.900000 0.000000
+V mf_cr_trad_wall_sphere|cr_trad_wall_sphere_f40|0.267363 -1.261033 0.000000
+V mf_cr_trad_wall_sphere|cr_trad_wall_sphere_f80|0.041386 -0.733160 0.000000
+V mf_cr_trad_wall_sphere|cr_trad_wall_sphere_f120|-0.249434 -0.700157 0.000000
+V mf_cr_trad_wall_sphere|cr_trad_wall_sphere_end|-0.686349 -0.433582 0.000000
+END mf_cr_trad_wall_sphere
+BEGIN mf_cr_brad_wall_box
+V mf_cr_brad_wall_box|cr_brad_wall_box_f0|0.500000 -1.900000 0.000000
+V mf_cr_brad_wall_box|cr_brad_wall_box_f40|0.267363 -1.261033 0.000000
+V mf_cr_brad_wall_box|cr_brad_wall_box_f80|0.034726 -0.622065 0.000000
+V mf_cr_brad_wall_box|cr_brad_wall_box_f120|-0.449086 -0.342044 0.000000
+V mf_cr_brad_wall_box|cr_brad_wall_box_end|-0.759969 0.185104 0.000000
+END mf_cr_brad_wall_box
+BEGIN mf_cr_brad_wall_sphere
+V mf_cr_brad_wall_sphere|cr_brad_wall_sphere_f0|0.500000 -1.900000 0.000000
+V mf_cr_brad_wall_sphere|cr_brad_wall_sphere_f40|0.267363 -1.261033 0.000000
+V mf_cr_brad_wall_sphere|cr_brad_wall_sphere_f80|0.041386 -0.733160 0.000000
+V mf_cr_brad_wall_sphere|cr_brad_wall_sphere_f120|-0.249434 -0.700157 0.000000
+V mf_cr_brad_wall_sphere|cr_brad_wall_sphere_end|-0.686349 -0.433582 0.000000
+END mf_cr_brad_wall_sphere
+BEGIN mf_cr_nodex_wall_box
+V mf_cr_nodex_wall_box|cr_nodex_wall_box_f0|0.500000 -1.900000 0.000000
+V mf_cr_nodex_wall_box|cr_nodex_wall_box_f40|0.267363 -1.261033 0.000000
+V mf_cr_nodex_wall_box|cr_nodex_wall_box_f80|0.034726 -0.622065 0.000000
+V mf_cr_nodex_wall_box|cr_nodex_wall_box_f120|-0.382029 -0.246216 0.000000
+V mf_cr_nodex_wall_box|cr_nodex_wall_box_end|-0.614666 0.392752 0.000000
+END mf_cr_nodex_wall_box
+BEGIN mf_cr_nodex_wall_sphere
+V mf_cr_nodex_wall_sphere|cr_nodex_wall_sphere_f0|0.500000 -1.900000 0.000000
+V mf_cr_nodex_wall_sphere|cr_nodex_wall_sphere_f40|0.267363 -1.261033 0.000000
+V mf_cr_nodex_wall_sphere|cr_nodex_wall_sphere_f80|0.034726 -0.622065 0.000000
+V mf_cr_nodex_wall_sphere|cr_nodex_wall_sphere_f120|-0.362915 -0.157600 0.000000
+V mf_cr_nodex_wall_sphere|cr_nodex_wall_sphere_end|-0.596361 0.481055 0.000000
+END mf_cr_nodex_wall_sphere
+BEGIN mf_cr_tnodex_wall_box
+V mf_cr_tnodex_wall_box|cr_tnodex_wall_box_f0|0.500000 -1.900000 0.000000
+V mf_cr_tnodex_wall_box|cr_tnodex_wall_box_f40|0.267363 -1.261033 0.000000
+V mf_cr_tnodex_wall_box|cr_tnodex_wall_box_f80|0.034726 -0.622065 0.000000
+V mf_cr_tnodex_wall_box|cr_tnodex_wall_box_f120|-0.382029 -0.246216 0.000000
+V mf_cr_tnodex_wall_box|cr_tnodex_wall_box_end|-0.614666 0.392752 0.000000
+END mf_cr_tnodex_wall_box
+BEGIN mf_cr_tnodex_wall_sphere
+V mf_cr_tnodex_wall_sphere|cr_tnodex_wall_sphere_f0|0.500000 -1.900000 0.000000
+V mf_cr_tnodex_wall_sphere|cr_tnodex_wall_sphere_f40|0.267363 -1.261033 0.000000
+V mf_cr_tnodex_wall_sphere|cr_tnodex_wall_sphere_f80|0.034726 -0.622065 0.000000
+V mf_cr_tnodex_wall_sphere|cr_tnodex_wall_sphere_f120|-0.362915 -0.157600 0.000000
+V mf_cr_tnodex_wall_sphere|cr_tnodex_wall_sphere_end|-0.596361 0.481055 0.000000
+END mf_cr_tnodex_wall_sphere
+BEGIN mf_cr_float_wall_box
+V mf_cr_float_wall_box|cr_float_wall_box_f0|0.500000 -1.900000 0.000000
+V mf_cr_float_wall_box|cr_float_wall_box_f40|0.267363 -1.261033 0.000000
+V mf_cr_float_wall_box|cr_float_wall_box_f80|0.034726 -0.622065 0.000000
+V mf_cr_float_wall_box|cr_float_wall_box_f120|-0.382038 -0.246227 0.000000
+V mf_cr_float_wall_box|cr_float_wall_box_end|-0.614675 0.327187 0.000000
+END mf_cr_float_wall_box
+BEGIN mf_cr_float_wall_sphere
+V mf_cr_float_wall_sphere|cr_float_wall_sphere_f0|0.500000 -1.900000 0.000000
+V mf_cr_float_wall_sphere|cr_float_wall_sphere_f40|0.267363 -1.261033 0.000000
+V mf_cr_float_wall_sphere|cr_float_wall_sphere_f80|0.034726 -0.622065 0.000000
+V mf_cr_float_wall_sphere|cr_float_wall_sphere_f120|-0.288801 -0.234282 0.000000
+V mf_cr_float_wall_sphere|cr_float_wall_sphere_end|-0.605700 0.325116 -0.001982
+END mf_cr_float_wall_sphere
+BEGIN mf_cr_tfloat_wall_box
+V mf_cr_tfloat_wall_box|cr_tfloat_wall_box_f0|0.500000 -1.900000 0.000000
+V mf_cr_tfloat_wall_box|cr_tfloat_wall_box_f40|0.267363 -1.261033 0.000000
+V mf_cr_tfloat_wall_box|cr_tfloat_wall_box_f80|0.034726 -0.622065 0.000000
+V mf_cr_tfloat_wall_box|cr_tfloat_wall_box_f120|-0.382038 -0.246227 0.000000
+V mf_cr_tfloat_wall_box|cr_tfloat_wall_box_end|-0.614675 0.327187 0.000000
+END mf_cr_tfloat_wall_box
+BEGIN mf_cr_tfloat_wall_sphere
+V mf_cr_tfloat_wall_sphere|cr_tfloat_wall_sphere_f0|0.500000 -1.900000 0.000000
+V mf_cr_tfloat_wall_sphere|cr_tfloat_wall_sphere_f40|0.267363 -1.261033 0.000000
+V mf_cr_tfloat_wall_sphere|cr_tfloat_wall_sphere_f80|0.034726 -0.622065 0.000000
+V mf_cr_tfloat_wall_sphere|cr_tfloat_wall_sphere_f120|-0.288801 -0.234282 0.000000
+V mf_cr_tfloat_wall_sphere|cr_tfloat_wall_sphere_end|-0.605700 0.325116 -0.001982
+END mf_cr_tfloat_wall_sphere
+BEGIN mf_cr_wide_wall_box
+V mf_cr_wide_wall_box|cr_wide_wall_box_f0|0.500000 -1.900000 0.000000
+V mf_cr_wide_wall_box|cr_wide_wall_box_f40|0.267363 -1.261033 0.000000
+V mf_cr_wide_wall_box|cr_wide_wall_box_f80|0.034726 -0.622065 0.000000
+V mf_cr_wide_wall_box|cr_wide_wall_box_f120|-0.431592 -0.317044 0.000000
+V mf_cr_wide_wall_box|cr_wide_wall_box_end|-0.854255 0.050362 0.000000
+END mf_cr_wide_wall_box
+BEGIN mf_cr_wide_wall_sphere
+V mf_cr_wide_wall_sphere|cr_wide_wall_sphere_f0|0.500000 -1.900000 0.000000
+V mf_cr_wide_wall_sphere|cr_wide_wall_sphere_f40|0.267363 -1.261033 0.000000
+V mf_cr_wide_wall_sphere|cr_wide_wall_sphere_f80|0.045780 -0.783177 0.000000
+V mf_cr_wide_wall_sphere|cr_wide_wall_sphere_f120|-0.238387 -0.754937 0.000000
+V mf_cr_wide_wall_sphere|cr_wide_wall_sphere_end|-0.671363 -0.519726 0.000000
+END mf_cr_wide_wall_sphere
+BEGIN mf_cr_rot_wall_box
+V mf_cr_rot_wall_box|cr_rot_wall_box_f0|0.500000 -1.900000 0.000000
+V mf_cr_rot_wall_box|cr_rot_wall_box_f40|0.267363 -1.261033 0.000000
+V mf_cr_rot_wall_box|cr_rot_wall_box_f80|0.034726 -0.622065 0.000000
+V mf_cr_rot_wall_box|cr_rot_wall_box_f120|-0.538011 -0.469122 0.000000
+V mf_cr_rot_wall_box|cr_rot_wall_box_end|-0.770648 0.169846 0.000000
+END mf_cr_rot_wall_box
+BEGIN mf_cr_rot_wall_sphere
+V mf_cr_rot_wall_sphere|cr_rot_wall_sphere_f0|0.500000 -1.900000 0.000000
+V mf_cr_rot_wall_sphere|cr_rot_wall_sphere_f40|0.267363 -1.261033 0.000000
+V mf_cr_rot_wall_sphere|cr_rot_wall_sphere_f80|0.045780 -0.783177 0.000000
+V mf_cr_rot_wall_sphere|cr_rot_wall_sphere_f120|-0.238387 -0.754937 0.000000
+V mf_cr_rot_wall_sphere|cr_rot_wall_sphere_end|-0.671363 -0.519726 0.000000
+END mf_cr_rot_wall_sphere
+BEGIN mf_cr_trot_wall_box
+V mf_cr_trot_wall_box|cr_trot_wall_box_f0|0.500000 -1.900000 0.000000
+V mf_cr_trot_wall_box|cr_trot_wall_box_f40|0.267363 -1.261033 0.000000
+V mf_cr_trot_wall_box|cr_trot_wall_box_f80|0.034726 -0.622065 0.000000
+V mf_cr_trot_wall_box|cr_trot_wall_box_f120|-0.538011 -0.469122 0.000000
+V mf_cr_trot_wall_box|cr_trot_wall_box_end|-0.770648 0.169846 0.000000
+END mf_cr_trot_wall_box
+BEGIN mf_cr_trot_wall_sphere
+V mf_cr_trot_wall_sphere|cr_trot_wall_sphere_f0|0.500000 -1.900000 0.000000
+V mf_cr_trot_wall_sphere|cr_trot_wall_sphere_f40|0.267363 -1.261033 0.000000
+V mf_cr_trot_wall_sphere|cr_trot_wall_sphere_f80|0.045780 -0.783177 0.000000
+V mf_cr_trot_wall_sphere|cr_trot_wall_sphere_f120|-0.238387 -0.754937 0.000000
+V mf_cr_trot_wall_sphere|cr_trot_wall_sphere_end|-0.671363 -0.519726 0.000000
+END mf_cr_trot_wall_sphere
+BEGIN mf_cr_rotx_wall_box
+V mf_cr_rotx_wall_box|cr_rotx_wall_box_f0|0.500000 -1.900000 0.000000
+V mf_cr_rotx_wall_box|cr_rotx_wall_box_f40|0.267363 -1.261033 0.000000
+V mf_cr_rotx_wall_box|cr_rotx_wall_box_f80|0.034726 -0.622065 0.000000
+V mf_cr_rotx_wall_box|cr_rotx_wall_box_f120|-0.197911 0.016903 0.000000
+V mf_cr_rotx_wall_box|cr_rotx_wall_box_end|-0.430548 0.655871 0.000000
+END mf_cr_rotx_wall_box
+BEGIN mf_cr_rotx_wall_sphere
+V mf_cr_rotx_wall_sphere|cr_rotx_wall_sphere_f0|0.500000 -1.900000 0.000000
+V mf_cr_rotx_wall_sphere|cr_rotx_wall_sphere_f40|0.267363 -1.261033 0.000000
+V mf_cr_rotx_wall_sphere|cr_rotx_wall_sphere_f80|0.034726 -0.622065 0.000000
+V mf_cr_rotx_wall_sphere|cr_rotx_wall_sphere_f120|-0.197911 0.016903 0.000000
+V mf_cr_rotx_wall_sphere|cr_rotx_wall_sphere_end|-0.430548 0.655871 0.000000
+END mf_cr_rotx_wall_sphere
+BEGIN mf_cr_trotx_wall_box
+V mf_cr_trotx_wall_box|cr_trotx_wall_box_f0|0.500000 -1.900000 0.000000
+V mf_cr_trotx_wall_box|cr_trotx_wall_box_f40|0.267363 -1.261033 0.000000
+V mf_cr_trotx_wall_box|cr_trotx_wall_box_f80|0.034726 -0.622065 0.000000
+V mf_cr_trotx_wall_box|cr_trotx_wall_box_f120|-0.197911 0.016903 0.000000
+V mf_cr_trotx_wall_box|cr_trotx_wall_box_end|-0.430548 0.655871 0.000000
+END mf_cr_trotx_wall_box
+BEGIN mf_cr_trotx_wall_sphere
+V mf_cr_trotx_wall_sphere|cr_trotx_wall_sphere_f0|0.500000 -1.900000 0.000000
+V mf_cr_trotx_wall_sphere|cr_trotx_wall_sphere_f40|0.267363 -1.261033 0.000000
+V mf_cr_trotx_wall_sphere|cr_trotx_wall_sphere_f80|0.034726 -0.622065 0.000000
+V mf_cr_trotx_wall_sphere|cr_trotx_wall_sphere_f120|-0.197911 0.016903 0.000000
+V mf_cr_trotx_wall_sphere|cr_trotx_wall_sphere_end|-0.430548 0.655871 0.000000
+END mf_cr_trotx_wall_sphere
+BEGIN mf_cr_piv_wall_box
+V mf_cr_piv_wall_box|cr_piv_wall_box_f0|0.500000 -1.900000 0.000000
+V mf_cr_piv_wall_box|cr_piv_wall_box_f40|0.267363 -1.261033 0.000000
+V mf_cr_piv_wall_box|cr_piv_wall_box_f80|0.034726 -0.622065 0.000000
+V mf_cr_piv_wall_box|cr_piv_wall_box_f120|-0.382029 -0.246216 0.000000
+V mf_cr_piv_wall_box|cr_piv_wall_box_end|-0.614666 0.392752 0.000000
+END mf_cr_piv_wall_box
+BEGIN mf_cr_piv_wall_sphere
+V mf_cr_piv_wall_sphere|cr_piv_wall_sphere_f0|0.500000 -1.900000 0.000000
+V mf_cr_piv_wall_sphere|cr_piv_wall_sphere_f40|0.267363 -1.261033 0.000000
+V mf_cr_piv_wall_sphere|cr_piv_wall_sphere_f80|0.034726 -0.622065 0.000000
+V mf_cr_piv_wall_sphere|cr_piv_wall_sphere_f120|-0.362915 -0.157600 0.000000
+V mf_cr_piv_wall_sphere|cr_piv_wall_sphere_end|-0.596361 0.481055 0.000000
+END mf_cr_piv_wall_sphere
+BEGIN mf_cr_tpiv_wall_box
+V mf_cr_tpiv_wall_box|cr_tpiv_wall_box_f0|0.500000 -1.900000 0.000000
+V mf_cr_tpiv_wall_box|cr_tpiv_wall_box_f40|0.267363 -1.261033 0.000000
+V mf_cr_tpiv_wall_box|cr_tpiv_wall_box_f80|0.034726 -0.622065 0.000000
+V mf_cr_tpiv_wall_box|cr_tpiv_wall_box_f120|-0.382029 -0.246216 0.000000
+V mf_cr_tpiv_wall_box|cr_tpiv_wall_box_end|-0.614666 0.392752 0.000000
+END mf_cr_tpiv_wall_box
+BEGIN mf_cr_tpiv_wall_sphere
+V mf_cr_tpiv_wall_sphere|cr_tpiv_wall_sphere_f0|0.500000 -1.900000 0.000000
+V mf_cr_tpiv_wall_sphere|cr_tpiv_wall_sphere_f40|0.267363 -1.261033 0.000000
+V mf_cr_tpiv_wall_sphere|cr_tpiv_wall_sphere_f80|0.034726 -0.622065 0.000000
+V mf_cr_tpiv_wall_sphere|cr_tpiv_wall_sphere_f120|-0.362915 -0.157600 0.000000
+V mf_cr_tpiv_wall_sphere|cr_tpiv_wall_sphere_end|-0.596361 0.481055 0.000000
+END mf_cr_tpiv_wall_sphere
+BEGIN mf_cr_prot_wall_box
+V mf_cr_prot_wall_box|cr_prot_wall_box_f0|0.500000 -1.900000 0.000000
+V mf_cr_prot_wall_box|cr_prot_wall_box_f40|0.267363 -1.261033 0.000000
+V mf_cr_prot_wall_box|cr_prot_wall_box_f80|0.034726 -0.622065 0.000000
+V mf_cr_prot_wall_box|cr_prot_wall_box_f120|-0.291641 -0.117044 0.000000
+V mf_cr_prot_wall_box|cr_prot_wall_box_end|-0.703135 0.266325 0.000000
+END mf_cr_prot_wall_box
+BEGIN mf_cr_prot_wall_sphere
+V mf_cr_prot_wall_sphere|cr_prot_wall_sphere_f0|0.500000 -1.900000 0.000000
+V mf_cr_prot_wall_sphere|cr_prot_wall_sphere_f40|0.267363 -1.261033 0.000000
+V mf_cr_prot_wall_sphere|cr_prot_wall_sphere_f80|0.034726 -0.622065 0.000000
+V mf_cr_prot_wall_sphere|cr_prot_wall_sphere_f120|-0.239928 -0.202737 0.000000
+V mf_cr_prot_wall_sphere|cr_prot_wall_sphere_end|-0.675637 0.055007 0.000000
+END mf_cr_prot_wall_sphere
+BEGIN mf_cr_tprot_wall_box
+V mf_cr_tprot_wall_box|cr_tprot_wall_box_f0|0.500000 -1.900000 0.000000
+V mf_cr_tprot_wall_box|cr_tprot_wall_box_f40|0.267363 -1.261033 0.000000
+V mf_cr_tprot_wall_box|cr_tprot_wall_box_f80|0.034726 -0.622065 0.000000
+V mf_cr_tprot_wall_box|cr_tprot_wall_box_f120|-0.291641 -0.117044 0.000000
+V mf_cr_tprot_wall_box|cr_tprot_wall_box_end|-0.703135 0.266325 0.000000
+END mf_cr_tprot_wall_box
+BEGIN mf_cr_tprot_wall_sphere
+V mf_cr_tprot_wall_sphere|cr_tprot_wall_sphere_f0|0.500000 -1.900000 0.000000
+V mf_cr_tprot_wall_sphere|cr_tprot_wall_sphere_f40|0.267363 -1.261033 0.000000
+V mf_cr_tprot_wall_sphere|cr_tprot_wall_sphere_f80|0.034726 -0.622065 0.000000
+V mf_cr_tprot_wall_sphere|cr_tprot_wall_sphere_f120|-0.239928 -0.202737 0.000000
+V mf_cr_tprot_wall_sphere|cr_tprot_wall_sphere_end|-0.675637 0.055007 0.000000
+END mf_cr_tprot_wall_sphere
+BEGIN mf_cr_tbox_mover_sphere
+V mf_cr_tbox_mover_sphere|cr_tbox_mover_sphere_f0|0.500000 -1.900000 0.000000
+V mf_cr_tbox_mover_sphere|cr_tbox_mover_sphere_f40|0.267363 -1.261033 0.000000
+V mf_cr_tbox_mover_sphere|cr_tbox_mover_sphere_f80|0.041386 -0.733160 0.000000
+V mf_cr_tbox_mover_sphere|cr_tbox_mover_sphere_f120|-0.249434 -0.700157 0.000000
+V mf_cr_tbox_mover_sphere|cr_tbox_mover_sphere_end|-0.686349 -0.433582 0.000000
+END mf_cr_tbox_mover_sphere
+BEGIN mf_cr_trad_mover_sphere
+V mf_cr_trad_mover_sphere|cr_trad_mover_sphere_f0|0.500000 -1.900000 0.000000
+V mf_cr_trad_mover_sphere|cr_trad_mover_sphere_f40|0.267363 -1.261033 0.000000
+V mf_cr_trad_mover_sphere|cr_trad_mover_sphere_f80|0.041386 -0.733160 0.000000
+V mf_cr_trad_mover_sphere|cr_trad_mover_sphere_f120|-0.249434 -0.700157 0.000000
+V mf_cr_trad_mover_sphere|cr_trad_mover_sphere_end|-0.686349 -0.433582 0.000000
+END mf_cr_trad_mover_sphere
+BEGIN mf_cr_brad_mover_sphere
+V mf_cr_brad_mover_sphere|cr_brad_mover_sphere_f0|0.500000 -1.900000 0.000000
+V mf_cr_brad_mover_sphere|cr_brad_mover_sphere_f40|0.267363 -1.261033 0.000000
+V mf_cr_brad_mover_sphere|cr_brad_mover_sphere_f80|0.041386 -0.733160 0.000000
+V mf_cr_brad_mover_sphere|cr_brad_mover_sphere_f120|-0.249434 -0.700157 0.000000
+V mf_cr_brad_mover_sphere|cr_brad_mover_sphere_end|-0.686349 -0.433582 0.000000
+END mf_cr_brad_mover_sphere
+BEGIN mf_cr_tnodex_mover_sphere
+V mf_cr_tnodex_mover_sphere|cr_tnodex_mover_sphere_f0|0.500000 -1.900000 0.000000
+V mf_cr_tnodex_mover_sphere|cr_tnodex_mover_sphere_f40|0.267363 -1.261033 0.000000
+V mf_cr_tnodex_mover_sphere|cr_tnodex_mover_sphere_f80|0.100819 -0.710548 0.000000
+V mf_cr_tnodex_mover_sphere|cr_tnodex_mover_sphere_f120|0.303216 -0.495391 0.000000
+V mf_cr_tnodex_mover_sphere|cr_tnodex_mover_sphere_end|0.463639 -0.006035 0.000000
+END mf_cr_tnodex_mover_sphere
+BEGIN mf_cr_tfloat_mover_sphere
+V mf_cr_tfloat_mover_sphere|cr_tfloat_mover_sphere_f0|0.500000 -1.900000 0.000000
+V mf_cr_tfloat_mover_sphere|cr_tfloat_mover_sphere_f40|0.267363 -1.261033 0.000000
+V mf_cr_tfloat_mover_sphere|cr_tfloat_mover_sphere_f80|0.034726 -0.622065 0.000000
+V mf_cr_tfloat_mover_sphere|cr_tfloat_mover_sphere_f120|-0.288801 -0.234282 0.000000
+V mf_cr_tfloat_mover_sphere|cr_tfloat_mover_sphere_end|-0.605700 0.325116 0.001982
+END mf_cr_tfloat_mover_sphere
+BEGIN mf_cr_rot_mover_sphere
+V mf_cr_rot_mover_sphere|cr_rot_mover_sphere_f0|0.500000 -1.900000 0.000000
+V mf_cr_rot_mover_sphere|cr_rot_mover_sphere_f40|0.267363 -1.261033 0.000000
+V mf_cr_rot_mover_sphere|cr_rot_mover_sphere_f80|0.045780 -0.783177 0.000000
+V mf_cr_rot_mover_sphere|cr_rot_mover_sphere_f120|-0.238387 -0.754937 0.000000
+V mf_cr_rot_mover_sphere|cr_rot_mover_sphere_end|-0.671363 -0.519726 0.000000
+END mf_cr_rot_mover_sphere
+BEGIN mf_cr_trot_mover_sphere
+V mf_cr_trot_mover_sphere|cr_trot_mover_sphere_f0|0.500000 -1.900000 0.000000
+V mf_cr_trot_mover_sphere|cr_trot_mover_sphere_f40|0.267363 -1.261033 0.000000
+V mf_cr_trot_mover_sphere|cr_trot_mover_sphere_f80|0.045780 -0.783177 0.000000
+V mf_cr_trot_mover_sphere|cr_trot_mover_sphere_f120|-0.238387 -0.754937 0.000000
+V mf_cr_trot_mover_sphere|cr_trot_mover_sphere_end|-0.671363 -0.519726 0.000000
+END mf_cr_trot_mover_sphere
+BEGIN mf_cr_rotx_mover_sphere
+V mf_cr_rotx_mover_sphere|cr_rotx_mover_sphere_f0|0.500000 -1.900000 0.000000
+V mf_cr_rotx_mover_sphere|cr_rotx_mover_sphere_f40|0.267363 -1.261033 0.000000
+V mf_cr_rotx_mover_sphere|cr_rotx_mover_sphere_f80|0.034726 -0.622065 0.000000
+V mf_cr_rotx_mover_sphere|cr_rotx_mover_sphere_f120|-0.197911 0.016903 0.000000
+V mf_cr_rotx_mover_sphere|cr_rotx_mover_sphere_end|-0.430548 0.655871 0.000000
+END mf_cr_rotx_mover_sphere
+BEGIN mf_cr_trotx_mover_sphere
+V mf_cr_trotx_mover_sphere|cr_trotx_mover_sphere_f0|0.500000 -1.900000 0.000000
+V mf_cr_trotx_mover_sphere|cr_trotx_mover_sphere_f40|0.267363 -1.261033 0.000000
+V mf_cr_trotx_mover_sphere|cr_trotx_mover_sphere_f80|0.034726 -0.622065 0.000000
+V mf_cr_trotx_mover_sphere|cr_trotx_mover_sphere_f120|-0.197911 0.016903 0.000000
+V mf_cr_trotx_mover_sphere|cr_trotx_mover_sphere_end|-0.430548 0.655871 0.000000
+END mf_cr_trotx_mover_sphere
+BEGIN mf_cr_piv_mover_sphere
+V mf_cr_piv_mover_sphere|cr_piv_mover_sphere_f0|0.500000 -1.900000 0.000000
+V mf_cr_piv_mover_sphere|cr_piv_mover_sphere_f40|0.267363 -1.261033 0.000000
+V mf_cr_piv_mover_sphere|cr_piv_mover_sphere_f80|0.100819 -0.710548 0.000000
+V mf_cr_piv_mover_sphere|cr_piv_mover_sphere_f120|0.303216 -0.495391 0.000000
+V mf_cr_piv_mover_sphere|cr_piv_mover_sphere_end|0.463639 -0.006035 0.000000
+END mf_cr_piv_mover_sphere
+BEGIN mf_cr_tpiv_mover_sphere
+V mf_cr_tpiv_mover_sphere|cr_tpiv_mover_sphere_f0|0.500000 -1.900000 0.000000
+V mf_cr_tpiv_mover_sphere|cr_tpiv_mover_sphere_f40|0.267363 -1.261033 0.000000
+V mf_cr_tpiv_mover_sphere|cr_tpiv_mover_sphere_f80|0.100819 -0.710548 0.000000
+V mf_cr_tpiv_mover_sphere|cr_tpiv_mover_sphere_f120|0.303216 -0.495391 0.000000
+V mf_cr_tpiv_mover_sphere|cr_tpiv_mover_sphere_end|0.463639 -0.006035 0.000000
+END mf_cr_tpiv_mover_sphere
+BEGIN mf_cr_prot_mover_sphere
+V mf_cr_prot_mover_sphere|cr_prot_mover_sphere_f0|0.500000 -1.900000 0.000000
+V mf_cr_prot_mover_sphere|cr_prot_mover_sphere_f40|0.267363 -1.261033 0.000000
+V mf_cr_prot_mover_sphere|cr_prot_mover_sphere_f80|0.016541 -1.190997 0.000000
+V mf_cr_prot_mover_sphere|cr_prot_mover_sphere_f120|-0.397278 -1.011096 0.000000
+V mf_cr_prot_mover_sphere|cr_prot_mover_sphere_end|-0.747856 -0.476309 0.000000
+END mf_cr_prot_mover_sphere
+BEGIN mf_cr_tprot_mover_sphere
+V mf_cr_tprot_mover_sphere|cr_tprot_mover_sphere_f0|0.500000 -1.900000 0.000000
+V mf_cr_tprot_mover_sphere|cr_tprot_mover_sphere_f40|0.267363 -1.261033 0.000000
+V mf_cr_tprot_mover_sphere|cr_tprot_mover_sphere_f80|0.016541 -1.190997 0.000000
+V mf_cr_tprot_mover_sphere|cr_tprot_mover_sphere_f120|-0.397278 -1.011096 0.000000
+V mf_cr_tprot_mover_sphere|cr_tprot_mover_sphere_end|-0.747856 -0.476309 0.000000
+END mf_cr_tprot_mover_sphere
+BEGIN mf_rects
+V mf_rects|cr_box_rect|640.000000
+V mf_rects|cr_box_node0|4.000000 -4.000000 0.000000
+V mf_rects|cr_box_node1|0.000000 0.000000 0.000000
+V mf_rects|cr_box_node2|0.000000 0.000000 1.700000
+V mf_rects|cr_box_node3|0.300000 0.100000 1.200000
+V mf_rects|cr_tbox_rect|640.000000
+V mf_rects|cr_tbox_node0|0.500000 -0.500000 0.000000
+V mf_rects|cr_tbox_node1|0.500000 -0.500000 0.000000
+V mf_rects|cr_tbox_node2|0.500000 -0.500000 1.700000
+V mf_rects|cr_tbox_node3|0.800000 -0.400000 1.200000
+V mf_rects|cr_trad_rect|640.000000
+V mf_rects|cr_trad_node0|0.500000 -0.500000 0.000000
+V mf_rects|cr_trad_node1|0.500000 -0.500000 0.000000
+V mf_rects|cr_trad_node2|0.500000 -0.500000 1.700000
+V mf_rects|cr_trad_node3|0.800000 -0.400000 1.200000
+V mf_rects|cr_brad_rect|640.000000
+V mf_rects|cr_brad_node0|4.000000 -4.000000 0.000000
+V mf_rects|cr_brad_node1|0.000000 0.000000 0.000000
+V mf_rects|cr_brad_node2|0.000000 0.000000 1.700000
+V mf_rects|cr_brad_node3|0.300000 0.100000 1.200000
+V mf_rects|cr_tnodex_rect|640.000000
+V mf_rects|cr_tnodex_node0|0.500000 -0.500000 0.000000
+V mf_rects|cr_tnodex_node1|1.000000 -0.500000 0.000000
+V mf_rects|cr_tnodex_node2|1.000000 -0.500000 1.700000
+V mf_rects|cr_tnodex_node3|1.300000 -0.400000 1.200000
+V mf_rects|cr_tfloat_rect|640.000000
+V mf_rects|cr_tfloat_node0|0.500000 -0.500000 0.000000
+V mf_rects|cr_tfloat_node1|0.500000 -0.500000 0.000000
+V mf_rects|cr_tfloat_node2|0.500000 -0.500000 1.700000
+V mf_rects|cr_tfloat_node3|0.800000 -0.400000 1.200000
+V mf_rects|cr_wide_rect|640.000000
+V mf_rects|cr_wide_node0|4.000000 -4.000000 0.000000
+V mf_rects|cr_wide_node1|0.000000 0.000000 0.000000
+V mf_rects|cr_wide_node2|0.000000 0.000000 1.700000
+V mf_rects|cr_wide_node3|0.300000 0.100000 1.200000
+V mf_rects|cr_rot_rect|640.000000
+V mf_rects|cr_rot_node0|4.000000 -4.000000 0.000000
+V mf_rects|cr_rot_node1|0.000000 0.000000 0.000000
+V mf_rects|cr_rot_node2|0.000000 0.000000 1.700000
+V mf_rects|cr_rot_node3|0.300000 0.100000 1.200000
+V mf_rects|cr_trot_rect|640.000000
+V mf_rects|cr_trot_node0|0.500000 -0.500000 0.000000
+V mf_rects|cr_trot_node1|0.500000 -0.500000 0.000000
+V mf_rects|cr_trot_node2|0.500000 -0.500000 1.700000
+V mf_rects|cr_trot_node3|0.400000 -0.200000 1.200000
+V mf_rects|cr_rotx_rect|640.000000
+V mf_rects|cr_rotx_node0|4.000000 -4.000000 0.000000
+V mf_rects|cr_rotx_node1|0.000000 0.000000 0.000000
+V mf_rects|cr_rotx_node2|0.000000 0.000000 1.700000
+V mf_rects|cr_rotx_node3|0.300000 0.100000 1.200000
+V mf_rects|cr_trotx_rect|640.000000
+V mf_rects|cr_trotx_node0|0.500000 -0.500000 0.000000
+V mf_rects|cr_trotx_node1|0.500000 -0.500000 0.000000
+V mf_rects|cr_trotx_node2|0.500000 -2.200000 0.000000
+V mf_rects|cr_trotx_node3|0.800000 -1.700000 0.100000
+V mf_rects|cr_piv_rect|640.000000
+V mf_rects|cr_piv_node0|4.500000 -4.000000 0.000000
+V mf_rects|cr_piv_node1|0.500000 0.000000 0.000000
+V mf_rects|cr_piv_node2|0.000000 0.000000 1.700000
+V mf_rects|cr_piv_node3|0.300000 0.100000 1.200000
+V mf_rects|cr_tpiv_rect|640.000000
+V mf_rects|cr_tpiv_node0|0.500000 -0.500000 0.000000
+V mf_rects|cr_tpiv_node1|1.500000 -0.500000 0.000000
+V mf_rects|cr_tpiv_node2|0.500000 -0.500000 1.700000
+V mf_rects|cr_tpiv_node3|0.800000 -0.400000 1.200000
+V mf_rects|cr_prot_rect|640.000000
+V mf_rects|cr_prot_node0|4.500000 -4.000000 0.000000
+V mf_rects|cr_prot_node1|0.000000 0.500000 0.000000
+V mf_rects|cr_prot_node2|0.000000 0.000000 1.700000
+V mf_rects|cr_prot_node3|0.300000 0.100000 1.200000
+V mf_rects|cr_tprot_rect|640.000000
+V mf_rects|cr_tprot_node0|0.500000 -0.500000 0.000000
+V mf_rects|cr_tprot_node1|0.500000 0.500000 0.000000
+V mf_rects|cr_tprot_node2|0.500000 -0.500000 1.700000
+V mf_rects|cr_tprot_node3|0.400000 -0.200000 1.200000
+END mf_rects
+BEGIN hdr_ctrx_wall_sphere
+V hdr_ctrx_wall_sphere|ctrx_wall_sphere_f0|0.000000 -1.000000 0.000000
+V hdr_ctrx_wall_sphere|ctrx_wall_sphere_f15|-0.042799 -1.362689 0.000000
+V hdr_ctrx_wall_sphere|ctrx_wall_sphere_f30|-0.063710 -1.360967 0.000000
+V hdr_ctrx_wall_sphere|ctrx_wall_sphere_f45|-0.087656 -1.358705 0.000000
+V hdr_ctrx_wall_sphere|ctrx_wall_sphere_f60|-0.115063 -1.355734 0.000000
+V hdr_ctrx_wall_sphere|ctrx_wall_sphere_f75|-0.146411 -1.351832 0.000000
+V hdr_ctrx_wall_sphere|ctrx_wall_sphere_end|-0.182235 -1.346712 0.000000
+V hdr_ctrx_wall_sphere|ctrx_wall_sphere_other|0.100000 0.500000 0.000000
+END hdr_ctrx_wall_sphere
+BEGIN hdr_ctrx_wall_box
+V hdr_ctrx_wall_box|ctrx_wall_box_f0|0.000000 -1.000000 0.000000
+V hdr_ctrx_wall_box|ctrx_wall_box_f15|0.000000 -0.745000 0.000000
+V hdr_ctrx_wall_box|ctrx_wall_box_f30|-1.#IND00 -1.#IND00 -1.#IND00
+V hdr_ctrx_wall_box|ctrx_wall_box_f45|-1.#IND00 -1.#IND00 -1.#IND00
+V hdr_ctrx_wall_box|ctrx_wall_box_f60|-1.#IND00 -1.#IND00 -1.#IND00
+V hdr_ctrx_wall_box|ctrx_wall_box_f75|-1.#IND00 -1.#IND00 -1.#IND00
+V hdr_ctrx_wall_box|ctrx_wall_box_end|-1.#IND00 -1.#IND00 -1.#IND00
+V hdr_ctrx_wall_box|ctrx_wall_box_other|0.100000 0.500000 0.000000
+END hdr_ctrx_wall_box
+BEGIN hdr_ctrz_wall_sphere
+V hdr_ctrz_wall_sphere|ctrz_wall_sphere_f0|0.000000 -1.000000 0.000000
+V hdr_ctrz_wall_sphere|ctrz_wall_sphere_f15|-0.042799 -1.362689 0.000000
+V hdr_ctrz_wall_sphere|ctrz_wall_sphere_f30|-0.063710 -1.360967 0.000000
+V hdr_ctrz_wall_sphere|ctrz_wall_sphere_f45|-0.087656 -1.358705 0.000000
+V hdr_ctrz_wall_sphere|ctrz_wall_sphere_f60|-0.115063 -1.355734 0.000000
+V hdr_ctrz_wall_sphere|ctrz_wall_sphere_f75|-0.146411 -1.351832 0.000000
+V hdr_ctrz_wall_sphere|ctrz_wall_sphere_end|-0.182235 -1.346712 0.000000
+V hdr_ctrz_wall_sphere|ctrz_wall_sphere_other|0.100000 0.500000 0.000000
+END hdr_ctrz_wall_sphere
+BEGIN hdr_ctrz_wall_box
+V hdr_ctrz_wall_box|ctrz_wall_box_f0|0.000000 -1.000000 0.000000
+V hdr_ctrz_wall_box|ctrz_wall_box_f15|0.000000 -0.745000 0.000000
+V hdr_ctrz_wall_box|ctrz_wall_box_f30|-1.#IND00 -1.#IND00 -1.#IND00
+V hdr_ctrz_wall_box|ctrz_wall_box_f45|-1.#IND00 -1.#IND00 -1.#IND00
+V hdr_ctrz_wall_box|ctrz_wall_box_f60|-1.#IND00 -1.#IND00 -1.#IND00
+V hdr_ctrz_wall_box|ctrz_wall_box_f75|-1.#IND00 -1.#IND00 -1.#IND00
+V hdr_ctrz_wall_box|ctrz_wall_box_end|-1.#IND00 -1.#IND00 -1.#IND00
+V hdr_ctrz_wall_box|ctrz_wall_box_other|0.100000 0.500000 0.000000
+END hdr_ctrz_wall_box
+BEGIN hdr_ctrx_mover_sphere
+V hdr_ctrx_mover_sphere|ctrx_mover_sphere_f0|0.000000 -1.000000 0.000000
+V hdr_ctrx_mover_sphere|ctrx_mover_sphere_f15|-0.042799 -1.362689 0.000000
+V hdr_ctrx_mover_sphere|ctrx_mover_sphere_f30|-0.063710 -1.360967 0.000000
+V hdr_ctrx_mover_sphere|ctrx_mover_sphere_f45|-0.087656 -1.358705 0.000000
+V hdr_ctrx_mover_sphere|ctrx_mover_sphere_f60|-0.115063 -1.355734 0.000000
+V hdr_ctrx_mover_sphere|ctrx_mover_sphere_f75|-0.146411 -1.351832 0.000000
+V hdr_ctrx_mover_sphere|ctrx_mover_sphere_end|-0.182235 -1.346712 0.000000
+V hdr_ctrx_mover_sphere|ctrx_mover_sphere_other|0.100000 0.500000 0.000000
+END hdr_ctrx_mover_sphere
+BEGIN hdr_ctrz_mover_sphere
+V hdr_ctrz_mover_sphere|ctrz_mover_sphere_f0|0.000000 -1.000000 0.000000
+V hdr_ctrz_mover_sphere|ctrz_mover_sphere_f15|-0.042799 -1.362689 0.000000
+V hdr_ctrz_mover_sphere|ctrz_mover_sphere_f30|-0.063710 -1.360967 0.000000
+V hdr_ctrz_mover_sphere|ctrz_mover_sphere_f45|-0.087656 -1.358705 0.000000
+V hdr_ctrz_mover_sphere|ctrz_mover_sphere_f60|-0.115063 -1.355734 0.000000
+V hdr_ctrz_mover_sphere|ctrz_mover_sphere_f75|-0.146411 -1.351832 0.000000
+V hdr_ctrz_mover_sphere|ctrz_mover_sphere_end|-0.182235 -1.346712 0.000000
+V hdr_ctrz_mover_sphere|ctrz_mover_sphere_other|0.100000 0.500000 0.000000
+END hdr_ctrz_mover_sphere
+BEGIN hdr_ctrz_both_sphere
+V hdr_ctrz_both_sphere|ctrz_both_sphere_f0|0.000000 -1.000000 0.000000
+V hdr_ctrz_both_sphere|ctrz_both_sphere_f15|-0.042799 -1.362689 0.000000
+V hdr_ctrz_both_sphere|ctrz_both_sphere_f30|-0.063710 -1.360967 0.000000
+V hdr_ctrz_both_sphere|ctrz_both_sphere_f45|-0.087656 -1.358705 0.000000
+V hdr_ctrz_both_sphere|ctrz_both_sphere_f60|-0.115063 -1.355734 0.000000
+V hdr_ctrz_both_sphere|ctrz_both_sphere_f75|-0.146411 -1.351832 0.000000
+V hdr_ctrz_both_sphere|ctrz_both_sphere_end|-0.182235 -1.346712 0.000000
+V hdr_ctrz_both_sphere|ctrz_both_sphere_other|0.100000 0.500000 0.000000
+END hdr_ctrz_both_sphere
+BEGIN hdr_bbig_wall_box
+V hdr_bbig_wall_box|bbig_wall_box_f0|0.000000 -1.000000 0.000000
+V hdr_bbig_wall_box|bbig_wall_box_f15|0.000000 -0.745000 0.000000
+V hdr_bbig_wall_box|bbig_wall_box_f30|-1.#IND00 -1.#IND00 -1.#IND00
+V hdr_bbig_wall_box|bbig_wall_box_f45|-1.#IND00 -1.#IND00 -1.#IND00
+V hdr_bbig_wall_box|bbig_wall_box_f60|-1.#IND00 -1.#IND00 -1.#IND00
+V hdr_bbig_wall_box|bbig_wall_box_f75|-1.#IND00 -1.#IND00 -1.#IND00
+V hdr_bbig_wall_box|bbig_wall_box_end|-1.#IND00 -1.#IND00 -1.#IND00
+V hdr_bbig_wall_box|bbig_wall_box_other|0.100000 0.500000 0.000000
+END hdr_bbig_wall_box
+BEGIN hdr_bbig_wall_sphere
+V hdr_bbig_wall_sphere|bbig_wall_sphere_f0|0.000000 -1.000000 0.000000
+V hdr_bbig_wall_sphere|bbig_wall_sphere_f15|-0.042799 -1.362689 0.000000
+V hdr_bbig_wall_sphere|bbig_wall_sphere_f30|-0.063710 -1.360967 0.000000
+V hdr_bbig_wall_sphere|bbig_wall_sphere_f45|-0.087656 -1.358705 0.000000
+V hdr_bbig_wall_sphere|bbig_wall_sphere_f60|-0.115063 -1.355734 0.000000
+V hdr_bbig_wall_sphere|bbig_wall_sphere_f75|-0.146411 -1.351832 0.000000
+V hdr_bbig_wall_sphere|bbig_wall_sphere_end|-0.182235 -1.346712 0.000000
+V hdr_bbig_wall_sphere|bbig_wall_sphere_other|0.100000 0.500000 0.000000
+END hdr_bbig_wall_sphere
+BEGIN hdr_bbig_mover_sphere
+V hdr_bbig_mover_sphere|bbig_mover_sphere_f0|0.000000 -1.000000 0.000000
+V hdr_bbig_mover_sphere|bbig_mover_sphere_f15|-0.042799 -1.362689 0.000000
+V hdr_bbig_mover_sphere|bbig_mover_sphere_f30|-0.063710 -1.360967 0.000000
+V hdr_bbig_mover_sphere|bbig_mover_sphere_f45|-0.087656 -1.358705 0.000000
+V hdr_bbig_mover_sphere|bbig_mover_sphere_f60|-0.115063 -1.355734 0.000000
+V hdr_bbig_mover_sphere|bbig_mover_sphere_f75|-0.146411 -1.351832 0.000000
+V hdr_bbig_mover_sphere|bbig_mover_sphere_end|-0.182235 -1.346712 0.000000
+V hdr_bbig_mover_sphere|bbig_mover_sphere_other|0.100000 0.500000 0.000000
+END hdr_bbig_mover_sphere
+BEGIN hdr_bbig_wall_box_half
+V hdr_bbig_wall_box_half|bbig_wall_box_half_f0|0.000000 -1.000000 0.000000
+V hdr_bbig_wall_box_half|bbig_wall_box_half_f15|0.000000 -0.745000 0.000000
+V hdr_bbig_wall_box_half|bbig_wall_box_half_f30|0.000000 -0.489999 0.000000
+V hdr_bbig_wall_box_half|bbig_wall_box_half_f45|0.000000 -0.235000 0.000000
+V hdr_bbig_wall_box_half|bbig_wall_box_half_f60|-1.#IND00 -1.#IND00 -1.#IND00
+V hdr_bbig_wall_box_half|bbig_wall_box_half_f75|-1.#IND00 -1.#IND00 -1.#IND00
+V hdr_bbig_wall_box_half|bbig_wall_box_half_end|-1.#IND00 -1.#IND00 -1.#IND00
+V hdr_bbig_wall_box_half|bbig_wall_box_half_other|0.100000 0.500000 0.000000
+END hdr_bbig_wall_box_half
+BEGIN hdr_bside_wall_box
+V hdr_bside_wall_box|bside_wall_box_f0|0.000000 -1.000000 0.000000
+V hdr_bside_wall_box|bside_wall_box_f15|0.000000 -0.745000 0.000000
+V hdr_bside_wall_box|bside_wall_box_f30|-1.#IND00 -1.#IND00 -1.#IND00
+V hdr_bside_wall_box|bside_wall_box_f45|-1.#IND00 -1.#IND00 -1.#IND00
+V hdr_bside_wall_box|bside_wall_box_f60|-1.#IND00 -1.#IND00 -1.#IND00
+V hdr_bside_wall_box|bside_wall_box_f75|-1.#IND00 -1.#IND00 -1.#IND00
+V hdr_bside_wall_box|bside_wall_box_end|-1.#IND00 -1.#IND00 -1.#IND00
+V hdr_bside_wall_box|bside_wall_box_other|0.100000 0.500000 0.000000
+END hdr_bside_wall_box
+BEGIN hdr_bside_wall_sphere
+V hdr_bside_wall_sphere|bside_wall_sphere_f0|0.000000 -1.000000 0.000000
+V hdr_bside_wall_sphere|bside_wall_sphere_f15|-0.042799 -1.362689 0.000000
+V hdr_bside_wall_sphere|bside_wall_sphere_f30|-0.063710 -1.360967 0.000000
+V hdr_bside_wall_sphere|bside_wall_sphere_f45|-0.087656 -1.358705 0.000000
+V hdr_bside_wall_sphere|bside_wall_sphere_f60|-0.115063 -1.355734 0.000000
+V hdr_bside_wall_sphere|bside_wall_sphere_f75|-0.146411 -1.351832 0.000000
+V hdr_bside_wall_sphere|bside_wall_sphere_end|-0.182235 -1.346712 0.000000
+V hdr_bside_wall_sphere|bside_wall_sphere_other|0.100000 0.500000 0.000000
+END hdr_bside_wall_sphere
+BEGIN hdr_bside_mover_sphere
+V hdr_bside_mover_sphere|bside_mover_sphere_f0|0.000000 -1.000000 0.000000
+V hdr_bside_mover_sphere|bside_mover_sphere_f15|-0.042799 -1.362689 0.000000
+V hdr_bside_mover_sphere|bside_mover_sphere_f30|-0.063710 -1.360967 0.000000
+V hdr_bside_mover_sphere|bside_mover_sphere_f45|-0.087656 -1.358705 0.000000
+V hdr_bside_mover_sphere|bside_mover_sphere_f60|-0.115063 -1.355734 0.000000
+V hdr_bside_mover_sphere|bside_mover_sphere_f75|-0.146411 -1.351832 0.000000
+V hdr_bside_mover_sphere|bside_mover_sphere_end|-0.182235 -1.346712 0.000000
+V hdr_bside_mover_sphere|bside_mover_sphere_other|0.100000 0.500000 0.000000
+END hdr_bside_mover_sphere
+BEGIN hdr_meshx_wall_sphere
+V hdr_meshx_wall_sphere|meshx_wall_sphere_f0|0.000000 -1.000000 0.000000
+V hdr_meshx_wall_sphere|meshx_wall_sphere_f15|-0.187893 -1.193878 0.000000
+V hdr_meshx_wall_sphere|meshx_wall_sphere_f30|-0.290530 -1.142241 0.000000
+V hdr_meshx_wall_sphere|meshx_wall_sphere_f45|-0.402215 -1.076568 0.000000
+V hdr_meshx_wall_sphere|meshx_wall_sphere_f60|-0.521783 -0.993855 0.000000
+V hdr_meshx_wall_sphere|meshx_wall_sphere_f75|-0.647094 -0.890955 0.000000
+V hdr_meshx_wall_sphere|meshx_wall_sphere_end|-0.774799 -0.764882 0.000000
+V hdr_meshx_wall_sphere|meshx_wall_sphere_other|0.100000 0.500000 0.000000
+END hdr_meshx_wall_sphere
+BEGIN hdr_meshx_mover_sphere
+V hdr_meshx_mover_sphere|meshx_mover_sphere_f0|0.000000 -1.000000 0.000000
+V hdr_meshx_mover_sphere|meshx_mover_sphere_f15|0.150141 -1.285314 0.000000
+V hdr_meshx_mover_sphere|meshx_mover_sphere_f30|0.226592 -1.259938 0.000000
+V hdr_meshx_mover_sphere|meshx_mover_sphere_f45|0.312146 -1.227093 0.000000
+V hdr_meshx_mover_sphere|meshx_mover_sphere_f60|0.407154 -1.184786 0.000000
+V hdr_meshx_mover_sphere|meshx_mover_sphere_f75|0.511607 -1.130636 0.000000
+V hdr_meshx_mover_sphere|meshx_mover_sphere_end|0.624946 -1.061885 0.000000
+V hdr_meshx_mover_sphere|meshx_mover_sphere_other|0.100000 0.500000 0.000000
+END hdr_meshx_mover_sphere
+BEGIN hdr_meshx_wall_box
+V hdr_meshx_wall_box|meshx_wall_box_f0|0.000000 -1.000000 0.000000
+V hdr_meshx_wall_box|meshx_wall_box_f15|0.000000 -0.745000 0.000000
+V hdr_meshx_wall_box|meshx_wall_box_f30|-1.#IND00 -1.#IND00 -1.#IND00
+V hdr_meshx_wall_box|meshx_wall_box_f45|-1.#IND00 -1.#IND00 -1.#IND00
+V hdr_meshx_wall_box|meshx_wall_box_f60|-1.#IND00 -1.#IND00 -1.#IND00
+V hdr_meshx_wall_box|meshx_wall_box_f75|-1.#IND00 -1.#IND00 -1.#IND00
+V hdr_meshx_wall_box|meshx_wall_box_end|-1.#IND00 -1.#IND00 -1.#IND00
+V hdr_meshx_wall_box|meshx_wall_box_other|0.100000 0.500000 0.000000
+END hdr_meshx_wall_box
+BEGIN hdr_nodex_wall_sphere
+V hdr_nodex_wall_sphere|nodex_wall_sphere_f0|0.000000 -1.000000 0.000000
+V hdr_nodex_wall_sphere|nodex_wall_sphere_f15|-0.187893 -1.193878 0.000000
+V hdr_nodex_wall_sphere|nodex_wall_sphere_f30|-0.290530 -1.142241 0.000000
+V hdr_nodex_wall_sphere|nodex_wall_sphere_f45|-0.402215 -1.076568 0.000000
+V hdr_nodex_wall_sphere|nodex_wall_sphere_f60|-0.521783 -0.993855 0.000000
+V hdr_nodex_wall_sphere|nodex_wall_sphere_f75|-0.647094 -0.890955 0.000000
+V hdr_nodex_wall_sphere|nodex_wall_sphere_end|-0.774799 -0.764882 0.000000
+V hdr_nodex_wall_sphere|nodex_wall_sphere_other|0.100000 0.500000 0.000000
+END hdr_nodex_wall_sphere
+BEGIN hdr_nodex_mover_sphere
+V hdr_nodex_mover_sphere|nodex_mover_sphere_f0|0.000000 -1.000000 0.000000
+V hdr_nodex_mover_sphere|nodex_mover_sphere_f15|0.150141 -1.285314 0.000000
+V hdr_nodex_mover_sphere|nodex_mover_sphere_f30|0.226592 -1.259938 0.000000
+V hdr_nodex_mover_sphere|nodex_mover_sphere_f45|0.312146 -1.227093 0.000000
+V hdr_nodex_mover_sphere|nodex_mover_sphere_f60|0.407154 -1.184786 0.000000
+V hdr_nodex_mover_sphere|nodex_mover_sphere_f75|0.511607 -1.130636 0.000000
+V hdr_nodex_mover_sphere|nodex_mover_sphere_end|0.624946 -1.061885 0.000000
+V hdr_nodex_mover_sphere|nodex_mover_sphere_other|0.100000 0.500000 0.000000
+END hdr_nodex_mover_sphere
+BEGIN hdr_float_wall_sphere
+V hdr_float_wall_sphere|float_wall_sphere_f0|0.000000 -1.000000 0.000000
+V hdr_float_wall_sphere|float_wall_sphere_f15|-0.000998 -0.757428 -0.003993
+V hdr_float_wall_sphere|float_wall_sphere_f30|-0.023659 -0.754936 0.000000
+V hdr_float_wall_sphere|float_wall_sphere_f45|-0.051397 -0.751897 0.000000
+V hdr_float_wall_sphere|float_wall_sphere_f60|-0.085244 -0.747344 0.000000
+V hdr_float_wall_sphere|float_wall_sphere_f75|-0.126452 -0.740535 0.000000
+V hdr_float_wall_sphere|float_wall_sphere_end|-0.176450 -0.730373 0.000000
+V hdr_float_wall_sphere|float_wall_sphere_other|0.100000 0.500000 0.000000
+END hdr_float_wall_sphere
+BEGIN hdr_float_mover_sphere
+V hdr_float_mover_sphere|float_mover_sphere_f0|0.000000 -1.000000 0.000000
+V hdr_float_mover_sphere|float_mover_sphere_f15|-0.000998 -0.757428 0.003993
+V hdr_float_mover_sphere|float_mover_sphere_f30|-0.023659 -0.754936 0.000000
+V hdr_float_mover_sphere|float_mover_sphere_f45|-0.051397 -0.751897 0.000000
+V hdr_float_mover_sphere|float_mover_sphere_f60|-0.085244 -0.747344 0.000000
+V hdr_float_mover_sphere|float_mover_sphere_f75|-0.126452 -0.740535 0.000000
+V hdr_float_mover_sphere|float_mover_sphere_end|-0.176450 -0.730373 0.000000
+V hdr_float_mover_sphere|float_mover_sphere_other|0.100000 0.500000 0.000000
+END hdr_float_mover_sphere
+BEGIN hdr_float_both_sphere
+V hdr_float_both_sphere|float_both_sphere_f0|0.000000 -1.000000 0.000000
+V hdr_float_both_sphere|float_both_sphere_f15|0.000000 -0.745000 0.000000
+V hdr_float_both_sphere|float_both_sphere_f30|0.000000 -0.489999 0.000000
+V hdr_float_both_sphere|float_both_sphere_f45|-0.005207 -0.273907 0.000000
+V hdr_float_both_sphere|float_both_sphere_f60|-0.045726 -0.267310 0.000000
+V hdr_float_both_sphere|float_both_sphere_f75|-0.101052 -0.254704 0.000000
+V hdr_float_both_sphere|float_both_sphere_end|-0.175302 -0.230896 0.000000
+V hdr_float_both_sphere|float_both_sphere_other|0.100000 0.500000 0.000000
+END hdr_float_both_sphere
+BEGIN hdr_float_wall_sphere_half
+V hdr_float_wall_sphere_half|float_wall_sphere_half_f0|0.000000 -1.000000 0.000000
+V hdr_float_wall_sphere_half|float_wall_sphere_half_f15|0.000000 -0.745000 0.000000
+V hdr_float_wall_sphere_half|float_wall_sphere_half_f30|0.000000 -0.489999 0.000000
+V hdr_float_wall_sphere_half|float_wall_sphere_half_f45|0.000000 -0.235000 0.000000
+V hdr_float_wall_sphere_half|float_wall_sphere_half_f60|-0.005642 -0.007620 0.000000
+V hdr_float_wall_sphere_half|float_wall_sphere_half_f75|-0.070963 0.011161 0.000000
+V hdr_float_wall_sphere_half|float_wall_sphere_half_end|-0.169295 0.056549 0.000000
+V hdr_float_wall_sphere_half|float_wall_sphere_half_other|0.100000 0.500000 0.000000
+END hdr_float_wall_sphere_half
+BEGIN hdr_rects
+V hdr_rects|cr_box_rect|640.000000
+V hdr_rects|cr_box_head|0.000000 0.000000 1.700000
+V hdr_rects|cr_ctrx_rect|640.000000
+V hdr_rects|cr_ctrx_head|0.000000 0.000000 1.700000
+V hdr_rects|cr_ctrz_rect|640.000000
+V hdr_rects|cr_ctrz_head|0.000000 0.000000 1.700000
+V hdr_rects|cr_bbig_rect|640.000000
+V hdr_rects|cr_bbig_head|0.000000 0.000000 1.700000
+V hdr_rects|cr_bside_rect|640.000000
+V hdr_rects|cr_bside_head|0.000000 0.000000 1.700000
+V hdr_rects|cr_meshx_rect|640.000000
+V hdr_rects|cr_meshx_head|0.000000 0.000000 1.700000
+V hdr_rects|cr_nodex_rect|640.000000
+V hdr_rects|cr_nodex_head|0.000000 0.000000 1.700000
+V hdr_rects|cr_float_rect|640.000000
+V hdr_rects|cr_float_head|0.000000 0.000000 1.700000
+END hdr_rects
 BEGIN localize
 V localize|one|"/crt001/Clean room text one"
 V localize|two|"/crt002/Second line, with punctuation: 1, 2; 3."
@@ -1094,11 +2017,6 @@ V actor_sees|sees_ahead|nil
 V actor_sees|sees_behind|nil
 V actor_sees|to_interest|0.000000 0.000000 0.000000
 END actor_sees
-BEGIN screen_to_world
-V screen_to_world|centre|0.000000
-V screen_to_world|corner|-0.578263
-V screen_to_world|clipped|nil
-END screen_to_world
 BEGIN light_details
 V light_details|GetLightType|"omni"
 V light_details|GetLightAngles|0.000000
@@ -1252,6 +2170,140 @@ END say_line
 BEGIN say_line_restore
 V say_line_restore|speed|7.000000
 END say_line_restore
+BEGIN tp_nothing
+V tp_nothing|nothing_text|none
+END tp_nothing
+BEGIN tp_spot_centre
+V tp_spot_centre|spot_centre_screen|320.000000 240.000000
+V tp_spot_centre|spot_centre_going|1.000000
+V tp_spot_centre|spot_centre_text|263.000000 228.000000 375.000000 237.000000
+END tp_spot_centre
+BEGIN tp_spot_left
+V tp_spot_left|spot_left_screen|137.000000 194.000000
+V tp_spot_left|spot_left_going|1.000000
+V tp_spot_left|spot_left_text|80.000000 182.000000 192.000000 191.000000
+END tp_spot_left
+BEGIN tp_spot_right
+V tp_spot_right|spot_right_screen|552.000000 332.000000
+V tp_spot_right|spot_right_going|1.000000
+V tp_spot_right|spot_right_text|495.000000 320.000000 607.000000 329.000000
+END tp_spot_right
+BEGIN tp_spot_high
+V tp_spot_high|spot_high_screen|320.000000 194.000000
+V tp_spot_high|spot_high_going|1.000000
+V tp_spot_high|spot_high_text|263.000000 182.000000 375.000000 191.000000
+END tp_spot_high
+BEGIN tp_spot_left_edge
+V tp_spot_left_edge|spot_left_edge_screen|16.000000 240.000000
+V tp_spot_left_edge|spot_left_edge_going|1.000000
+V tp_spot_left_edge|spot_left_edge_text|11.000000 216.000000 100.000000 237.000000
+END tp_spot_left_edge
+BEGIN tp_spot_right_edge
+V tp_spot_right_edge|spot_right_edge_screen|623.000000 240.000000
+V tp_spot_right_edge|spot_right_edge_going|1.000000
+V tp_spot_right_edge|spot_right_edge_text|539.000000 216.000000 628.000000 237.000000
+END tp_spot_right_edge
+BEGIN tp_spot_top_edge
+V tp_spot_top_edge|spot_top_edge_screen|320.000000 22.000000
+V tp_spot_top_edge|spot_top_edge_going|1.000000
+V tp_spot_top_edge|spot_top_edge_text|263.000000 10.000000 375.000000 19.000000
+END tp_spot_top_edge
+BEGIN tp_spot_bottom_edge
+V tp_spot_bottom_edge|spot_bottom_edge_screen|320.000000 477.000000
+V tp_spot_bottom_edge|spot_bottom_edge_going|1.000000
+V tp_spot_bottom_edge|spot_bottom_edge_text|263.000000 458.000000 375.000000 467.000000
+END tp_spot_bottom_edge
+BEGIN tp_spot_off_left
+V tp_spot_off_left|spot_off_left_screen|nil
+V tp_spot_off_left|spot_off_left_going|1.000000
+V tp_spot_off_left|spot_off_left_text|263.000000 438.000000 375.000000 447.000000
+END tp_spot_off_left
+BEGIN tp_spot_off_top
+V tp_spot_off_top|spot_off_top_screen|nil
+V tp_spot_off_top|spot_off_top_going|1.000000
+V tp_spot_off_top|spot_off_top_text|263.000000 438.000000 375.000000 447.000000
+END tp_spot_off_top
+BEGIN tp_spot_behind_camera
+V tp_spot_behind_camera|spot_behind_camera_screen|nil
+V tp_spot_behind_camera|spot_behind_camera_going|1.000000
+V tp_spot_behind_camera|spot_behind_camera_text|263.000000 438.000000 375.000000 447.000000
+END tp_spot_behind_camera
+BEGIN tp_long_centre
+V tp_long_centre|long_centre_going|1.000000
+V tp_long_centre|long_centre_text|11.000000 228.000000 627.000000 237.000000
+END tp_long_centre
+BEGIN tp_medium_left_edge
+V tp_medium_left_edge|medium_left_edge_going|1.000000
+V tp_medium_left_edge|medium_left_edge_text|13.000000 216.000000 137.000000 237.000000
+END tp_medium_left_edge
+BEGIN tp_moved
+V tp_moved|moved_before|171.000000 228.000000 283.000000 237.000000
+V tp_moved|moved_after|171.000000 228.000000 283.000000 237.000000
+END tp_moved
+BEGIN tp_no_set
+V tp_no_set|no_set_going|1.000000
+V tp_no_set|no_set_text|263.000000 438.000000 375.000000 447.000000
+END tp_no_set
+BEGIN tp_other_set
+V tp_other_set|other_set_going|1.000000
+V tp_other_set|other_set_text|263.000000 438.000000 375.000000 447.000000
+END tp_other_set
+BEGIN tp_hidden
+V tp_hidden|hidden_going|1.000000
+V tp_hidden|hidden_text|354.000000 228.000000 466.000000 237.000000
+END tp_hidden
+BEGIN tp_costume
+V tp_costume|costume_going|1.000000
+V tp_costume|costume_text|263.000000 438.000000 375.000000 447.000000
+END tp_costume
+BEGIN tp_offpos_dialog
+V tp_offpos_dialog|offpos_dialog_going|1.000000
+V tp_offpos_dialog|offpos_dialog_text|263.000000 10.000000 375.000000 19.000000
+END tp_offpos_dialog
+BEGIN tp_offpos_corner
+V tp_offpos_corner|offpos_corner_going|1.000000
+V tp_offpos_corner|offpos_corner_text|11.000000 10.000000 100.000000 31.000000
+END tp_offpos_corner
+BEGIN tp_offpos_far_corner
+V tp_offpos_far_corner|offpos_far_corner_going|1.000000
+V tp_offpos_far_corner|offpos_far_corner_text|539.000000 446.000000 628.000000 467.000000
+END tp_offpos_far_corner
+BEGIN tp_offpos_middle
+V tp_offpos_middle|offpos_middle_going|1.000000
+V tp_offpos_middle|offpos_middle_text|143.000000 288.000000 255.000000 297.000000
+END tp_offpos_middle
+BEGIN tp_offpos_default
+V tp_offpos_default|offpos_default_going|1.000000
+V tp_offpos_default|offpos_default_text|263.000000 438.000000 375.000000 447.000000
+END tp_offpos_default
+BEGIN tp_table_xy
+V tp_table_xy|table_xy_going|1.000000
+V tp_table_xy|table_xy_text|43.000000 100.000000 155.000000 109.000000
+END tp_table_xy
+BEGIN tp_table_x_only
+V tp_table_x_only|table_x_only_going|1.000000
+V tp_table_x_only|table_x_only_text|443.000000 137.000000 555.000000 146.000000
+END tp_table_x_only
+BEGIN tp_table_y_only
+V tp_table_y_only|table_y_only_going|1.000000
+V tp_table_y_only|table_y_only_text|353.000000 60.000000 465.000000 69.000000
+END tp_table_y_only
+BEGIN tp_table_xy_zero
+V tp_table_xy_zero|table_xy_zero_going|1.000000
+V tp_table_xy_zero|table_xy_zero_text|11.000000 10.000000 100.000000 31.000000
+END tp_table_xy_zero
+BEGIN tp_table_xy_far
+V tp_table_xy_far|table_xy_far_going|1.000000
+V tp_table_xy_far|table_xy_far_text|539.000000 446.000000 628.000000 467.000000
+END tp_table_xy_far
+BEGIN tp_table_xy_negative
+V tp_table_xy_negative|table_xy_negative_going|1.000000
+V tp_table_xy_negative|table_xy_negative_text|11.000000 10.000000 100.000000 31.000000
+END tp_table_xy_negative
+BEGIN tp_table_xy_no_set
+V tp_table_xy_no_set|table_xy_no_set_going|1.000000
+V tp_table_xy_no_set|table_xy_no_set_text|93.000000 200.000000 205.000000 209.000000
+END tp_table_xy_no_set
 BEGIN frame_time
 V frame_time|steady|"17 17 17 17 17 17 17 17 "
 V frame_time|after_same_set|"17 17 17 17 "
@@ -4678,22 +5730,22 @@ BEGIN args_GetCurrentSetup_p1_tab
 V args_GetCurrentSetup_p1_tab|r|nil
 END args_GetCurrentSetup_p1_tab
 BEGIN args_GetDiskFreeSpace_none
-V args_GetDiskFreeSpace_none|r|125825.687500
+V args_GetDiskFreeSpace_none|r|123283.406250
 END args_GetDiskFreeSpace_none
 BEGIN args_GetDiskFreeSpace_nil
-V args_GetDiskFreeSpace_nil|r|125825.687500
+V args_GetDiskFreeSpace_nil|r|123283.406250
 END args_GetDiskFreeSpace_nil
 BEGIN args_GetDiskFreeSpace_str
-V args_GetDiskFreeSpace_str|r|125825.687500
+V args_GetDiskFreeSpace_str|r|123283.406250
 END args_GetDiskFreeSpace_str
 BEGIN args_GetDiskFreeSpace_num
-V args_GetDiskFreeSpace_num|r|125825.687500
+V args_GetDiskFreeSpace_num|r|123283.406250
 END args_GetDiskFreeSpace_num
 BEGIN args_GetDiskFreeSpace_tab
-V args_GetDiskFreeSpace_tab|r|125825.687500
+V args_GetDiskFreeSpace_tab|r|123283.406250
 END args_GetDiskFreeSpace_tab
 BEGIN args_GetDiskFreeSpace_fn
-V args_GetDiskFreeSpace_fn|r|125825.687500
+V args_GetDiskFreeSpace_fn|r|123283.406250
 END args_GetDiskFreeSpace_fn
 BEGIN args_GetImage_none
 V args_GetImage_none|r|nil
@@ -4888,22 +5940,22 @@ BEGIN args_GetLightType_l_tab
 V args_GetLightType_l_tab|r|"omni"
 END args_GetLightType_l_tab
 BEGIN args_GetMemoryUsage_none
-V args_GetMemoryUsage_none|r|9650181.000000
+V args_GetMemoryUsage_none|r|10814796.000000
 END args_GetMemoryUsage_none
 BEGIN args_GetMemoryUsage_nil
-V args_GetMemoryUsage_nil|r|9651027.000000
+V args_GetMemoryUsage_nil|r|10815647.000000
 END args_GetMemoryUsage_nil
 BEGIN args_GetMemoryUsage_str
-V args_GetMemoryUsage_str|r|9651863.000000
+V args_GetMemoryUsage_str|r|10816488.000000
 END args_GetMemoryUsage_str
 BEGIN args_GetMemoryUsage_num
-V args_GetMemoryUsage_num|r|9652699.000000
+V args_GetMemoryUsage_num|r|10817329.000000
 END args_GetMemoryUsage_num
 BEGIN args_GetMemoryUsage_tab
-V args_GetMemoryUsage_tab|r|9653639.000000
+V args_GetMemoryUsage_tab|r|10818274.000000
 END args_GetMemoryUsage_tab
 BEGIN args_GetMemoryUsage_fn
-V args_GetMemoryUsage_fn|r|9654472.000000
+V args_GetMemoryUsage_fn|r|10819112.000000
 END args_GetMemoryUsage_fn
 BEGIN args_GetPhysicalBytes_none
 V args_GetPhysicalBytes_none|r|2147483648.000000
@@ -5428,22 +6480,22 @@ BEGIN args_GetTextSpeed_fn
 V args_GetTextSpeed_fn|r|7.000000
 END args_GetTextSpeed_fn
 BEGIN args_GetTickCount_none
-V args_GetTickCount_none|r|442061216.000000
+V args_GetTickCount_none|r|471380032.000000
 END args_GetTickCount_none
 BEGIN args_GetTickCount_nil
-V args_GetTickCount_nil|r|442061216.000000
+V args_GetTickCount_nil|r|471380032.000000
 END args_GetTickCount_nil
 BEGIN args_GetTickCount_str
-V args_GetTickCount_str|r|442061216.000000
+V args_GetTickCount_str|r|471380032.000000
 END args_GetTickCount_str
 BEGIN args_GetTickCount_num
-V args_GetTickCount_num|r|442061216.000000
+V args_GetTickCount_num|r|471380032.000000
 END args_GetTickCount_num
 BEGIN args_GetTickCount_tab
-V args_GetTickCount_tab|r|442061216.000000
+V args_GetTickCount_tab|r|471380032.000000
 END args_GetTickCount_tab
 BEGIN args_GetTickCount_fn
-V args_GetTickCount_fn|r|442061216.000000
+V args_GetTickCount_fn|r|471380032.000000
 END args_GetTickCount_fn
 BEGIN args_GetTranslationMode_none
 V args_GetTranslationMode_none|r|0.000000
@@ -8884,22 +9936,22 @@ BEGIN args_ReadRegistryValue_p1_tab
 V args_ReadRegistryValue_p1_tab|r|nil
 END args_ReadRegistryValue_p1_tab
 BEGIN args_ResReport_none
-V args_ResReport_none|r|10268134.000000
+V args_ResReport_none|r|11433196.000000
 END args_ResReport_none
 BEGIN args_ResReport_nil
-V args_ResReport_nil|r|10268920.000000
+V args_ResReport_nil|r|11433982.000000
 END args_ResReport_nil
 BEGIN args_ResReport_str
-V args_ResReport_str|r|10269696.000000
+V args_ResReport_str|r|11434758.000000
 END args_ResReport_str
 BEGIN args_ResReport_num
-V args_ResReport_num|r|10270472.000000
+V args_ResReport_num|r|11435534.000000
 END args_ResReport_num
 BEGIN args_ResReport_tab
-V args_ResReport_tab|r|10271352.000000
+V args_ResReport_tab|r|11436414.000000
 END args_ResReport_tab
 BEGIN args_ResReport_fn
-V args_ResReport_fn|r|10272125.000000
+V args_ResReport_fn|r|11437187.000000
 END args_ResReport_fn
 BEGIN args_ResetTextures_none
 V args_ResetTextures_none|r|nil
@@ -13906,7 +14958,7 @@ BEGIN args_ceil_fn
 ERROR args_ceil_fn bad argument #1 to function `ceil' (number expected)
 FAILED args_ceil_fn
 BEGIN args_collectgarbage_none
-V args_collectgarbage_none|r|4811.000000
+V args_collectgarbage_none|r|4546.000000
 END args_collectgarbage_none
 BEGIN args_collectgarbage_nil
 ERROR args_collectgarbage_nil bad argument #1 to function `collectgarbage' (number expected)
@@ -13942,7 +14994,7 @@ BEGIN args_cos_fn
 ERROR args_cos_fn bad argument #1 to function `cos' (number expected)
 FAILED args_cos_fn
 BEGIN args_date_none
-V args_date_none|r|"11/05/26 04:00:19"
+V args_date_none|r|"11/05/26 12:08:58"
 END args_date_none
 BEGIN args_date_nil
 ERROR args_date_nil bad argument #1 to function `date' (string expected)
@@ -14708,10 +15760,10 @@ BEGIN args_tostring_num
 V args_tostring_num|r|"1.5"
 END args_tostring_num
 BEGIN args_tostring_tab
-V args_tostring_tab|r|"table: 041978DC"
+V args_tostring_tab|r|"table: 068BC8EC"
 END args_tostring_tab
 BEGIN args_tostring_fn
-V args_tostring_fn|r|"function: 03E4AE0C"
+V args_tostring_fn|r|"function: 03FE6DBC"
 END args_tostring_fn
 BEGIN args_type_none
 ERROR args_type_none API error - attempt to push a NOOBJECT
@@ -14731,1067 +15783,599 @@ END args_type_tab
 BEGIN args_type_fn
 V args_type_fn|r|"function" -4.000000
 END args_type_fn
-BEGIN model_collide
-V model_collide|box_f0|0.000000 -1.000000 0.000000
-V model_collide|box_f15|0.000000 -0.745000 0.000000
-V model_collide|box_f30|-1.#IND00 -1.#IND00 -1.#IND00
-V model_collide|box_f45|-1.#IND00 -1.#IND00 -1.#IND00
-V model_collide|box_f60|-1.#IND00 -1.#IND00 -1.#IND00
-V model_collide|box_f75|-1.#IND00 -1.#IND00 -1.#IND00
-V model_collide|box_end|-1.#IND00 -1.#IND00 -1.#IND00
-V model_collide|box_other|0.100000 0.500000 0.000000
-V model_collide|sphere_f0|0.000000 -1.000000 0.000000
-V model_collide|sphere_f15|-0.042799 -1.362689 0.000000
-V model_collide|sphere_f30|-0.063710 -1.360967 0.000000
-V model_collide|sphere_f45|-0.087656 -1.358705 0.000000
-V model_collide|sphere_f60|-0.115063 -1.355734 0.000000
-V model_collide|sphere_f75|-0.146411 -1.351832 0.000000
-V model_collide|sphere_end|-0.182235 -1.346712 0.000000
-V model_collide|sphere_other|0.100000 0.500000 0.000000
-V model_collide|sphere_half_f0|0.000000 -1.000000 0.000000
-V model_collide|sphere_half_f15|0.000000 -0.745000 0.000000
-V model_collide|sphere_half_f30|0.000000 -0.489999 0.000000
-V model_collide|sphere_half_f45|-0.023090 -0.425931 0.000000
-V model_collide|sphere_half_f60|-0.061612 -0.419990 0.000000
-V model_collide|sphere_half_f75|-0.111692 -0.409773 0.000000
-V model_collide|sphere_half_end|-0.176177 -0.392315 0.000000
-V model_collide|sphere_half_other|0.100000 0.500000 0.000000
-END model_collide
-BEGIN hdr_ctrx_wall_sphere
-V hdr_ctrx_wall_sphere|ctrx_wall_sphere_f0|0.000000 -1.000000 0.000000
-V hdr_ctrx_wall_sphere|ctrx_wall_sphere_f15|-0.042799 -1.362689 0.000000
-V hdr_ctrx_wall_sphere|ctrx_wall_sphere_f30|-0.063710 -1.360967 0.000000
-V hdr_ctrx_wall_sphere|ctrx_wall_sphere_f45|-0.087656 -1.358705 0.000000
-V hdr_ctrx_wall_sphere|ctrx_wall_sphere_f60|-0.115063 -1.355734 0.000000
-V hdr_ctrx_wall_sphere|ctrx_wall_sphere_f75|-0.146411 -1.351832 0.000000
-V hdr_ctrx_wall_sphere|ctrx_wall_sphere_end|-0.182235 -1.346712 0.000000
-V hdr_ctrx_wall_sphere|ctrx_wall_sphere_other|0.100000 0.500000 0.000000
-END hdr_ctrx_wall_sphere
-BEGIN hdr_ctrx_wall_box
-V hdr_ctrx_wall_box|ctrx_wall_box_f0|0.000000 -1.000000 0.000000
-V hdr_ctrx_wall_box|ctrx_wall_box_f15|0.000000 -0.745000 0.000000
-V hdr_ctrx_wall_box|ctrx_wall_box_f30|-1.#IND00 -1.#IND00 -1.#IND00
-V hdr_ctrx_wall_box|ctrx_wall_box_f45|-1.#IND00 -1.#IND00 -1.#IND00
-V hdr_ctrx_wall_box|ctrx_wall_box_f60|-1.#IND00 -1.#IND00 -1.#IND00
-V hdr_ctrx_wall_box|ctrx_wall_box_f75|-1.#IND00 -1.#IND00 -1.#IND00
-V hdr_ctrx_wall_box|ctrx_wall_box_end|-1.#IND00 -1.#IND00 -1.#IND00
-V hdr_ctrx_wall_box|ctrx_wall_box_other|0.100000 0.500000 0.000000
-END hdr_ctrx_wall_box
-BEGIN hdr_ctrz_wall_sphere
-V hdr_ctrz_wall_sphere|ctrz_wall_sphere_f0|0.000000 -1.000000 0.000000
-V hdr_ctrz_wall_sphere|ctrz_wall_sphere_f15|-0.042799 -1.362689 0.000000
-V hdr_ctrz_wall_sphere|ctrz_wall_sphere_f30|-0.063710 -1.360967 0.000000
-V hdr_ctrz_wall_sphere|ctrz_wall_sphere_f45|-0.087656 -1.358705 0.000000
-V hdr_ctrz_wall_sphere|ctrz_wall_sphere_f60|-0.115063 -1.355734 0.000000
-V hdr_ctrz_wall_sphere|ctrz_wall_sphere_f75|-0.146411 -1.351832 0.000000
-V hdr_ctrz_wall_sphere|ctrz_wall_sphere_end|-0.182235 -1.346712 0.000000
-V hdr_ctrz_wall_sphere|ctrz_wall_sphere_other|0.100000 0.500000 0.000000
-END hdr_ctrz_wall_sphere
-BEGIN hdr_ctrz_wall_box
-V hdr_ctrz_wall_box|ctrz_wall_box_f0|0.000000 -1.000000 0.000000
-V hdr_ctrz_wall_box|ctrz_wall_box_f15|0.000000 -0.745000 0.000000
-V hdr_ctrz_wall_box|ctrz_wall_box_f30|-1.#IND00 -1.#IND00 -1.#IND00
-V hdr_ctrz_wall_box|ctrz_wall_box_f45|-1.#IND00 -1.#IND00 -1.#IND00
-V hdr_ctrz_wall_box|ctrz_wall_box_f60|-1.#IND00 -1.#IND00 -1.#IND00
-V hdr_ctrz_wall_box|ctrz_wall_box_f75|-1.#IND00 -1.#IND00 -1.#IND00
-V hdr_ctrz_wall_box|ctrz_wall_box_end|-1.#IND00 -1.#IND00 -1.#IND00
-V hdr_ctrz_wall_box|ctrz_wall_box_other|0.100000 0.500000 0.000000
-END hdr_ctrz_wall_box
-BEGIN hdr_ctrx_mover_sphere
-V hdr_ctrx_mover_sphere|ctrx_mover_sphere_f0|0.000000 -1.000000 0.000000
-V hdr_ctrx_mover_sphere|ctrx_mover_sphere_f15|-0.042799 -1.362689 0.000000
-V hdr_ctrx_mover_sphere|ctrx_mover_sphere_f30|-0.063710 -1.360967 0.000000
-V hdr_ctrx_mover_sphere|ctrx_mover_sphere_f45|-0.087656 -1.358705 0.000000
-V hdr_ctrx_mover_sphere|ctrx_mover_sphere_f60|-0.115063 -1.355734 0.000000
-V hdr_ctrx_mover_sphere|ctrx_mover_sphere_f75|-0.146411 -1.351832 0.000000
-V hdr_ctrx_mover_sphere|ctrx_mover_sphere_end|-0.182235 -1.346712 0.000000
-V hdr_ctrx_mover_sphere|ctrx_mover_sphere_other|0.100000 0.500000 0.000000
-END hdr_ctrx_mover_sphere
-BEGIN hdr_ctrz_mover_sphere
-V hdr_ctrz_mover_sphere|ctrz_mover_sphere_f0|0.000000 -1.000000 0.000000
-V hdr_ctrz_mover_sphere|ctrz_mover_sphere_f15|-0.042799 -1.362689 0.000000
-V hdr_ctrz_mover_sphere|ctrz_mover_sphere_f30|-0.063710 -1.360967 0.000000
-V hdr_ctrz_mover_sphere|ctrz_mover_sphere_f45|-0.087656 -1.358705 0.000000
-V hdr_ctrz_mover_sphere|ctrz_mover_sphere_f60|-0.115063 -1.355734 0.000000
-V hdr_ctrz_mover_sphere|ctrz_mover_sphere_f75|-0.146411 -1.351832 0.000000
-V hdr_ctrz_mover_sphere|ctrz_mover_sphere_end|-0.182235 -1.346712 0.000000
-V hdr_ctrz_mover_sphere|ctrz_mover_sphere_other|0.100000 0.500000 0.000000
-END hdr_ctrz_mover_sphere
-BEGIN hdr_ctrz_both_sphere
-V hdr_ctrz_both_sphere|ctrz_both_sphere_f0|0.000000 -1.000000 0.000000
-V hdr_ctrz_both_sphere|ctrz_both_sphere_f15|-0.042799 -1.362689 0.000000
-V hdr_ctrz_both_sphere|ctrz_both_sphere_f30|-0.063710 -1.360967 0.000000
-V hdr_ctrz_both_sphere|ctrz_both_sphere_f45|-0.087656 -1.358705 0.000000
-V hdr_ctrz_both_sphere|ctrz_both_sphere_f60|-0.115063 -1.355734 0.000000
-V hdr_ctrz_both_sphere|ctrz_both_sphere_f75|-0.146411 -1.351832 0.000000
-V hdr_ctrz_both_sphere|ctrz_both_sphere_end|-0.182235 -1.346712 0.000000
-V hdr_ctrz_both_sphere|ctrz_both_sphere_other|0.100000 0.500000 0.000000
-END hdr_ctrz_both_sphere
-BEGIN hdr_bbig_wall_box
-V hdr_bbig_wall_box|bbig_wall_box_f0|0.000000 -1.000000 0.000000
-V hdr_bbig_wall_box|bbig_wall_box_f15|0.000000 -0.745000 0.000000
-V hdr_bbig_wall_box|bbig_wall_box_f30|-1.#IND00 -1.#IND00 -1.#IND00
-V hdr_bbig_wall_box|bbig_wall_box_f45|-1.#IND00 -1.#IND00 -1.#IND00
-V hdr_bbig_wall_box|bbig_wall_box_f60|-1.#IND00 -1.#IND00 -1.#IND00
-V hdr_bbig_wall_box|bbig_wall_box_f75|-1.#IND00 -1.#IND00 -1.#IND00
-V hdr_bbig_wall_box|bbig_wall_box_end|-1.#IND00 -1.#IND00 -1.#IND00
-V hdr_bbig_wall_box|bbig_wall_box_other|0.100000 0.500000 0.000000
-END hdr_bbig_wall_box
-BEGIN hdr_bbig_wall_sphere
-V hdr_bbig_wall_sphere|bbig_wall_sphere_f0|0.000000 -1.000000 0.000000
-V hdr_bbig_wall_sphere|bbig_wall_sphere_f15|-0.042799 -1.362689 0.000000
-V hdr_bbig_wall_sphere|bbig_wall_sphere_f30|-0.063710 -1.360967 0.000000
-V hdr_bbig_wall_sphere|bbig_wall_sphere_f45|-0.087656 -1.358705 0.000000
-V hdr_bbig_wall_sphere|bbig_wall_sphere_f60|-0.115063 -1.355734 0.000000
-V hdr_bbig_wall_sphere|bbig_wall_sphere_f75|-0.146411 -1.351832 0.000000
-V hdr_bbig_wall_sphere|bbig_wall_sphere_end|-0.182235 -1.346712 0.000000
-V hdr_bbig_wall_sphere|bbig_wall_sphere_other|0.100000 0.500000 0.000000
-END hdr_bbig_wall_sphere
-BEGIN hdr_bbig_mover_sphere
-V hdr_bbig_mover_sphere|bbig_mover_sphere_f0|0.000000 -1.000000 0.000000
-V hdr_bbig_mover_sphere|bbig_mover_sphere_f15|-0.042799 -1.362689 0.000000
-V hdr_bbig_mover_sphere|bbig_mover_sphere_f30|-0.063710 -1.360967 0.000000
-V hdr_bbig_mover_sphere|bbig_mover_sphere_f45|-0.087656 -1.358705 0.000000
-V hdr_bbig_mover_sphere|bbig_mover_sphere_f60|-0.115063 -1.355734 0.000000
-V hdr_bbig_mover_sphere|bbig_mover_sphere_f75|-0.146411 -1.351832 0.000000
-V hdr_bbig_mover_sphere|bbig_mover_sphere_end|-0.182235 -1.346712 0.000000
-V hdr_bbig_mover_sphere|bbig_mover_sphere_other|0.100000 0.500000 0.000000
-END hdr_bbig_mover_sphere
-BEGIN hdr_bbig_wall_box_half
-V hdr_bbig_wall_box_half|bbig_wall_box_half_f0|0.000000 -1.000000 0.000000
-V hdr_bbig_wall_box_half|bbig_wall_box_half_f15|0.000000 -0.745000 0.000000
-V hdr_bbig_wall_box_half|bbig_wall_box_half_f30|0.000000 -0.489999 0.000000
-V hdr_bbig_wall_box_half|bbig_wall_box_half_f45|0.000000 -0.235000 0.000000
-V hdr_bbig_wall_box_half|bbig_wall_box_half_f60|-1.#IND00 -1.#IND00 -1.#IND00
-V hdr_bbig_wall_box_half|bbig_wall_box_half_f75|-1.#IND00 -1.#IND00 -1.#IND00
-V hdr_bbig_wall_box_half|bbig_wall_box_half_end|-1.#IND00 -1.#IND00 -1.#IND00
-V hdr_bbig_wall_box_half|bbig_wall_box_half_other|0.100000 0.500000 0.000000
-END hdr_bbig_wall_box_half
-BEGIN hdr_bside_wall_box
-V hdr_bside_wall_box|bside_wall_box_f0|0.000000 -1.000000 0.000000
-V hdr_bside_wall_box|bside_wall_box_f15|0.000000 -0.745000 0.000000
-V hdr_bside_wall_box|bside_wall_box_f30|-1.#IND00 -1.#IND00 -1.#IND00
-V hdr_bside_wall_box|bside_wall_box_f45|-1.#IND00 -1.#IND00 -1.#IND00
-V hdr_bside_wall_box|bside_wall_box_f60|-1.#IND00 -1.#IND00 -1.#IND00
-V hdr_bside_wall_box|bside_wall_box_f75|-1.#IND00 -1.#IND00 -1.#IND00
-V hdr_bside_wall_box|bside_wall_box_end|-1.#IND00 -1.#IND00 -1.#IND00
-V hdr_bside_wall_box|bside_wall_box_other|0.100000 0.500000 0.000000
-END hdr_bside_wall_box
-BEGIN hdr_bside_wall_sphere
-V hdr_bside_wall_sphere|bside_wall_sphere_f0|0.000000 -1.000000 0.000000
-V hdr_bside_wall_sphere|bside_wall_sphere_f15|-0.042799 -1.362689 0.000000
-V hdr_bside_wall_sphere|bside_wall_sphere_f30|-0.063710 -1.360967 0.000000
-V hdr_bside_wall_sphere|bside_wall_sphere_f45|-0.087656 -1.358705 0.000000
-V hdr_bside_wall_sphere|bside_wall_sphere_f60|-0.115063 -1.355734 0.000000
-V hdr_bside_wall_sphere|bside_wall_sphere_f75|-0.146411 -1.351832 0.000000
-V hdr_bside_wall_sphere|bside_wall_sphere_end|-0.182235 -1.346712 0.000000
-V hdr_bside_wall_sphere|bside_wall_sphere_other|0.100000 0.500000 0.000000
-END hdr_bside_wall_sphere
-BEGIN hdr_bside_mover_sphere
-V hdr_bside_mover_sphere|bside_mover_sphere_f0|0.000000 -1.000000 0.000000
-V hdr_bside_mover_sphere|bside_mover_sphere_f15|-0.042799 -1.362689 0.000000
-V hdr_bside_mover_sphere|bside_mover_sphere_f30|-0.063710 -1.360967 0.000000
-V hdr_bside_mover_sphere|bside_mover_sphere_f45|-0.087656 -1.358705 0.000000
-V hdr_bside_mover_sphere|bside_mover_sphere_f60|-0.115063 -1.355734 0.000000
-V hdr_bside_mover_sphere|bside_mover_sphere_f75|-0.146411 -1.351832 0.000000
-V hdr_bside_mover_sphere|bside_mover_sphere_end|-0.182235 -1.346712 0.000000
-V hdr_bside_mover_sphere|bside_mover_sphere_other|0.100000 0.500000 0.000000
-END hdr_bside_mover_sphere
-BEGIN hdr_meshx_wall_sphere
-V hdr_meshx_wall_sphere|meshx_wall_sphere_f0|0.000000 -1.000000 0.000000
-V hdr_meshx_wall_sphere|meshx_wall_sphere_f15|-0.187893 -1.193878 0.000000
-V hdr_meshx_wall_sphere|meshx_wall_sphere_f30|-0.290530 -1.142241 0.000000
-V hdr_meshx_wall_sphere|meshx_wall_sphere_f45|-0.402215 -1.076568 0.000000
-V hdr_meshx_wall_sphere|meshx_wall_sphere_f60|-0.521783 -0.993855 0.000000
-V hdr_meshx_wall_sphere|meshx_wall_sphere_f75|-0.647094 -0.890955 0.000000
-V hdr_meshx_wall_sphere|meshx_wall_sphere_end|-0.774799 -0.764882 0.000000
-V hdr_meshx_wall_sphere|meshx_wall_sphere_other|0.100000 0.500000 0.000000
-END hdr_meshx_wall_sphere
-BEGIN hdr_meshx_mover_sphere
-V hdr_meshx_mover_sphere|meshx_mover_sphere_f0|0.000000 -1.000000 0.000000
-V hdr_meshx_mover_sphere|meshx_mover_sphere_f15|0.150141 -1.285314 0.000000
-V hdr_meshx_mover_sphere|meshx_mover_sphere_f30|0.226592 -1.259938 0.000000
-V hdr_meshx_mover_sphere|meshx_mover_sphere_f45|0.312146 -1.227093 0.000000
-V hdr_meshx_mover_sphere|meshx_mover_sphere_f60|0.407154 -1.184786 0.000000
-V hdr_meshx_mover_sphere|meshx_mover_sphere_f75|0.511607 -1.130636 0.000000
-V hdr_meshx_mover_sphere|meshx_mover_sphere_end|0.624946 -1.061885 0.000000
-V hdr_meshx_mover_sphere|meshx_mover_sphere_other|0.100000 0.500000 0.000000
-END hdr_meshx_mover_sphere
-BEGIN hdr_meshx_wall_box
-V hdr_meshx_wall_box|meshx_wall_box_f0|0.000000 -1.000000 0.000000
-V hdr_meshx_wall_box|meshx_wall_box_f15|0.000000 -0.745000 0.000000
-V hdr_meshx_wall_box|meshx_wall_box_f30|-1.#IND00 -1.#IND00 -1.#IND00
-V hdr_meshx_wall_box|meshx_wall_box_f45|-1.#IND00 -1.#IND00 -1.#IND00
-V hdr_meshx_wall_box|meshx_wall_box_f60|-1.#IND00 -1.#IND00 -1.#IND00
-V hdr_meshx_wall_box|meshx_wall_box_f75|-1.#IND00 -1.#IND00 -1.#IND00
-V hdr_meshx_wall_box|meshx_wall_box_end|-1.#IND00 -1.#IND00 -1.#IND00
-V hdr_meshx_wall_box|meshx_wall_box_other|0.100000 0.500000 0.000000
-END hdr_meshx_wall_box
-BEGIN hdr_nodex_wall_sphere
-V hdr_nodex_wall_sphere|nodex_wall_sphere_f0|0.000000 -1.000000 0.000000
-V hdr_nodex_wall_sphere|nodex_wall_sphere_f15|-0.187893 -1.193878 0.000000
-V hdr_nodex_wall_sphere|nodex_wall_sphere_f30|-0.290530 -1.142241 0.000000
-V hdr_nodex_wall_sphere|nodex_wall_sphere_f45|-0.402215 -1.076568 0.000000
-V hdr_nodex_wall_sphere|nodex_wall_sphere_f60|-0.521783 -0.993855 0.000000
-V hdr_nodex_wall_sphere|nodex_wall_sphere_f75|-0.647094 -0.890955 0.000000
-V hdr_nodex_wall_sphere|nodex_wall_sphere_end|-0.774799 -0.764882 0.000000
-V hdr_nodex_wall_sphere|nodex_wall_sphere_other|0.100000 0.500000 0.000000
-END hdr_nodex_wall_sphere
-BEGIN hdr_nodex_mover_sphere
-V hdr_nodex_mover_sphere|nodex_mover_sphere_f0|0.000000 -1.000000 0.000000
-V hdr_nodex_mover_sphere|nodex_mover_sphere_f15|0.150141 -1.285314 0.000000
-V hdr_nodex_mover_sphere|nodex_mover_sphere_f30|0.226592 -1.259938 0.000000
-V hdr_nodex_mover_sphere|nodex_mover_sphere_f45|0.312146 -1.227093 0.000000
-V hdr_nodex_mover_sphere|nodex_mover_sphere_f60|0.407154 -1.184786 0.000000
-V hdr_nodex_mover_sphere|nodex_mover_sphere_f75|0.511607 -1.130636 0.000000
-V hdr_nodex_mover_sphere|nodex_mover_sphere_end|0.624946 -1.061885 0.000000
-V hdr_nodex_mover_sphere|nodex_mover_sphere_other|0.100000 0.500000 0.000000
-END hdr_nodex_mover_sphere
-BEGIN hdr_float_wall_sphere
-V hdr_float_wall_sphere|float_wall_sphere_f0|0.000000 -1.000000 0.000000
-V hdr_float_wall_sphere|float_wall_sphere_f15|-0.000998 -0.757428 -0.003993
-V hdr_float_wall_sphere|float_wall_sphere_f30|-0.023659 -0.754936 0.000000
-V hdr_float_wall_sphere|float_wall_sphere_f45|-0.051397 -0.751897 0.000000
-V hdr_float_wall_sphere|float_wall_sphere_f60|-0.085244 -0.747344 0.000000
-V hdr_float_wall_sphere|float_wall_sphere_f75|-0.126452 -0.740535 0.000000
-V hdr_float_wall_sphere|float_wall_sphere_end|-0.176450 -0.730373 0.000000
-V hdr_float_wall_sphere|float_wall_sphere_other|0.100000 0.500000 0.000000
-END hdr_float_wall_sphere
-BEGIN hdr_float_mover_sphere
-V hdr_float_mover_sphere|float_mover_sphere_f0|0.000000 -1.000000 0.000000
-V hdr_float_mover_sphere|float_mover_sphere_f15|-0.000998 -0.757428 0.003993
-V hdr_float_mover_sphere|float_mover_sphere_f30|-0.023659 -0.754936 0.000000
-V hdr_float_mover_sphere|float_mover_sphere_f45|-0.051397 -0.751897 0.000000
-V hdr_float_mover_sphere|float_mover_sphere_f60|-0.085244 -0.747344 0.000000
-V hdr_float_mover_sphere|float_mover_sphere_f75|-0.126452 -0.740535 0.000000
-V hdr_float_mover_sphere|float_mover_sphere_end|-0.176450 -0.730373 0.000000
-V hdr_float_mover_sphere|float_mover_sphere_other|0.100000 0.500000 0.000000
-END hdr_float_mover_sphere
-BEGIN hdr_float_both_sphere
-V hdr_float_both_sphere|float_both_sphere_f0|0.000000 -1.000000 0.000000
-V hdr_float_both_sphere|float_both_sphere_f15|0.000000 -0.745000 0.000000
-V hdr_float_both_sphere|float_both_sphere_f30|0.000000 -0.489999 0.000000
-V hdr_float_both_sphere|float_both_sphere_f45|-0.005207 -0.273907 0.000000
-V hdr_float_both_sphere|float_both_sphere_f60|-0.045726 -0.267310 0.000000
-V hdr_float_both_sphere|float_both_sphere_f75|-0.101052 -0.254704 0.000000
-V hdr_float_both_sphere|float_both_sphere_end|-0.175302 -0.230896 0.000000
-V hdr_float_both_sphere|float_both_sphere_other|0.100000 0.500000 0.000000
-END hdr_float_both_sphere
-BEGIN hdr_float_wall_sphere_half
-V hdr_float_wall_sphere_half|float_wall_sphere_half_f0|0.000000 -1.000000 0.000000
-V hdr_float_wall_sphere_half|float_wall_sphere_half_f15|0.000000 -0.745000 0.000000
-V hdr_float_wall_sphere_half|float_wall_sphere_half_f30|0.000000 -0.489999 0.000000
-V hdr_float_wall_sphere_half|float_wall_sphere_half_f45|0.000000 -0.235000 0.000000
-V hdr_float_wall_sphere_half|float_wall_sphere_half_f60|-0.005642 -0.007620 0.000000
-V hdr_float_wall_sphere_half|float_wall_sphere_half_f75|-0.070963 0.011161 0.000000
-V hdr_float_wall_sphere_half|float_wall_sphere_half_end|-0.169295 0.056549 0.000000
-V hdr_float_wall_sphere_half|float_wall_sphere_half_other|0.100000 0.500000 0.000000
-END hdr_float_wall_sphere_half
-BEGIN hdr_rects
-V hdr_rects|cr_box_rect|640.000000
-V hdr_rects|cr_box_head|0.000000 0.000000 1.700000
-V hdr_rects|cr_ctrx_rect|640.000000
-V hdr_rects|cr_ctrx_head|0.000000 0.000000 1.700000
-V hdr_rects|cr_ctrz_rect|640.000000
-V hdr_rects|cr_ctrz_head|0.000000 0.000000 1.700000
-V hdr_rects|cr_bbig_rect|640.000000
-V hdr_rects|cr_bbig_head|0.000000 0.000000 1.700000
-V hdr_rects|cr_bside_rect|640.000000
-V hdr_rects|cr_bside_head|0.000000 0.000000 1.700000
-V hdr_rects|cr_meshx_rect|640.000000
-V hdr_rects|cr_meshx_head|0.000000 0.000000 1.700000
-V hdr_rects|cr_nodex_rect|640.000000
-V hdr_rects|cr_nodex_head|0.000000 0.000000 1.700000
-V hdr_rects|cr_float_rect|640.000000
-V hdr_rects|cr_float_head|0.000000 0.000000 1.700000
-END hdr_rects
-BEGIN cm_forward_m0_w0
-V cm_forward_m0_w0|cm_forward_m0_w0_f0|0.200000 -1.500000 0.000000
-V cm_forward_m0_w0|cm_forward_m0_w0_f20|0.083681 -1.180517 0.000000
-V cm_forward_m0_w0|cm_forward_m0_w0_f40|-0.032637 -0.861033 0.000000
-V cm_forward_m0_w0|cm_forward_m0_w0_f60|-0.148956 -0.541548 0.000000
-V cm_forward_m0_w0|cm_forward_m0_w0_f80|-0.265274 -0.222064 0.000000
-V cm_forward_m0_w0|cm_forward_m0_w0_end|-0.381593 0.097419 0.000000
-V cm_forward_m0_w0|cm_forward_m0_w0_walking|nil
-END cm_forward_m0_w0
-BEGIN cm_forward_m1_w0
-V cm_forward_m1_w0|cm_forward_m1_w0_f0|0.200000 -1.500000 0.000000
-V cm_forward_m1_w0|cm_forward_m1_w0_f20|0.083681 -1.180517 0.000000
-V cm_forward_m1_w0|cm_forward_m1_w0_f40|-0.032637 -0.861033 0.000000
-V cm_forward_m1_w0|cm_forward_m1_w0_f60|-0.148956 -0.541548 0.000000
-V cm_forward_m1_w0|cm_forward_m1_w0_f80|-0.265274 -0.222064 0.000000
-V cm_forward_m1_w0|cm_forward_m1_w0_end|-0.381593 0.097419 0.000000
-V cm_forward_m1_w0|cm_forward_m1_w0_walking|nil
-END cm_forward_m1_w0
-BEGIN cm_forward_m2_w0
-V cm_forward_m2_w0|cm_forward_m2_w0_f0|0.200000 -1.500000 0.000000
-V cm_forward_m2_w0|cm_forward_m2_w0_f20|0.083681 -1.180517 0.000000
-V cm_forward_m2_w0|cm_forward_m2_w0_f40|-0.032637 -0.861033 0.000000
-V cm_forward_m2_w0|cm_forward_m2_w0_f60|-0.148956 -0.541548 0.000000
-V cm_forward_m2_w0|cm_forward_m2_w0_f80|-0.265274 -0.222064 0.000000
-V cm_forward_m2_w0|cm_forward_m2_w0_end|-0.381593 0.097419 0.000000
-V cm_forward_m2_w0|cm_forward_m2_w0_walking|nil
-END cm_forward_m2_w0
-BEGIN cm_forward_m0_w1
-V cm_forward_m0_w1|cm_forward_m0_w1_f0|0.200000 -1.500000 0.000000
-V cm_forward_m0_w1|cm_forward_m0_w1_f20|0.083681 -1.180517 0.000000
-V cm_forward_m0_w1|cm_forward_m0_w1_f40|-0.032637 -0.861033 0.000000
-V cm_forward_m0_w1|cm_forward_m0_w1_f60|-0.148956 -0.541548 0.000000
-V cm_forward_m0_w1|cm_forward_m0_w1_f80|-0.273371 -0.233635 0.000000
-V cm_forward_m0_w1|cm_forward_m0_w1_end|-0.512649 -0.089869 0.000000
-V cm_forward_m0_w1|cm_forward_m0_w1_walking|nil
-END cm_forward_m0_w1
-BEGIN cm_forward_m1_w1
-V cm_forward_m1_w1|cm_forward_m1_w1_f0|0.200000 -1.500000 0.000000
-V cm_forward_m1_w1|cm_forward_m1_w1_f20|0.083681 -1.180517 0.000000
-V cm_forward_m1_w1|cm_forward_m1_w1_f40|-0.032637 -0.861033 0.000000
-V cm_forward_m1_w1|cm_forward_m1_w1_f60|-0.148956 -0.541548 0.000000
-V cm_forward_m1_w1|cm_forward_m1_w1_f80|-0.273371 -0.233635 0.000000
-V cm_forward_m1_w1|cm_forward_m1_w1_end|-0.512649 -0.089869 0.000000
-V cm_forward_m1_w1|cm_forward_m1_w1_walking|nil
-END cm_forward_m1_w1
-BEGIN cm_forward_m2_w1
-V cm_forward_m2_w1|cm_forward_m2_w1_f0|0.200000 -1.500000 0.000000
-V cm_forward_m2_w1|cm_forward_m2_w1_f20|0.083681 -1.180517 0.000000
-V cm_forward_m2_w1|cm_forward_m2_w1_f40|-0.032637 -0.861033 0.000000
-V cm_forward_m2_w1|cm_forward_m2_w1_f60|-0.148956 -0.541548 0.000000
-V cm_forward_m2_w1|cm_forward_m2_w1_f80|-0.273371 -0.233635 0.000000
-V cm_forward_m2_w1|cm_forward_m2_w1_end|-0.512649 -0.089869 0.000000
-V cm_forward_m2_w1|cm_forward_m2_w1_walking|nil
-END cm_forward_m2_w1
-BEGIN cm_forward_m0_w2
-V cm_forward_m0_w2|cm_forward_m0_w2_f0|0.200000 -1.500000 0.000000
-V cm_forward_m0_w2|cm_forward_m0_w2_f20|0.083681 -1.180517 0.000000
-V cm_forward_m0_w2|cm_forward_m0_w2_f40|-0.032637 -0.861033 0.000000
-V cm_forward_m0_w2|cm_forward_m0_w2_f60|-0.148956 -0.541548 0.000000
-V cm_forward_m0_w2|cm_forward_m0_w2_f80|-0.349590 -0.460444 0.000000
-V cm_forward_m0_w2|cm_forward_m0_w2_end|-0.573539 -0.279013 0.000000
-V cm_forward_m0_w2|cm_forward_m0_w2_walking|nil
-END cm_forward_m0_w2
-BEGIN cm_forward_m1_w2
-V cm_forward_m1_w2|cm_forward_m1_w2_f0|0.200000 -1.500000 0.000000
-V cm_forward_m1_w2|cm_forward_m1_w2_f20|0.083681 -1.180517 0.000000
-V cm_forward_m1_w2|cm_forward_m1_w2_f40|-0.032637 -0.861033 0.000000
-V cm_forward_m1_w2|cm_forward_m1_w2_f60|-0.148956 -0.541548 0.000000
-V cm_forward_m1_w2|cm_forward_m1_w2_f80|-0.349590 -0.460444 0.000000
-V cm_forward_m1_w2|cm_forward_m1_w2_end|-0.573539 -0.279013 0.000000
-V cm_forward_m1_w2|cm_forward_m1_w2_walking|nil
-END cm_forward_m1_w2
-BEGIN cm_forward_m2_w2
-V cm_forward_m2_w2|cm_forward_m2_w2_f0|0.200000 -1.500000 0.000000
-V cm_forward_m2_w2|cm_forward_m2_w2_f20|0.083681 -1.180517 0.000000
-V cm_forward_m2_w2|cm_forward_m2_w2_f40|-0.032637 -0.861033 0.000000
-V cm_forward_m2_w2|cm_forward_m2_w2_f60|-0.148956 -0.541548 0.000000
-V cm_forward_m2_w2|cm_forward_m2_w2_f80|-0.349590 -0.460444 0.000000
-V cm_forward_m2_w2|cm_forward_m2_w2_end|-0.573539 -0.279013 0.000000
-V cm_forward_m2_w2|cm_forward_m2_w2_walking|nil
-END cm_forward_m2_w2
-BEGIN cm_to_m0_w0
-V cm_to_m0_w0|cm_to_m0_w0_f0|0.200000 -1.500000 0.000000
-V cm_to_m0_w0|cm_to_m0_w0_f20|0.145737 -1.164359 0.000000
-V cm_to_m0_w0|cm_to_m0_w0_f40|0.091503 -0.828712 0.000000
-V cm_to_m0_w0|cm_to_m0_w0_f60|0.037275 -0.493064 0.000000
-V cm_to_m0_w0|cm_to_m0_w0_f80|-0.016925 -0.157412 0.000000
-V cm_to_m0_w0|cm_to_m0_w0_end|-0.071105 0.178243 0.000000
-V cm_to_m0_w0|cm_to_m0_w0_walking|1.000000
-END cm_to_m0_w0
-BEGIN cm_to_m1_w0
-V cm_to_m1_w0|cm_to_m1_w0_f0|0.200000 -1.500000 0.000000
-V cm_to_m1_w0|cm_to_m1_w0_f20|0.145737 -1.164359 0.000000
-V cm_to_m1_w0|cm_to_m1_w0_f40|0.091503 -0.828712 0.000000
-V cm_to_m1_w0|cm_to_m1_w0_f60|0.037275 -0.493064 0.000000
-V cm_to_m1_w0|cm_to_m1_w0_f80|-0.016925 -0.157412 0.000000
-V cm_to_m1_w0|cm_to_m1_w0_end|-0.071105 0.178243 0.000000
-V cm_to_m1_w0|cm_to_m1_w0_walking|1.000000
-END cm_to_m1_w0
-BEGIN cm_to_m2_w0
-V cm_to_m2_w0|cm_to_m2_w0_f0|0.200000 -1.500000 0.000000
-V cm_to_m2_w0|cm_to_m2_w0_f20|0.145737 -1.164359 0.000000
-V cm_to_m2_w0|cm_to_m2_w0_f40|0.091503 -0.828712 0.000000
-V cm_to_m2_w0|cm_to_m2_w0_f60|0.037275 -0.493064 0.000000
-V cm_to_m2_w0|cm_to_m2_w0_f80|-0.016925 -0.157412 0.000000
-V cm_to_m2_w0|cm_to_m2_w0_end|-0.071105 0.178243 0.000000
-V cm_to_m2_w0|cm_to_m2_w0_walking|1.000000
-END cm_to_m2_w0
-BEGIN cm_to_m0_w1
-V cm_to_m0_w1|cm_to_m0_w1_f0|0.200000 -1.500000 0.000000
-V cm_to_m0_w1|cm_to_m0_w1_f20|0.145737 -1.164359 0.000000
-V cm_to_m0_w1|cm_to_m0_w1_f40|0.091503 -0.828712 0.000000
-V cm_to_m0_w1|cm_to_m0_w1_f60|0.037275 -0.493064 0.000000
-V cm_to_m0_w1|cm_to_m0_w1_f80|-0.080633 -0.246309 0.000000
-V cm_to_m0_w1|cm_to_m0_w1_end|-0.414674 -0.309681 0.000000
-V cm_to_m0_w1|cm_to_m0_w1_walking|1.000000
-END cm_to_m0_w1
-BEGIN cm_to_m1_w1
-V cm_to_m1_w1|cm_to_m1_w1_f0|0.200000 -1.500000 0.000000
-V cm_to_m1_w1|cm_to_m1_w1_f20|0.145737 -1.164359 0.000000
-V cm_to_m1_w1|cm_to_m1_w1_f40|0.091503 -0.828712 0.000000
-V cm_to_m1_w1|cm_to_m1_w1_f60|0.037275 -0.493064 0.000000
-V cm_to_m1_w1|cm_to_m1_w1_f80|-0.080633 -0.246309 0.000000
-V cm_to_m1_w1|cm_to_m1_w1_end|-0.414674 -0.309681 0.000000
-V cm_to_m1_w1|cm_to_m1_w1_walking|1.000000
-END cm_to_m1_w1
-BEGIN cm_to_m2_w1
-V cm_to_m2_w1|cm_to_m2_w1_f0|0.200000 -1.500000 0.000000
-V cm_to_m2_w1|cm_to_m2_w1_f20|0.145737 -1.164359 0.000000
-V cm_to_m2_w1|cm_to_m2_w1_f40|0.091503 -0.828712 0.000000
-V cm_to_m2_w1|cm_to_m2_w1_f60|0.037275 -0.493064 0.000000
-V cm_to_m2_w1|cm_to_m2_w1_f80|-0.080633 -0.246309 0.000000
-V cm_to_m2_w1|cm_to_m2_w1_end|-0.414674 -0.309681 0.000000
-V cm_to_m2_w1|cm_to_m2_w1_walking|1.000000
-END cm_to_m2_w1
-BEGIN cm_to_m0_w2
-V cm_to_m0_w2|cm_to_m0_w2_f0|0.200000 -1.500000 0.000000
-V cm_to_m0_w2|cm_to_m0_w2_f20|0.145737 -1.164359 0.000000
-V cm_to_m0_w2|cm_to_m0_w2_f40|0.091503 -0.828712 0.000000
-V cm_to_m0_w2|cm_to_m0_w2_f60|0.040330 -0.546173 0.000000
-V cm_to_m0_w2|cm_to_m0_w2_f80|-0.001352 -0.547260 0.000000
-V cm_to_m0_w2|cm_to_m0_w2_end|-0.057649 -0.545035 0.000000
-V cm_to_m0_w2|cm_to_m0_w2_walking|1.000000
-END cm_to_m0_w2
-BEGIN cm_to_m1_w2
-V cm_to_m1_w2|cm_to_m1_w2_f0|0.200000 -1.500000 0.000000
-V cm_to_m1_w2|cm_to_m1_w2_f20|0.145737 -1.164359 0.000000
-V cm_to_m1_w2|cm_to_m1_w2_f40|0.091503 -0.828712 0.000000
-V cm_to_m1_w2|cm_to_m1_w2_f60|0.040330 -0.546173 0.000000
-V cm_to_m1_w2|cm_to_m1_w2_f80|-0.001352 -0.547260 0.000000
-V cm_to_m1_w2|cm_to_m1_w2_end|-0.057649 -0.545035 0.000000
-V cm_to_m1_w2|cm_to_m1_w2_walking|1.000000
-END cm_to_m1_w2
-BEGIN cm_to_m2_w2
-V cm_to_m2_w2|cm_to_m2_w2_f0|0.200000 -1.500000 0.000000
-V cm_to_m2_w2|cm_to_m2_w2_f20|0.145737 -1.164359 0.000000
-V cm_to_m2_w2|cm_to_m2_w2_f40|0.091503 -0.828712 0.000000
-V cm_to_m2_w2|cm_to_m2_w2_f60|0.040330 -0.546173 0.000000
-V cm_to_m2_w2|cm_to_m2_w2_f80|-0.001352 -0.547260 0.000000
-V cm_to_m2_w2|cm_to_m2_w2_end|-0.057649 -0.545035 0.000000
-V cm_to_m2_w2|cm_to_m2_w2_walking|1.000000
-END cm_to_m2_w2
-BEGIN cm_forward_s1_m0_w0
-V cm_forward_s1_m0_w0|cm_forward_s1_m0_w0_f0|0.200000 -1.900000 0.000000
-V cm_forward_s1_m0_w0|cm_forward_s1_m0_w0_f20|0.083681 -1.580517 0.000000
-V cm_forward_s1_m0_w0|cm_forward_s1_m0_w0_f40|-0.032637 -1.261033 0.000000
-V cm_forward_s1_m0_w0|cm_forward_s1_m0_w0_f60|-0.148956 -0.941550 0.000000
-V cm_forward_s1_m0_w0|cm_forward_s1_m0_w0_f80|-0.265274 -0.622065 0.000000
-V cm_forward_s1_m0_w0|cm_forward_s1_m0_w0_end|-0.381593 -0.302581 0.000000
-V cm_forward_s1_m0_w0|cm_forward_s1_m0_w0_walking|nil
-END cm_forward_s1_m0_w0
-BEGIN cm_forward_s1_m1_w0
-V cm_forward_s1_m1_w0|cm_forward_s1_m1_w0_f0|0.200000 -1.900000 0.000000
-V cm_forward_s1_m1_w0|cm_forward_s1_m1_w0_f20|0.083681 -1.580517 0.000000
-V cm_forward_s1_m1_w0|cm_forward_s1_m1_w0_f40|-0.032637 -1.261033 0.000000
-V cm_forward_s1_m1_w0|cm_forward_s1_m1_w0_f60|-0.148956 -0.941550 0.000000
-V cm_forward_s1_m1_w0|cm_forward_s1_m1_w0_f80|-0.265274 -0.622065 0.000000
-V cm_forward_s1_m1_w0|cm_forward_s1_m1_w0_end|-0.381593 -0.302581 0.000000
-V cm_forward_s1_m1_w0|cm_forward_s1_m1_w0_walking|nil
-END cm_forward_s1_m1_w0
-BEGIN cm_forward_s1_m2_w0
-V cm_forward_s1_m2_w0|cm_forward_s1_m2_w0_f0|0.200000 -1.900000 0.000000
-V cm_forward_s1_m2_w0|cm_forward_s1_m2_w0_f20|0.083681 -1.580517 0.000000
-V cm_forward_s1_m2_w0|cm_forward_s1_m2_w0_f40|-0.032637 -1.261033 0.000000
-V cm_forward_s1_m2_w0|cm_forward_s1_m2_w0_f60|-0.148956 -0.941550 0.000000
-V cm_forward_s1_m2_w0|cm_forward_s1_m2_w0_f80|-0.265274 -0.622065 0.000000
-V cm_forward_s1_m2_w0|cm_forward_s1_m2_w0_end|-0.381593 -0.302581 0.000000
-V cm_forward_s1_m2_w0|cm_forward_s1_m2_w0_walking|nil
-END cm_forward_s1_m2_w0
-BEGIN cm_forward_s1_m0_w1
-V cm_forward_s1_m0_w1|cm_forward_s1_m0_w1_f0|0.200000 -1.900000 0.000000
-V cm_forward_s1_m0_w1|cm_forward_s1_m0_w1_f20|0.083681 -1.580517 0.000000
-V cm_forward_s1_m0_w1|cm_forward_s1_m0_w1_f40|-0.032637 -1.261033 0.000000
-V cm_forward_s1_m0_w1|cm_forward_s1_m0_w1_f60|-0.148956 -0.941550 0.000000
-V cm_forward_s1_m0_w1|cm_forward_s1_m0_w1_f80|-0.448622 -0.884083 0.000000
-V cm_forward_s1_m0_w1|cm_forward_s1_m0_w1_end|-0.788500 -0.884083 0.000000
-V cm_forward_s1_m0_w1|cm_forward_s1_m0_w1_walking|nil
-END cm_forward_s1_m0_w1
-BEGIN cm_forward_s1_m1_w1
-V cm_forward_s1_m1_w1|cm_forward_s1_m1_w1_f0|0.200000 -1.900000 0.000000
-V cm_forward_s1_m1_w1|cm_forward_s1_m1_w1_f20|0.083681 -1.580517 0.000000
-V cm_forward_s1_m1_w1|cm_forward_s1_m1_w1_f40|-0.032637 -1.261033 0.000000
-V cm_forward_s1_m1_w1|cm_forward_s1_m1_w1_f60|-0.148956 -0.941550 0.000000
-V cm_forward_s1_m1_w1|cm_forward_s1_m1_w1_f80|-0.448622 -0.884083 0.000000
-V cm_forward_s1_m1_w1|cm_forward_s1_m1_w1_end|-0.788500 -0.884083 0.000000
-V cm_forward_s1_m1_w1|cm_forward_s1_m1_w1_walking|nil
-END cm_forward_s1_m1_w1
-BEGIN cm_forward_s1_m2_w1
-V cm_forward_s1_m2_w1|cm_forward_s1_m2_w1_f0|0.200000 -1.900000 0.000000
-V cm_forward_s1_m2_w1|cm_forward_s1_m2_w1_f20|0.083681 -1.580517 0.000000
-V cm_forward_s1_m2_w1|cm_forward_s1_m2_w1_f40|-0.032637 -1.261033 0.000000
-V cm_forward_s1_m2_w1|cm_forward_s1_m2_w1_f60|-0.148956 -0.941550 0.000000
-V cm_forward_s1_m2_w1|cm_forward_s1_m2_w1_f80|-0.448622 -0.884083 0.000000
-V cm_forward_s1_m2_w1|cm_forward_s1_m2_w1_end|-0.788500 -0.884083 0.000000
-V cm_forward_s1_m2_w1|cm_forward_s1_m2_w1_walking|nil
-END cm_forward_s1_m2_w1
-BEGIN cm_forward_s1_m0_w2
-V cm_forward_s1_m0_w2|cm_forward_s1_m0_w2_f0|0.200000 -1.900000 0.000000
-V cm_forward_s1_m0_w2|cm_forward_s1_m0_w2_f20|0.088221 -1.666070 0.000000
-V cm_forward_s1_m0_w2|cm_forward_s1_m0_w2_f40|-0.022621 -1.668017 0.000000
-V cm_forward_s1_m0_w2|cm_forward_s1_m0_w2_f60|-0.153960 -1.661799 0.000000
-V cm_forward_s1_m0_w2|cm_forward_s1_m0_w2_f80|-0.307920 -1.642603 0.000000
-V cm_forward_s1_m0_w2|cm_forward_s1_m0_w2_end|-0.485548 -1.603952 0.000000
-V cm_forward_s1_m0_w2|cm_forward_s1_m0_w2_walking|nil
-END cm_forward_s1_m0_w2
-BEGIN cm_forward_s1_m1_w2
-V cm_forward_s1_m1_w2|cm_forward_s1_m1_w2_f0|0.200000 -1.900000 0.000000
-V cm_forward_s1_m1_w2|cm_forward_s1_m1_w2_f20|0.088221 -1.666070 0.000000
-V cm_forward_s1_m1_w2|cm_forward_s1_m1_w2_f40|-0.022621 -1.668017 0.000000
-V cm_forward_s1_m1_w2|cm_forward_s1_m1_w2_f60|-0.153960 -1.661799 0.000000
-V cm_forward_s1_m1_w2|cm_forward_s1_m1_w2_f80|-0.307920 -1.642603 0.000000
-V cm_forward_s1_m1_w2|cm_forward_s1_m1_w2_end|-0.485548 -1.603952 0.000000
-V cm_forward_s1_m1_w2|cm_forward_s1_m1_w2_walking|nil
-END cm_forward_s1_m1_w2
-BEGIN cm_forward_s1_m2_w2
-V cm_forward_s1_m2_w2|cm_forward_s1_m2_w2_f0|0.200000 -1.900000 0.000000
-V cm_forward_s1_m2_w2|cm_forward_s1_m2_w2_f20|0.088221 -1.666070 0.000000
-V cm_forward_s1_m2_w2|cm_forward_s1_m2_w2_f40|-0.022621 -1.668017 0.000000
-V cm_forward_s1_m2_w2|cm_forward_s1_m2_w2_f60|-0.153960 -1.661799 0.000000
-V cm_forward_s1_m2_w2|cm_forward_s1_m2_w2_f80|-0.307920 -1.642603 0.000000
-V cm_forward_s1_m2_w2|cm_forward_s1_m2_w2_end|-0.485548 -1.603952 0.000000
-V cm_forward_s1_m2_w2|cm_forward_s1_m2_w2_walking|nil
-END cm_forward_s1_m2_w2
-BEGIN mf_cr_box_wall_box
-V mf_cr_box_wall_box|cr_box_wall_box_f0|0.500000 -1.900000 0.000000
-V mf_cr_box_wall_box|cr_box_wall_box_f40|0.267363 -1.261033 0.000000
-V mf_cr_box_wall_box|cr_box_wall_box_f80|0.034726 -0.622065 0.000000
-V mf_cr_box_wall_box|cr_box_wall_box_f120|-0.449086 -0.342044 0.000000
-V mf_cr_box_wall_box|cr_box_wall_box_end|-0.759969 0.185104 0.000000
-END mf_cr_box_wall_box
-BEGIN mf_cr_box_wall_sphere
-V mf_cr_box_wall_sphere|cr_box_wall_sphere_f0|0.500000 -1.900000 0.000000
-V mf_cr_box_wall_sphere|cr_box_wall_sphere_f40|0.267363 -1.261033 0.000000
-V mf_cr_box_wall_sphere|cr_box_wall_sphere_f80|0.041386 -0.733160 0.000000
-V mf_cr_box_wall_sphere|cr_box_wall_sphere_f120|-0.249434 -0.700157 0.000000
-V mf_cr_box_wall_sphere|cr_box_wall_sphere_end|-0.686349 -0.433582 0.000000
-END mf_cr_box_wall_sphere
-BEGIN mf_cr_tbox_wall_box
-V mf_cr_tbox_wall_box|cr_tbox_wall_box_f0|0.500000 -1.900000 0.000000
-V mf_cr_tbox_wall_box|cr_tbox_wall_box_f40|0.267363 -1.261033 0.000000
-V mf_cr_tbox_wall_box|cr_tbox_wall_box_f80|0.034726 -0.622065 0.000000
-V mf_cr_tbox_wall_box|cr_tbox_wall_box_f120|-0.449086 -0.342044 0.000000
-V mf_cr_tbox_wall_box|cr_tbox_wall_box_end|-0.759969 0.185104 0.000000
-END mf_cr_tbox_wall_box
-BEGIN mf_cr_tbox_wall_sphere
-V mf_cr_tbox_wall_sphere|cr_tbox_wall_sphere_f0|0.500000 -1.900000 0.000000
-V mf_cr_tbox_wall_sphere|cr_tbox_wall_sphere_f40|0.267363 -1.261033 0.000000
-V mf_cr_tbox_wall_sphere|cr_tbox_wall_sphere_f80|0.041386 -0.733160 0.000000
-V mf_cr_tbox_wall_sphere|cr_tbox_wall_sphere_f120|-0.249434 -0.700157 0.000000
-V mf_cr_tbox_wall_sphere|cr_tbox_wall_sphere_end|-0.686349 -0.433582 0.000000
-END mf_cr_tbox_wall_sphere
-BEGIN mf_cr_trad_wall_box
-V mf_cr_trad_wall_box|cr_trad_wall_box_f0|0.500000 -1.900000 0.000000
-V mf_cr_trad_wall_box|cr_trad_wall_box_f40|0.267363 -1.261033 0.000000
-V mf_cr_trad_wall_box|cr_trad_wall_box_f80|0.034726 -0.622065 0.000000
-V mf_cr_trad_wall_box|cr_trad_wall_box_f120|-0.449086 -0.342044 0.000000
-V mf_cr_trad_wall_box|cr_trad_wall_box_end|-0.759969 0.185104 0.000000
-END mf_cr_trad_wall_box
-BEGIN mf_cr_trad_wall_sphere
-V mf_cr_trad_wall_sphere|cr_trad_wall_sphere_f0|0.500000 -1.900000 0.000000
-V mf_cr_trad_wall_sphere|cr_trad_wall_sphere_f40|0.267363 -1.261033 0.000000
-V mf_cr_trad_wall_sphere|cr_trad_wall_sphere_f80|0.041386 -0.733160 0.000000
-V mf_cr_trad_wall_sphere|cr_trad_wall_sphere_f120|-0.249434 -0.700157 0.000000
-V mf_cr_trad_wall_sphere|cr_trad_wall_sphere_end|-0.686349 -0.433582 0.000000
-END mf_cr_trad_wall_sphere
-BEGIN mf_cr_brad_wall_box
-V mf_cr_brad_wall_box|cr_brad_wall_box_f0|0.500000 -1.900000 0.000000
-V mf_cr_brad_wall_box|cr_brad_wall_box_f40|0.267363 -1.261033 0.000000
-V mf_cr_brad_wall_box|cr_brad_wall_box_f80|0.034726 -0.622065 0.000000
-V mf_cr_brad_wall_box|cr_brad_wall_box_f120|-0.449086 -0.342044 0.000000
-V mf_cr_brad_wall_box|cr_brad_wall_box_end|-0.759969 0.185104 0.000000
-END mf_cr_brad_wall_box
-BEGIN mf_cr_brad_wall_sphere
-V mf_cr_brad_wall_sphere|cr_brad_wall_sphere_f0|0.500000 -1.900000 0.000000
-V mf_cr_brad_wall_sphere|cr_brad_wall_sphere_f40|0.267363 -1.261033 0.000000
-V mf_cr_brad_wall_sphere|cr_brad_wall_sphere_f80|0.041386 -0.733160 0.000000
-V mf_cr_brad_wall_sphere|cr_brad_wall_sphere_f120|-0.249434 -0.700157 0.000000
-V mf_cr_brad_wall_sphere|cr_brad_wall_sphere_end|-0.686349 -0.433582 0.000000
-END mf_cr_brad_wall_sphere
-BEGIN mf_cr_nodex_wall_box
-V mf_cr_nodex_wall_box|cr_nodex_wall_box_f0|0.500000 -1.900000 0.000000
-V mf_cr_nodex_wall_box|cr_nodex_wall_box_f40|0.267363 -1.261033 0.000000
-V mf_cr_nodex_wall_box|cr_nodex_wall_box_f80|0.034726 -0.622065 0.000000
-V mf_cr_nodex_wall_box|cr_nodex_wall_box_f120|-0.382029 -0.246216 0.000000
-V mf_cr_nodex_wall_box|cr_nodex_wall_box_end|-0.614666 0.392752 0.000000
-END mf_cr_nodex_wall_box
-BEGIN mf_cr_nodex_wall_sphere
-V mf_cr_nodex_wall_sphere|cr_nodex_wall_sphere_f0|0.500000 -1.900000 0.000000
-V mf_cr_nodex_wall_sphere|cr_nodex_wall_sphere_f40|0.267363 -1.261033 0.000000
-V mf_cr_nodex_wall_sphere|cr_nodex_wall_sphere_f80|0.034726 -0.622065 0.000000
-V mf_cr_nodex_wall_sphere|cr_nodex_wall_sphere_f120|-0.362915 -0.157600 0.000000
-V mf_cr_nodex_wall_sphere|cr_nodex_wall_sphere_end|-0.596361 0.481055 0.000000
-END mf_cr_nodex_wall_sphere
-BEGIN mf_cr_tnodex_wall_box
-V mf_cr_tnodex_wall_box|cr_tnodex_wall_box_f0|0.500000 -1.900000 0.000000
-V mf_cr_tnodex_wall_box|cr_tnodex_wall_box_f40|0.267363 -1.261033 0.000000
-V mf_cr_tnodex_wall_box|cr_tnodex_wall_box_f80|0.034726 -0.622065 0.000000
-V mf_cr_tnodex_wall_box|cr_tnodex_wall_box_f120|-0.382029 -0.246216 0.000000
-V mf_cr_tnodex_wall_box|cr_tnodex_wall_box_end|-0.614666 0.392752 0.000000
-END mf_cr_tnodex_wall_box
-BEGIN mf_cr_tnodex_wall_sphere
-V mf_cr_tnodex_wall_sphere|cr_tnodex_wall_sphere_f0|0.500000 -1.900000 0.000000
-V mf_cr_tnodex_wall_sphere|cr_tnodex_wall_sphere_f40|0.267363 -1.261033 0.000000
-V mf_cr_tnodex_wall_sphere|cr_tnodex_wall_sphere_f80|0.034726 -0.622065 0.000000
-V mf_cr_tnodex_wall_sphere|cr_tnodex_wall_sphere_f120|-0.362915 -0.157600 0.000000
-V mf_cr_tnodex_wall_sphere|cr_tnodex_wall_sphere_end|-0.596361 0.481055 0.000000
-END mf_cr_tnodex_wall_sphere
-BEGIN mf_cr_float_wall_box
-V mf_cr_float_wall_box|cr_float_wall_box_f0|0.500000 -1.900000 0.000000
-V mf_cr_float_wall_box|cr_float_wall_box_f40|0.267363 -1.261033 0.000000
-V mf_cr_float_wall_box|cr_float_wall_box_f80|0.034726 -0.622065 0.000000
-V mf_cr_float_wall_box|cr_float_wall_box_f120|-0.382038 -0.246227 0.000000
-V mf_cr_float_wall_box|cr_float_wall_box_end|-0.614675 0.327187 0.000000
-END mf_cr_float_wall_box
-BEGIN mf_cr_float_wall_sphere
-V mf_cr_float_wall_sphere|cr_float_wall_sphere_f0|0.500000 -1.900000 0.000000
-V mf_cr_float_wall_sphere|cr_float_wall_sphere_f40|0.267363 -1.261033 0.000000
-V mf_cr_float_wall_sphere|cr_float_wall_sphere_f80|0.034726 -0.622065 0.000000
-V mf_cr_float_wall_sphere|cr_float_wall_sphere_f120|-0.288801 -0.234282 0.000000
-V mf_cr_float_wall_sphere|cr_float_wall_sphere_end|-0.605700 0.325116 -0.001982
-END mf_cr_float_wall_sphere
-BEGIN mf_cr_tfloat_wall_box
-V mf_cr_tfloat_wall_box|cr_tfloat_wall_box_f0|0.500000 -1.900000 0.000000
-V mf_cr_tfloat_wall_box|cr_tfloat_wall_box_f40|0.267363 -1.261033 0.000000
-V mf_cr_tfloat_wall_box|cr_tfloat_wall_box_f80|0.034726 -0.622065 0.000000
-V mf_cr_tfloat_wall_box|cr_tfloat_wall_box_f120|-0.382038 -0.246227 0.000000
-V mf_cr_tfloat_wall_box|cr_tfloat_wall_box_end|-0.614675 0.327187 0.000000
-END mf_cr_tfloat_wall_box
-BEGIN mf_cr_tfloat_wall_sphere
-V mf_cr_tfloat_wall_sphere|cr_tfloat_wall_sphere_f0|0.500000 -1.900000 0.000000
-V mf_cr_tfloat_wall_sphere|cr_tfloat_wall_sphere_f40|0.267363 -1.261033 0.000000
-V mf_cr_tfloat_wall_sphere|cr_tfloat_wall_sphere_f80|0.034726 -0.622065 0.000000
-V mf_cr_tfloat_wall_sphere|cr_tfloat_wall_sphere_f120|-0.288801 -0.234282 0.000000
-V mf_cr_tfloat_wall_sphere|cr_tfloat_wall_sphere_end|-0.605700 0.325116 -0.001982
-END mf_cr_tfloat_wall_sphere
-BEGIN mf_cr_wide_wall_box
-V mf_cr_wide_wall_box|cr_wide_wall_box_f0|0.500000 -1.900000 0.000000
-V mf_cr_wide_wall_box|cr_wide_wall_box_f40|0.267363 -1.261033 0.000000
-V mf_cr_wide_wall_box|cr_wide_wall_box_f80|0.034726 -0.622065 0.000000
-V mf_cr_wide_wall_box|cr_wide_wall_box_f120|-0.431592 -0.317044 0.000000
-V mf_cr_wide_wall_box|cr_wide_wall_box_end|-0.854255 0.050362 0.000000
-END mf_cr_wide_wall_box
-BEGIN mf_cr_wide_wall_sphere
-V mf_cr_wide_wall_sphere|cr_wide_wall_sphere_f0|0.500000 -1.900000 0.000000
-V mf_cr_wide_wall_sphere|cr_wide_wall_sphere_f40|0.267363 -1.261033 0.000000
-V mf_cr_wide_wall_sphere|cr_wide_wall_sphere_f80|0.045780 -0.783177 0.000000
-V mf_cr_wide_wall_sphere|cr_wide_wall_sphere_f120|-0.238387 -0.754937 0.000000
-V mf_cr_wide_wall_sphere|cr_wide_wall_sphere_end|-0.671363 -0.519726 0.000000
-END mf_cr_wide_wall_sphere
-BEGIN mf_cr_rot_wall_box
-V mf_cr_rot_wall_box|cr_rot_wall_box_f0|0.500000 -1.900000 0.000000
-V mf_cr_rot_wall_box|cr_rot_wall_box_f40|0.267363 -1.261033 0.000000
-V mf_cr_rot_wall_box|cr_rot_wall_box_f80|0.034726 -0.622065 0.000000
-V mf_cr_rot_wall_box|cr_rot_wall_box_f120|-0.538011 -0.469122 0.000000
-V mf_cr_rot_wall_box|cr_rot_wall_box_end|-0.770648 0.169846 0.000000
-END mf_cr_rot_wall_box
-BEGIN mf_cr_rot_wall_sphere
-V mf_cr_rot_wall_sphere|cr_rot_wall_sphere_f0|0.500000 -1.900000 0.000000
-V mf_cr_rot_wall_sphere|cr_rot_wall_sphere_f40|0.267363 -1.261033 0.000000
-V mf_cr_rot_wall_sphere|cr_rot_wall_sphere_f80|0.045780 -0.783177 0.000000
-V mf_cr_rot_wall_sphere|cr_rot_wall_sphere_f120|-0.238387 -0.754937 0.000000
-V mf_cr_rot_wall_sphere|cr_rot_wall_sphere_end|-0.671363 -0.519726 0.000000
-END mf_cr_rot_wall_sphere
-BEGIN mf_cr_trot_wall_box
-V mf_cr_trot_wall_box|cr_trot_wall_box_f0|0.500000 -1.900000 0.000000
-V mf_cr_trot_wall_box|cr_trot_wall_box_f40|0.267363 -1.261033 0.000000
-V mf_cr_trot_wall_box|cr_trot_wall_box_f80|0.034726 -0.622065 0.000000
-V mf_cr_trot_wall_box|cr_trot_wall_box_f120|-0.538011 -0.469122 0.000000
-V mf_cr_trot_wall_box|cr_trot_wall_box_end|-0.770648 0.169846 0.000000
-END mf_cr_trot_wall_box
-BEGIN mf_cr_trot_wall_sphere
-V mf_cr_trot_wall_sphere|cr_trot_wall_sphere_f0|0.500000 -1.900000 0.000000
-V mf_cr_trot_wall_sphere|cr_trot_wall_sphere_f40|0.267363 -1.261033 0.000000
-V mf_cr_trot_wall_sphere|cr_trot_wall_sphere_f80|0.045780 -0.783177 0.000000
-V mf_cr_trot_wall_sphere|cr_trot_wall_sphere_f120|-0.238387 -0.754937 0.000000
-V mf_cr_trot_wall_sphere|cr_trot_wall_sphere_end|-0.671363 -0.519726 0.000000
-END mf_cr_trot_wall_sphere
-BEGIN mf_cr_rotx_wall_box
-V mf_cr_rotx_wall_box|cr_rotx_wall_box_f0|0.500000 -1.900000 0.000000
-V mf_cr_rotx_wall_box|cr_rotx_wall_box_f40|0.267363 -1.261033 0.000000
-V mf_cr_rotx_wall_box|cr_rotx_wall_box_f80|0.034726 -0.622065 0.000000
-V mf_cr_rotx_wall_box|cr_rotx_wall_box_f120|-0.197911 0.016903 0.000000
-V mf_cr_rotx_wall_box|cr_rotx_wall_box_end|-0.430548 0.655871 0.000000
-END mf_cr_rotx_wall_box
-BEGIN mf_cr_rotx_wall_sphere
-V mf_cr_rotx_wall_sphere|cr_rotx_wall_sphere_f0|0.500000 -1.900000 0.000000
-V mf_cr_rotx_wall_sphere|cr_rotx_wall_sphere_f40|0.267363 -1.261033 0.000000
-V mf_cr_rotx_wall_sphere|cr_rotx_wall_sphere_f80|0.034726 -0.622065 0.000000
-V mf_cr_rotx_wall_sphere|cr_rotx_wall_sphere_f120|-0.197911 0.016903 0.000000
-V mf_cr_rotx_wall_sphere|cr_rotx_wall_sphere_end|-0.430548 0.655871 0.000000
-END mf_cr_rotx_wall_sphere
-BEGIN mf_cr_trotx_wall_box
-V mf_cr_trotx_wall_box|cr_trotx_wall_box_f0|0.500000 -1.900000 0.000000
-V mf_cr_trotx_wall_box|cr_trotx_wall_box_f40|0.267363 -1.261033 0.000000
-V mf_cr_trotx_wall_box|cr_trotx_wall_box_f80|0.034726 -0.622065 0.000000
-V mf_cr_trotx_wall_box|cr_trotx_wall_box_f120|-0.197911 0.016903 0.000000
-V mf_cr_trotx_wall_box|cr_trotx_wall_box_end|-0.430548 0.655871 0.000000
-END mf_cr_trotx_wall_box
-BEGIN mf_cr_trotx_wall_sphere
-V mf_cr_trotx_wall_sphere|cr_trotx_wall_sphere_f0|0.500000 -1.900000 0.000000
-V mf_cr_trotx_wall_sphere|cr_trotx_wall_sphere_f40|0.267363 -1.261033 0.000000
-V mf_cr_trotx_wall_sphere|cr_trotx_wall_sphere_f80|0.034726 -0.622065 0.000000
-V mf_cr_trotx_wall_sphere|cr_trotx_wall_sphere_f120|-0.197911 0.016903 0.000000
-V mf_cr_trotx_wall_sphere|cr_trotx_wall_sphere_end|-0.430548 0.655871 0.000000
-END mf_cr_trotx_wall_sphere
-BEGIN mf_cr_piv_wall_box
-V mf_cr_piv_wall_box|cr_piv_wall_box_f0|0.500000 -1.900000 0.000000
-V mf_cr_piv_wall_box|cr_piv_wall_box_f40|0.267363 -1.261033 0.000000
-V mf_cr_piv_wall_box|cr_piv_wall_box_f80|0.034726 -0.622065 0.000000
-V mf_cr_piv_wall_box|cr_piv_wall_box_f120|-0.382029 -0.246216 0.000000
-V mf_cr_piv_wall_box|cr_piv_wall_box_end|-0.614666 0.392752 0.000000
-END mf_cr_piv_wall_box
-BEGIN mf_cr_piv_wall_sphere
-V mf_cr_piv_wall_sphere|cr_piv_wall_sphere_f0|0.500000 -1.900000 0.000000
-V mf_cr_piv_wall_sphere|cr_piv_wall_sphere_f40|0.267363 -1.261033 0.000000
-V mf_cr_piv_wall_sphere|cr_piv_wall_sphere_f80|0.034726 -0.622065 0.000000
-V mf_cr_piv_wall_sphere|cr_piv_wall_sphere_f120|-0.362915 -0.157600 0.000000
-V mf_cr_piv_wall_sphere|cr_piv_wall_sphere_end|-0.596361 0.481055 0.000000
-END mf_cr_piv_wall_sphere
-BEGIN mf_cr_tpiv_wall_box
-V mf_cr_tpiv_wall_box|cr_tpiv_wall_box_f0|0.500000 -1.900000 0.000000
-V mf_cr_tpiv_wall_box|cr_tpiv_wall_box_f40|0.267363 -1.261033 0.000000
-V mf_cr_tpiv_wall_box|cr_tpiv_wall_box_f80|0.034726 -0.622065 0.000000
-V mf_cr_tpiv_wall_box|cr_tpiv_wall_box_f120|-0.382029 -0.246216 0.000000
-V mf_cr_tpiv_wall_box|cr_tpiv_wall_box_end|-0.614666 0.392752 0.000000
-END mf_cr_tpiv_wall_box
-BEGIN mf_cr_tpiv_wall_sphere
-V mf_cr_tpiv_wall_sphere|cr_tpiv_wall_sphere_f0|0.500000 -1.900000 0.000000
-V mf_cr_tpiv_wall_sphere|cr_tpiv_wall_sphere_f40|0.267363 -1.261033 0.000000
-V mf_cr_tpiv_wall_sphere|cr_tpiv_wall_sphere_f80|0.034726 -0.622065 0.000000
-V mf_cr_tpiv_wall_sphere|cr_tpiv_wall_sphere_f120|-0.362915 -0.157600 0.000000
-V mf_cr_tpiv_wall_sphere|cr_tpiv_wall_sphere_end|-0.596361 0.481055 0.000000
-END mf_cr_tpiv_wall_sphere
-BEGIN mf_cr_prot_wall_box
-V mf_cr_prot_wall_box|cr_prot_wall_box_f0|0.500000 -1.900000 0.000000
-V mf_cr_prot_wall_box|cr_prot_wall_box_f40|0.267363 -1.261033 0.000000
-V mf_cr_prot_wall_box|cr_prot_wall_box_f80|0.034726 -0.622065 0.000000
-V mf_cr_prot_wall_box|cr_prot_wall_box_f120|-0.291641 -0.117044 0.000000
-V mf_cr_prot_wall_box|cr_prot_wall_box_end|-0.703135 0.266325 0.000000
-END mf_cr_prot_wall_box
-BEGIN mf_cr_prot_wall_sphere
-V mf_cr_prot_wall_sphere|cr_prot_wall_sphere_f0|0.500000 -1.900000 0.000000
-V mf_cr_prot_wall_sphere|cr_prot_wall_sphere_f40|0.267363 -1.261033 0.000000
-V mf_cr_prot_wall_sphere|cr_prot_wall_sphere_f80|0.034726 -0.622065 0.000000
-V mf_cr_prot_wall_sphere|cr_prot_wall_sphere_f120|-0.239928 -0.202737 0.000000
-V mf_cr_prot_wall_sphere|cr_prot_wall_sphere_end|-0.675637 0.055007 0.000000
-END mf_cr_prot_wall_sphere
-BEGIN mf_cr_tprot_wall_box
-V mf_cr_tprot_wall_box|cr_tprot_wall_box_f0|0.500000 -1.900000 0.000000
-V mf_cr_tprot_wall_box|cr_tprot_wall_box_f40|0.267363 -1.261033 0.000000
-V mf_cr_tprot_wall_box|cr_tprot_wall_box_f80|0.034726 -0.622065 0.000000
-V mf_cr_tprot_wall_box|cr_tprot_wall_box_f120|-0.291641 -0.117044 0.000000
-V mf_cr_tprot_wall_box|cr_tprot_wall_box_end|-0.703135 0.266325 0.000000
-END mf_cr_tprot_wall_box
-BEGIN mf_cr_tprot_wall_sphere
-V mf_cr_tprot_wall_sphere|cr_tprot_wall_sphere_f0|0.500000 -1.900000 0.000000
-V mf_cr_tprot_wall_sphere|cr_tprot_wall_sphere_f40|0.267363 -1.261033 0.000000
-V mf_cr_tprot_wall_sphere|cr_tprot_wall_sphere_f80|0.034726 -0.622065 0.000000
-V mf_cr_tprot_wall_sphere|cr_tprot_wall_sphere_f120|-0.239928 -0.202737 0.000000
-V mf_cr_tprot_wall_sphere|cr_tprot_wall_sphere_end|-0.675637 0.055007 0.000000
-END mf_cr_tprot_wall_sphere
-BEGIN mf_cr_tbox_mover_sphere
-V mf_cr_tbox_mover_sphere|cr_tbox_mover_sphere_f0|0.500000 -1.900000 0.000000
-V mf_cr_tbox_mover_sphere|cr_tbox_mover_sphere_f40|0.267363 -1.261033 0.000000
-V mf_cr_tbox_mover_sphere|cr_tbox_mover_sphere_f80|0.041386 -0.733160 0.000000
-V mf_cr_tbox_mover_sphere|cr_tbox_mover_sphere_f120|-0.249434 -0.700157 0.000000
-V mf_cr_tbox_mover_sphere|cr_tbox_mover_sphere_end|-0.686349 -0.433582 0.000000
-END mf_cr_tbox_mover_sphere
-BEGIN mf_cr_trad_mover_sphere
-V mf_cr_trad_mover_sphere|cr_trad_mover_sphere_f0|0.500000 -1.900000 0.000000
-V mf_cr_trad_mover_sphere|cr_trad_mover_sphere_f40|0.267363 -1.261033 0.000000
-V mf_cr_trad_mover_sphere|cr_trad_mover_sphere_f80|0.041386 -0.733160 0.000000
-V mf_cr_trad_mover_sphere|cr_trad_mover_sphere_f120|-0.249434 -0.700157 0.000000
-V mf_cr_trad_mover_sphere|cr_trad_mover_sphere_end|-0.686349 -0.433582 0.000000
-END mf_cr_trad_mover_sphere
-BEGIN mf_cr_brad_mover_sphere
-V mf_cr_brad_mover_sphere|cr_brad_mover_sphere_f0|0.500000 -1.900000 0.000000
-V mf_cr_brad_mover_sphere|cr_brad_mover_sphere_f40|0.267363 -1.261033 0.000000
-V mf_cr_brad_mover_sphere|cr_brad_mover_sphere_f80|0.041386 -0.733160 0.000000
-V mf_cr_brad_mover_sphere|cr_brad_mover_sphere_f120|-0.249434 -0.700157 0.000000
-V mf_cr_brad_mover_sphere|cr_brad_mover_sphere_end|-0.686349 -0.433582 0.000000
-END mf_cr_brad_mover_sphere
-BEGIN mf_cr_tnodex_mover_sphere
-V mf_cr_tnodex_mover_sphere|cr_tnodex_mover_sphere_f0|0.500000 -1.900000 0.000000
-V mf_cr_tnodex_mover_sphere|cr_tnodex_mover_sphere_f40|0.267363 -1.261033 0.000000
-V mf_cr_tnodex_mover_sphere|cr_tnodex_mover_sphere_f80|0.100819 -0.710548 0.000000
-V mf_cr_tnodex_mover_sphere|cr_tnodex_mover_sphere_f120|0.303216 -0.495391 0.000000
-V mf_cr_tnodex_mover_sphere|cr_tnodex_mover_sphere_end|0.463639 -0.006035 0.000000
-END mf_cr_tnodex_mover_sphere
-BEGIN mf_cr_tfloat_mover_sphere
-V mf_cr_tfloat_mover_sphere|cr_tfloat_mover_sphere_f0|0.500000 -1.900000 0.000000
-V mf_cr_tfloat_mover_sphere|cr_tfloat_mover_sphere_f40|0.267363 -1.261033 0.000000
-V mf_cr_tfloat_mover_sphere|cr_tfloat_mover_sphere_f80|0.034726 -0.622065 0.000000
-V mf_cr_tfloat_mover_sphere|cr_tfloat_mover_sphere_f120|-0.288801 -0.234282 0.000000
-V mf_cr_tfloat_mover_sphere|cr_tfloat_mover_sphere_end|-0.605700 0.325116 0.001982
-END mf_cr_tfloat_mover_sphere
-BEGIN mf_cr_rot_mover_sphere
-V mf_cr_rot_mover_sphere|cr_rot_mover_sphere_f0|0.500000 -1.900000 0.000000
-V mf_cr_rot_mover_sphere|cr_rot_mover_sphere_f40|0.267363 -1.261033 0.000000
-V mf_cr_rot_mover_sphere|cr_rot_mover_sphere_f80|0.045780 -0.783177 0.000000
-V mf_cr_rot_mover_sphere|cr_rot_mover_sphere_f120|-0.238387 -0.754937 0.000000
-V mf_cr_rot_mover_sphere|cr_rot_mover_sphere_end|-0.671363 -0.519726 0.000000
-END mf_cr_rot_mover_sphere
-BEGIN mf_cr_trot_mover_sphere
-V mf_cr_trot_mover_sphere|cr_trot_mover_sphere_f0|0.500000 -1.900000 0.000000
-V mf_cr_trot_mover_sphere|cr_trot_mover_sphere_f40|0.267363 -1.261033 0.000000
-V mf_cr_trot_mover_sphere|cr_trot_mover_sphere_f80|0.045780 -0.783177 0.000000
-V mf_cr_trot_mover_sphere|cr_trot_mover_sphere_f120|-0.238387 -0.754937 0.000000
-V mf_cr_trot_mover_sphere|cr_trot_mover_sphere_end|-0.671363 -0.519726 0.000000
-END mf_cr_trot_mover_sphere
-BEGIN mf_cr_rotx_mover_sphere
-V mf_cr_rotx_mover_sphere|cr_rotx_mover_sphere_f0|0.500000 -1.900000 0.000000
-V mf_cr_rotx_mover_sphere|cr_rotx_mover_sphere_f40|0.267363 -1.261033 0.000000
-V mf_cr_rotx_mover_sphere|cr_rotx_mover_sphere_f80|0.034726 -0.622065 0.000000
-V mf_cr_rotx_mover_sphere|cr_rotx_mover_sphere_f120|-0.197911 0.016903 0.000000
-V mf_cr_rotx_mover_sphere|cr_rotx_mover_sphere_end|-0.430548 0.655871 0.000000
-END mf_cr_rotx_mover_sphere
-BEGIN mf_cr_trotx_mover_sphere
-V mf_cr_trotx_mover_sphere|cr_trotx_mover_sphere_f0|0.500000 -1.900000 0.000000
-V mf_cr_trotx_mover_sphere|cr_trotx_mover_sphere_f40|0.267363 -1.261033 0.000000
-V mf_cr_trotx_mover_sphere|cr_trotx_mover_sphere_f80|0.034726 -0.622065 0.000000
-V mf_cr_trotx_mover_sphere|cr_trotx_mover_sphere_f120|-0.197911 0.016903 0.000000
-V mf_cr_trotx_mover_sphere|cr_trotx_mover_sphere_end|-0.430548 0.655871 0.000000
-END mf_cr_trotx_mover_sphere
-BEGIN mf_cr_piv_mover_sphere
-V mf_cr_piv_mover_sphere|cr_piv_mover_sphere_f0|0.500000 -1.900000 0.000000
-V mf_cr_piv_mover_sphere|cr_piv_mover_sphere_f40|0.267363 -1.261033 0.000000
-V mf_cr_piv_mover_sphere|cr_piv_mover_sphere_f80|0.100819 -0.710548 0.000000
-V mf_cr_piv_mover_sphere|cr_piv_mover_sphere_f120|0.303216 -0.495391 0.000000
-V mf_cr_piv_mover_sphere|cr_piv_mover_sphere_end|0.463639 -0.006035 0.000000
-END mf_cr_piv_mover_sphere
-BEGIN mf_cr_tpiv_mover_sphere
-V mf_cr_tpiv_mover_sphere|cr_tpiv_mover_sphere_f0|0.500000 -1.900000 0.000000
-V mf_cr_tpiv_mover_sphere|cr_tpiv_mover_sphere_f40|0.267363 -1.261033 0.000000
-V mf_cr_tpiv_mover_sphere|cr_tpiv_mover_sphere_f80|0.100819 -0.710548 0.000000
-V mf_cr_tpiv_mover_sphere|cr_tpiv_mover_sphere_f120|0.303216 -0.495391 0.000000
-V mf_cr_tpiv_mover_sphere|cr_tpiv_mover_sphere_end|0.463639 -0.006035 0.000000
-END mf_cr_tpiv_mover_sphere
-BEGIN mf_cr_prot_mover_sphere
-V mf_cr_prot_mover_sphere|cr_prot_mover_sphere_f0|0.500000 -1.900000 0.000000
-V mf_cr_prot_mover_sphere|cr_prot_mover_sphere_f40|0.267363 -1.261033 0.000000
-V mf_cr_prot_mover_sphere|cr_prot_mover_sphere_f80|0.016541 -1.190997 0.000000
-V mf_cr_prot_mover_sphere|cr_prot_mover_sphere_f120|-0.397278 -1.011096 0.000000
-V mf_cr_prot_mover_sphere|cr_prot_mover_sphere_end|-0.747856 -0.476309 0.000000
-END mf_cr_prot_mover_sphere
-BEGIN mf_cr_tprot_mover_sphere
-V mf_cr_tprot_mover_sphere|cr_tprot_mover_sphere_f0|0.500000 -1.900000 0.000000
-V mf_cr_tprot_mover_sphere|cr_tprot_mover_sphere_f40|0.267363 -1.261033 0.000000
-V mf_cr_tprot_mover_sphere|cr_tprot_mover_sphere_f80|0.016541 -1.190997 0.000000
-V mf_cr_tprot_mover_sphere|cr_tprot_mover_sphere_f120|-0.397278 -1.011096 0.000000
-V mf_cr_tprot_mover_sphere|cr_tprot_mover_sphere_end|-0.747856 -0.476309 0.000000
-END mf_cr_tprot_mover_sphere
-BEGIN mf_rects
-V mf_rects|cr_box_rect|640.000000
-V mf_rects|cr_box_node0|4.000000 -4.000000 0.000000
-V mf_rects|cr_box_node1|0.000000 0.000000 0.000000
-V mf_rects|cr_box_node2|0.000000 0.000000 1.700000
-V mf_rects|cr_box_node3|0.300000 0.100000 1.200000
-V mf_rects|cr_tbox_rect|640.000000
-V mf_rects|cr_tbox_node0|0.500000 -0.500000 0.000000
-V mf_rects|cr_tbox_node1|0.500000 -0.500000 0.000000
-V mf_rects|cr_tbox_node2|0.500000 -0.500000 1.700000
-V mf_rects|cr_tbox_node3|0.800000 -0.400000 1.200000
-V mf_rects|cr_trad_rect|640.000000
-V mf_rects|cr_trad_node0|0.500000 -0.500000 0.000000
-V mf_rects|cr_trad_node1|0.500000 -0.500000 0.000000
-V mf_rects|cr_trad_node2|0.500000 -0.500000 1.700000
-V mf_rects|cr_trad_node3|0.800000 -0.400000 1.200000
-V mf_rects|cr_brad_rect|640.000000
-V mf_rects|cr_brad_node0|4.000000 -4.000000 0.000000
-V mf_rects|cr_brad_node1|0.000000 0.000000 0.000000
-V mf_rects|cr_brad_node2|0.000000 0.000000 1.700000
-V mf_rects|cr_brad_node3|0.300000 0.100000 1.200000
-V mf_rects|cr_tnodex_rect|640.000000
-V mf_rects|cr_tnodex_node0|0.500000 -0.500000 0.000000
-V mf_rects|cr_tnodex_node1|1.000000 -0.500000 0.000000
-V mf_rects|cr_tnodex_node2|1.000000 -0.500000 1.700000
-V mf_rects|cr_tnodex_node3|1.300000 -0.400000 1.200000
-V mf_rects|cr_tfloat_rect|640.000000
-V mf_rects|cr_tfloat_node0|0.500000 -0.500000 0.000000
-V mf_rects|cr_tfloat_node1|0.500000 -0.500000 0.000000
-V mf_rects|cr_tfloat_node2|0.500000 -0.500000 1.700000
-V mf_rects|cr_tfloat_node3|0.800000 -0.400000 1.200000
-V mf_rects|cr_wide_rect|640.000000
-V mf_rects|cr_wide_node0|4.000000 -4.000000 0.000000
-V mf_rects|cr_wide_node1|0.000000 0.000000 0.000000
-V mf_rects|cr_wide_node2|0.000000 0.000000 1.700000
-V mf_rects|cr_wide_node3|0.300000 0.100000 1.200000
-V mf_rects|cr_rot_rect|640.000000
-V mf_rects|cr_rot_node0|4.000000 -4.000000 0.000000
-V mf_rects|cr_rot_node1|0.000000 0.000000 0.000000
-V mf_rects|cr_rot_node2|0.000000 0.000000 1.700000
-V mf_rects|cr_rot_node3|0.300000 0.100000 1.200000
-V mf_rects|cr_trot_rect|640.000000
-V mf_rects|cr_trot_node0|0.500000 -0.500000 0.000000
-V mf_rects|cr_trot_node1|0.500000 -0.500000 0.000000
-V mf_rects|cr_trot_node2|0.500000 -0.500000 1.700000
-V mf_rects|cr_trot_node3|0.400000 -0.200000 1.200000
-V mf_rects|cr_rotx_rect|640.000000
-V mf_rects|cr_rotx_node0|4.000000 -4.000000 0.000000
-V mf_rects|cr_rotx_node1|0.000000 0.000000 0.000000
-V mf_rects|cr_rotx_node2|0.000000 0.000000 1.700000
-V mf_rects|cr_rotx_node3|0.300000 0.100000 1.200000
-V mf_rects|cr_trotx_rect|640.000000
-V mf_rects|cr_trotx_node0|0.500000 -0.500000 0.000000
-V mf_rects|cr_trotx_node1|0.500000 -0.500000 0.000000
-V mf_rects|cr_trotx_node2|0.500000 -2.200000 0.000000
-V mf_rects|cr_trotx_node3|0.800000 -1.700000 0.100000
-V mf_rects|cr_piv_rect|640.000000
-V mf_rects|cr_piv_node0|4.500000 -4.000000 0.000000
-V mf_rects|cr_piv_node1|0.500000 0.000000 0.000000
-V mf_rects|cr_piv_node2|0.000000 0.000000 1.700000
-V mf_rects|cr_piv_node3|0.300000 0.100000 1.200000
-V mf_rects|cr_tpiv_rect|640.000000
-V mf_rects|cr_tpiv_node0|0.500000 -0.500000 0.000000
-V mf_rects|cr_tpiv_node1|1.500000 -0.500000 0.000000
-V mf_rects|cr_tpiv_node2|0.500000 -0.500000 1.700000
-V mf_rects|cr_tpiv_node3|0.800000 -0.400000 1.200000
-V mf_rects|cr_prot_rect|640.000000
-V mf_rects|cr_prot_node0|4.500000 -4.000000 0.000000
-V mf_rects|cr_prot_node1|0.000000 0.500000 0.000000
-V mf_rects|cr_prot_node2|0.000000 0.000000 1.700000
-V mf_rects|cr_prot_node3|0.300000 0.100000 1.200000
-V mf_rects|cr_tprot_rect|640.000000
-V mf_rects|cr_tprot_node0|0.500000 -0.500000 0.000000
-V mf_rects|cr_tprot_node1|0.500000 0.500000 0.000000
-V mf_rects|cr_tprot_node2|0.500000 -0.500000 1.700000
-V mf_rects|cr_tprot_node3|0.400000 -0.200000 1.200000
-END mf_rects
 SKIP rest_chore_zero
+BEGIN draw_at_centre
+V draw_at_centre|at_centre_box|270.000000 207.000000 370.000000 267.000000
+V draw_at_centre|at_centre_rect|270.000000 207.000000 101.000000 61.000000
+V draw_at_centre|at_centre_costume|"cr_dbox.cos"
+END draw_at_centre
+BEGIN draw_at_right
+V draw_at_right|at_right_box|458.000000 207.000000 571.000000 267.000000
+V draw_at_right|at_right_rect|458.000000 207.000000 114.000000 61.000000
+V draw_at_right|at_right_costume|"cr_dbox.cos"
+END draw_at_right
+BEGIN draw_at_down
+V draw_at_down|at_down_box|269.000000 352.000000 371.000000 420.000000
+V draw_at_down|at_down_rect|269.000000 352.000000 103.000000 69.000000
+V draw_at_down|at_down_costume|"cr_dbox.cos"
+END draw_at_down
+BEGIN draw_at_yaw45
+V draw_at_yaw45|at_yaw45_box|264.000000 180.000000 376.000000 292.000000
+V draw_at_yaw45|at_yaw45_rect|264.000000 180.000000 113.000000 113.000000
+V draw_at_yaw45|at_yaw45_costume|"cr_dbox.cos"
+END draw_at_yaw45
+BEGIN draw_at_yaw90
+V draw_at_yaw90|at_yaw90_box|290.000000 187.000000 350.000000 286.000000
+V draw_at_yaw90|at_yaw90_rect|290.000000 187.000000 61.000000 100.000000
+V draw_at_yaw90|at_yaw90_costume|"cr_dbox.cos"
+END draw_at_yaw90
+BEGIN draw_at_edge
+V draw_at_edge|at_edge_box|586.000000 207.000000 639.000000 267.000000
+V draw_at_edge|at_edge_rect|586.000000 207.000000 54.000000 61.000000
+V draw_at_edge|at_edge_costume|"cr_dbox.cos"
+END draw_at_edge
+BEGIN draw_at_off
+V draw_at_off|at_off_box|none
+V draw_at_off|at_off_rect|nil
+V draw_at_off|at_off_costume|"cr_dbox.cos"
+END draw_at_off
+BEGIN draw_scale
+V draw_scale|scale_double|209.000000 166.000000 431.000000 297.000000
+V draw_scale|scale_half|296.000000 224.000000 344.000000 253.000000
+END draw_scale
+BEGIN draw_visibility
+V draw_visibility|visibility_shown|270.000000 207.000000 370.000000 267.000000
+V draw_visibility|visibility_hidden|none
+V draw_visibility|visibility_hidden_rect|nil
+V draw_visibility|visibility_again|270.000000 207.000000 370.000000 267.000000
+V draw_visibility|visibility_out_of_set|none
+END draw_visibility
+BEGIN draw_push_pop
+V draw_push_pop|push_pop_depth|2.000000
+V draw_push_pop|push_pop_pushed|none
+V draw_push_pop|push_pop_popped|270.000000 207.000000 370.000000 267.000000
+END draw_push_pop
+BEGIN draw_two
+V draw_two|two_both|170.000000 157.000000 469.000000 267.000000
+V draw_two|two_rect_a|170.000000 207.000000 105.000000 61.000000
+V draw_two|two_rect_b|366.000000 157.000000 104.000000 65.000000
+V draw_two|two_one|366.000000 157.000000 469.000000 221.000000
+END draw_two
+BEGIN draw_clip
+V draw_clip|clip_on|270.000000 207.000000 370.000000 267.000000
+V draw_clip|clip_off|270.000000 207.000000 370.000000 267.000000
+END draw_clip
+BEGIN draw_talk_centre
+V draw_talk_centre|talk_centre_going|1.000000
+V draw_talk_centre|talk_centre_text|263.000000 195.000000 375.000000 204.000000
+END draw_talk_centre
+BEGIN draw_talk_left
+V draw_talk_left|talk_left_going|1.000000
+V draw_talk_left|talk_left_text|72.000000 97.000000 184.000000 106.000000
+END draw_talk_left
+BEGIN draw_talk_top
+V draw_talk_top|talk_top_going|1.000000
+V draw_talk_top|talk_top_text|263.000000 10.000000 375.000000 19.000000
+END draw_talk_top
+BEGIN draw_talk_left_edge
+V draw_talk_left_edge|talk_left_edge_going|1.000000
+V draw_talk_left_edge|talk_left_edge_text|11.000000 183.000000 100.000000 204.000000
+END draw_talk_left_edge
+BEGIN draw_talk_moved
+V draw_talk_moved|talk_moved_before|165.000000 195.000000 277.000000 204.000000
+V draw_talk_moved|talk_moved_after|165.000000 195.000000 277.000000 204.000000
+END draw_talk_moved
+BEGIN draw_talk_hidden
+V draw_talk_hidden|talk_hidden_going|1.000000
+V draw_talk_hidden|talk_hidden_text|361.000000 195.000000 473.000000 204.000000
+END draw_talk_hidden
+BEGIN draw_components
+V draw_components|components_start|220.000000 207.000000 420.000000 267.000000
+V draw_components|components_grey_playing|nil
+V draw_components|components_grey|220.000000 207.000000 283.000000 267.000000
+V draw_components|components_white_playing|nil
+V draw_components|components_white|220.000000 207.000000 420.000000 267.000000
+V draw_components|components_hidden_playing|nil
+V draw_components|components_hidden|220.000000 207.000000 283.000000 267.000000
+V draw_components|components_shown_playing|nil
+V draw_components|components_shown|220.000000 207.000000 420.000000 267.000000
+V draw_components|components_sprite_playing|nil
+V draw_components|components_sprite|220.000000 114.000000 420.000000 267.000000
+V draw_components|components_no_sprite_playing|nil
+V draw_components|components_no_sprite|220.000000 207.000000 420.000000 267.000000
+END draw_components
+BEGIN draw_bitmap_component
+V draw_bitmap_component|bitmap_component_state|"userdata"
+V draw_bitmap_component|bitmap_component_image_mid|nil
+V draw_bitmap_component|bitmap_component_done|nil
+END draw_bitmap_component
 SKIP shadow_color
+BEGIN head_rest
+V head_rest|rest|269.000000 221.000000 371.000000 239.000000
+V head_rest|rest_node|0.000000 0.000000 1.000000
+END head_rest
+BEGIN head_no_head_set
+V head_no_head_set|no_head_set|269.000000 221.000000 371.000000 239.000000
+V head_no_head_set|no_head_set_node|0.000000 0.000000 1.000000
+END head_no_head_set
+BEGIN head_look_side
+V head_look_side|look_side_early|282.000000 186.000000 358.000000 274.000000
+V head_look_side|look_side_early_node|0.000000 0.000000 1.000000
+V head_look_side|look_side_late|303.000000 179.000000 337.000000 281.000000
+V head_look_side|look_side_late_node|0.000000 0.000000 1.000000
+END head_look_side
+BEGIN head_look_front
+V head_look_front|look_front_early|269.000000 221.000000 371.000000 239.000000
+V head_look_front|look_front_early_node|0.000000 0.000000 1.000000
+V head_look_front|look_front_late|269.000000 221.000000 371.000000 239.000000
+V head_look_front|look_front_late_node|0.000000 0.000000 1.000000
+END head_look_front
+BEGIN head_look_behind
+V head_look_behind|look_behind_early|269.000000 221.000000 371.000000 239.000000
+V head_look_behind|look_behind_early_node|0.000000 0.000000 1.000000
+V head_look_behind|look_behind_late|269.000000 221.000000 371.000000 239.000000
+V head_look_behind|look_behind_late_node|0.000000 0.000000 1.000000
+END head_look_behind
+BEGIN head_look_up
+V head_look_up|look_up_early|270.000000 273.000000 370.000000 295.000000
+V head_look_up|look_up_early_node|0.000000 -0.425755 0.892505
+V head_look_up|look_up_late|271.000000 282.000000 369.000000 303.000000
+V head_look_up|look_up_late_node|0.000000 -0.492359 0.852680
+END head_look_up
+BEGIN head_look_diagonal
+V head_look_diagonal|look_diagonal_early|279.000000 188.000000 362.000000 271.000000
+V head_look_diagonal|look_diagonal_early_node|0.000000 0.000000 1.000000
+V head_look_diagonal|look_diagonal_late|279.000000 188.000000 362.000000 271.000000
+V head_look_diagonal|look_diagonal_late_node|0.000000 0.000000 1.000000
+END head_look_diagonal
+BEGIN head_limits
+V head_limits|limits|270.000000 205.000000 370.000000 255.000000
+V head_limits|limits_node|0.000000 0.000000 1.000000
+END head_limits
+BEGIN head_rate
+V head_rate|rate_rate|50.000000
+V head_rate|rate_10|269.000000 214.000000 371.000000 246.000000
+V head_rate|rate_10_node|0.000000 0.000000 1.000000
+V head_rate|rate_40|274.000000 195.000000 367.000000 265.000000
+V head_rate|rate_40_node|0.000000 0.000000 1.000000
+END head_rate
+BEGIN head_back
+V head_back|back_10|269.000000 221.000000 371.000000 239.000000
+V head_back|back_10_node|0.000000 0.000000 1.000000
+V head_back|back_60|269.000000 221.000000 371.000000 239.000000
+V head_back|back_60_node|0.000000 0.000000 1.000000
+END head_back
+BEGIN head_actor
+V head_actor|actor|265.000000 161.000000 350.000000 243.000000
+V head_actor|actor_node|-0.084575 0.230169 0.965767
+END head_actor
+BEGIN kf_rest
+V kf_rest|rest_body|-1.000000 0.000000 0.000000
+V kf_rest|rest_head|-1.000000 0.000000 1.700000
+V kf_rest|rest_box|170.000000 207.000000 274.000000 267.000000
+END kf_rest
+BEGIN kf_once
+V kf_once|once_0_body|-1.000000 0.000000 0.000000
+V kf_once|once_0_head|-1.000000 0.000000 1.700000
+V kf_once|once_0_playing|0.000000
+V kf_once|once_20_body|-1.000000 0.000000 0.000000
+V kf_once|once_20_head|-1.000000 0.000000 1.700000
+V kf_once|once_20_playing|0.000000
+V kf_once|once_40_body|-1.000000 0.000000 0.000000
+V kf_once|once_40_head|-1.000000 0.000000 1.700000
+V kf_once|once_40_playing|0.000000
+V kf_once|once_60_body|-1.000000 0.000000 0.000000
+V kf_once|once_60_head|-1.000000 0.000000 1.700000
+V kf_once|once_60_playing|0.000000
+V kf_once|once_80_body|-1.000000 0.000000 0.000000
+V kf_once|once_80_head|-1.000000 0.000000 1.700000
+V kf_once|once_80_playing|0.000000
+V kf_once|once_100_body|-1.000000 0.000000 0.000000
+V kf_once|once_100_head|-1.000000 0.000000 1.700000
+V kf_once|once_100_playing|0.000000
+V kf_once|once_120_body|-1.000000 0.000000 0.000000
+V kf_once|once_120_head|-1.000000 0.000000 1.700000
+V kf_once|once_120_playing|nil
+V kf_once|once_140_body|-1.000000 0.000000 0.000000
+V kf_once|once_140_head|-1.000000 0.000000 1.700000
+V kf_once|once_140_playing|nil
+V kf_once|once_box|170.000000 207.000000 274.000000 267.000000
+END kf_once
+BEGIN kf_loop
+V kf_loop|loop_0_body|-1.000000 0.000000 0.000000
+V kf_loop|loop_0_head|-1.000000 0.000000 1.700000
+V kf_loop|loop_0_playing|1.000000
+V kf_loop|loop_20_body|-1.000000 0.000000 0.000000
+V kf_loop|loop_20_head|-1.000000 0.000000 1.700000
+V kf_loop|loop_20_playing|1.000000
+V kf_loop|loop_40_body|-1.000000 0.000000 0.000000
+V kf_loop|loop_40_head|-1.000000 0.000000 1.700000
+V kf_loop|loop_40_playing|1.000000
+V kf_loop|loop_60_body|-1.000000 0.000000 0.000000
+V kf_loop|loop_60_head|-1.000000 0.000000 1.700000
+V kf_loop|loop_60_playing|1.000000
+V kf_loop|loop_80_body|-1.000000 0.000000 0.000000
+V kf_loop|loop_80_head|-1.000000 0.000000 1.700000
+V kf_loop|loop_80_playing|1.000000
+V kf_loop|loop_100_body|-1.000000 0.000000 0.000000
+V kf_loop|loop_100_head|-1.000000 0.000000 1.700000
+V kf_loop|loop_100_playing|1.000000
+V kf_loop|loop_120_body|-1.000000 0.000000 0.000000
+V kf_loop|loop_120_head|-1.000000 0.000000 1.700000
+V kf_loop|loop_120_playing|nil
+V kf_loop|loop_140_body|-1.000000 0.000000 0.000000
+V kf_loop|loop_140_head|-1.000000 0.000000 1.700000
+V kf_loop|loop_140_playing|nil
+V kf_loop|loop_160_body|-1.000000 0.000000 0.000000
+V kf_loop|loop_160_head|-1.000000 0.000000 1.700000
+V kf_loop|loop_160_playing|nil
+END kf_loop
+BEGIN kf_looping_chore
+V kf_looping_chore|looping_chore_0_body|-1.000000 0.000000 0.000000
+V kf_looping_chore|looping_chore_0_head|-1.000000 0.000000 1.700000
+V kf_looping_chore|looping_chore_0_playing|0.000000
+V kf_looping_chore|looping_chore_20_body|-1.000000 0.000000 0.000000
+V kf_looping_chore|looping_chore_20_head|-1.000000 0.000000 1.700000
+V kf_looping_chore|looping_chore_20_playing|0.000000
+V kf_looping_chore|looping_chore_40_body|-1.000000 0.000000 0.000000
+V kf_looping_chore|looping_chore_40_head|-1.000000 0.000000 1.700000
+V kf_looping_chore|looping_chore_40_playing|0.000000
+V kf_looping_chore|looping_chore_60_body|-1.000000 0.000000 0.000000
+V kf_looping_chore|looping_chore_60_head|-1.000000 0.000000 1.700000
+V kf_looping_chore|looping_chore_60_playing|0.000000
+V kf_looping_chore|looping_chore_80_body|-1.000000 0.000000 0.000000
+V kf_looping_chore|looping_chore_80_head|-1.000000 0.000000 1.700000
+V kf_looping_chore|looping_chore_80_playing|0.000000
+V kf_looping_chore|looping_chore_100_body|-1.000000 0.000000 0.000000
+V kf_looping_chore|looping_chore_100_head|-1.000000 0.000000 1.700000
+V kf_looping_chore|looping_chore_100_playing|0.000000
+V kf_looping_chore|looping_chore_120_body|-1.000000 0.000000 0.000000
+V kf_looping_chore|looping_chore_120_head|-1.000000 0.000000 1.700000
+V kf_looping_chore|looping_chore_120_playing|0.000000
+V kf_looping_chore|looping_chore_140_body|-1.000000 0.000000 0.000000
+V kf_looping_chore|looping_chore_140_head|-1.000000 0.000000 1.700000
+V kf_looping_chore|looping_chore_140_playing|0.000000
+V kf_looping_chore|looping_chore_160_body|-1.000000 0.000000 0.000000
+V kf_looping_chore|looping_chore_160_head|-1.000000 0.000000 1.700000
+V kf_looping_chore|looping_chore_160_playing|0.000000
+END kf_looping_chore
+BEGIN kf_hold
+V kf_hold|hold_0_body|-1.000000 0.000000 0.000000
+V kf_hold|hold_0_head|-1.000000 0.000000 1.700000
+V kf_hold|hold_0_playing|2.000000
+V kf_hold|hold_20_body|-1.000000 0.000000 0.000000
+V kf_hold|hold_20_head|-1.000000 0.000000 1.700000
+V kf_hold|hold_20_playing|2.000000
+V kf_hold|hold_40_body|-1.000000 0.000000 0.000000
+V kf_hold|hold_40_head|-1.000000 0.000000 1.700000
+V kf_hold|hold_40_playing|2.000000
+V kf_hold|hold_60_body|-1.000000 0.000000 0.000000
+V kf_hold|hold_60_head|-1.000000 0.000000 1.700000
+V kf_hold|hold_60_playing|2.000000
+V kf_hold|hold_80_body|-1.000000 0.000000 0.000000
+V kf_hold|hold_80_head|-1.000000 0.000000 1.700000
+V kf_hold|hold_80_playing|2.000000
+V kf_hold|hold_100_body|-1.000000 0.000000 0.000000
+V kf_hold|hold_100_head|-1.000000 0.000000 1.700000
+V kf_hold|hold_100_playing|2.000000
+V kf_hold|hold_120_body|0.000000 0.000000 0.000000
+V kf_hold|hold_120_head|0.000000 0.000000 1.700000
+V kf_hold|hold_120_playing|nil
+V kf_hold|hold_140_body|0.000000 0.000000 0.000000
+V kf_hold|hold_140_head|0.000000 0.000000 1.700000
+V kf_hold|hold_140_playing|nil
+V kf_hold|hold_box|290.000000 187.000000 350.000000 286.000000
+END kf_hold
+BEGIN kf_fade_end
+V kf_fade_end|fade_end_0_body|-1.000000 0.000000 0.000000
+V kf_fade_end|fade_end_0_head|-1.000000 0.000000 1.700000
+V kf_fade_end|fade_end_0_playing|3.000000
+V kf_fade_end|fade_end_20_body|-1.000000 0.000000 0.000000
+V kf_fade_end|fade_end_20_head|-1.000000 0.000000 1.700000
+V kf_fade_end|fade_end_20_playing|3.000000
+V kf_fade_end|fade_end_40_body|-1.000000 0.000000 0.000000
+V kf_fade_end|fade_end_40_head|-1.000000 0.000000 1.700000
+V kf_fade_end|fade_end_40_playing|3.000000
+V kf_fade_end|fade_end_60_body|-1.000000 0.000000 0.000000
+V kf_fade_end|fade_end_60_head|-1.000000 0.000000 1.700000
+V kf_fade_end|fade_end_60_playing|3.000000
+V kf_fade_end|fade_end_80_body|-1.000000 0.000000 0.000000
+V kf_fade_end|fade_end_80_head|-1.000000 0.000000 1.700000
+V kf_fade_end|fade_end_80_playing|3.000000
+V kf_fade_end|fade_end_100_body|-1.000000 0.000000 0.000000
+V kf_fade_end|fade_end_100_head|-1.000000 0.000000 1.700000
+V kf_fade_end|fade_end_100_playing|3.000000
+V kf_fade_end|fade_end_120_body|-0.204000 0.000000 0.000000
+V kf_fade_end|fade_end_120_head|-0.204000 0.000000 1.700000
+V kf_fade_end|fade_end_120_playing|nil
+V kf_fade_end|fade_end_140_body|-1.000000 0.000000 0.000000
+V kf_fade_end|fade_end_140_head|-1.000000 0.000000 1.700000
+V kf_fade_end|fade_end_140_playing|nil
+END kf_fade_end
+BEGIN kf_stopped
+V kf_stopped|stopped_0_body|-1.000000 0.000000 0.000000
+V kf_stopped|stopped_0_head|-1.000000 0.000000 1.700000
+V kf_stopped|stopped_0_playing|4.000000
+V kf_stopped|stopped_10_body|-1.000000 0.000000 0.000000
+V kf_stopped|stopped_10_head|-1.000000 0.000000 1.700000
+V kf_stopped|stopped_10_playing|nil
+V kf_stopped|stopped_20_body|-1.000000 0.000000 0.000000
+V kf_stopped|stopped_20_head|-1.000000 0.000000 1.700000
+V kf_stopped|stopped_20_playing|nil
+V kf_stopped|stopped_30_body|-1.000000 0.000000 0.000000
+V kf_stopped|stopped_30_head|-1.000000 0.000000 1.700000
+V kf_stopped|stopped_30_playing|nil
+END kf_stopped
+BEGIN kf_stop_chore
+V kf_stop_chore|stop_chore_0_body|-1.000000 0.000000 0.000000
+V kf_stop_chore|stop_chore_0_head|-1.000000 0.000000 1.700000
+V kf_stop_chore|stop_chore_0_playing|nil
+V kf_stop_chore|stop_chore_10_body|-1.000000 0.000000 0.000000
+V kf_stop_chore|stop_chore_10_head|-1.000000 0.000000 1.700000
+V kf_stop_chore|stop_chore_10_playing|nil
+V kf_stop_chore|stop_chore_20_body|-1.000000 0.000000 0.000000
+V kf_stop_chore|stop_chore_20_head|-1.000000 0.000000 1.700000
+V kf_stop_chore|stop_chore_20_playing|nil
+V kf_stop_chore|stop_chore_30_body|-1.000000 0.000000 0.000000
+V kf_stop_chore|stop_chore_30_head|-1.000000 0.000000 1.700000
+V kf_stop_chore|stop_chore_30_playing|nil
+END kf_stop_chore
+BEGIN kf_complete
+V kf_complete|complete_0_body|-1.000000 0.000000 0.000000
+V kf_complete|complete_0_head|-1.000000 0.000000 1.700000
+V kf_complete|complete_0_playing|nil
+V kf_complete|complete_10_body|-1.000000 0.000000 0.000000
+V kf_complete|complete_10_head|-1.000000 0.000000 1.700000
+V kf_complete|complete_10_playing|nil
+V kf_complete|complete_20_body|-1.000000 0.000000 0.000000
+V kf_complete|complete_20_head|-1.000000 0.000000 1.700000
+V kf_complete|complete_20_playing|nil
+V kf_complete|complete_30_body|-1.000000 0.000000 0.000000
+V kf_complete|complete_30_head|-1.000000 0.000000 1.700000
+V kf_complete|complete_30_playing|nil
+END kf_complete
+BEGIN kf_late
+V kf_late|late_lv_0|nil
+V kf_late|late_0_body|-1.000000 0.000000 0.000000
+V kf_late|late_0_head|-1.000000 0.000000 1.700000
+V kf_late|late_lv_20|50.000000
+V kf_late|late_20_body|-1.000000 0.000000 0.000000
+V kf_late|late_20_head|-1.000000 0.000000 1.700000
+V kf_late|late_lv_40|51.000000
+V kf_late|late_40_body|-1.000000 0.000000 0.000000
+V kf_late|late_40_head|-1.000000 0.000000 1.700000
+V kf_late|late_lv_60|51.000000
+V kf_late|late_60_body|-1.000000 0.000000 0.000000
+V kf_late|late_60_head|-1.000000 0.000000 1.700000
+V kf_late|late_lv_80|51.000000
+V kf_late|late_80_body|-1.000000 0.000000 0.000000
+V kf_late|late_80_head|-1.000000 0.000000 1.700000
+V kf_late|late_lv_100|51.000000
+V kf_late|late_100_body|-1.000000 0.000000 0.000000
+V kf_late|late_100_head|-1.000000 0.000000 1.700000
+V kf_late|late_lv_120|52.000000
+V kf_late|late_120_body|-1.000000 0.000000 0.000000
+V kf_late|late_120_head|-1.000000 0.000000 1.700000
+V kf_late|late_lv_140|52.000000
+V kf_late|late_140_body|-1.000000 0.000000 0.000000
+V kf_late|late_140_head|-1.000000 0.000000 1.700000
+END kf_late
+BEGIN kf_fade_in
+V kf_fade_in|fade_in_0_body|-1.000000 0.000000 0.000000
+V kf_fade_in|fade_in_0_head|-1.000000 0.000000 1.700000
+V kf_fade_in|fade_in_0_playing|1.000000
+V kf_fade_in|fade_in_15_body|-1.000000 0.000000 0.000000
+V kf_fade_in|fade_in_15_head|-1.000000 0.000000 1.700000
+V kf_fade_in|fade_in_15_playing|1.000000
+V kf_fade_in|fade_in_30_body|-1.000000 0.000000 0.000000
+V kf_fade_in|fade_in_30_head|-1.000000 0.000000 1.700000
+V kf_fade_in|fade_in_30_playing|1.000000
+V kf_fade_in|fade_in_45_body|-1.000000 0.000000 0.000000
+V kf_fade_in|fade_in_45_head|-1.000000 0.000000 1.700000
+V kf_fade_in|fade_in_45_playing|1.000000
+V kf_fade_in|fade_in_60_body|-1.000000 0.000000 0.000000
+V kf_fade_in|fade_in_60_head|-1.000000 0.000000 1.700000
+V kf_fade_in|fade_in_60_playing|1.000000
+V kf_fade_in|fade_in_75_body|-1.000000 0.000000 0.000000
+V kf_fade_in|fade_in_75_head|-1.000000 0.000000 1.700000
+V kf_fade_in|fade_in_75_playing|1.000000
+END kf_fade_in
+BEGIN kf_fade_out
+V kf_fade_out|fade_out_0_body|-1.000000 0.000000 0.000000
+V kf_fade_out|fade_out_0_head|-1.000000 0.000000 1.700000
+V kf_fade_out|fade_out_0_playing|1.000000
+V kf_fade_out|fade_out_15_body|-1.000000 0.000000 0.000000
+V kf_fade_out|fade_out_15_head|-1.000000 0.000000 1.700000
+V kf_fade_out|fade_out_15_playing|1.000000
+V kf_fade_out|fade_out_30_body|-1.000000 0.000000 0.000000
+V kf_fade_out|fade_out_30_head|-1.000000 0.000000 1.700000
+V kf_fade_out|fade_out_30_playing|1.000000
+V kf_fade_out|fade_out_45_body|-1.000000 0.000000 0.000000
+V kf_fade_out|fade_out_45_head|-1.000000 0.000000 1.700000
+V kf_fade_out|fade_out_45_playing|1.000000
+V kf_fade_out|fade_out_60_body|-1.000000 0.000000 0.000000
+V kf_fade_out|fade_out_60_head|-1.000000 0.000000 1.700000
+V kf_fade_out|fade_out_60_playing|1.000000
+V kf_fade_out|fade_out_75_body|-1.000000 0.000000 0.000000
+V kf_fade_out|fade_out_75_head|-1.000000 0.000000 1.700000
+V kf_fade_out|fade_out_75_playing|1.000000
+END kf_fade_out
+BEGIN kf_time_scale
+V kf_time_scale|time_scale_0_body|-1.000000 0.000000 0.000000
+V kf_time_scale|time_scale_0_head|-1.000000 0.000000 1.700000
+V kf_time_scale|time_scale_0_playing|0.000000
+V kf_time_scale|time_scale_15_body|-1.000000 0.000000 0.000000
+V kf_time_scale|time_scale_15_head|-1.000000 0.000000 1.700000
+V kf_time_scale|time_scale_15_playing|0.000000
+V kf_time_scale|time_scale_30_body|-1.000000 0.000000 0.000000
+V kf_time_scale|time_scale_30_head|-1.000000 0.000000 1.700000
+V kf_time_scale|time_scale_30_playing|0.000000
+V kf_time_scale|time_scale_45_body|-1.000000 0.000000 0.000000
+V kf_time_scale|time_scale_45_head|-1.000000 0.000000 1.700000
+V kf_time_scale|time_scale_45_playing|0.000000
+V kf_time_scale|time_scale_60_body|-1.000000 0.000000 0.000000
+V kf_time_scale|time_scale_60_head|-1.000000 0.000000 1.700000
+V kf_time_scale|time_scale_60_playing|nil
+END kf_time_scale
+BEGIN kf_chores
+V kf_chores|chores_list|"table"
+V kf_chores|chores_any|1.000000
+V kf_chores|chores_other|nil
+END kf_chores
+BEGIN kf_markers
+V kf_markers|markers_system|"table"
+V kf_markers|markers_seen|" nil nil"
+END kf_markers
+BEGIN lab_files
+V lab_files|check_archive|1.000000
+V lab_files|check_member|1.000000
+V lab_files|check_member_case|1.000000
+V lab_files|check_dup|1.000000
+V lab_files|check_text|1.000000
+END lab_files
+BEGIN lab_dofile
+V lab_dofile|only|userdata "lab"
+V lab_dofile|dup|userdata "loose"
+V lab_dofile|missing|nil
+END lab_dofile
+BEGIN lab_costume
+V lab_costume|costume|"cr_lab_box.cos"
+V lab_costume|chore|0.000000 1.000000
+END lab_costume
+BEGIN lab_text
+V lab_text|line_count|nil
+V lab_text|line|nil
+END lab_text
+BEGIN screen_to_world
+V screen_to_world|centre|0.000000
+V screen_to_world|corner|-0.578263
+V screen_to_world|clipped|nil
+END screen_to_world
+BEGIN screen_to_world_open
+V screen_to_world_open|centre|-1.#IND00
+V screen_to_world_open|corner|-1.#IND00
+END screen_to_world_open
+BEGIN path_corner
+V path_corner|a_to_c_f10|-1.177453 -0.392468 0.000000
+V path_corner|a_to_c_f20|-0.854906 -0.284936 0.000000
+V path_corner|a_to_c_f30|-0.532358 -0.177404 0.000000
+V path_corner|a_to_c_f40|-0.209811 -0.069872 0.000000
+V path_corner|a_to_c_f50|0.075400 0.113185 0.000000
+V path_corner|a_to_c_f60|0.263911 0.396140 0.000000
+V path_corner|a_to_c_frames|39.000000
+V path_corner|a_to_c_end|1.019992 1.527501 0.000000
+V path_corner|a_to_c_sector|2.000000
+END path_corner
+BEGIN path_back
+V path_back|c_to_a_f10|1.259581 1.259587 0.000000
+V path_back|c_to_a_f20|1.019162 1.019174 0.000000
+V path_back|c_to_a_f30|0.778743 0.778761 0.000000
+V path_back|c_to_a_f40|0.538324 0.538347 0.000000
+V path_back|c_to_a_f50|0.297905 0.297933 0.000000
+V path_back|c_to_a_f60|0.057486 0.057520 0.000000
+V path_back|c_to_a_frames|114.000000
+V path_back|c_to_a_end|-1.527501 -0.980007 0.000000
+V path_back|c_to_a_sector|0.000000
+END path_back
+BEGIN path_same_row
+V path_same_row|a_to_b_f10|-1.160000 -1.000000 0.000000
+V path_same_row|a_to_b_f20|-0.820000 -1.000000 0.000000
+V path_same_row|a_to_b_f30|-0.480000 -1.000000 0.000000
+V path_same_row|a_to_b_f40|-0.140000 -1.000000 0.000000
+V path_same_row|a_to_b_f50|0.238000 -1.000000 0.000000
+V path_same_row|a_to_b_f60|0.578000 -1.000000 0.000000
+V path_same_row|a_to_b_frames|27.000000
+V path_same_row|a_to_b_end|1.533973 -1.001348 0.000000
+V path_same_row|a_to_b_sector|1.000000
+END path_same_row
+BEGIN path_off_floor
+V path_off_floor|to_hole_f10|-1.259581 -1.259587 0.000000
+V path_off_floor|to_hole_f20|-1.019162 -1.019174 0.000000
+V path_off_floor|to_hole_f30|-0.778743 -0.778761 0.000000
+V path_off_floor|to_hole_f40|-0.538324 -0.538347 0.000000
+V path_off_floor|to_hole_f50|-0.297905 -0.297933 0.000000
+V path_off_floor|to_hole_f60|-0.057486 -0.057520 0.000000
+V path_off_floor|to_hole_frames|32.000000
+V path_off_floor|to_hole_end|0.001349 1.033973 0.000000
+V path_off_floor|to_hole_sector|2.000000
+V path_off_floor|to_far_f10|1.240419 1.240413 0.000000
+V path_off_floor|to_far_f20|1.480838 1.480827 0.000000
+V path_off_floor|to_far_f30|1.721257 1.721241 0.000000
+V path_off_floor|to_far_f40|1.961676 1.961655 0.000000
+V path_off_floor|to_far_f50|2.000000 2.000000 0.000000
+V path_off_floor|to_far_f60|2.000000 2.000000 0.000000
+V path_off_floor|to_far_frames|0.000000
+V path_off_floor|to_far_end|2.000000 2.000000 0.000000
+V path_off_floor|to_far_sector|2.000000
+END path_off_floor
+BEGIN path_forward
+V path_forward|fwd_f0|-1.000000 -0.500000 0.000000
+V path_forward|fwd_f15|-1.000000 -0.245000 0.000000
+V path_forward|fwd_f30|-1.000000 0.000000 0.000000
+V path_forward|fwd_f45|-1.000000 0.000000 0.000000
+V path_forward|fwd_f60|-1.000000 0.000000 0.000000
+V path_forward|fwd_f75|-1.000000 0.000000 0.000000
+V path_forward|fwd_end|-1.000000 0.000000 0.000000
+V path_forward|fwd_sector|0.000000
+V path_forward|fwd45_end|-0.900896 -0.014473 0.000000
+END path_forward
+BEGIN shadow_none
+V shadow_none|none_dark|none
+END shadow_none
+BEGIN shadow_point_above
+V shadow_point_above|point_above_dark|none
+V shadow_point_above|point_above_box|270.000000 207.000000 370.000000 267.000000
+END shadow_point_above
+BEGIN shadow_point_left
+V shadow_point_left|point_left_dark|none
+V shadow_point_left|point_left_box|270.000000 207.000000 370.000000 267.000000
+END shadow_point_left
+BEGIN shadow_point_front
+V shadow_point_front|point_front_dark|none
+V shadow_point_front|point_front_box|270.000000 207.000000 370.000000 267.000000
+END shadow_point_front
+BEGIN shadow_point_low
+V shadow_point_low|point_low_dark|none
+V shadow_point_low|point_low_box|270.000000 207.000000 370.000000 267.000000
+END shadow_point_low
+BEGIN shadow_not_activated
+V shadow_not_activated|not_activated_dark|none
+END shadow_not_activated
+BEGIN shadow_deactivated
+V shadow_deactivated|deactivated_dark|none
+END shadow_deactivated
+BEGIN shadow_killed
+V shadow_killed|killed_dark|none
+END shadow_killed
+BEGIN shadow_second_slot
+V shadow_second_slot|second_slot_dark|none
+END shadow_second_slot
+BEGIN shadow_moved
+V shadow_moved|moved_dark|none
+END shadow_moved
+BEGIN sight_visible
+V sight_visible|ahead|""
+V sight_visible|turned|""
+V sight_visible|right|""
+END sight_visible
+BEGIN sight_look
+V sight_look|point_ret|1.000000
+V sight_look|point_head|0.000000 0.000000 1.700000
+V sight_look|actor_head|0.000000 0.000000 1.700000
+V sight_look|nil_head|0.000000 0.000000 1.700000
+END sight_look
+BEGIN sight_turn
+V sight_turn|turn_first|1.000000
+V sight_turn|turn_frames|29.000000
+V sight_turn|turn_rot|0.000000 -43.745338 0.000000
+V sight_turn|turn_actor_frames|58.000000
+V sight_turn|turn_actor_rot|0.000000 43.751999 0.000000
+V sight_turn|point_rot|0.000000 180.014709 0.000000
+V sight_turn|point_actor_rot|0.000000 44.988007 0.000000
+V sight_turn|yaw_to_point|-90.000008
+END sight_turn
 SKIP font_dims_handle
 SKIP font_dims_name
-BEGIN tp_nothing
-V tp_nothing|nothing_text|none
-END tp_nothing
-BEGIN tp_spot_centre
-V tp_spot_centre|spot_centre_screen|320.000000 240.000000
-V tp_spot_centre|spot_centre_going|1.000000
-V tp_spot_centre|spot_centre_text|263.000000 228.000000 375.000000 237.000000
-END tp_spot_centre
-BEGIN tp_spot_left
-V tp_spot_left|spot_left_screen|137.000000 194.000000
-V tp_spot_left|spot_left_going|1.000000
-V tp_spot_left|spot_left_text|80.000000 182.000000 192.000000 191.000000
-END tp_spot_left
-BEGIN tp_spot_right
-V tp_spot_right|spot_right_screen|552.000000 332.000000
-V tp_spot_right|spot_right_going|1.000000
-V tp_spot_right|spot_right_text|495.000000 320.000000 607.000000 329.000000
-END tp_spot_right
-BEGIN tp_spot_high
-V tp_spot_high|spot_high_screen|320.000000 194.000000
-V tp_spot_high|spot_high_going|1.000000
-V tp_spot_high|spot_high_text|263.000000 182.000000 375.000000 191.000000
-END tp_spot_high
-BEGIN tp_spot_left_edge
-V tp_spot_left_edge|spot_left_edge_screen|16.000000 240.000000
-V tp_spot_left_edge|spot_left_edge_going|1.000000
-V tp_spot_left_edge|spot_left_edge_text|11.000000 216.000000 100.000000 237.000000
-END tp_spot_left_edge
-BEGIN tp_spot_right_edge
-V tp_spot_right_edge|spot_right_edge_screen|623.000000 240.000000
-V tp_spot_right_edge|spot_right_edge_going|1.000000
-V tp_spot_right_edge|spot_right_edge_text|539.000000 216.000000 628.000000 237.000000
-END tp_spot_right_edge
-BEGIN tp_spot_top_edge
-V tp_spot_top_edge|spot_top_edge_screen|320.000000 22.000000
-V tp_spot_top_edge|spot_top_edge_going|1.000000
-V tp_spot_top_edge|spot_top_edge_text|263.000000 10.000000 375.000000 19.000000
-END tp_spot_top_edge
-BEGIN tp_spot_bottom_edge
-V tp_spot_bottom_edge|spot_bottom_edge_screen|320.000000 477.000000
-V tp_spot_bottom_edge|spot_bottom_edge_going|1.000000
-V tp_spot_bottom_edge|spot_bottom_edge_text|263.000000 458.000000 375.000000 467.000000
-END tp_spot_bottom_edge
-BEGIN tp_spot_off_left
-V tp_spot_off_left|spot_off_left_screen|nil
-V tp_spot_off_left|spot_off_left_going|1.000000
-V tp_spot_off_left|spot_off_left_text|263.000000 438.000000 375.000000 447.000000
-END tp_spot_off_left
-BEGIN tp_spot_off_top
-V tp_spot_off_top|spot_off_top_screen|nil
-V tp_spot_off_top|spot_off_top_going|1.000000
-V tp_spot_off_top|spot_off_top_text|263.000000 438.000000 375.000000 447.000000
-END tp_spot_off_top
-BEGIN tp_spot_behind_camera
-V tp_spot_behind_camera|spot_behind_camera_screen|nil
-V tp_spot_behind_camera|spot_behind_camera_going|1.000000
-V tp_spot_behind_camera|spot_behind_camera_text|263.000000 438.000000 375.000000 447.000000
-END tp_spot_behind_camera
-BEGIN tp_long_centre
-V tp_long_centre|long_centre_going|1.000000
-V tp_long_centre|long_centre_text|11.000000 228.000000 627.000000 237.000000
-END tp_long_centre
-BEGIN tp_medium_left_edge
-V tp_medium_left_edge|medium_left_edge_going|1.000000
-V tp_medium_left_edge|medium_left_edge_text|13.000000 216.000000 137.000000 237.000000
-END tp_medium_left_edge
-BEGIN tp_moved
-V tp_moved|moved_before|171.000000 228.000000 283.000000 237.000000
-V tp_moved|moved_after|171.000000 228.000000 283.000000 237.000000
-END tp_moved
-BEGIN tp_no_set
-V tp_no_set|no_set_going|1.000000
-V tp_no_set|no_set_text|263.000000 438.000000 375.000000 447.000000
-END tp_no_set
-BEGIN tp_other_set
-V tp_other_set|other_set_going|1.000000
-V tp_other_set|other_set_text|263.000000 438.000000 375.000000 447.000000
-END tp_other_set
-BEGIN tp_hidden
-V tp_hidden|hidden_going|1.000000
-V tp_hidden|hidden_text|354.000000 228.000000 466.000000 237.000000
-END tp_hidden
-BEGIN tp_costume
-V tp_costume|costume_going|1.000000
-V tp_costume|costume_text|263.000000 438.000000 375.000000 447.000000
-END tp_costume
-BEGIN tp_offpos_dialog
-V tp_offpos_dialog|offpos_dialog_going|1.000000
-V tp_offpos_dialog|offpos_dialog_text|263.000000 10.000000 375.000000 19.000000
-END tp_offpos_dialog
-BEGIN tp_offpos_corner
-V tp_offpos_corner|offpos_corner_going|1.000000
-V tp_offpos_corner|offpos_corner_text|11.000000 10.000000 100.000000 31.000000
-END tp_offpos_corner
-BEGIN tp_offpos_far_corner
-V tp_offpos_far_corner|offpos_far_corner_going|1.000000
-V tp_offpos_far_corner|offpos_far_corner_text|539.000000 446.000000 628.000000 467.000000
-END tp_offpos_far_corner
-BEGIN tp_offpos_middle
-V tp_offpos_middle|offpos_middle_going|1.000000
-V tp_offpos_middle|offpos_middle_text|143.000000 288.000000 255.000000 297.000000
-END tp_offpos_middle
-BEGIN tp_offpos_default
-V tp_offpos_default|offpos_default_going|1.000000
-V tp_offpos_default|offpos_default_text|263.000000 438.000000 375.000000 447.000000
-END tp_offpos_default
-BEGIN tp_table_xy
-V tp_table_xy|table_xy_going|1.000000
-V tp_table_xy|table_xy_text|43.000000 100.000000 155.000000 109.000000
-END tp_table_xy
-BEGIN tp_table_x_only
-V tp_table_x_only|table_x_only_going|1.000000
-V tp_table_x_only|table_x_only_text|443.000000 137.000000 555.000000 146.000000
-END tp_table_x_only
-BEGIN tp_table_y_only
-V tp_table_y_only|table_y_only_going|1.000000
-V tp_table_y_only|table_y_only_text|353.000000 60.000000 465.000000 69.000000
-END tp_table_y_only
-BEGIN tp_table_xy_zero
-V tp_table_xy_zero|table_xy_zero_going|1.000000
-V tp_table_xy_zero|table_xy_zero_text|11.000000 10.000000 100.000000 31.000000
-END tp_table_xy_zero
-BEGIN tp_table_xy_far
-V tp_table_xy_far|table_xy_far_going|1.000000
-V tp_table_xy_far|table_xy_far_text|539.000000 446.000000 628.000000 467.000000
-END tp_table_xy_far
-BEGIN tp_table_xy_negative
-V tp_table_xy_negative|table_xy_negative_going|1.000000
-V tp_table_xy_negative|table_xy_negative_text|11.000000 10.000000 100.000000 31.000000
-END tp_table_xy_negative
-BEGIN tp_table_xy_no_set
-V tp_table_xy_no_set|table_xy_no_set_going|1.000000
-V tp_table_xy_no_set|table_xy_no_set_text|93.000000 200.000000 205.000000 209.000000
-END tp_table_xy_no_set
 SKIP args_ActivateActorShadow_p2_big
 SKIP args_AddShadowPlane_p2_nil
 SKIP args_AddShadowPlane_p2_tab
@@ -15912,4 +16496,4 @@ SKIP args_SnapToPlane_none
 SKIP args_SnapToPlane_nil
 SKIP args_SnapToPlane_tab
 SKIP args_SnapToPlane_fn
-SUMMARY 4740 tests, 255 failed
+SUMMARY 4907 tests, 255 failed

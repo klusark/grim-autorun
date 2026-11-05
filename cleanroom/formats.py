@@ -109,7 +109,8 @@ def lua_text(src):
 COSTUME_TAGS = {"LUAV": ("luav", "int", "Lua Variable"), "MMDL": ("MMDL", "fs", "MAIN RDroid Thing (.3DO)"),
                 "MODL": ("MODL", "fs", "RDroid Thing (.3DO)"), "KEYF": ("KEYF", "fs", "RDroid Keyframe (.KEY)"),
                 "CMAP": ("cmap", "fs", "RDroid Colormap"), "MESH": ("MESH", "fs", "RDroid Thing Mesh"),
-                "IMLS": ("imls", "fs", "iMuse Resident Sound FX")}
+                "IMLS": ("imls", "fs", "iMuse Resident Sound FX"), "MAT ": ("MAT ", "fs", "RDroid Animated Material"),
+                "BKND": ("BKND", "fs", "General Bitmap"), "SPRT": ("sprt", "fs", "Sprite")}
 
 
 def costume(components, chores):
@@ -224,22 +225,37 @@ def model3do(name, meshes, nodes, header=None):
     return out
 
 
-def model3do_text(name, meshes, nodes, radius=None, insert=(0.0, 0.0, 0.0)):
+def model3do_text(name, meshes, nodes, radius=None, insert=(0.0, 0.0, 0.0), materials=(), faces=None, lighting=3):
     """The same model as model3do, in the text .3do format (the one the original's rdModel3_LoadEntryText parses when a file
     does not start with LDOM). It has no bounding box or centre, only a radius (by default the one the original works out:
-    it replaces the one of the file in rdModel3_LoadPostProcess, as it does a binary header's)."""
+    it replaces the one of the file in rdModel3_LoadPostProcess, as it does a binary header's).
+    materials: the .mat names; faces: {mesh index: [(material index, [vertex indices])]}, each face with the texture
+    vertices of the corners of the texture; lighting: the lighting mode of every mesh and face (0: none, the colours of
+    the texture as they are; 3: lit)."""
     g = lambda v: "%.6f" % v
-    out = ["section: header", "3do 2.1", "section: modelresource", "materials 0", "section: geometrydef",
+    faces = faces or {}
+    out = ["section: header", "3do 2.1", "section: modelresource", "materials %d" % len(materials)]
+    out += ["%d: %s" % (i, m) for i, m in enumerate(materials)]
+    out += ["section: geometrydef",
            "radius " + g(model_bounds(meshes, nodes)[3] if radius is None else radius),
            "insert offset " + " ".join(g(v) for v in insert), "geosets 1", "geoset 0", "meshes %d" % len(meshes)]
+    corners = [(0.0, 0.0), (1.0, 0.0), (1.0, 1.0), (0.0, 1.0)]
     for i, (mname, verts) in enumerate(meshes):
         mr = max([sum(c * c for c in v) ** 0.5 for v in verts] or [0.0])
-        out += ["mesh %d" % i, "name " + mname, "radius " + g(mr), "shadow 0", "geometrymode 4", "lightingmode 3",
-                "texturemode 0", "vertices %d" % len(verts)]
+        mf = faces.get(i, [])
+        out += ["mesh %d" % i, "name " + mname, "radius " + g(mr), "shadow 0", "geometrymode 4",
+                "lightingmode %d" % lighting, "texturemode 0", "vertices %d" % len(verts)]
         out += ["%d: %s 1.0" % (k, " ".join(g(c) for c in v)) for k, v in enumerate(verts)]
-        out += ["texture vertices 0", "vertex normals"]
+        out += ["texture vertices %d" % (len(corners) if mf else 0)]
+        out += ["%d: %s %s" % (k, g(u), g(v)) for k, (u, v) in enumerate(corners)] if mf else []
+        out += ["vertex normals"]
         out += ["%d: 0.0 0.0 1.0" % k for k in range(len(verts))]
-        out += ["faces 0", "face normals"]
+        out += ["faces %d" % len(mf)]
+        for k, (mat, vs) in enumerate(mf):
+            out.append("%d: %d 0x0000 4 %d 0 0.0000 %d %s" % (k, mat, lighting, len(vs),
+                                                            " ".join("%d, %d" % (v, j % 4) for j, v in enumerate(vs))))
+        out += ["face normals"]
+        out += ["%d: 0.0 0.0 1.0" % k for k in range(len(mf))]
     children = [[j for j, n in enumerate(nodes) if n[2] == i] for i in range(len(nodes))]
     out += ["section: hierarchydef", "hierarchy nodes %d" % len(nodes)]
     for i, (nname, mesh, parent, pos, pivot, rot) in enumerate(nodes):
@@ -249,6 +265,43 @@ def model3do_text(name, meshes, nodes, radius=None, insert=(0.0, 0.0, 0.0)):
         child = children[i][0] if children[i] else -1
         out += ["%d: 0x0 0x1 %d %d %d %d %d %s %s" % (i, mesh, parent, child, sibling, len(children[i]),
                                                      " ".join(g(v) for v in tuple(pos) + tuple(rot) + tuple(pivot)), nname)]
+    return ("\r\n".join(out) + "\r\n").encode("ascii")
+
+
+def material(width, height, index=255, cels=1, indices=None):
+    """A .mat of one 8-bit texture of colour index `index` (of the colormap the model is drawn with: cr_pal.cmp is a grey
+    ramp, 255 white), `cels` cels on it. The layout of rdMaterial_LoadFile (and of what ScummVM reads, MaterialData::initGrim):
+    'MAT ', 0x32, flags 2 (no palette), the cels, the textures, 14 words of the texture format (the first the bits a pixel);
+    a cel: flags 8 (it has a texture), a colour, four 1.0, then 16 bytes, the fourth word the texture; a texture: width,
+    height, flags, two words, the mipmap levels (1), and its pixels."""
+    u = lambda *v: struct.pack("<%dI" % len(v), *v)
+    f = lambda *v: struct.pack("<%df" % len(v), *v)
+    # (the first two words of the format go into each texture's surface description: the second is its bits a pixel, which
+    # the original divides by)
+    indices = list(indices or [index] * cels)
+    out = b"MAT " + u(0x32, 2, len(indices), len(indices)) + u(8, 8) + b"\0" * 48
+    for i, c in enumerate(indices):
+        out += u(8, c) + f(1.0, 1.0, 1.0, 1.0) + u(0, 0, 0, i)
+    for c in indices:
+        out += u(width, height, 0, 0, 0, 1) + bytes([c]) * (width * height)
+    return out
+
+
+def keyframe_text(frames, fps, joints, nodes, markers=(), flags=0, type_=0):
+    """A text .key (rdKeyframe_LoadEntry; ScummVM KeyframeAnim::loadText). joints: the number of joints (the model's nodes);
+    nodes: [(joint index, node name, [(frame, flags, pos, (pitch, yaw, roll), dpos, (dpitch, dyaw, droll)), ...])] (the
+    name is matched with the model's node names); markers: [(frame, value)], at most 8."""
+    g = lambda v: "%.6f" % v
+    out = ["section: header", "flags 0x%x" % flags, "type 0x%x" % type_, "frames %d" % frames, "fps " + g(fps),
+           "joints %d" % joints]
+    if markers:
+        out += ["section: markers", "markers %d" % len(markers)] + ["%s %d" % (g(f), v) for f, v in markers]
+    out += ["section: keyframe nodes", "nodes %d" % len(nodes)]
+    for index, name, entries in nodes:
+        out += ["node %d" % index, "mesh name " + name, "entries %d" % len(entries)]
+        for i, (frame, eflags, pos, rot, dpos, drot) in enumerate(entries):
+            out.append("%d: %s 0x%x %s" % (i, g(frame), eflags, " ".join(g(v) for v in tuple(pos) + tuple(rot))))
+            out.append(" ".join(g(v) for v in tuple(dpos) + tuple(drot)))
     return ("\r\n".join(out) + "\r\n").encode("ascii")
 
 

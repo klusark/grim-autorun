@@ -46,8 +46,23 @@ SETS = {
         ("hi", "walk", True, 0.0, rect(-2, 1.0, 2, 3, 0.5)),
         ("hot", "chernobyl", True, 9999.0, rect(1, -3, 2, -2)),
     ]),
+    # cr_flat again, with a z-buffer that lets models be drawn (OPEN_SETS)
+    "cr_open": (((40, 90, 40), (60, 120, 60)), [
+        ("floor", "walk", True, 0.0, rect(-2, -2, 2, 2)),
+        # (the plane the shadows fall on, as the game's sets have it: a special sector named shadow1, 1 cm up)
+        ("shadow1", "special", True, 9999.0, rect(-3, -3, 3, 3, 0.01)),
+    ]),
+    # an L of three floors: from one arm to the other the straight line leaves the floor (the path goes through the corner)
+    "cr_ell": (((40, 90, 90), (60, 120, 120)), [
+        ("ell_a", "walk", True, 0.0, rect(-2, -2, 0, 0)),
+        ("ell_b", "walk", True, 0.0, rect(0, -2, 2, 0)),
+        ("ell_c", "walk", True, 0.0, rect(0, 0, 2, 2)),
+    ]),
 }
 
+
+# the sets whose z-buffer is far (0): the models in them are drawn
+OPEN_SETS = {"cr_open"}
 
 # A costume without a model: one Lua Variable component, whose global CR_LV takes the value of each key when the chore reaches it
 LUAV_COSTUME = (
@@ -123,6 +138,67 @@ FORMAT_MODELS = {
 }
 
 
+
+# A model with a picture: a box 1 x 0.6 x 0.5 m (cr_dbox, white; cr_gbox, grey: 150, under the bright level of snaps.py, so
+# that a text over it can be measured) whose top and four sides are drawn, both ways round (no face is culled), without
+# lighting (the colours of the texture as they are). Its nodes are those of BOX_MODEL (the keyframes move "body").
+DRAW_BOX = F.box(1.0, 0.6, 0.5)
+# (the corners of F.box: x, then y, then z, each low then high: index = 4 * (x high) + 2 * (y high) + (z high))
+_q = lambda a, b, c, d: [[a, b, c, d], [d, c, b, a]]
+DRAW_FACES = _q(1, 5, 7, 3) + _q(0, 4, 5, 1) + _q(2, 3, 7, 6) + _q(0, 1, 3, 2) + _q(4, 6, 7, 5)
+
+
+def _draw_model(name, mat):
+    return F.model3do_text(name, [("body", DRAW_BOX)], BOX_MODEL[2], materials=[mat],
+                           faces={0: [(0, f) for f in DRAW_FACES]}, lighting=0)
+
+
+# A keyframe of 2 s (30 frames at 15 a second) that slides the body node 1 m to +x and turns it 90 degrees (yaw), and the
+# same back; the markers at frames 10 and 20
+SLIDE_KEY = F.keyframe_text(30, 15.0, 4, [
+    (1, "body", [(0.0, 0, (0, 0, 0), (0, 0, 0), (1.0 / 29, 0, 0), (0, 90.0 / 29, 0)),
+                 (29.0, 0, (1.0, 0, 0), (0, 90.0, 0), (0, 0, 0), (0, 0, 0))]),
+], markers=[(10.0, 1), (20.0, 2)])
+
+# component ids: 0 the model, 1 the Lua Variable (BOX_COSTUME's chores use 1), 2 the colormap, 3 the keyframe
+DRAW_COMPONENTS = [("MMDL", -1, "cr_dbox.3do"), ("LUAV", -1, "CR_LV"), ("CMAP", 0, "cr_pal.cmp")]
+KEY_CHORES = [("slide_once", 2000, [(3, [(0, 0)])]),
+              ("slide_loop", 2000, [(3, [(0, 1)])]),
+              ("slide_hold", 2000, [(3, [(0, 2)])]),
+              ("slide_fade", 2000, [(3, [(0, 3)])]),
+              ("slide_stop", 100, [(3, [(0, 4)])]),
+              ("slide_late", 2000, [(3, [(500, 0)]), (1, [(0, 50), (500, 51), (2000, 52)])])]
+
+
+# Two drawn boxes (0.6 x 0.6 x 0.5 m) on one model, 0.7 m either side of the root: the left one white (cr_white.mat), the
+# right one with a material of two cels, white then grey (cr_two.mat). cr_comp.cos switches what is seen through the
+# components: the material (its cel), a mesh (the right box shown or not), a sprite on the left box (white, 0.4 m square,
+# 1 m up), the bitmap of an object state.
+SMALL_BOX = F.box(0.6, 0.6, 0.5)
+TWO_NODES = [("root", -1, -1, (0, 0, 0), (0, 0, 0), (0, 0, 0)),
+             ("left", 0, 0, (-0.7, 0, 0), (0, 0, 0), (0, 0, 0)),
+             ("right", 1, 0, (0.7, 0, 0), (0, 0, 0), (0, 0, 0))]
+COMP_COMPONENTS = [("MMDL", -1, "cr_two.3do"), ("LUAV", -1, "CR_LV"), ("CMAP", 0, "cr_pal.cmp"), ("MAT ", 0, "cr_two.mat"),
+                   ("MESH", 0, "mesh 2"), ("MESH", 0, "mesh 1"), ("SPRT", 5, "cr_white.mat,40,40,0,100,0"),
+                   ("BKND", -1, "cr_obj.bm")]
+COMP_CHORES = [("cel_grey", 100, [(3, [(0, 1)])]),
+               ("cel_white", 100, [(3, [(0, 0)])]),
+               ("hide_right", 100, [(4, [(0, 0)])]),
+               ("show_right", 100, [(4, [(0, 1)])]),
+               ("sprite_on", 100, [(6, [(0, 1)])]),
+               ("sprite_off", 100, [(6, [(0, 0)])]),
+               ("bitmap", 200, [(7, [(0, 1), (100, 2)])])]
+
+
+# A head that turns: a grey body (0.3 x 0.3 x 0.5 m), a neck node at 0.5 m and on it a white bar 0.9 x 0.15 x 0.15 m along
+# x (the head node at 1 m): seen from above, the box of the bar changes when the head yaws (SetActorHead with the joints
+# 1, 2, 3: body, neck, head)
+HEAD_NODES = [("root", -1, -1, (0, 0, 0), (0, 0, 0), (0, 0, 0)),
+              ("body", 0, 0, (0, 0, 0), (0, 0, 0), (0, 0, 0)),
+              ("neck", -1, 1, (0, 0, 0.5), (0, 0, 0), (0, 0, 0)),
+              ("head", 1, 2, (0, 0, 0.5), (0, 0, 0), (0, 0, 0))]
+
+
 def files():
     out = {}
     out["cr_box.3do"] = F.model3do(*BOX_MODEL)
@@ -140,6 +216,25 @@ def files():
             out[m + ".3do"] = F.model3do_text(m + ".3do", meshes, nodes, h)
         else:
             out[m + ".3do"] = F.model3do(m + ".3do", meshes, nodes, h)
+    out["cr_white.mat"] = F.material(8, 8, 255)
+    out["cr_grey.mat"] = F.material(8, 8, 150)
+    out["cr_dbox.3do"] = _draw_model("cr_dbox.3do", "cr_white.mat")
+    out["cr_gbox.3do"] = _draw_model("cr_gbox.3do", "cr_grey.mat")
+    out["cr_slide.key"] = SLIDE_KEY
+    out["cr_two.mat"] = F.material(8, 8, indices=[255, 150])
+    out["cr_two.3do"] = F.model3do_text("cr_two.3do", [("left", SMALL_BOX), ("right", SMALL_BOX)], TWO_NODES,
+                                        materials=["cr_white.mat", "cr_two.mat"],
+                                        faces={0: [(0, f) for f in DRAW_FACES], 1: [(1, f) for f in DRAW_FACES]}, lighting=0)
+    out["cr_comp.cos"] = F.costume(COMP_COMPONENTS, COMP_CHORES)
+    out["cr_head.3do"] = F.model3do_text("cr_head.3do", [("body", F.box(0.3, 0.3, 0.5)), ("head", F.box(0.9, 0.15, 0.15))],
+                                         HEAD_NODES, materials=["cr_grey.mat", "cr_white.mat"],
+                                         faces={0: [(0, f) for f in DRAW_FACES], 1: [(1, f) for f in DRAW_FACES]},
+                                         lighting=0)
+    out["cr_head.cos"] = F.costume([("MMDL", -1, "cr_head.3do"), ("LUAV", -1, "CR_LV"), ("CMAP", 0, "cr_pal.cmp")],
+                                   BOX_COSTUME[1])
+    out["cr_dbox.cos"] = F.costume(DRAW_COMPONENTS, BOX_COSTUME[1])
+    out["cr_gbox.cos"] = F.costume([("MMDL", -1, "cr_gbox.3do")] + DRAW_COMPONENTS[1:], BOX_COSTUME[1])
+    out["cr_kbox.cos"] = F.costume(DRAW_COMPONENTS + [("KEYF", 0, "cr_slide.key")], KEY_CHORES)
     for m in list(HEADER_MODELS) + ["cr_meshx", "cr_nodex", "cr_float"] + list(FORMAT_MODELS):
         out[m + ".cos"] = F.costume([("MMDL", -1, m + ".3do"), ("LUAV", -1, "CR_LV")], BOX_COSTUME[1])
     # a small bitmap of its own for object states and images: the original frees a bitmap with the object state that used
@@ -150,10 +245,14 @@ def files():
     out["cr_box.cos"] = F.costume(*BOX_COSTUME)
     out["cr_luav.cos"] = F.costume(*LUAV_COSTUME)
     out["cr_pal.cmp"] = F.colormap([(i, i, i) for i in range(256)])
-    zfar = F.bitmap(W, H, [0xFFFF] * (W * H), fmt=5)
+    # The z-buffers: 0xffff everywhere (the background is in front of every model: nothing is drawn; ScreenToWorld gives
+    # points on the floor) or, for the sets of OPEN_SETS, 0 (the background is the farthest: the models are drawn;
+    # ScreenToWorld gives NaN on the original)
+    znear = F.bitmap(W, H, [0xFFFF] * (W * H), fmt=5)
+    zfar = F.bitmap(W, H, [0] * (W * H), fmt=5)
     for name, (colours, sectors) in SETS.items():
         out[name + ".bm"] = F.bitmap(W, H, F.checker(W, H, 40, *colours))
-        out[name + ".zbm"] = zfar
+        out[name + ".zbm"] = zfar if name in OPEN_SETS else znear
         setup = dict(CAMERA, name=name + "_0", background=name + ".bm", zbuffer=name + ".zbm")
         out[name + ".set"] = F.set_file(["cr_pal.cmp"], [setup], [LIGHT], sectors)
     # a set of three setups (cameras): above, from the south at an angle and rolled, and from the east with a narrow fov
@@ -176,4 +275,13 @@ def loose_files():
             # (three lines for TextFileGetLine; the second starts at 7)
             "cr_lines.txt": b"line1\r\nline2\r\nline3\r\n",
             # (a file the dofile test runs)
-            "cr_dofile_target.lua": F.lua_text('CR_DOFILE = "yes"\n')}
+            "cr_dofile_target.lua": F.lua_text('CR_DOFILE = "yes"\n'),
+            # (a file that is also in cr_extra.lab, with another value: which of the two is read)
+            "cr_dup.lua": F.lua_text('CR_DUP = "loose"\n'),
+            # an archive in the game folder beside the loose files (both engines open every .lab of the folder)
+            "cr_extra.lab": F.lab({
+                "cr_lab_only.lua": F.lua_text('CR_LAB = "lab"\n'),
+                "cr_dup.lua": F.lua_text('CR_DUP = "lab"\n'),
+                "cr_lab_box.cos": F.costume(*BOX_COSTUME),
+                "cr_lab_text.txt": b"from the lab\r\n",
+            })}

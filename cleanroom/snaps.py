@@ -11,7 +11,8 @@ import struct
 
 BRIGHT = 180  # (the backgrounds are at most 120 in any channel; ScummVM's screenshot is grey)
 
-SNAP = re.compile(r'^(V [^|]*\|[^|]*\|)"snap:([A-Za-z0-9_.]+)"$')
+SNAP = re.compile(r'^(V [^|]*\|[^|]*\|)"snap:([A-Za-z0-9_.]+)(:dark)?"$')
+DARK = 30  # (cr_snap(key, "dark"): the box of the pixels darker than any background, a shadow)
 
 
 def read_bmp(path):
@@ -33,12 +34,12 @@ def read_bmp(path):
     return w, abs(h), rows
 
 
-def bright_box(path):
+def bright_box(path, dark=False):
     w, h, rows = read_bmp(path)
     xs, ys = [], []
     for y, row in enumerate(rows):
         for x, (r, g, b) in enumerate(row):
-            if r >= BRIGHT and g >= BRIGHT and b >= BRIGHT:
+            if (r < DARK and g < DARK and b < DARK) if dark else (r >= BRIGHT and g >= BRIGHT and b >= BRIGHT):
                 xs.append(x)
                 ys.append(y)
     if not xs:
@@ -64,6 +65,6 @@ def resolve(lines, folder):
         if not os.path.exists(path):
             out.append(m.group(1) + "missing")
             continue
-        box = bright_box(path)
+        box = bright_box(path, bool(m.group(3)))
         out.append(m.group(1) + ("none" if box is None else " ".join("%.6f" % v for v in box)))
     return out

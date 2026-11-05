@@ -87,7 +87,9 @@ cr_test("actor_sees", cr_t_actor_sees)
 
 cr_t_screen_to_world = function()
 	MakeCurrentSet("cr_flat.set")
-	cr_frames(1)
+	-- (the original reads the depth of the z-buffer last drawn: a frame or two after a change of set it can still be that
+	-- of the set before)
+	cr_frames(4)
 	local f = cr_fn("ScreenToWorld")
 	if f then
 		cr_log("centre", f(320, 240))
@@ -99,6 +101,18 @@ cr_t_screen_to_world = function()
 	end
 end
 cr_test("screen_to_world", cr_t_screen_to_world)
+
+-- the same in cr_open, whose z-buffer is 0 (far) everywhere: the original reads the depth at the point
+cr_t_screen_to_world_open = function()
+	MakeCurrentSet("cr_open.set")
+	cr_frames(4)
+	local f = cr_fn("ScreenToWorld")
+	if f then
+		cr_log("centre", f(320, 240))
+		cr_log("corner", f(0, 0))
+	end
+end
+cr_test("screen_to_world_open", cr_t_screen_to_world_open)
 
 cr_t_light_details = function()
 	MakeCurrentSet("cr_flat.set")

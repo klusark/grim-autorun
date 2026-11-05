@@ -58,11 +58,15 @@ end
 -- The original saves its back buffer at once; ScummVM the next frame it draws: let a frame or two pass before changing what
 -- is on the screen.
 CR_SNAP_N = 0
-cr_snap = function(key)
+cr_snap = function(key, mode)
 	CR_SNAP_N = CR_SNAP_N + 1
 	local f = "crsnap" .. CR_SNAP_N .. ".bmp"
 	PrintDebug("CRSNAP:" .. f)
-	cr_log(key, "snap:" .. f)
+	if mode == "dark" then
+		cr_log(key, "snap:" .. f .. ":dark")
+	else
+		cr_log(key, "snap:" .. f)
+	end
 end
 
 cr_test = function(name, fn)
