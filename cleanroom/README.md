@@ -72,12 +72,49 @@ end
 cr_test("my_case", cr_t_my_case)
 ```
 
-Lua 3.1: no `break`, no closures over locals, nil is false, at most 32 locals. `TRUE`/`FALSE` are defined by the runner.
-A test that raises an error writes `ERROR` and `FAILED`, and the runner goes on. Log what you see and let the
-comparison decide. Test names, keys and the order of the keys must not depend on the engine.
+Lua 3.1: no `break`, no closures over locals (use globals, e.g. `CR_A` with `cr_actor_global`), nil is false, at most
+32 locals, and no mixed table constructors (`{ 1, 2; n = 2 }` needs the `;`). `TRUE`/`FALSE` are defined by the runner.
+Before a run, `run.py` parses every Lua file with the game's own LUA.DLL (`autorun/tools/lua31`). A file that does not
+parse would otherwise drop its tests with one ERROR line. A test that raises an error writes `ERROR` and `FAILED`, and the
+runner goes on. Log what you see and let the comparison decide. Test names, keys and the order of the keys must not depend
+on the engine. A key logged twice in a test is compared as `key`, `key#2`, ...
 
-Original-only traps found so far: `WalkActorTo` moves an actor only when it follows the boxes (`SetActorFollowBoxes`);
-`SetSelectedActor` on an actor without a costume crashes the original.
+`compare.py` puts a test in one of three classes. `same`: equal within 1e-6. `close`: all differing values are numbers
+within 1e-3 (`--close`). `DIFF`: anything else.
+
+Original-only traps found so far:
+- `WalkActorTo` moves an actor only when it follows the boxes (`SetActorFollowBoxes`).
+- `SetSelectedActor` on an actor without a costume crashes the original.
+- `GetAngleBetweenActors(a, b)` crashes when `a` does not follow the boxes (it reads the walker's heading).
+- There is no `sleep_for`.
+
+## Determinism of the original
+
+With `simtime` every frame is 17 ms (`frame_time` checks it), and repeated runs give the same values except one: the order
+of `next()`. The original's Lua hashes strings and tables by address. LUA.DLL's own C runtime places its small-block heap
+where Windows finds room, and that moves by multiples of 64 KB from run to run; the low bits of every address repeat.
+Two attempts did not change it, so both were dropped: ASLR off for the process (a creation flag in grimlaunch), and LUA.DLL's
+and the exe's heap calls redirected to a fixed arena from patch.dll (Lua's objects are not allocated there). The first region
+is reserved before patch.dll loads. Fixing it would need patch.dll loaded at the process entry, before the runtimes start.
+Until then, tests must not depend on table order. `--save` keeps any value that varies in `expected/unstable.txt`.
+
+## Differences found (ScummVM grim-actor-fixes, 2026-11-05)
+
+58 tests: 28 the same, 2 close, 28 differ. Besides the per-frame walk and turn values:
+- The walk ends one frame's step past the target on the original (more at a higher rate), with a final yaw 2.3 degrees off.
+  After `PutActorAt` the original keeps walking.
+- The original eases into `TurnActorTo`; ScummVM turns at a constant rate. `WalkActorForward` into a wall slides on the
+  original and stops dead on ScummVM.
+- ScummVM does not fire the LUAV keys of a costume without a model (`CR_LV` is never set); the original does.
+- `MakeSectorActive` with a number does nothing on the original. A sector switched on stays on across a change of set on the
+  original; ScummVM resets it. The current setup is kept across a change of set on the original; ScummVM goes back to 0.
+  `GetCurrentSetup` of a set that is not current is 0 on the original and nil on ScummVM.
+- `WorldToScreen` returns whole pixels on the original; with a rolled camera ScummVM is up to 31 px off.
+- `RotateVector` and `GetAngleBetweenVectors` are within 1e-3 (the original's sin/cos tables).
+- Registry: an unset value reads 96 on ScummVM (nil on the original); numbers come back as strings on the original.
+- Number text: the original's C runtime writes 3-digit exponents (`1e+015`) and `1.#INF`; `tonumber("0x10")` is nil.
+  `LocalizeString("no slashes")` gives `"//no slashes"` on the original.
+- About 87 Lua builtins exist only on the original; `sleep_for`, `pause_script`, `unpause_script` only on ScummVM.
 
 ## Not done yet
 
