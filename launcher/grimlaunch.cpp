@@ -33,14 +33,20 @@
 // view). $GRIM_INI names another file. --no-ini leaves grim.ini alone.
 // Format: [Grim] then name=value lines. A string that would read back as a number is quoted; REG_BINARY is written as hex:.
 //
-// patch.dll is needed by debuglog, framelimit and config. Build it once, next to the exe, with the 32-bit MinGW gcc:
-//   cd patches\patch
+// patch.dll is needed by debuglog, framelimit and config. It is read from the folder of grimlaunch.exe (by full path; the one next to
+// the game's exe is the fallback). Build it once, next to the launcher, with the 32-bit MinGW gcc:
+//   cd launcher
 //   set PATH=C:\msys64\mingw32\bin;%PATH%
-//   gcc -shared -O2 -static-libgcc -o <game folder>\patch.dll patch.c config.c -luser32 -lgdi32 -lwinmm
+//   gcc -shared -O2 -static-libgcc -o <folder of grimlaunch.exe>\patch.dll patch.c config.c -luser32 -lgdi32 -lwinmm
 // (config_test.c is a host test of config.c: gcc -DCONFIG_TEST -o ct config_test.c && ./ct)
 //
 // build (64-bit is fine, the game is a 32-bit process):  g++ -O2 -static -o grimlaunch.exe grimlaunch.cpp
-// usage:  grimlaunch [--with a,b|all] [--only a,b] [--skip a,b] [--simtime-ms N] [--no-ini] [--resume-delay MS] <GRIMFANDANGO.exe|Monkey4.exe> [game arguments...]
+// usage:  grimlaunch [--with a,b|all] [--only a,b] [--skip a,b] [--simtime-ms N] [--no-ini] [--resume-delay MS] [<GRIMFANDANGO.exe|GrimFandango.exe|Monkey4.exe>] [game arguments...]
+// Without an exe argument (the first argument not ending in .exe), the current folder is searched for a game exe (any *.exe whose bytes
+// are one of the three); it is started if there is exactly one.
+
+#define _CRT_SECURE_NO_WARNINGS
+
 #include <windows.h>
 #include <cctype>
 #include <cstdio>
@@ -55,6 +61,7 @@
 static DWORD g_iatLoadLibraryA = 0x4d7154;
 static DWORD g_iatGetProcAddress = 0x4d7158;
 static const char DLL_NAME[] = "patch.dll";
+static std::string g_dllPath;   // full path of patch.dll: next to the launcher
 
 static const DWORD ARENA_WANTED = 0x5F000000;   // the code and strings the launcher puts into the process; lua.dll and the system dlls stay clear
 static const DWORD ARENA_SIZE = 0x10000;
@@ -131,7 +138,7 @@ static DWORD cstring(const std::string &s) {
 //   then == 0: jumps to the export, which returns to the caller (a missing export makes the function return 0)
 //   then != 0: calls the export, then jumps to `then` (a missing export is skipped)
 static DWORD loaderStub(const char *exportName, DWORD then = 0) {
-	DWORD dll = cstring(DLL_NAME), fn = cstring(exportName);
+	DWORD dll = cstring(g_dllPath), fn = cstring(exportName);
 	auto build = [&](DWORD va) {
 		std::string c;
 		c += '\x68'; c += le32(dll);                                // push "patch.dll"
@@ -570,17 +577,56 @@ static bool fileBytes(const std::string &exe, DWORD va, size_t n, std::string &o
 static const DWORD RM_PRINTDEBUG = 0x0044B7E0, RM_PRINTDEBUG_SLOT = 0x005C8A64;
 static const DWORD RM_IAT_LOADLIBRARYA = 0x005710F8, RM_IAT_GETPROCADDRESS = 0x00571034;
 
-static Game detectGame(const std::string &exe) {
+static bool identifyGame(const std::string &exe, Game &game) {
 	std::string b;
 	if (fileBytes(exe, RM_PRINTDEBUG, 9, b) && b == bytes({0x56, 0x6a, 0x01, 0xff, 0x15, 0x50, 0x11, 0x57, 0x00}) &&
 	    fileBytes(exe, RM_PRINTDEBUG_SLOT, 4, b) && b == le32(RM_PRINTDEBUG))
-		return REMASTERED;
-	if (fileBytes(exe, 0x00401721, 5, b) && b == bytes({0xa1, 0x48, 0x5a, 0x4f, 0x00}))
-		return GRIM;
-	if (fileBytes(exe, EMI_KEY_CHECK, 5, b) && b == bytes({0x83, 0xf8, 0x44, 0x77, 0xb0}))
-		return EMI;
-	fprintf(stderr, "%s is neither the Grim Fandango v1.01 exe, the Remastered exe nor the EMI v1.1 exe\n", exe.c_str());
-	exit(1);
+		game = REMASTERED;
+	else if (fileBytes(exe, 0x00401721, 5, b) && b == bytes({0xa1, 0x48, 0x5a, 0x4f, 0x00}))
+		game = GRIM;
+	else if (fileBytes(exe, EMI_KEY_CHECK, 5, b) && b == bytes({0x83, 0xf8, 0x44, 0x77, 0xb0}))
+		game = EMI;
+	else
+		return false;
+	return true;
+}
+
+static Game detectGame(const std::string &exe) {
+	Game game;
+	if (!identifyGame(exe, game)) {
+		fprintf(stderr, "%s is neither the Grim Fandango v1.01 exe, the Remastered exe nor the EMI v1.1 exe\n", exe.c_str());
+		exit(1);
+	}
+	return game;
+}
+
+// the one game exe in the current folder; exits when there is none or more than one
+static std::string findGameExe() {
+	char cwd[MAX_PATH];
+	if (!GetCurrentDirectoryA(MAX_PATH, cwd))
+		die("GetCurrentDirectory");
+	std::vector<std::string> found;
+	WIN32_FIND_DATAA fd;
+	HANDLE h = FindFirstFileA((std::string(cwd) + "\\*.exe").c_str(), &fd);
+	if (h != INVALID_HANDLE_VALUE) {
+		do {
+			Game game;
+			std::string path = std::string(cwd) + '\\' + fd.cFileName;
+			if (!(fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) && identifyGame(path, game))
+				found.push_back(path);
+		} while (FindNextFileA(h, &fd));
+		FindClose(h);
+	}
+	if (found.size() == 1)
+		return found[0];
+	if (found.empty())
+		fprintf(stderr, "no Grim Fandango, Remastered or Escape from Monkey Island exe in %s: run grimlaunch from the game folder or name the exe\n", cwd);
+	else {
+		fprintf(stderr, "more than one game exe in %s, name the one to start:\n", cwd);
+		for (auto &f : found)
+			fprintf(stderr, "  %s\n", f.c_str());
+	}
+	exit(2);
 }
 
 // the Windows compatibility settings for this exe (AppCompatFlags\Layers, value named by the full path), user and machine
@@ -650,9 +696,11 @@ int main(int argc, char **argv) {
 			return 2;
 		}
 	}
-	if (i >= argc) {
-		fprintf(stderr, "usage: grimlaunch [--with a,b|all] [--only a,b] [--skip a,b] [--simtime-ms N] [--no-ini] [--resume-delay MS] <GRIMFANDANGO.exe|GrimFandango.exe|Monkey4.exe> [game arguments...]\n");
-		return 2;
+	// the exe is the first argument when it ends in .exe; otherwise the game exe of the current folder is looked for
+	bool exeGiven = false;
+	if (i < argc) {
+		size_t n = strlen(argv[i]);
+		exeGiven = n > 4 && _stricmp(argv[i] + n - 4, ".exe") == 0;
 	}
 	for (auto *list : {&with, &only, &skip})
 		for (auto &n : *list) {
@@ -666,11 +714,24 @@ int main(int argc, char **argv) {
 		}
 
 	char exe[MAX_PATH];
-	if (!GetFullPathNameA(argv[i], MAX_PATH, exe, nullptr))
+	std::string named = exeGiven ? argv[i] : findGameExe();
+	if (!GetFullPathNameA(named.c_str(), MAX_PATH, exe, nullptr))
 		die("GetFullPathName");
 	std::string dir = exe;
 	dir.erase(dir.find_last_of('\\'));
 	g_dir = dir;
+	// patch.dll is read from the folder of the launcher (the stubs load it by full path); next to the game's exe is the fallback
+	{
+		char self[MAX_PATH];
+		if (!GetModuleFileNameA(nullptr, self, MAX_PATH))
+			die("GetModuleFileName");
+		std::string selfDir = self;
+		selfDir.erase(selfDir.find_last_of('\\'));
+		g_dllPath = selfDir + '\\' + DLL_NAME;
+		if (GetFileAttributesA(g_dllPath.c_str()) == INVALID_FILE_ATTRIBUTES && dir != selfDir)
+			if (GetFileAttributesA((dir + '\\' + DLL_NAME).c_str()) != INVALID_FILE_ATTRIBUTES)
+				g_dllPath = dir + '\\' + DLL_NAME;
+	}
 	Game game = detectGame(exe);
 	g_game = game;
 	printf("%s\n", game == GRIM ? "Grim Fandango v1.01" : game == REMASTERED ? "Grim Fandango Remastered" : "Escape from Monkey Island v1.1");
@@ -683,7 +744,7 @@ int main(int argc, char **argv) {
 	};
 	std::string cmd = std::string("\"") + exe + "\"";
 	bool hasW = false;
-	for (int a = i + 1; a < argc; a++) {
+	for (int a = exeGiven ? i + 1 : i; a < argc; a++) {
 		cmd += std::string(" ") + argv[a];
 		hasW |= !strcmp(argv[a], "-w");
 	}
@@ -705,8 +766,8 @@ int main(int argc, char **argv) {
 	bool needDll = false;
 	for (const char *n : {"debuglog", "framelimit", "config"})
 		needDll |= game != EMI && enabled(n, strcmp(n, "framelimit") != 0);
-	if (needDll && GetFileAttributesA((dir + '\\' + DLL_NAME).c_str()) == INVALID_FILE_ATTRIBUTES)
-		fprintf(stderr, "warning: %s is not in %s, the stubs will do nothing\n", DLL_NAME, dir.c_str());
+	if (needDll && GetFileAttributesA(g_dllPath.c_str()) == INVALID_FILE_ATTRIBUTES)
+		fprintf(stderr, "warning: %s does not exist, the stubs will do nothing\n", g_dllPath.c_str());
 	if (enabled("config", true) && !noIni) {
 		const char *env = getenv("GRIM_INI");
 		std::string ini = env ? env : dir + "\\grim.ini";
