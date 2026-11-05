@@ -30,6 +30,7 @@ open differences and the pitfalls.
 | `autorun/GHIDRA_NAMES.md` | Addresses in the original exe and the names given to them in Ghidra |
 | `autorun/*_PLAN.md` | Design notes: navigation, state, accuracy, collision |
 | `autorun/tools/` | Python and shell tools: trace compare, golden tests, frame diff, coverage, audio probes, offline Lua 3.1 (`lua31/`), original math check (`origmath/`) |
+| `cleanroom/` | Engine tests on both engines with none of the game's data: our own Lua, sets, bitmaps, costumes (see its README) |
 | `emi_autorun/` | Escape from Monkey Island playthrough, built on the Grim libraries (see its `PROGRESS.md`) |
 | `crashdbg/` | Windows helpers for the original exe: debugger launcher (`grimrun2`), breakpoint tracer (`grimtrace`), iMuse tracer (`imtrace`), memory read/write, F12 sender |
 | `patches/patch/` | Source of `patch.dll` (`patch.c`: logging to `grimdebug.log`, frame limiter; `config.c`: grim.ini instead of the registry), loaded by the patched game. Build steps are in the header of `launcher/grimlaunch.cpp` (32-bit gcc) |
