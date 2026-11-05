@@ -99,17 +99,22 @@ cr_t_builtins = function()
 	local names = { }
 	local n = 0
 	local k, v = nextvar(nil)
+	-- (the runner's and the tests' own functions are left out; there are thousands of them with the argument probe)
 	while k do
-		if type(v) == "function" or type(v) == "cfunction" then
+		if (type(v) == "function" or type(v) == "cfunction") and strsub(k, 1, 3) ~= "cr_" then
 			n = n + 1
 			names[n] = k
 		end
 		k, v = nextvar(k)
 	end
-	-- (insertion sort: Lua 3.1 has no sort)
+	-- (insertion sort: Lua 3.1 has no sort. The original kills a script that runs "a really long time" without
+	-- break_here, so it yields every 50 names)
 	local i = 2
 	local j, x, moving
 	while i <= n do
+		if mod(i, 50) == 0 then
+			break_here()
+		end
 		x = names[i]
 		j = i - 1
 		moving = TRUE

@@ -49,7 +49,7 @@ end
 cr_test("methods", cr_t_methods)
 
 cr_t_string_syntax = function()
-	cr_log("escapes", strlen("a\nb\tc\\"), strbyte("\65"), strlen("\0"))
+	cr_log("escapes", strlen("a\nb\tc\\"), "\65" == "A", strlen("\0"))
 	cr_log("quotes", 'single "dq"', "double 'sq'")
 	local long = [[line one
 line two]]

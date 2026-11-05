@@ -31,6 +31,11 @@ cr_t_camera_set = function()
 	MakeCurrentSetup(0)
 	cr_frames(1)
 	cr_log("fov_back", GetCameraFOV())
+	-- (the camera of setup 0 as assets.py has it: the original keeps what was set in the setup)
+	SetCameraFOV(60)
+	SetCameraRoll(0)
+	SetCameraPosition(0, -0.5, 6)
+	SetCameraInterest(0, 0, 0)
 end
 cr_test("camera_set", cr_t_camera_set)
 
