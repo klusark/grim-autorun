@@ -20,7 +20,7 @@
 //   nopause    the game goes on when its window is not the active one (it stops otherwise)
 //   offscreen  the window opens 20000 pixels off the screen and never takes the focus (for unattended runs)    (off)
 //   f11        F11 runs lua_dofile("grimpatch.bin")
-//   debugmode  the game's own debug switches (see patchEmiDebugmode): -log (debug.log of its engine messages) and -fps (the Ctrl+Backspace+F hotkey)    (off)
+//   debugmode  the game's own debug switches -log (debug.log of its engine messages) and -fps (hotkey), and the scripts' debug keys (see patchEmiDebugmode)    (off)
 //   undo640    puts the desktop mode back first thing, when the exe has the 640x480 compatibility setting (below)
 //   windowed   the game's own -w switch is added to the command line unless you pass it
 //
@@ -530,13 +530,56 @@ static void patchEmiDatadir() {
 // Both bytes are set here. A debug window is meant for -log together with -w: 0x407bd0 then loads DebugLog.dll (not shipped) and keeps
 // its _ShowDebugLog as the log callback at 0x4d4e88, which stays 0 when the dll is missing and the first log message calls it. The jump
 // at 0x407bee (je to the default callback, a function returning 0) is made unconditional, so the callback is always set and no dll is needed.
-// (ToggleDebugDraw and the other debug builtins of the Lua table, and the Backspace+C / Backspace+L hotkeys, are stubs in the release.)
+// (ToggleDebugDraw, ToggleDraw*, SectEdit*, LightMgrStartup of the Lua table, and the Backspace+C / Backspace+L hotkeys, are stubs in the release.)
+//
+// The scripts have a debug part that nothing reaches. _system.lua ends in dofile("_debug.lua"), which defines debugButtonHandler (the
+// spotfinder, the fly camera, Go to Set, run a script, print a variable, the sector editor ...), but SampleButtonHandler of _controls.lua
+// never calls it. After the C code has run _system.lua (0x40f6f0 calls lua_dofile, 0x4420c0), lua_dostring (0x442320) runs a chunk that
+// puts debugButtonHandler in front of SampleButtonHandler. global_debug stays unset: with it the scripts would load every act's props
+// and actors at start up and _sets.lua would no longer load them when an act changes.
+static const char DEBUG_LUA[] = R"LUA(
+if debugButtonHandler and SampleButtonHandler and not debugmode_orig_handler then
+	debugmode_orig_handler = SampleButtonHandler
+	debugmode_installed = (system.buttonHandler == SampleButtonHandler)
+	SampleButtonHandler = function(key, down, extra)
+		altKeyDown = GetControlState(ALTKEY)
+		local handled, used = debugButtonHandler(key, down, GetControlState(SHIFTKEY), GetControlState(CONTROLKEY))
+		if handled or used then
+			return
+		end
+		return debugmode_orig_handler(key, down, extra)
+	end
+	if debugmode_installed then
+		system.buttonHandler = SampleButtonHandler
+	end
+	PrintDebug("debugmode: debugButtonHandler installed")
+end
+)LUA";
+
 static void patchEmiDebugmode() {
 	static const DWORD LOG = 0x004d4eec, FPS = 0x004d4eee, CALLBACK_JUMP = 0x00407bec;
+	static const DWORD AFTER_SYSTEM = 0x0040f6fa, LUA_DOSTRING = 0x00442320;
 	expect(CALLBACK_JUMP, bytes({0x84, 0xc0, 0x74, 0x63}), "the EMI log callback choice");   // test al,al; je default
+	expect(AFTER_SYSTEM, bytes({0x83, 0xc4, 0x04, 0x85, 0xc0, 0x74, 0x03}), "the EMI call of _system.lua");   // add esp,4; test eax,eax; je ok
 	write(LOG, bytes({0x01}));
 	write(FPS, bytes({0x01}));
 	write(CALLBACK_JUMP + 2, bytes({0xeb}));                                                    // jmp default
+	// after lua_dofile("_system.lua"): add esp,4; if it worked (eax == 0), lua_dostring(chunk); then test eax,eax and on to the je
+	DWORD chunk = cstring(DEBUG_LUA);
+	auto build = [&](DWORD va) {
+		std::string c = bytes({0x83, 0xc4, 0x04, 0x85, 0xc0, 0x75, 0x00});                     // add esp,4; test eax,eax; jnz done
+		size_t jnz = c.size() - 1;
+		c += bytes({0x68}); c += le32(chunk);                                                          // push chunk
+		c += bytes({0xe8}); c += le32(LUA_DOSTRING - (va + c.size() + 4));                             // call lua_dostring
+		c += bytes({0x83, 0xc4, 0x04, 0x31, 0xc0});                                            // add esp,4; xor eax,eax
+		c[jnz] = (char)(c.size() - (jnz + 1));
+		c += bytes({0x85, 0xc0});                                                              // done: test eax,eax
+		c += jmp(va + c.size(), AFTER_SYSTEM + 5);
+		return c;
+	};
+	DWORD va = alloc(build(0).size());
+	write(va, build(va));
+	write(AFTER_SYSTEM, jmp(AFTER_SYSTEM, va));
 }
 
 static const struct { const char *name; void (*apply)(); bool def; int games; } PATCHES[] = {
