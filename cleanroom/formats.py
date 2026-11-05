@@ -4,6 +4,7 @@ descriptions in assets.py; nothing is read from the game's own data.
 The layouts follow what the readers of both engines take (ScummVM engines/grim: lab.cpp, bitmap.cpp, colormap.cpp,
 localize.cpp, set.cpp; the original v1.01 exe: Resource_OpenArchivesInDir, Polyglot_LoadTable, stdBitmap_LoadResource).
 """
+import math
 import struct
 
 
@@ -134,6 +135,49 @@ def costume(components, chores):
     return ("\r\n".join(out) + "\r\n").encode("ascii")
 
 
+def _rotation(pitch, yaw, roll):
+    """The rotation of a node, as ScummVM builds it (Quaternion::fromEuler(yaw, pitch, roll, EO_ZXY)): yaw about z, then
+    pitch about x, then roll about y, in degrees."""
+    def rz(a):
+        c, s = math.cos(a), math.sin(a)
+        return [[c, -s, 0], [s, c, 0], [0, 0, 1]]
+    def rx(a):
+        c, s = math.cos(a), math.sin(a)
+        return [[1, 0, 0], [0, c, -s], [0, s, c]]
+    def ry(a):
+        c, s = math.cos(a), math.sin(a)
+        return [[c, 0, s], [0, 1, 0], [-s, 0, c]]
+    mul = lambda a, b: [[sum(a[i][k] * b[k][j] for k in range(3)) for j in range(3)] for i in range(3)]
+    return mul(mul(rz(math.radians(yaw)), rx(math.radians(pitch))), ry(math.radians(roll)))
+
+
+def model_bounds(meshes, nodes):
+    """The bounding box (lo, hi), centre and radius of a model as the original works them out (rdModel3_CalcBoundingBoxes):
+    every vertex through its node's transform, the centre the middle of the box, the radius half its diagonal. A vertex v
+    of a node is at parent * [R | pos] * (pivot + v), as ScummVM draws it."""
+    world = []
+    allv = []
+    for name, mesh, parent, pos, pivot, rot in nodes:
+        r = _rotation(*rot)
+        if parent >= 0:
+            pr, pt = world[parent]
+            r2 = [[sum(pr[i][k] * r[k][j] for k in range(3)) for j in range(3)] for i in range(3)]
+            t2 = tuple(pt[i] + sum(pr[i][k] * pos[k] for k in range(3)) for i in range(3))
+        else:
+            r2, t2 = r, tuple(pos)
+        world.append((r2, t2))
+        if mesh >= 0:
+            for v in meshes[mesh][1]:
+                p = [v[k] + pivot[k] for k in range(3)]
+                allv.append(tuple(t2[i] + sum(r2[i][k] * p[k] for k in range(3)) for i in range(3)))
+    allv = allv or [(0.0, 0.0, 0.0)]
+    lo = tuple(min(v[i] for v in allv) for i in range(3))
+    hi = tuple(max(v[i] for v in allv) for i in range(3))
+    centre = tuple((lo[i] + hi[i]) / 2 for i in range(3))
+    radius = sum((hi[i] - lo[i]) ** 2 for i in range(3)) ** 0.5 / 2
+    return lo, hi, centre, radius
+
+
 def model3do(name, meshes, nodes, header=None):
     """A binary .3do (LDOM) without materials or faces: what a model gives an actor besides its picture (the bounding box
     and radius for collisions and GetActorRect, the hierarchy for chores and keyframes).
@@ -142,27 +186,11 @@ def model3do(name, meshes, nodes, header=None):
     header: values for the end of the file instead of the ones from the vertices (radius, lo, hi, centre, insert), to tell an
     engine that reads them from one that works them out from the mesh. The original ignores them: rdModel3_LoadPostProcess
     works out the box from the vertices through the node transforms, the centre as its middle and the radius as half its
-    diagonal. The default header is that (translations only: the nodes of a mesh may not be rotated or have a pivot)."""
+    diagonal. The default header is that (model_bounds)."""
     f = lambda *v: struct.pack("<%df" % len(v), *v)
     u = lambda *v: struct.pack("<%dI" % len(v), *v)
     s32 = lambda t, n: t.encode("ascii")[:n - 1].ljust(n, b"\0")
-    def offset(i):
-        o = (0.0, 0.0, 0.0)
-        while i >= 0:
-            o = tuple(o[k] + nodes[i][3][k] for k in range(3))
-            i = nodes[i][2]
-        return o
-    allv = []
-    for i, n in enumerate(nodes):
-        if n[1] >= 0:
-            assert tuple(n[4]) == (0, 0, 0) and tuple(n[5]) == (0, 0, 0), "a mesh node with a pivot or rotation"
-            o = offset(i)
-            allv += [tuple(v[k] + o[k] for k in range(3)) for v in meshes[n[1]][1]]
-    allv = allv or [(0.0, 0.0, 0.0)]
-    lo = tuple(min(v[i] for v in allv) for i in range(3))
-    hi = tuple(max(v[i] for v in allv) for i in range(3))
-    centre = tuple((lo[i] + hi[i]) / 2 for i in range(3))
-    radius = sum((hi[i] - lo[i]) ** 2 for i in range(3)) ** 0.5 / 2
+    lo, hi, centre, radius = model_bounds(meshes, nodes)
     out = b"LDOM" + u(0) + s32(name, 32) + u(0) + u(1) + u(len(meshes))
     for mname, verts in meshes:
         mr = max([sum(c * c for c in v) ** 0.5 for v in verts] or [0.0])
@@ -194,6 +222,34 @@ def model3do(name, meshes, nodes, header=None):
     h.update(header or {})
     out += f(h["radius"]) + f(*h["lo"]) + f(*h["hi"]) + f(*h["centre"]) + f(*h["insert"])
     return out
+
+
+def model3do_text(name, meshes, nodes, radius=None, insert=(0.0, 0.0, 0.0)):
+    """The same model as model3do, in the text .3do format (the one the original's rdModel3_LoadEntryText parses when a file
+    does not start with LDOM). It has no bounding box or centre, only a radius (by default the one the original works out:
+    it replaces the one of the file in rdModel3_LoadPostProcess, as it does a binary header's)."""
+    g = lambda v: "%.6f" % v
+    out = ["section: header", "3do 2.1", "section: modelresource", "materials 0", "section: geometrydef",
+           "radius " + g(model_bounds(meshes, nodes)[3] if radius is None else radius),
+           "insert offset " + " ".join(g(v) for v in insert), "geosets 1", "geoset 0", "meshes %d" % len(meshes)]
+    for i, (mname, verts) in enumerate(meshes):
+        mr = max([sum(c * c for c in v) ** 0.5 for v in verts] or [0.0])
+        out += ["mesh %d" % i, "name " + mname, "radius " + g(mr), "shadow 0", "geometrymode 4", "lightingmode 3",
+                "texturemode 0", "vertices %d" % len(verts)]
+        out += ["%d: %s 1.0" % (k, " ".join(g(c) for c in v)) for k, v in enumerate(verts)]
+        out += ["texture vertices 0", "vertex normals"]
+        out += ["%d: 0.0 0.0 1.0" % k for k in range(len(verts))]
+        out += ["faces 0", "face normals"]
+    children = [[j for j, n in enumerate(nodes) if n[2] == i] for i in range(len(nodes))]
+    out += ["section: hierarchydef", "hierarchy nodes %d" % len(nodes)]
+    for i, (nname, mesh, parent, pos, pivot, rot) in enumerate(nodes):
+        sibs = children[parent] if parent >= 0 else [j for j, n in enumerate(nodes) if n[2] < 0]
+        k = sibs.index(i)
+        sibling = sibs[k + 1] if k + 1 < len(sibs) else -1
+        child = children[i][0] if children[i] else -1
+        out += ["%d: 0x0 0x1 %d %d %d %d %d %s %s" % (i, mesh, parent, child, sibling, len(children[i]),
+                                                     " ".join(g(v) for v in tuple(pos) + tuple(rot) + tuple(pivot)), nname)]
+    return ("\r\n".join(out) + "\r\n").encode("ascii")
 
 
 def box(sx, sy, sz, z0=0.0):

@@ -15005,7 +15005,6 @@ V hdr_rects|cr_nodex_head|0.000000 0.000000 1.700000
 V hdr_rects|cr_float_rect|640.000000
 V hdr_rects|cr_float_head|0.000000 0.000000 1.700000
 END hdr_rects
-SKIP rest_chore_zero
 BEGIN cm_forward_m0_w0
 V cm_forward_m0_w0|cm_forward_m0_w0_f0|0.200000 -1.500000 0.000000
 V cm_forward_m0_w0|cm_forward_m0_w0_f20|0.083681 -1.180517 0.000000
@@ -15249,7 +15248,414 @@ V cm_forward_s1_m2_w2|cm_forward_s1_m2_w2_f80|-0.307920 -1.642603 0.000000
 V cm_forward_s1_m2_w2|cm_forward_s1_m2_w2_end|-0.485548 -1.603952 0.000000
 V cm_forward_s1_m2_w2|cm_forward_s1_m2_w2_walking|nil
 END cm_forward_s1_m2_w2
+SKIP rest_chore_zero
 SKIP shadow_color
+BEGIN mf_cr_box_wall_box
+V mf_cr_box_wall_box|cr_box_wall_box_f0|0.500000 -1.900000 0.000000
+V mf_cr_box_wall_box|cr_box_wall_box_f40|0.267363 -1.261033 0.000000
+V mf_cr_box_wall_box|cr_box_wall_box_f80|0.034726 -0.622065 0.000000
+V mf_cr_box_wall_box|cr_box_wall_box_f120|-0.449086 -0.342044 0.000000
+V mf_cr_box_wall_box|cr_box_wall_box_end|-0.759969 0.185104 0.000000
+END mf_cr_box_wall_box
+BEGIN mf_cr_box_wall_sphere
+V mf_cr_box_wall_sphere|cr_box_wall_sphere_f0|0.500000 -1.900000 0.000000
+V mf_cr_box_wall_sphere|cr_box_wall_sphere_f40|0.267363 -1.261033 0.000000
+V mf_cr_box_wall_sphere|cr_box_wall_sphere_f80|0.041386 -0.733160 0.000000
+V mf_cr_box_wall_sphere|cr_box_wall_sphere_f120|-0.249434 -0.700157 0.000000
+V mf_cr_box_wall_sphere|cr_box_wall_sphere_end|-0.686349 -0.433582 0.000000
+END mf_cr_box_wall_sphere
+BEGIN mf_cr_tbox_wall_box
+V mf_cr_tbox_wall_box|cr_tbox_wall_box_f0|0.500000 -1.900000 0.000000
+V mf_cr_tbox_wall_box|cr_tbox_wall_box_f40|0.267363 -1.261033 0.000000
+V mf_cr_tbox_wall_box|cr_tbox_wall_box_f80|0.034726 -0.622065 0.000000
+V mf_cr_tbox_wall_box|cr_tbox_wall_box_f120|-0.449086 -0.342044 0.000000
+V mf_cr_tbox_wall_box|cr_tbox_wall_box_end|-0.759969 0.185104 0.000000
+END mf_cr_tbox_wall_box
+BEGIN mf_cr_tbox_wall_sphere
+V mf_cr_tbox_wall_sphere|cr_tbox_wall_sphere_f0|0.500000 -1.900000 0.000000
+V mf_cr_tbox_wall_sphere|cr_tbox_wall_sphere_f40|0.267363 -1.261033 0.000000
+V mf_cr_tbox_wall_sphere|cr_tbox_wall_sphere_f80|0.041386 -0.733160 0.000000
+V mf_cr_tbox_wall_sphere|cr_tbox_wall_sphere_f120|-0.249434 -0.700157 0.000000
+V mf_cr_tbox_wall_sphere|cr_tbox_wall_sphere_end|-0.686349 -0.433582 0.000000
+END mf_cr_tbox_wall_sphere
+BEGIN mf_cr_trad_wall_box
+V mf_cr_trad_wall_box|cr_trad_wall_box_f0|0.500000 -1.900000 0.000000
+V mf_cr_trad_wall_box|cr_trad_wall_box_f40|0.267363 -1.261033 0.000000
+V mf_cr_trad_wall_box|cr_trad_wall_box_f80|0.034726 -0.622065 0.000000
+V mf_cr_trad_wall_box|cr_trad_wall_box_f120|-0.449086 -0.342044 0.000000
+V mf_cr_trad_wall_box|cr_trad_wall_box_end|-0.759969 0.185104 0.000000
+END mf_cr_trad_wall_box
+BEGIN mf_cr_trad_wall_sphere
+V mf_cr_trad_wall_sphere|cr_trad_wall_sphere_f0|0.500000 -1.900000 0.000000
+V mf_cr_trad_wall_sphere|cr_trad_wall_sphere_f40|0.267363 -1.261033 0.000000
+V mf_cr_trad_wall_sphere|cr_trad_wall_sphere_f80|0.041386 -0.733160 0.000000
+V mf_cr_trad_wall_sphere|cr_trad_wall_sphere_f120|-0.249434 -0.700157 0.000000
+V mf_cr_trad_wall_sphere|cr_trad_wall_sphere_end|-0.686349 -0.433582 0.000000
+END mf_cr_trad_wall_sphere
+BEGIN mf_cr_brad_wall_box
+V mf_cr_brad_wall_box|cr_brad_wall_box_f0|0.500000 -1.900000 0.000000
+V mf_cr_brad_wall_box|cr_brad_wall_box_f40|0.267363 -1.261033 0.000000
+V mf_cr_brad_wall_box|cr_brad_wall_box_f80|0.034726 -0.622065 0.000000
+V mf_cr_brad_wall_box|cr_brad_wall_box_f120|-0.449086 -0.342044 0.000000
+V mf_cr_brad_wall_box|cr_brad_wall_box_end|-0.759969 0.185104 0.000000
+END mf_cr_brad_wall_box
+BEGIN mf_cr_brad_wall_sphere
+V mf_cr_brad_wall_sphere|cr_brad_wall_sphere_f0|0.500000 -1.900000 0.000000
+V mf_cr_brad_wall_sphere|cr_brad_wall_sphere_f40|0.267363 -1.261033 0.000000
+V mf_cr_brad_wall_sphere|cr_brad_wall_sphere_f80|0.041386 -0.733160 0.000000
+V mf_cr_brad_wall_sphere|cr_brad_wall_sphere_f120|-0.249434 -0.700157 0.000000
+V mf_cr_brad_wall_sphere|cr_brad_wall_sphere_end|-0.686349 -0.433582 0.000000
+END mf_cr_brad_wall_sphere
+BEGIN mf_cr_nodex_wall_box
+V mf_cr_nodex_wall_box|cr_nodex_wall_box_f0|0.500000 -1.900000 0.000000
+V mf_cr_nodex_wall_box|cr_nodex_wall_box_f40|0.267363 -1.261033 0.000000
+V mf_cr_nodex_wall_box|cr_nodex_wall_box_f80|0.034726 -0.622065 0.000000
+V mf_cr_nodex_wall_box|cr_nodex_wall_box_f120|-0.382029 -0.246216 0.000000
+V mf_cr_nodex_wall_box|cr_nodex_wall_box_end|-0.614666 0.392752 0.000000
+END mf_cr_nodex_wall_box
+BEGIN mf_cr_nodex_wall_sphere
+V mf_cr_nodex_wall_sphere|cr_nodex_wall_sphere_f0|0.500000 -1.900000 0.000000
+V mf_cr_nodex_wall_sphere|cr_nodex_wall_sphere_f40|0.267363 -1.261033 0.000000
+V mf_cr_nodex_wall_sphere|cr_nodex_wall_sphere_f80|0.034726 -0.622065 0.000000
+V mf_cr_nodex_wall_sphere|cr_nodex_wall_sphere_f120|-0.362915 -0.157600 0.000000
+V mf_cr_nodex_wall_sphere|cr_nodex_wall_sphere_end|-0.596361 0.481055 0.000000
+END mf_cr_nodex_wall_sphere
+BEGIN mf_cr_tnodex_wall_box
+V mf_cr_tnodex_wall_box|cr_tnodex_wall_box_f0|0.500000 -1.900000 0.000000
+V mf_cr_tnodex_wall_box|cr_tnodex_wall_box_f40|0.267363 -1.261033 0.000000
+V mf_cr_tnodex_wall_box|cr_tnodex_wall_box_f80|0.034726 -0.622065 0.000000
+V mf_cr_tnodex_wall_box|cr_tnodex_wall_box_f120|-0.382029 -0.246216 0.000000
+V mf_cr_tnodex_wall_box|cr_tnodex_wall_box_end|-0.614666 0.392752 0.000000
+END mf_cr_tnodex_wall_box
+BEGIN mf_cr_tnodex_wall_sphere
+V mf_cr_tnodex_wall_sphere|cr_tnodex_wall_sphere_f0|0.500000 -1.900000 0.000000
+V mf_cr_tnodex_wall_sphere|cr_tnodex_wall_sphere_f40|0.267363 -1.261033 0.000000
+V mf_cr_tnodex_wall_sphere|cr_tnodex_wall_sphere_f80|0.034726 -0.622065 0.000000
+V mf_cr_tnodex_wall_sphere|cr_tnodex_wall_sphere_f120|-0.362915 -0.157600 0.000000
+V mf_cr_tnodex_wall_sphere|cr_tnodex_wall_sphere_end|-0.596361 0.481055 0.000000
+END mf_cr_tnodex_wall_sphere
+BEGIN mf_cr_float_wall_box
+V mf_cr_float_wall_box|cr_float_wall_box_f0|0.500000 -1.900000 0.000000
+V mf_cr_float_wall_box|cr_float_wall_box_f40|0.267363 -1.261033 0.000000
+V mf_cr_float_wall_box|cr_float_wall_box_f80|0.034726 -0.622065 0.000000
+V mf_cr_float_wall_box|cr_float_wall_box_f120|-0.382038 -0.246227 0.000000
+V mf_cr_float_wall_box|cr_float_wall_box_end|-0.614675 0.327187 0.000000
+END mf_cr_float_wall_box
+BEGIN mf_cr_float_wall_sphere
+V mf_cr_float_wall_sphere|cr_float_wall_sphere_f0|0.500000 -1.900000 0.000000
+V mf_cr_float_wall_sphere|cr_float_wall_sphere_f40|0.267363 -1.261033 0.000000
+V mf_cr_float_wall_sphere|cr_float_wall_sphere_f80|0.034726 -0.622065 0.000000
+V mf_cr_float_wall_sphere|cr_float_wall_sphere_f120|-0.288801 -0.234282 0.000000
+V mf_cr_float_wall_sphere|cr_float_wall_sphere_end|-0.605700 0.325116 -0.001982
+END mf_cr_float_wall_sphere
+BEGIN mf_cr_tfloat_wall_box
+V mf_cr_tfloat_wall_box|cr_tfloat_wall_box_f0|0.500000 -1.900000 0.000000
+V mf_cr_tfloat_wall_box|cr_tfloat_wall_box_f40|0.267363 -1.261033 0.000000
+V mf_cr_tfloat_wall_box|cr_tfloat_wall_box_f80|0.034726 -0.622065 0.000000
+V mf_cr_tfloat_wall_box|cr_tfloat_wall_box_f120|-0.382038 -0.246227 0.000000
+V mf_cr_tfloat_wall_box|cr_tfloat_wall_box_end|-0.614675 0.327187 0.000000
+END mf_cr_tfloat_wall_box
+BEGIN mf_cr_tfloat_wall_sphere
+V mf_cr_tfloat_wall_sphere|cr_tfloat_wall_sphere_f0|0.500000 -1.900000 0.000000
+V mf_cr_tfloat_wall_sphere|cr_tfloat_wall_sphere_f40|0.267363 -1.261033 0.000000
+V mf_cr_tfloat_wall_sphere|cr_tfloat_wall_sphere_f80|0.034726 -0.622065 0.000000
+V mf_cr_tfloat_wall_sphere|cr_tfloat_wall_sphere_f120|-0.288801 -0.234282 0.000000
+V mf_cr_tfloat_wall_sphere|cr_tfloat_wall_sphere_end|-0.605700 0.325116 -0.001982
+END mf_cr_tfloat_wall_sphere
+BEGIN mf_cr_wide_wall_box
+V mf_cr_wide_wall_box|cr_wide_wall_box_f0|0.500000 -1.900000 0.000000
+V mf_cr_wide_wall_box|cr_wide_wall_box_f40|0.267363 -1.261033 0.000000
+V mf_cr_wide_wall_box|cr_wide_wall_box_f80|0.034726 -0.622065 0.000000
+V mf_cr_wide_wall_box|cr_wide_wall_box_f120|-0.431592 -0.317044 0.000000
+V mf_cr_wide_wall_box|cr_wide_wall_box_end|-0.854255 0.050362 0.000000
+END mf_cr_wide_wall_box
+BEGIN mf_cr_wide_wall_sphere
+V mf_cr_wide_wall_sphere|cr_wide_wall_sphere_f0|0.500000 -1.900000 0.000000
+V mf_cr_wide_wall_sphere|cr_wide_wall_sphere_f40|0.267363 -1.261033 0.000000
+V mf_cr_wide_wall_sphere|cr_wide_wall_sphere_f80|0.045780 -0.783177 0.000000
+V mf_cr_wide_wall_sphere|cr_wide_wall_sphere_f120|-0.238387 -0.754937 0.000000
+V mf_cr_wide_wall_sphere|cr_wide_wall_sphere_end|-0.671363 -0.519726 0.000000
+END mf_cr_wide_wall_sphere
+BEGIN mf_cr_rot_wall_box
+V mf_cr_rot_wall_box|cr_rot_wall_box_f0|0.500000 -1.900000 0.000000
+V mf_cr_rot_wall_box|cr_rot_wall_box_f40|0.267363 -1.261033 0.000000
+V mf_cr_rot_wall_box|cr_rot_wall_box_f80|0.034726 -0.622065 0.000000
+V mf_cr_rot_wall_box|cr_rot_wall_box_f120|-0.538011 -0.469122 0.000000
+V mf_cr_rot_wall_box|cr_rot_wall_box_end|-0.770648 0.169846 0.000000
+END mf_cr_rot_wall_box
+BEGIN mf_cr_rot_wall_sphere
+V mf_cr_rot_wall_sphere|cr_rot_wall_sphere_f0|0.500000 -1.900000 0.000000
+V mf_cr_rot_wall_sphere|cr_rot_wall_sphere_f40|0.267363 -1.261033 0.000000
+V mf_cr_rot_wall_sphere|cr_rot_wall_sphere_f80|0.045780 -0.783177 0.000000
+V mf_cr_rot_wall_sphere|cr_rot_wall_sphere_f120|-0.238387 -0.754937 0.000000
+V mf_cr_rot_wall_sphere|cr_rot_wall_sphere_end|-0.671363 -0.519726 0.000000
+END mf_cr_rot_wall_sphere
+BEGIN mf_cr_trot_wall_box
+V mf_cr_trot_wall_box|cr_trot_wall_box_f0|0.500000 -1.900000 0.000000
+V mf_cr_trot_wall_box|cr_trot_wall_box_f40|0.267363 -1.261033 0.000000
+V mf_cr_trot_wall_box|cr_trot_wall_box_f80|0.034726 -0.622065 0.000000
+V mf_cr_trot_wall_box|cr_trot_wall_box_f120|-0.538011 -0.469122 0.000000
+V mf_cr_trot_wall_box|cr_trot_wall_box_end|-0.770648 0.169846 0.000000
+END mf_cr_trot_wall_box
+BEGIN mf_cr_trot_wall_sphere
+V mf_cr_trot_wall_sphere|cr_trot_wall_sphere_f0|0.500000 -1.900000 0.000000
+V mf_cr_trot_wall_sphere|cr_trot_wall_sphere_f40|0.267363 -1.261033 0.000000
+V mf_cr_trot_wall_sphere|cr_trot_wall_sphere_f80|0.045780 -0.783177 0.000000
+V mf_cr_trot_wall_sphere|cr_trot_wall_sphere_f120|-0.238387 -0.754937 0.000000
+V mf_cr_trot_wall_sphere|cr_trot_wall_sphere_end|-0.671363 -0.519726 0.000000
+END mf_cr_trot_wall_sphere
+BEGIN mf_cr_rotx_wall_box
+V mf_cr_rotx_wall_box|cr_rotx_wall_box_f0|0.500000 -1.900000 0.000000
+V mf_cr_rotx_wall_box|cr_rotx_wall_box_f40|0.267363 -1.261033 0.000000
+V mf_cr_rotx_wall_box|cr_rotx_wall_box_f80|0.034726 -0.622065 0.000000
+V mf_cr_rotx_wall_box|cr_rotx_wall_box_f120|-0.197911 0.016903 0.000000
+V mf_cr_rotx_wall_box|cr_rotx_wall_box_end|-0.430548 0.655871 0.000000
+END mf_cr_rotx_wall_box
+BEGIN mf_cr_rotx_wall_sphere
+V mf_cr_rotx_wall_sphere|cr_rotx_wall_sphere_f0|0.500000 -1.900000 0.000000
+V mf_cr_rotx_wall_sphere|cr_rotx_wall_sphere_f40|0.267363 -1.261033 0.000000
+V mf_cr_rotx_wall_sphere|cr_rotx_wall_sphere_f80|0.034726 -0.622065 0.000000
+V mf_cr_rotx_wall_sphere|cr_rotx_wall_sphere_f120|-0.197911 0.016903 0.000000
+V mf_cr_rotx_wall_sphere|cr_rotx_wall_sphere_end|-0.430548 0.655871 0.000000
+END mf_cr_rotx_wall_sphere
+BEGIN mf_cr_trotx_wall_box
+V mf_cr_trotx_wall_box|cr_trotx_wall_box_f0|0.500000 -1.900000 0.000000
+V mf_cr_trotx_wall_box|cr_trotx_wall_box_f40|0.267363 -1.261033 0.000000
+V mf_cr_trotx_wall_box|cr_trotx_wall_box_f80|0.034726 -0.622065 0.000000
+V mf_cr_trotx_wall_box|cr_trotx_wall_box_f120|-0.197911 0.016903 0.000000
+V mf_cr_trotx_wall_box|cr_trotx_wall_box_end|-0.430548 0.655871 0.000000
+END mf_cr_trotx_wall_box
+BEGIN mf_cr_trotx_wall_sphere
+V mf_cr_trotx_wall_sphere|cr_trotx_wall_sphere_f0|0.500000 -1.900000 0.000000
+V mf_cr_trotx_wall_sphere|cr_trotx_wall_sphere_f40|0.267363 -1.261033 0.000000
+V mf_cr_trotx_wall_sphere|cr_trotx_wall_sphere_f80|0.034726 -0.622065 0.000000
+V mf_cr_trotx_wall_sphere|cr_trotx_wall_sphere_f120|-0.197911 0.016903 0.000000
+V mf_cr_trotx_wall_sphere|cr_trotx_wall_sphere_end|-0.430548 0.655871 0.000000
+END mf_cr_trotx_wall_sphere
+BEGIN mf_cr_piv_wall_box
+V mf_cr_piv_wall_box|cr_piv_wall_box_f0|0.500000 -1.900000 0.000000
+V mf_cr_piv_wall_box|cr_piv_wall_box_f40|0.267363 -1.261033 0.000000
+V mf_cr_piv_wall_box|cr_piv_wall_box_f80|0.034726 -0.622065 0.000000
+V mf_cr_piv_wall_box|cr_piv_wall_box_f120|-0.382029 -0.246216 0.000000
+V mf_cr_piv_wall_box|cr_piv_wall_box_end|-0.614666 0.392752 0.000000
+END mf_cr_piv_wall_box
+BEGIN mf_cr_piv_wall_sphere
+V mf_cr_piv_wall_sphere|cr_piv_wall_sphere_f0|0.500000 -1.900000 0.000000
+V mf_cr_piv_wall_sphere|cr_piv_wall_sphere_f40|0.267363 -1.261033 0.000000
+V mf_cr_piv_wall_sphere|cr_piv_wall_sphere_f80|0.034726 -0.622065 0.000000
+V mf_cr_piv_wall_sphere|cr_piv_wall_sphere_f120|-0.362915 -0.157600 0.000000
+V mf_cr_piv_wall_sphere|cr_piv_wall_sphere_end|-0.596361 0.481055 0.000000
+END mf_cr_piv_wall_sphere
+BEGIN mf_cr_tpiv_wall_box
+V mf_cr_tpiv_wall_box|cr_tpiv_wall_box_f0|0.500000 -1.900000 0.000000
+V mf_cr_tpiv_wall_box|cr_tpiv_wall_box_f40|0.267363 -1.261033 0.000000
+V mf_cr_tpiv_wall_box|cr_tpiv_wall_box_f80|0.034726 -0.622065 0.000000
+V mf_cr_tpiv_wall_box|cr_tpiv_wall_box_f120|-0.382029 -0.246216 0.000000
+V mf_cr_tpiv_wall_box|cr_tpiv_wall_box_end|-0.614666 0.392752 0.000000
+END mf_cr_tpiv_wall_box
+BEGIN mf_cr_tpiv_wall_sphere
+V mf_cr_tpiv_wall_sphere|cr_tpiv_wall_sphere_f0|0.500000 -1.900000 0.000000
+V mf_cr_tpiv_wall_sphere|cr_tpiv_wall_sphere_f40|0.267363 -1.261033 0.000000
+V mf_cr_tpiv_wall_sphere|cr_tpiv_wall_sphere_f80|0.034726 -0.622065 0.000000
+V mf_cr_tpiv_wall_sphere|cr_tpiv_wall_sphere_f120|-0.362915 -0.157600 0.000000
+V mf_cr_tpiv_wall_sphere|cr_tpiv_wall_sphere_end|-0.596361 0.481055 0.000000
+END mf_cr_tpiv_wall_sphere
+BEGIN mf_cr_prot_wall_box
+V mf_cr_prot_wall_box|cr_prot_wall_box_f0|0.500000 -1.900000 0.000000
+V mf_cr_prot_wall_box|cr_prot_wall_box_f40|0.267363 -1.261033 0.000000
+V mf_cr_prot_wall_box|cr_prot_wall_box_f80|0.034726 -0.622065 0.000000
+V mf_cr_prot_wall_box|cr_prot_wall_box_f120|-0.291641 -0.117044 0.000000
+V mf_cr_prot_wall_box|cr_prot_wall_box_end|-0.703135 0.266325 0.000000
+END mf_cr_prot_wall_box
+BEGIN mf_cr_prot_wall_sphere
+V mf_cr_prot_wall_sphere|cr_prot_wall_sphere_f0|0.500000 -1.900000 0.000000
+V mf_cr_prot_wall_sphere|cr_prot_wall_sphere_f40|0.267363 -1.261033 0.000000
+V mf_cr_prot_wall_sphere|cr_prot_wall_sphere_f80|0.034726 -0.622065 0.000000
+V mf_cr_prot_wall_sphere|cr_prot_wall_sphere_f120|-0.239928 -0.202737 0.000000
+V mf_cr_prot_wall_sphere|cr_prot_wall_sphere_end|-0.675637 0.055007 0.000000
+END mf_cr_prot_wall_sphere
+BEGIN mf_cr_tprot_wall_box
+V mf_cr_tprot_wall_box|cr_tprot_wall_box_f0|0.500000 -1.900000 0.000000
+V mf_cr_tprot_wall_box|cr_tprot_wall_box_f40|0.267363 -1.261033 0.000000
+V mf_cr_tprot_wall_box|cr_tprot_wall_box_f80|0.034726 -0.622065 0.000000
+V mf_cr_tprot_wall_box|cr_tprot_wall_box_f120|-0.291641 -0.117044 0.000000
+V mf_cr_tprot_wall_box|cr_tprot_wall_box_end|-0.703135 0.266325 0.000000
+END mf_cr_tprot_wall_box
+BEGIN mf_cr_tprot_wall_sphere
+V mf_cr_tprot_wall_sphere|cr_tprot_wall_sphere_f0|0.500000 -1.900000 0.000000
+V mf_cr_tprot_wall_sphere|cr_tprot_wall_sphere_f40|0.267363 -1.261033 0.000000
+V mf_cr_tprot_wall_sphere|cr_tprot_wall_sphere_f80|0.034726 -0.622065 0.000000
+V mf_cr_tprot_wall_sphere|cr_tprot_wall_sphere_f120|-0.239928 -0.202737 0.000000
+V mf_cr_tprot_wall_sphere|cr_tprot_wall_sphere_end|-0.675637 0.055007 0.000000
+END mf_cr_tprot_wall_sphere
+BEGIN mf_cr_tbox_mover_sphere
+V mf_cr_tbox_mover_sphere|cr_tbox_mover_sphere_f0|0.500000 -1.900000 0.000000
+V mf_cr_tbox_mover_sphere|cr_tbox_mover_sphere_f40|0.267363 -1.261033 0.000000
+V mf_cr_tbox_mover_sphere|cr_tbox_mover_sphere_f80|0.041386 -0.733160 0.000000
+V mf_cr_tbox_mover_sphere|cr_tbox_mover_sphere_f120|-0.249434 -0.700157 0.000000
+V mf_cr_tbox_mover_sphere|cr_tbox_mover_sphere_end|-0.686349 -0.433582 0.000000
+END mf_cr_tbox_mover_sphere
+BEGIN mf_cr_trad_mover_sphere
+V mf_cr_trad_mover_sphere|cr_trad_mover_sphere_f0|0.500000 -1.900000 0.000000
+V mf_cr_trad_mover_sphere|cr_trad_mover_sphere_f40|0.267363 -1.261033 0.000000
+V mf_cr_trad_mover_sphere|cr_trad_mover_sphere_f80|0.041386 -0.733160 0.000000
+V mf_cr_trad_mover_sphere|cr_trad_mover_sphere_f120|-0.249434 -0.700157 0.000000
+V mf_cr_trad_mover_sphere|cr_trad_mover_sphere_end|-0.686349 -0.433582 0.000000
+END mf_cr_trad_mover_sphere
+BEGIN mf_cr_brad_mover_sphere
+V mf_cr_brad_mover_sphere|cr_brad_mover_sphere_f0|0.500000 -1.900000 0.000000
+V mf_cr_brad_mover_sphere|cr_brad_mover_sphere_f40|0.267363 -1.261033 0.000000
+V mf_cr_brad_mover_sphere|cr_brad_mover_sphere_f80|0.041386 -0.733160 0.000000
+V mf_cr_brad_mover_sphere|cr_brad_mover_sphere_f120|-0.249434 -0.700157 0.000000
+V mf_cr_brad_mover_sphere|cr_brad_mover_sphere_end|-0.686349 -0.433582 0.000000
+END mf_cr_brad_mover_sphere
+BEGIN mf_cr_tnodex_mover_sphere
+V mf_cr_tnodex_mover_sphere|cr_tnodex_mover_sphere_f0|0.500000 -1.900000 0.000000
+V mf_cr_tnodex_mover_sphere|cr_tnodex_mover_sphere_f40|0.267363 -1.261033 0.000000
+V mf_cr_tnodex_mover_sphere|cr_tnodex_mover_sphere_f80|0.100819 -0.710548 0.000000
+V mf_cr_tnodex_mover_sphere|cr_tnodex_mover_sphere_f120|0.303216 -0.495391 0.000000
+V mf_cr_tnodex_mover_sphere|cr_tnodex_mover_sphere_end|0.463639 -0.006035 0.000000
+END mf_cr_tnodex_mover_sphere
+BEGIN mf_cr_tfloat_mover_sphere
+V mf_cr_tfloat_mover_sphere|cr_tfloat_mover_sphere_f0|0.500000 -1.900000 0.000000
+V mf_cr_tfloat_mover_sphere|cr_tfloat_mover_sphere_f40|0.267363 -1.261033 0.000000
+V mf_cr_tfloat_mover_sphere|cr_tfloat_mover_sphere_f80|0.034726 -0.622065 0.000000
+V mf_cr_tfloat_mover_sphere|cr_tfloat_mover_sphere_f120|-0.288801 -0.234282 0.000000
+V mf_cr_tfloat_mover_sphere|cr_tfloat_mover_sphere_end|-0.605700 0.325116 0.001982
+END mf_cr_tfloat_mover_sphere
+BEGIN mf_cr_rot_mover_sphere
+V mf_cr_rot_mover_sphere|cr_rot_mover_sphere_f0|0.500000 -1.900000 0.000000
+V mf_cr_rot_mover_sphere|cr_rot_mover_sphere_f40|0.267363 -1.261033 0.000000
+V mf_cr_rot_mover_sphere|cr_rot_mover_sphere_f80|0.045780 -0.783177 0.000000
+V mf_cr_rot_mover_sphere|cr_rot_mover_sphere_f120|-0.238387 -0.754937 0.000000
+V mf_cr_rot_mover_sphere|cr_rot_mover_sphere_end|-0.671363 -0.519726 0.000000
+END mf_cr_rot_mover_sphere
+BEGIN mf_cr_trot_mover_sphere
+V mf_cr_trot_mover_sphere|cr_trot_mover_sphere_f0|0.500000 -1.900000 0.000000
+V mf_cr_trot_mover_sphere|cr_trot_mover_sphere_f40|0.267363 -1.261033 0.000000
+V mf_cr_trot_mover_sphere|cr_trot_mover_sphere_f80|0.045780 -0.783177 0.000000
+V mf_cr_trot_mover_sphere|cr_trot_mover_sphere_f120|-0.238387 -0.754937 0.000000
+V mf_cr_trot_mover_sphere|cr_trot_mover_sphere_end|-0.671363 -0.519726 0.000000
+END mf_cr_trot_mover_sphere
+BEGIN mf_cr_rotx_mover_sphere
+V mf_cr_rotx_mover_sphere|cr_rotx_mover_sphere_f0|0.500000 -1.900000 0.000000
+V mf_cr_rotx_mover_sphere|cr_rotx_mover_sphere_f40|0.267363 -1.261033 0.000000
+V mf_cr_rotx_mover_sphere|cr_rotx_mover_sphere_f80|0.034726 -0.622065 0.000000
+V mf_cr_rotx_mover_sphere|cr_rotx_mover_sphere_f120|-0.197911 0.016903 0.000000
+V mf_cr_rotx_mover_sphere|cr_rotx_mover_sphere_end|-0.430548 0.655871 0.000000
+END mf_cr_rotx_mover_sphere
+BEGIN mf_cr_trotx_mover_sphere
+V mf_cr_trotx_mover_sphere|cr_trotx_mover_sphere_f0|0.500000 -1.900000 0.000000
+V mf_cr_trotx_mover_sphere|cr_trotx_mover_sphere_f40|0.267363 -1.261033 0.000000
+V mf_cr_trotx_mover_sphere|cr_trotx_mover_sphere_f80|0.034726 -0.622065 0.000000
+V mf_cr_trotx_mover_sphere|cr_trotx_mover_sphere_f120|-0.197911 0.016903 0.000000
+V mf_cr_trotx_mover_sphere|cr_trotx_mover_sphere_end|-0.430548 0.655871 0.000000
+END mf_cr_trotx_mover_sphere
+BEGIN mf_cr_piv_mover_sphere
+V mf_cr_piv_mover_sphere|cr_piv_mover_sphere_f0|0.500000 -1.900000 0.000000
+V mf_cr_piv_mover_sphere|cr_piv_mover_sphere_f40|0.267363 -1.261033 0.000000
+V mf_cr_piv_mover_sphere|cr_piv_mover_sphere_f80|0.100819 -0.710548 0.000000
+V mf_cr_piv_mover_sphere|cr_piv_mover_sphere_f120|0.303216 -0.495391 0.000000
+V mf_cr_piv_mover_sphere|cr_piv_mover_sphere_end|0.463639 -0.006035 0.000000
+END mf_cr_piv_mover_sphere
+BEGIN mf_cr_tpiv_mover_sphere
+V mf_cr_tpiv_mover_sphere|cr_tpiv_mover_sphere_f0|0.500000 -1.900000 0.000000
+V mf_cr_tpiv_mover_sphere|cr_tpiv_mover_sphere_f40|0.267363 -1.261033 0.000000
+V mf_cr_tpiv_mover_sphere|cr_tpiv_mover_sphere_f80|0.100819 -0.710548 0.000000
+V mf_cr_tpiv_mover_sphere|cr_tpiv_mover_sphere_f120|0.303216 -0.495391 0.000000
+V mf_cr_tpiv_mover_sphere|cr_tpiv_mover_sphere_end|0.463639 -0.006035 0.000000
+END mf_cr_tpiv_mover_sphere
+BEGIN mf_cr_prot_mover_sphere
+V mf_cr_prot_mover_sphere|cr_prot_mover_sphere_f0|0.500000 -1.900000 0.000000
+V mf_cr_prot_mover_sphere|cr_prot_mover_sphere_f40|0.267363 -1.261033 0.000000
+V mf_cr_prot_mover_sphere|cr_prot_mover_sphere_f80|0.016541 -1.190997 0.000000
+V mf_cr_prot_mover_sphere|cr_prot_mover_sphere_f120|-0.397278 -1.011096 0.000000
+V mf_cr_prot_mover_sphere|cr_prot_mover_sphere_end|-0.747856 -0.476309 0.000000
+END mf_cr_prot_mover_sphere
+BEGIN mf_cr_tprot_mover_sphere
+V mf_cr_tprot_mover_sphere|cr_tprot_mover_sphere_f0|0.500000 -1.900000 0.000000
+V mf_cr_tprot_mover_sphere|cr_tprot_mover_sphere_f40|0.267363 -1.261033 0.000000
+V mf_cr_tprot_mover_sphere|cr_tprot_mover_sphere_f80|0.016541 -1.190997 0.000000
+V mf_cr_tprot_mover_sphere|cr_tprot_mover_sphere_f120|-0.397278 -1.011096 0.000000
+V mf_cr_tprot_mover_sphere|cr_tprot_mover_sphere_end|-0.747856 -0.476309 0.000000
+END mf_cr_tprot_mover_sphere
+BEGIN mf_rects
+V mf_rects|cr_box_rect|640.000000
+V mf_rects|cr_box_node0|4.000000 -4.000000 0.000000
+V mf_rects|cr_box_node1|0.000000 0.000000 0.000000
+V mf_rects|cr_box_node2|0.000000 0.000000 1.700000
+V mf_rects|cr_box_node3|0.300000 0.100000 1.200000
+V mf_rects|cr_tbox_rect|640.000000
+V mf_rects|cr_tbox_node0|0.500000 -0.500000 0.000000
+V mf_rects|cr_tbox_node1|0.500000 -0.500000 0.000000
+V mf_rects|cr_tbox_node2|0.500000 -0.500000 1.700000
+V mf_rects|cr_tbox_node3|0.800000 -0.400000 1.200000
+V mf_rects|cr_trad_rect|640.000000
+V mf_rects|cr_trad_node0|0.500000 -0.500000 0.000000
+V mf_rects|cr_trad_node1|0.500000 -0.500000 0.000000
+V mf_rects|cr_trad_node2|0.500000 -0.500000 1.700000
+V mf_rects|cr_trad_node3|0.800000 -0.400000 1.200000
+V mf_rects|cr_brad_rect|640.000000
+V mf_rects|cr_brad_node0|4.000000 -4.000000 0.000000
+V mf_rects|cr_brad_node1|0.000000 0.000000 0.000000
+V mf_rects|cr_brad_node2|0.000000 0.000000 1.700000
+V mf_rects|cr_brad_node3|0.300000 0.100000 1.200000
+V mf_rects|cr_tnodex_rect|640.000000
+V mf_rects|cr_tnodex_node0|0.500000 -0.500000 0.000000
+V mf_rects|cr_tnodex_node1|1.000000 -0.500000 0.000000
+V mf_rects|cr_tnodex_node2|1.000000 -0.500000 1.700000
+V mf_rects|cr_tnodex_node3|1.300000 -0.400000 1.200000
+V mf_rects|cr_tfloat_rect|640.000000
+V mf_rects|cr_tfloat_node0|0.500000 -0.500000 0.000000
+V mf_rects|cr_tfloat_node1|0.500000 -0.500000 0.000000
+V mf_rects|cr_tfloat_node2|0.500000 -0.500000 1.700000
+V mf_rects|cr_tfloat_node3|0.800000 -0.400000 1.200000
+V mf_rects|cr_wide_rect|640.000000
+V mf_rects|cr_wide_node0|4.000000 -4.000000 0.000000
+V mf_rects|cr_wide_node1|0.000000 0.000000 0.000000
+V mf_rects|cr_wide_node2|0.000000 0.000000 1.700000
+V mf_rects|cr_wide_node3|0.300000 0.100000 1.200000
+V mf_rects|cr_rot_rect|640.000000
+V mf_rects|cr_rot_node0|4.000000 -4.000000 0.000000
+V mf_rects|cr_rot_node1|0.000000 0.000000 0.000000
+V mf_rects|cr_rot_node2|0.000000 0.000000 1.700000
+V mf_rects|cr_rot_node3|0.300000 0.100000 1.200000
+V mf_rects|cr_trot_rect|640.000000
+V mf_rects|cr_trot_node0|0.500000 -0.500000 0.000000
+V mf_rects|cr_trot_node1|0.500000 -0.500000 0.000000
+V mf_rects|cr_trot_node2|0.500000 -0.500000 1.700000
+V mf_rects|cr_trot_node3|0.400000 -0.200000 1.200000
+V mf_rects|cr_rotx_rect|640.000000
+V mf_rects|cr_rotx_node0|4.000000 -4.000000 0.000000
+V mf_rects|cr_rotx_node1|0.000000 0.000000 0.000000
+V mf_rects|cr_rotx_node2|0.000000 0.000000 1.700000
+V mf_rects|cr_rotx_node3|0.300000 0.100000 1.200000
+V mf_rects|cr_trotx_rect|640.000000
+V mf_rects|cr_trotx_node0|0.500000 -0.500000 0.000000
+V mf_rects|cr_trotx_node1|0.500000 -0.500000 0.000000
+V mf_rects|cr_trotx_node2|0.500000 -2.200000 0.000000
+V mf_rects|cr_trotx_node3|0.800000 -1.700000 0.100000
+V mf_rects|cr_piv_rect|640.000000
+V mf_rects|cr_piv_node0|4.500000 -4.000000 0.000000
+V mf_rects|cr_piv_node1|0.500000 0.000000 0.000000
+V mf_rects|cr_piv_node2|0.000000 0.000000 1.700000
+V mf_rects|cr_piv_node3|0.300000 0.100000 1.200000
+V mf_rects|cr_tpiv_rect|640.000000
+V mf_rects|cr_tpiv_node0|0.500000 -0.500000 0.000000
+V mf_rects|cr_tpiv_node1|1.500000 -0.500000 0.000000
+V mf_rects|cr_tpiv_node2|0.500000 -0.500000 1.700000
+V mf_rects|cr_tpiv_node3|0.800000 -0.400000 1.200000
+V mf_rects|cr_prot_rect|640.000000
+V mf_rects|cr_prot_node0|4.500000 -4.000000 0.000000
+V mf_rects|cr_prot_node1|0.000000 0.500000 0.000000
+V mf_rects|cr_prot_node2|0.000000 0.000000 1.700000
+V mf_rects|cr_prot_node3|0.300000 0.100000 1.200000
+V mf_rects|cr_tprot_rect|640.000000
+V mf_rects|cr_tprot_node0|0.500000 -0.500000 0.000000
+V mf_rects|cr_tprot_node1|0.500000 0.500000 0.000000
+V mf_rects|cr_tprot_node2|0.500000 -0.500000 1.700000
+V mf_rects|cr_tprot_node3|0.400000 -0.200000 1.200000
+END mf_rects
 SKIP font_dims_handle
 SKIP font_dims_name
 SKIP args_ActivateActorShadow_p2_big
