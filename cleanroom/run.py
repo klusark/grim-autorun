@@ -27,6 +27,7 @@ sys.path.insert(0, HERE)
 import assets  # noqa: E402
 import formats  # noqa: E402
 import compare  # noqa: E402
+import snaps  # noqa: E402
 
 ROOT = os.path.dirname(HERE)
 BUILD = os.path.join(HERE, "build")
@@ -157,7 +158,8 @@ def run_engine(engine, only=None, fresh=False):
         build(only, skip)
         if not lint():
             sys.exit(2)
-        lines = once()
+        snaps.clear(os.path.join(RUN, engine))
+        lines = snaps.resolve(once(), os.path.join(RUN, engine))
         if any(l.startswith("SUMMARY") for l in lines):
             break
         name = unfinished(lines)

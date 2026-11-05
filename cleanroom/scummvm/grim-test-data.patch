@@ -41,10 +41,20 @@ index 1013f938dc7..441582e77c7 100644
  		// Grim Fandango English version (patched)
  		{
 diff --git a/engines/grim/grim.cpp b/engines/grim/grim.cpp
-index c84f3cc2a3e..5228cfa138e 100644
+index c84f3cc2a3e..d8d20840bef 100644
 --- a/engines/grim/grim.cpp
 +++ b/engines/grim/grim.cpp
-@@ -329,7 +329,7 @@ GfxBase *GrimEngine::createRenderer(int screenW, int screenH) {
+@@ -72,6 +72,9 @@
+ #include "engines/grim/primitives.h"
+ #include "engines/grim/objectstate.h"
+ #include "engines/grim/set.h"
++
++#include "common/file.h"
++#include "image/bmp.h"
+ #include "engines/grim/sound.h"
+ #include "engines/grim/debugger.h"
+ #include "engines/grim/remastered/overlay.h"
+@@ -329,7 +332,7 @@ GfxBase *GrimEngine::createRenderer(int screenW, int screenH) {
  }
  
  const char *GrimEngine::getUpdateFilename() {
@@ -53,7 +63,7 @@ index c84f3cc2a3e..5228cfa138e 100644
  		return "gfupd101.exe";
  	else
  		return nullptr;
-@@ -354,7 +354,7 @@ Common::Error GrimEngine::run() {
+@@ -354,7 +357,7 @@ Common::Error GrimEngine::run() {
  	}
  
  	ConfMan.registerDefault("check_gamedata", true);
@@ -62,18 +72,60 @@ index c84f3cc2a3e..5228cfa138e 100644
  		MD5CheckDialog d;
  		if (!d.runModal()) {
  			Common::U32String confirmString = Common::U32String::format(_(
+@@ -985,6 +988,21 @@ void GrimEngine::drawNormalMode() {
+ 	_currSet->drawBitmaps(ObjectState::OBJSTATE_OVERLAY);
+ }
+ 
++// Test data (grim_tools/cleanroom): the scene as it is now, drawn and saved as a 24-bit .bmp in the game folder, for the
++// tests that look at where a text is drawn. The original saves its back buffer (Render_SaveScreenshotBmp, through
++// patch.dll); the frames are not drawn at the same times on the two, so the scene is drawn here at once.
++void GrimEngine::saveSnap(const char *file) {
++	updateDisplayScene();
++	Bitmap *frame = g_driver->getScreenshot(640, 480, false);
++	if (frame) {
++		frame->setActiveImage(0);
++		Common::DumpFile out;
++		if (!out.open(ConfMan.getPath("path").appendComponent(file), true) || !Image::writeBMP(out, frame->getData()))
++			warning("CRSNAP: cannot write %s", file);
++		delete frame;
++	}
++}
++
+ void GrimEngine::doFlip() {
+ 	_frameCounter++;
+ 	// When possible, flip the buffer
 diff --git a/engines/grim/grim.h b/engines/grim/grim.h
-index 3bd29bd1803..c0e8d213037 100644
+index 3bd29bd1803..e9f9fe5ae5f 100644
 --- a/engines/grim/grim.h
 +++ b/engines/grim/grim.h
-@@ -89,6 +89,7 @@ public:
+@@ -89,6 +89,9 @@ public:
  	bool canLoadGameStateCurrently(Common::U32String *msg = nullptr) override { return true; }
  	Common::Error loadGameState(int slot) override;
  	bool isRemastered() const { return !!(_gameFlags & ADGF_REMASTERED); }
 +	bool isTestData() const { return !!(_gameFlags & GF_TESTDATA); }
++	/** Test data: the scene is drawn and saved to this file of the game folder (PrintDebug("CRSNAP:<file>")) */
++	void saveSnap(const char *file);
  
  	void setMode(EngineMode mode);
  	EngineMode getMode() { return _mode; }
+diff --git a/engines/grim/lua_v1.cpp b/engines/grim/lua_v1.cpp
+index c577f59f1a8..752c6fdaa08 100644
+--- a/engines/grim/lua_v1.cpp
++++ b/engines/grim/lua_v1.cpp
+@@ -78,6 +78,13 @@ void Lua_V1::new_dofile() {
+ // Debugging message functions
+ 
+ void Lua_V1::PrintDebug() {
++	if (g_grim->isTestData()) {
++		lua_Object msgObj = lua_getparam(1);
++		if (lua_isstring(msgObj) && !strncmp(lua_getstring(msgObj), "CRSNAP:", 7)) {
++			g_grim->saveSnap(lua_getstring(msgObj) + 7);
++			return;
++		}
++	}
+ 	if (!Debug::isChannelEnabled(Debug::Scripts))
+ 		return;
+ 	Common::String msg("Debug: ");
 diff --git a/engines/grim/resource.cpp b/engines/grim/resource.cpp
 index 3fe51625f63..7f11d6ea313 100644
 --- a/engines/grim/resource.cpp

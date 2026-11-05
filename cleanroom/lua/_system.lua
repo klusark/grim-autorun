@@ -54,6 +54,17 @@ cr_log = function(key, a, b, c, d)
 	cr_out("V " .. s)
 end
 
+-- A picture of the screen: run.py puts the box of the bright pixels of it (x0 y0 x1 y1) in the log under key (snaps.py).
+-- The original saves its back buffer at once; ScummVM the next frame it draws: let a frame or two pass before changing what
+-- is on the screen.
+CR_SNAP_N = 0
+cr_snap = function(key)
+	CR_SNAP_N = CR_SNAP_N + 1
+	local f = "crsnap" .. CR_SNAP_N .. ".bmp"
+	PrintDebug("CRSNAP:" .. f)
+	cr_log(key, "snap:" .. f)
+end
+
 cr_test = function(name, fn)
 	CR_N = CR_N + 1
 	CR_TESTS[CR_N] = { name = name, fn = fn }

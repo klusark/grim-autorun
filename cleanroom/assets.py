@@ -11,6 +11,8 @@ TEXT = [
     ("crt001", "Clean room text one"),
     ("crt002", "Second line, with punctuation: 1, 2; 3."),
     ("crt003", "x"),
+    # (wider than the screen in cr_font.laf: 107 characters of 5 and 6 pixels)
+    ("crt004", "a line of text that is much too long to fit on the screen in one piece, so that it is clamped at both edges"),
 ]
 
 

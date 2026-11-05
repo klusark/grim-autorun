@@ -15248,8 +15248,6 @@ V cm_forward_s1_m2_w2|cm_forward_s1_m2_w2_f80|-0.307920 -1.642603 0.000000
 V cm_forward_s1_m2_w2|cm_forward_s1_m2_w2_end|-0.485548 -1.603952 0.000000
 V cm_forward_s1_m2_w2|cm_forward_s1_m2_w2_walking|nil
 END cm_forward_s1_m2_w2
-SKIP rest_chore_zero
-SKIP shadow_color
 BEGIN mf_cr_box_wall_box
 V mf_cr_box_wall_box|cr_box_wall_box_f0|0.500000 -1.900000 0.000000
 V mf_cr_box_wall_box|cr_box_wall_box_f40|0.267363 -1.261033 0.000000
@@ -15656,8 +15654,144 @@ V mf_rects|cr_tprot_node1|0.500000 0.500000 0.000000
 V mf_rects|cr_tprot_node2|0.500000 -0.500000 1.700000
 V mf_rects|cr_tprot_node3|0.400000 -0.200000 1.200000
 END mf_rects
+SKIP rest_chore_zero
+SKIP shadow_color
 SKIP font_dims_handle
 SKIP font_dims_name
+BEGIN tp_nothing
+V tp_nothing|nothing_text|none
+END tp_nothing
+BEGIN tp_spot_centre
+V tp_spot_centre|spot_centre_screen|320.000000 240.000000
+V tp_spot_centre|spot_centre_going|1.000000
+V tp_spot_centre|spot_centre_text|263.000000 228.000000 375.000000 237.000000
+END tp_spot_centre
+BEGIN tp_spot_left
+V tp_spot_left|spot_left_screen|137.000000 194.000000
+V tp_spot_left|spot_left_going|1.000000
+V tp_spot_left|spot_left_text|80.000000 182.000000 192.000000 191.000000
+END tp_spot_left
+BEGIN tp_spot_right
+V tp_spot_right|spot_right_screen|552.000000 332.000000
+V tp_spot_right|spot_right_going|1.000000
+V tp_spot_right|spot_right_text|495.000000 320.000000 607.000000 329.000000
+END tp_spot_right
+BEGIN tp_spot_high
+V tp_spot_high|spot_high_screen|320.000000 194.000000
+V tp_spot_high|spot_high_going|1.000000
+V tp_spot_high|spot_high_text|263.000000 182.000000 375.000000 191.000000
+END tp_spot_high
+BEGIN tp_spot_left_edge
+V tp_spot_left_edge|spot_left_edge_screen|16.000000 240.000000
+V tp_spot_left_edge|spot_left_edge_going|1.000000
+V tp_spot_left_edge|spot_left_edge_text|11.000000 216.000000 100.000000 237.000000
+END tp_spot_left_edge
+BEGIN tp_spot_right_edge
+V tp_spot_right_edge|spot_right_edge_screen|623.000000 240.000000
+V tp_spot_right_edge|spot_right_edge_going|1.000000
+V tp_spot_right_edge|spot_right_edge_text|539.000000 216.000000 628.000000 237.000000
+END tp_spot_right_edge
+BEGIN tp_spot_top_edge
+V tp_spot_top_edge|spot_top_edge_screen|320.000000 22.000000
+V tp_spot_top_edge|spot_top_edge_going|1.000000
+V tp_spot_top_edge|spot_top_edge_text|263.000000 10.000000 375.000000 19.000000
+END tp_spot_top_edge
+BEGIN tp_spot_bottom_edge
+V tp_spot_bottom_edge|spot_bottom_edge_screen|320.000000 477.000000
+V tp_spot_bottom_edge|spot_bottom_edge_going|1.000000
+V tp_spot_bottom_edge|spot_bottom_edge_text|263.000000 458.000000 375.000000 467.000000
+END tp_spot_bottom_edge
+BEGIN tp_spot_off_left
+V tp_spot_off_left|spot_off_left_screen|nil
+V tp_spot_off_left|spot_off_left_going|1.000000
+V tp_spot_off_left|spot_off_left_text|263.000000 438.000000 375.000000 447.000000
+END tp_spot_off_left
+BEGIN tp_spot_off_top
+V tp_spot_off_top|spot_off_top_screen|nil
+V tp_spot_off_top|spot_off_top_going|1.000000
+V tp_spot_off_top|spot_off_top_text|263.000000 438.000000 375.000000 447.000000
+END tp_spot_off_top
+BEGIN tp_spot_behind_camera
+V tp_spot_behind_camera|spot_behind_camera_screen|nil
+V tp_spot_behind_camera|spot_behind_camera_going|1.000000
+V tp_spot_behind_camera|spot_behind_camera_text|263.000000 438.000000 375.000000 447.000000
+END tp_spot_behind_camera
+BEGIN tp_long_centre
+V tp_long_centre|long_centre_going|1.000000
+V tp_long_centre|long_centre_text|11.000000 228.000000 627.000000 237.000000
+END tp_long_centre
+BEGIN tp_medium_left_edge
+V tp_medium_left_edge|medium_left_edge_going|1.000000
+V tp_medium_left_edge|medium_left_edge_text|13.000000 216.000000 137.000000 237.000000
+END tp_medium_left_edge
+BEGIN tp_moved
+V tp_moved|moved_before|171.000000 228.000000 283.000000 237.000000
+V tp_moved|moved_after|171.000000 228.000000 283.000000 237.000000
+END tp_moved
+BEGIN tp_no_set
+V tp_no_set|no_set_going|1.000000
+V tp_no_set|no_set_text|263.000000 438.000000 375.000000 447.000000
+END tp_no_set
+BEGIN tp_other_set
+V tp_other_set|other_set_going|1.000000
+V tp_other_set|other_set_text|263.000000 438.000000 375.000000 447.000000
+END tp_other_set
+BEGIN tp_hidden
+V tp_hidden|hidden_going|1.000000
+V tp_hidden|hidden_text|354.000000 228.000000 466.000000 237.000000
+END tp_hidden
+BEGIN tp_costume
+V tp_costume|costume_going|1.000000
+V tp_costume|costume_text|263.000000 438.000000 375.000000 447.000000
+END tp_costume
+BEGIN tp_offpos_dialog
+V tp_offpos_dialog|offpos_dialog_going|1.000000
+V tp_offpos_dialog|offpos_dialog_text|263.000000 10.000000 375.000000 19.000000
+END tp_offpos_dialog
+BEGIN tp_offpos_corner
+V tp_offpos_corner|offpos_corner_going|1.000000
+V tp_offpos_corner|offpos_corner_text|11.000000 10.000000 100.000000 31.000000
+END tp_offpos_corner
+BEGIN tp_offpos_far_corner
+V tp_offpos_far_corner|offpos_far_corner_going|1.000000
+V tp_offpos_far_corner|offpos_far_corner_text|539.000000 446.000000 628.000000 467.000000
+END tp_offpos_far_corner
+BEGIN tp_offpos_middle
+V tp_offpos_middle|offpos_middle_going|1.000000
+V tp_offpos_middle|offpos_middle_text|143.000000 288.000000 255.000000 297.000000
+END tp_offpos_middle
+BEGIN tp_offpos_default
+V tp_offpos_default|offpos_default_going|1.000000
+V tp_offpos_default|offpos_default_text|263.000000 438.000000 375.000000 447.000000
+END tp_offpos_default
+BEGIN tp_table_xy
+V tp_table_xy|table_xy_going|1.000000
+V tp_table_xy|table_xy_text|43.000000 100.000000 155.000000 109.000000
+END tp_table_xy
+BEGIN tp_table_x_only
+V tp_table_x_only|table_x_only_going|1.000000
+V tp_table_x_only|table_x_only_text|443.000000 137.000000 555.000000 146.000000
+END tp_table_x_only
+BEGIN tp_table_y_only
+V tp_table_y_only|table_y_only_going|1.000000
+V tp_table_y_only|table_y_only_text|353.000000 60.000000 465.000000 69.000000
+END tp_table_y_only
+BEGIN tp_table_xy_zero
+V tp_table_xy_zero|table_xy_zero_going|1.000000
+V tp_table_xy_zero|table_xy_zero_text|11.000000 10.000000 100.000000 31.000000
+END tp_table_xy_zero
+BEGIN tp_table_xy_far
+V tp_table_xy_far|table_xy_far_going|1.000000
+V tp_table_xy_far|table_xy_far_text|539.000000 446.000000 628.000000 467.000000
+END tp_table_xy_far
+BEGIN tp_table_xy_negative
+V tp_table_xy_negative|table_xy_negative_going|1.000000
+V tp_table_xy_negative|table_xy_negative_text|11.000000 10.000000 100.000000 31.000000
+END tp_table_xy_negative
+BEGIN tp_table_xy_no_set
+V tp_table_xy_no_set|table_xy_no_set_going|1.000000
+V tp_table_xy_no_set|table_xy_no_set_text|93.000000 200.000000 205.000000 209.000000
+END tp_table_xy_no_set
 SKIP args_ActivateActorShadow_p2_big
 SKIP args_AddShadowPlane_p2_nil
 SKIP args_AddShadowPlane_p2_tab
