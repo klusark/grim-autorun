@@ -1,0 +1,114 @@
+diff --git a/engines/grim/detection.h b/engines/grim/detection.h
+index e46e49e80fa..b438f7a4863 100644
+--- a/engines/grim/detection.h
++++ b/engines/grim/detection.h
+@@ -32,6 +32,13 @@ static const Engines::ObsoleteGameID obsoleteGameIDsTable[] = {
+ 
+ namespace Grim {
+ 
++// Game flags of the engine (the low 16 bits of ADGameDescription::flags)
++enum GrimGameFlags {
++	// Data made for engine tests (grim_tools/cleanroom): only the files of the game folder are read, no update or
++	// patch archive is needed
++	GF_TESTDATA = 1 << 0
++};
++
+ enum GrimGameType {
+ 	GType_GRIM,
+ 	GType_MONKEY4
+diff --git a/engines/grim/detection_tables.h b/engines/grim/detection_tables.h
+index 1013f938dc7..441582e77c7 100644
+--- a/engines/grim/detection_tables.h
++++ b/engines/grim/detection_tables.h
+@@ -27,6 +27,19 @@
+ namespace Grim {
+ 
+ static const GrimGameDescription gameDescriptions[] = {
++	{
++		// Engine test data (grim_tools/cleanroom), no file of the game: a folder of loose files with this marker
++		{
++			"grim",
++			"Test data",
++			AD_ENTRY1("grimtestdata.txt", nullptr),
++			Common::EN_ANY,
++			Common::kPlatformWindows,
++			GF_TESTDATA,
++			GUI_OPTIONS_GRIME
++		},
++		GType_GRIM
++	},
+ 	{
+ 		// Grim Fandango English version (patched)
+ 		{
+diff --git a/engines/grim/grim.cpp b/engines/grim/grim.cpp
+index c84f3cc2a3e..5228cfa138e 100644
+--- a/engines/grim/grim.cpp
++++ b/engines/grim/grim.cpp
+@@ -329,7 +329,7 @@ GfxBase *GrimEngine::createRenderer(int screenW, int screenH) {
+ }
+ 
+ const char *GrimEngine::getUpdateFilename() {
+-	if (!(getGameFlags() & ADGF_DEMO))
++	if (!(getGameFlags() & ADGF_DEMO) && !isTestData())
+ 		return "gfupd101.exe";
+ 	else
+ 		return nullptr;
+@@ -354,7 +354,7 @@ Common::Error GrimEngine::run() {
+ 	}
+ 
+ 	ConfMan.registerDefault("check_gamedata", true);
+-	if (ConfMan.getBool("check_gamedata") && !isRemastered()) {
++	if (ConfMan.getBool("check_gamedata") && !isRemastered() && !isTestData()) {
+ 		MD5CheckDialog d;
+ 		if (!d.runModal()) {
+ 			Common::U32String confirmString = Common::U32String::format(_(
+diff --git a/engines/grim/grim.h b/engines/grim/grim.h
+index 3bd29bd1803..c0e8d213037 100644
+--- a/engines/grim/grim.h
++++ b/engines/grim/grim.h
+@@ -89,6 +89,7 @@ public:
+ 	bool canLoadGameStateCurrently(Common::U32String *msg = nullptr) override { return true; }
+ 	Common::Error loadGameState(int slot) override;
+ 	bool isRemastered() const { return !!(_gameFlags & ADGF_REMASTERED); }
++	bool isTestData() const { return !!(_gameFlags & GF_TESTDATA); }
+ 
+ 	void setMode(EngineMode mode);
+ 	EngineMode getMode() { return _mode; }
+diff --git a/engines/grim/resource.cpp b/engines/grim/resource.cpp
+index 3fe51625f63..7f11d6ea313 100644
+--- a/engines/grim/resource.cpp
++++ b/engines/grim/resource.cpp
+@@ -20,6 +20,8 @@
+  */
+ 
+ #include "gui/error.h"
++#include "common/config-manager.h"
++#include "common/fs.h"
+ 
+ #include "engines/grim/resource.h"
+ #include "engines/grim/colormap.h"
+@@ -115,7 +117,13 @@ ResourceLoader::ResourceLoader() {
+ 		}
+ 	}
+ 
+-	if (g_grim->getGameType() == GType_GRIM) {
++	if (g_grim->getGameType() == GType_GRIM && g_grim->isTestData()) {
++		// Test data: loose files, and every LAB of the game folder, as the original does (Resource_OpenArchivesInDir). Only the game folder:
++		// SearchMan would also list the embedded grim-patch.lab, whose patches are for the game's own scripts
++		Common::FSDirectory gameDir(ConfMan.getPath("path"));
++		gameDir.listMatchingMembers(files, "*.lab");
++		Common::sort(files.begin(), files.end(), LabListComperator());
++	} else if (g_grim->getGameType() == GType_GRIM) {
+ 		if (g_grim->getGameFlags() & ADGF_DEMO) {
+ 			SearchMan.listMatchingMembers(files, "gfdemo01.lab");
+ 			SearchMan.listMatchingMembers(files, "gdemo001.lab"); // For the english demo with video.
+@@ -193,7 +201,8 @@ ResourceLoader::ResourceLoader() {
+ 		}
+ 	}
+ 
+-	if (files.empty())
++	// (test data may be loose files only, which are read from the game folder through SearchMan)
++	if (files.empty() && !(g_grim->getGameType() == GType_GRIM && g_grim->isTestData()))
+ 		error("%s", "Cannot find game data - check configuration file");
+ 
+ 	// Load labs
