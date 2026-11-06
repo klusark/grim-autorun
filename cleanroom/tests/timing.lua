@@ -40,4 +40,4 @@ cr_t_sleeper = function()
 	sleep_for(100)
 	CR_SLEPT = TRUE
 end
-cr_test("sleep_for", cr_t_sleep_for)
+cr_scummvm_differs("sleep_for", nil, "grim") cr_scummvm_differs("sleep_for", nil, "emi") cr_test("sleep_for", cr_t_sleep_for)

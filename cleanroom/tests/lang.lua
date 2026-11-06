@@ -56,7 +56,7 @@ line two]]
 	cr_log("long", strlen(long), strfind(long, "\n"))
 	cr_log("nested_long", strlen([[a [[b]] c]]))
 end
-cr_test("string_syntax", cr_t_string_syntax)
+cr_scummvm_differs("string_syntax", nil, "grim") cr_test("string_syntax", cr_t_string_syntax)
 
 cr_t_control_flow = function()
 	local i = 0

@@ -33,7 +33,7 @@ cr_t_chore_keys = function()
 	cr_log("at_once", CR_LV, IsActorChoring(a, 0, FALSE, "cr_luav.cos"))
 	cr_follow_chore(a, 0, 120, "keys")
 end
-cr_test("chore_keys", cr_t_chore_keys)
+cr_scummvm_differs("chore_keys") cr_test("chore_keys", cr_t_chore_keys)
 
 cr_t_chore_short = function()
 	local a = cr_costume_actor()
@@ -44,7 +44,7 @@ cr_t_chore_short = function()
 	cr_log("zero_at_once", CR_LV, IsActorChoring(a, 3, FALSE, "cr_luav.cos"))
 	cr_follow_chore(a, 3, 30, "zero")
 end
-cr_test("chore_short", cr_t_chore_short)
+cr_scummvm_differs("chore_short") cr_test("chore_short", cr_t_chore_short)
 
 cr_t_chore_loop = function()
 	local a = cr_costume_actor()
@@ -69,4 +69,4 @@ cr_t_chore_loop = function()
 	cr_frames(1)
 	cr_log("completed_next", CR_LV, IsActorChoring(a, 0, FALSE, "cr_luav.cos"))
 end
-cr_test("chore_loop", cr_t_chore_loop)
+cr_scummvm_differs("chore_loop") cr_test("chore_loop", cr_t_chore_loop)

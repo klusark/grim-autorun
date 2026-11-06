@@ -37,7 +37,7 @@ cr_t_ee_time_scale = function()
 	local x, y, z = GetActorPos(a)
 	cr_log("walk_scaled", x, y, z)
 end
-cr_test("ee_time_scale", cr_t_ee_time_scale)
+cr_scummvm_differs("ee_time_scale") cr_test("ee_time_scale", cr_t_ee_time_scale)
 
 cr_t_ee_rates = function()
 	local a = cr_ee_actor()
@@ -55,7 +55,7 @@ cr_t_ee_rates = function()
 	SetActorTurnRate(a, 30)
 	cr_log("turn_rate", GetActorTurnRate(a))
 end
-cr_test("ee_rates", cr_t_ee_rates)
+cr_scummvm_differs("ee_rates") cr_test("ee_rates", cr_t_ee_rates)
 
 cr_t_ee_alpha = function()
 	local a = cr_ee_actor()
@@ -78,7 +78,7 @@ cr_t_ee_puck = function()
 	EnableActorPuck(a, FALSE)
 	cr_log("vector_off", GetActorPuckVector(a))
 end
-cr_test("ee_puck", cr_t_ee_puck)
+cr_scummvm_differs("ee_puck") cr_test("ee_puck", cr_t_ee_puck)
 
 cr_t_ee_angles = function()
 	local a = cr_ee_actor()
@@ -110,7 +110,7 @@ cr_t_ee_camera = function()
 	cr_frames(1)
 	cr_log("position_other_set", GetCameraPosition())
 end
-cr_test("ee_camera", cr_t_ee_camera)
+cr_scummvm_differs("ee_camera") cr_test("ee_camera", cr_t_ee_camera)
 
 cr_t_ee_overworld = function()
 	ClearOverworld()
@@ -144,7 +144,7 @@ cr_t_ee_layers = function()
 	end
 	cr_log("missing", NewLayer("no_such.til", 1, 0))
 end
-cr_test("ee_layers", cr_t_ee_layers)
+cr_scummvm_differs("ee_layers") cr_test("ee_layers", cr_t_ee_layers)
 
 cr_t_ee_text = function()
 	cr_log("localize", LocalizeString("/crt001/"))
@@ -158,7 +158,7 @@ cr_t_ee_text = function()
 	cr_log("text_speed_set", GetTextSpeed())
 	cr_log("translation", GetTranslationMode())
 end
-cr_test("ee_text", cr_t_ee_text)
+cr_scummvm_differs("ee_text") cr_test("ee_text", cr_t_ee_text)
 
 cr_t_ee_sound_groups = function()
 	cr_log("group_0", GetGroupVolume(0))
@@ -172,7 +172,7 @@ cr_t_ee_sound_groups = function()
 	cr_log("music_set", ImGetMusicVol())
 	cr_log("playing", IsSoundPlaying("no_such.wav"))
 end
-cr_test("ee_sound_groups", cr_t_ee_sound_groups)
+cr_scummvm_differs("ee_sound_groups") cr_test("ee_sound_groups", cr_t_ee_sound_groups)
 
 cr_t_ee_misc = function()
 	cr_log("cpu", type(GetCPUSpeed()))
@@ -183,4 +183,4 @@ cr_t_ee_misc = function()
 	cr_log("message", IsMessageGoing())
 	cr_log("movie", IsMoviePlaying())
 end
-cr_test("ee_misc", cr_t_ee_misc)
+cr_scummvm_differs("ee_misc") cr_test("ee_misc", cr_t_ee_misc)

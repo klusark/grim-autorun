@@ -20,12 +20,12 @@ cr_test("loop_100k", cr_t_loop_100k)
 cr_t_loop_1m = function()
 	cr_log("done", cr_long_loop(1000000))
 end
-cr_test("loop_1m", cr_t_loop_1m)
+cr_scummvm_differs("loop_1m") cr_test("loop_1m", cr_t_loop_1m)
 
 cr_t_loop_5m = function()
 	cr_log("done", cr_long_loop(5000000))
 end
-cr_test("loop_5m", cr_t_loop_5m)
+cr_scummvm_differs("loop_5m") cr_test("loop_5m", cr_t_loop_5m)
 
 -- (cr_lines.txt is in the game folder: 3 lines)
 cr_t_text_file = function()
@@ -35,7 +35,7 @@ cr_t_text_file = function()
 	cr_log("missing_count", TextFileGetLineCount("cr_no_such.txt"))
 	cr_log("missing_line", TextFileGetLine("cr_no_such.txt", 0))
 end
-cr_test("text_file", cr_t_text_file)
+cr_scummvm_differs("text_file") cr_test("text_file", cr_t_text_file)
 
 cr_t_script_odd = function()
 	cr_log("find_nil", find_script(nil))
@@ -55,7 +55,7 @@ cr_t_script_odd_wait = function()
 		break_here()
 	end
 end
-cr_test("script_odd", cr_t_script_odd)
+cr_scummvm_differs("script_odd") cr_test("script_odd", cr_t_script_odd)
 
 -- (an actor with the model costume walks forward into the outer wall of cr_flat, collision mode off and box)
 cr_model_wall = function(key, mode)
@@ -87,7 +87,7 @@ cr_t_model_wall = function()
 	cr_model_wall("off", 0)
 	cr_model_wall("box", 1)
 end
-cr_test("model_wall", cr_t_model_wall)
+cr_scummvm_differs("model_wall") cr_test("model_wall", cr_t_model_wall)
 
 cr_t_walk_rate_change = function()
 	cr_actor_global("cr_flat.set")
@@ -107,4 +107,4 @@ cr_t_walk_rate_change = function()
 	cr_frames(60)
 	cr_pos("end", CR_A)
 end
-cr_test("walk_rate_change", cr_t_walk_rate_change)
+cr_scummvm_differs("walk_rate_change") cr_test("walk_rate_change", cr_t_walk_rate_change)

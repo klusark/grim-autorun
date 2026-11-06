@@ -34,7 +34,7 @@ cr_t_set_edge = function()
 	MakeSectorActive("e_off", FALSE)
 	cr_point("off_again", 0, -3, 0)
 end
-cr_test("set_edge", cr_t_set_edge)
+cr_scummvm_differs("set_edge") cr_test("set_edge", cr_t_set_edge)
 
 cr_t_set_stair = function()
 	MakeCurrentSet("cr_stair.set")

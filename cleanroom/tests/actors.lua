@@ -38,7 +38,7 @@ cr_t_actor_place = function()
 	cr_log("sector", GetActorSector(a, 4096))
 	cr_log("walk_rate", GetActorWalkRate(a))
 end
-cr_test("actor_place", cr_t_actor_place)
+cr_scummvm_differs("actor_place") cr_test("actor_place", cr_t_actor_place)
 
 cr_t_actor_walk = function()
 	local a = cr_actor("cr_flat.set")
@@ -61,7 +61,7 @@ cr_t_actor_walk = function()
 	local p, y, r = GetActorRot(a)
 	cr_log("end_rot", p, y, r)
 end
-cr_test("actor_walk", cr_t_actor_walk)
+cr_scummvm_differs("actor_walk") cr_test("actor_walk", cr_t_actor_walk)
 
 cr_t_actor_walk_nofollow = function()
 	local a = cr_actor("cr_flat.set", TRUE)
@@ -72,7 +72,7 @@ cr_t_actor_walk_nofollow = function()
 	cr_pos("after_10", a)
 	cr_log("moving", IsActorMoving(a))
 end
-cr_test("actor_walk_nofollow", cr_t_actor_walk_nofollow)
+cr_scummvm_differs("actor_walk_nofollow") cr_test("actor_walk_nofollow", cr_t_actor_walk_nofollow)
 
 cr_t_actor_turn = function()
 	local a = cr_actor("cr_flat.set")
@@ -92,7 +92,7 @@ cr_t_actor_turn = function()
 	p, y, r = GetActorRot(a)
 	cr_log("end", y)
 end
-cr_test("actor_turn", cr_t_actor_turn)
+cr_scummvm_differs("actor_turn") cr_test("actor_turn", cr_t_actor_turn)
 
 cr_t_actor_forward_wall = function()
 	local a = cr_actor("cr_flat.set")
@@ -111,7 +111,7 @@ cr_t_actor_forward_wall = function()
 	end
 	cr_pos("end", a)
 end
-cr_test("actor_forward_wall", cr_t_actor_forward_wall)
+cr_scummvm_differs("actor_forward_wall") cr_test("actor_forward_wall", cr_t_actor_forward_wall)
 
 cr_t_actor_stair = function()
 	local a = cr_actor("cr_stair.set")
@@ -132,4 +132,4 @@ cr_t_actor_stair = function()
 	cr_pos("end", a)
 	cr_log("sector", GetActorSector(a, 4096))
 end
-cr_test("actor_stair", cr_t_actor_stair)
+cr_scummvm_differs("actor_stair") cr_test("actor_stair", cr_t_actor_stair)

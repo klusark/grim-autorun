@@ -32,7 +32,7 @@ cr_t_io_write_read = function()
 	cr_log("remove_missing", remove("cr_no_such_file.txt"))
 	cr_log("readfrom_missing", readfrom("cr_no_such_file.txt"))
 end
-cr_test("io_write_read", cr_t_io_write_read)
+cr_scummvm_differs("io_write_read") cr_test("io_write_read", cr_t_io_write_read)
 
 cr_t_errormethod = function()
 	CR_EM = nil

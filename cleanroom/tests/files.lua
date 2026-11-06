@@ -17,4 +17,4 @@ cr_t_registry = function()
 	WriteRegistryValue("CrTestFloat", 1.5)
 	cr_log("float", ReadRegistryValue("CrTestFloat"))
 end
-cr_test("registry", cr_t_registry)
+cr_scummvm_differs("registry") cr_test("registry", cr_t_registry)

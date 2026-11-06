@@ -2,6 +2,6 @@
 BX_LOG = function(yaw, off, x, y, ox, oy, ok)
 	cr_log("box_yaw" .. yaw .. "_off" .. floor(off * 10), x, y)
 end
-cr_test("box_repro", function()
+cr_scummvm_differs("box_repro") cr_test("box_repro", function()
 	bx_main()
 end)

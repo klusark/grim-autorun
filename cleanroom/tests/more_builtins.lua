@@ -8,7 +8,7 @@ cr_t_localize = function()
 	cr_log("missing", LocalizeString("/nosuchid/"))
 	cr_log("plain", LocalizeString("no slashes"))
 end
-cr_test("localize", cr_t_localize)
+cr_scummvm_differs("localize") cr_test("localize", cr_t_localize)
 
 cr_t_screen_effects = function()
 	DimScreen()
@@ -38,7 +38,7 @@ cr_t_set_locks = function()
 	end
 	MakeCurrentSet("cr_flat.set")
 end
-cr_test("set_locks", cr_t_set_locks)
+cr_scummvm_differs("set_locks") cr_test("set_locks", cr_t_set_locks)
 
 cr_t_actor_extras = function()
 	local a = cr_attr_actor("cr_extra1")
@@ -61,7 +61,7 @@ cr_t_actor_extras = function()
 	cr_log("ok", 1)
 	PutActorInSet(a, nil)
 end
-cr_test("actor_extras", cr_t_actor_extras)
+cr_scummvm_differs("actor_extras") cr_test("actor_extras", cr_t_actor_extras)
 
 cr_t_actor_sees = function()
 	local a = cr_attr_actor("cr_extra2")
@@ -83,7 +83,7 @@ cr_t_actor_sees = function()
 	PutActorInSet(a, nil)
 	PutActorInSet(b, nil)
 end
-cr_test("actor_sees", cr_t_actor_sees)
+cr_scummvm_differs("actor_sees") cr_test("actor_sees", cr_t_actor_sees)
 
 cr_t_screen_to_world = function()
 	MakeCurrentSet("cr_flat.set")
@@ -100,7 +100,7 @@ cr_t_screen_to_world = function()
 		cr_log("clipped", g(3, 0, 0))
 	end
 end
-cr_test("screen_to_world", cr_t_screen_to_world)
+cr_scummvm_differs("screen_to_world") cr_test("screen_to_world", cr_t_screen_to_world)
 
 -- the same in cr_open, whose z-buffer is 0 (far) everywhere: the original reads the depth at the point
 cr_t_screen_to_world_open = function()
@@ -112,7 +112,7 @@ cr_t_screen_to_world_open = function()
 		cr_log("corner", f(0, 0))
 	end
 end
-cr_test("screen_to_world_open", cr_t_screen_to_world_open)
+cr_scummvm_differs("screen_to_world_open") cr_test("screen_to_world_open", cr_t_screen_to_world_open)
 
 cr_t_light_details = function()
 	MakeCurrentSet("cr_flat.set")
@@ -130,7 +130,7 @@ cr_t_light_details = function()
 	LightMgrStartup()
 	cr_log("ok", 1)
 end
-cr_test("light_details", cr_t_light_details)
+cr_scummvm_differs("light_details") cr_test("light_details", cr_t_light_details)
 
 cr_t_sound_details = function()
 	ImFadeParam("no_such.imu", 1, 0, 100)
@@ -149,7 +149,7 @@ cr_t_sound_details = function()
 	LoadBundle("no_such.bun")
 	cr_log("ok", 1)
 end
-cr_test("sound_details", cr_t_sound_details)
+cr_scummvm_differs("sound_details") cr_test("sound_details", cr_t_sound_details)
 
 cr_t_resource_locks = function()
 	local names = { "LockCostume", "UnlockCostume" }
@@ -166,7 +166,7 @@ cr_t_resource_locks = function()
 		cr_log("unlock_font", f(LockFont("cr_font.laf")))
 	end
 end
-cr_test("resource_locks", cr_t_resource_locks)
+cr_scummvm_differs("resource_locks") cr_test("resource_locks", cr_t_resource_locks)
 
 cr_t_iris = function()
 	IrisDown(320, 240, 100)
@@ -185,4 +185,4 @@ cr_t_env = function()
 	end
 	cr_log("date_type", type(date()))
 end
-cr_test("env", cr_t_env)
+cr_scummvm_differs("env") cr_test("env", cr_t_env)

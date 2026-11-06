@@ -61,7 +61,7 @@ cr_t_ea_place = function()
 	cr_log("moving", IsActorMoving(a))
 	cr_log("turning", IsActorTurning(a))
 end
-cr_test("ea_place", cr_t_ea_place)
+cr_scummvm_differs("ea_place") cr_test("ea_place", cr_t_ea_place)
 
 cr_t_ea_sector = function()
 	local a = cr_ea_actor("cr_edge.set")
@@ -89,7 +89,7 @@ cr_t_ea_yaw_to = function()
 	SetActorRot(a, 0, 90, 0)
 	cr_log("turned_plus_x", GetActorYawToPoint(a, { x = 1, y = 0, z = 0 }))
 end
-cr_test("ea_yaw_to", cr_t_ea_yaw_to)
+cr_scummvm_differs("ea_yaw_to") cr_test("ea_yaw_to", cr_t_ea_yaw_to)
 
 cr_t_ea_walk = function()
 	local a = cr_ea_actor("cr_flat.set")
@@ -102,7 +102,7 @@ cr_t_ea_walk = function()
 	cr_ea_follow(a, "w")
 	cr_ea_rot("rot_end", a)
 end
-cr_test("ea_walk", cr_t_ea_walk)
+cr_scummvm_differs("ea_walk") cr_test("ea_walk", cr_t_ea_walk)
 
 cr_t_ea_walk_outside = function()
 	local a = cr_ea_actor("cr_flat.set")
@@ -112,7 +112,7 @@ cr_t_ea_walk_outside = function()
 	cr_log("moving", IsActorMoving(a))
 	cr_ea_follow(a, "w")
 end
-cr_test("ea_walk_outside", cr_t_ea_walk_outside)
+cr_scummvm_differs("ea_walk_outside") cr_test("ea_walk_outside", cr_t_ea_walk_outside)
 
 cr_t_ea_walk_nofollow = function()
 	local a = cr_ea_actor("cr_flat.set", TRUE)
@@ -122,7 +122,7 @@ cr_t_ea_walk_nofollow = function()
 	cr_log("moving", IsActorMoving(a))
 	cr_ea_follow(a, "w")
 end
-cr_test("ea_walk_nofollow", cr_t_ea_walk_nofollow)
+cr_scummvm_differs("ea_walk_nofollow") cr_test("ea_walk_nofollow", cr_t_ea_walk_nofollow)
 
 -- around the corner of the L: the straight line leaves the floor
 cr_t_ea_walk_ell = function()
@@ -134,7 +134,7 @@ cr_t_ea_walk_ell = function()
 	cr_ea_follow(a, "w")
 	cr_log("sector", GetActorSector(a, 4096))
 end
-cr_test("ea_walk_ell", cr_t_ea_walk_ell)
+cr_scummvm_differs("ea_walk_ell") cr_test("ea_walk_ell", cr_t_ea_walk_ell)
 
 cr_t_ea_walk_stop = function()
 	local a = cr_ea_actor("cr_flat.set")
@@ -148,7 +148,7 @@ cr_t_ea_walk_stop = function()
 	cr_frames(5)
 	cr_ea_pos("after_stop", a)
 end
-cr_test("ea_walk_stop", cr_t_ea_walk_stop)
+cr_scummvm_differs("ea_walk_stop") cr_test("ea_walk_stop", cr_t_ea_walk_stop)
 
 cr_t_ea_walk_forward = function()
 	local a = cr_ea_actor("cr_flat.set")
@@ -166,7 +166,7 @@ cr_t_ea_walk_forward = function()
 	end
 	cr_ea_pos("end", a)
 end
-cr_test("ea_walk_forward", cr_t_ea_walk_forward)
+cr_scummvm_differs("ea_walk_forward") cr_test("ea_walk_forward", cr_t_ea_walk_forward)
 
 cr_t_ea_turn = function()
 	local a = cr_ea_actor("cr_flat.set")
@@ -188,7 +188,7 @@ cr_t_ea_turn = function()
 	PointActorAt(a, 0, 0, -1)
 	cr_ea_rot("point_at", a)
 end
-cr_test("ea_turn", cr_t_ea_turn)
+cr_scummvm_differs("ea_turn") cr_test("ea_turn", cr_t_ea_turn)
 
 cr_t_ea_overworld = function()
 	local a = cr_ea_actor("cr_flat.set")
@@ -209,11 +209,11 @@ cr_t_ea_unloaded_out = function()
 	UnloadActor(a)
 	cr_log("r", PutActorInSet(a, nil))
 end
-cr_test("ea_unloaded_out", cr_t_ea_unloaded_out)
+cr_scummvm_differs("ea_unloaded_out") cr_test("ea_unloaded_out", cr_t_ea_unloaded_out)
 
 cr_t_ea_unloaded_in = function()
 	local a = cr_ea_actor("cr_flat.set")
 	UnloadActor(a)
 	cr_log("r", PutActorInSet(a, "cr_flat.set"))
 end
-cr_test("ea_unloaded_in", cr_t_ea_unloaded_in)
+cr_scummvm_differs("ea_unloaded_in") cr_test("ea_unloaded_in", cr_t_ea_unloaded_in)

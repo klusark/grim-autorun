@@ -17,4 +17,4 @@ cr_t_camera = function()
 	sx, sy = WorldToScreen(10, 0, 0)
 	cr_log("screen_far_right", sx, sy)
 end
-cr_test("camera", cr_t_camera)
+cr_scummvm_differs("camera") cr_test("camera", cr_t_camera)

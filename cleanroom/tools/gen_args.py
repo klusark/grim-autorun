@@ -42,6 +42,17 @@ if EMI:
     del sys.argv[sys.argv.index("--game"):sys.argv.index("--game") + 2]
     DENY |= EMI_DENY
 
+# (builtins whose result is not meant to repeat run to run, and with which arguments (None: all): their tests mark it with
+# cr_unstable. Times, memory and disk sizes, the date, addresses; collectgarbage counts the objects of the test sources;
+# EMI's GammaEnabled says what the renderer can do (1 with Direct3D, nil with OpenGL).
+# GetActorNodeLocation with a negative node and GetVisibleThings(function) gave other values in other saves (what they
+# read is not set, it seems), and EMI's ImStateHasEnded / ImStateHasLooped(1.5) depend on how far the music has got)
+UNSTABLE = {"GetTickCount": None, "GetMemoryUsage": None, "GetDiskFreeSpace": None, "ResReport": None,
+            "collectgarbage": None, "date": ["none"], "tostring": ["fn", "tab"], "GammaEnabled": None,
+            "GetActorNodeLocation": ["p2_neg"], "GetVisibleThings": ["fn"],
+            "ImStateHasEnded": ["num"], "ImStateHasLooped": ["num"]}
+# (the argument tests ScummVM is known to give differently: cr_scummvm_differs; tools/mark_known.py writes the list)
+DIFFERS_LIST = os.path.join(HERE, "tools", "args_differs_emi.txt" if EMI else "args_differs.txt")
 PATTERNS = [("none", ""), ("nil", "nil"), ("str", '"cr"'), ("num", "1.5"), ("tab", "{ }"), ("fn", "cr_args_fn")]
 ACTOR_PATTERNS = [("a", "CR_ARGS_ACTOR"), ("a_nil", "CR_ARGS_ACTOR, nil"), ("a_str", 'CR_ARGS_ACTOR, "cr"'),
                   ("a_num", "CR_ARGS_ACTOR, 1.5"), ("a_tab", "CR_ARGS_ACTOR, { }")]
@@ -141,7 +152,14 @@ def builtins():
         m = re.match(r"^V builtins\|fn_([A-Za-z_0-9]+)\|", l)
         if m:
             names.append(m.group(1))
-    return [n for n in names if n not in DENY and not n.startswith("cr_")]
+    # (and not the globals the tests define: the builtins test sees every function, the tests' helpers too)
+    own = set()
+    tests = os.path.join(HERE, "tests")
+    for f in os.listdir(tests):
+        if f.endswith(".lua") and not f.startswith("zz_args"):
+            text = open(os.path.join(tests, f), encoding="latin-1").read()
+            own |= set(re.findall(r"^(?:function\s+)?([A-Za-z_][A-Za-z_0-9]*)\s*[=(]", text, re.M))
+    return [n for n in names if n not in DENY and n not in own and not n.startswith("cr_")]
 
 
 def main():
@@ -203,6 +221,9 @@ def main():
            ""]
     n = 0
     sigs = signatures()
+    differs = set()
+    if os.path.exists(DIFFERS_LIST):
+        differs = set(l.strip() for l in open(DIFFERS_LIST) if l.strip() and not l.startswith("#"))
     for name in builtins():
         pats = PATTERNS + (ACTOR_PATTERNS if "Actor" in name else []) + family_patterns(name) + position_patterns(name, sigs)
         for key, args in pats:
@@ -211,9 +232,12 @@ def main():
             out += ["%s = function()" % fn,
                     '\tcr_args_for("%s")' % name,
                     "\tlocal r1, r2, r3, r4 = %s(%s)" % (name, args),
-                    '\tcr_log("r", r1, r2, r3, r4)',
+                    # (the marks go on lines that are there anyway: a mark does not move the lines after it)
+                    "\t" + ('cr_unstable("r") ' if name in UNSTABLE and (UNSTABLE[name] is None or key in UNSTABLE[name])
+                            else "") + 'cr_log("r", r1, r2, r3, r4)',
                     "end",
-                    'cr_test("args_%s_%s", %s)' % (name, key, fn)]
+                    ('cr_scummvm_differs("args_%s_%s") ' % (name, key) if "args_%s_%s" % (name, key) in differs else "")
+                    + 'cr_test("args_%s_%s", %s)' % (name, key, fn)]
     if EMI:
         # (no costume of EMI's yet, no font, image or object state)
         out = [l for l in out if "SetActorCostume" not in l]

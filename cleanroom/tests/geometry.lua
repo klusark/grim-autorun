@@ -24,7 +24,7 @@ cr_t_shrink_pos = function()
 	cr_shrink("stair_ramp", 1.9, 0.5, 0.25, 0.3)
 	cr_shrink("stair_hot", 1.5, -2.5, 0, 0.3)
 end
-cr_test("shrink_pos", cr_t_shrink_pos)
+cr_scummvm_differs("shrink_pos") cr_test("shrink_pos", cr_t_shrink_pos)
 
 cr_t_shrink_boxes = function()
 	MakeCurrentSet("cr_flat.set")
@@ -43,7 +43,7 @@ cr_t_shrink_boxes = function()
 	cr_point("edge_shrunk_wedge", 3.6, -1, 0)
 	UnShrinkBoxes()
 end
-cr_test("shrink_boxes", cr_t_shrink_boxes)
+cr_scummvm_differs("shrink_boxes") cr_test("shrink_boxes", cr_t_shrink_boxes)
 
 cr_t_actor_sectors = function()
 	local a = cr_actor("cr_stair.set")
@@ -83,7 +83,7 @@ cr_t_walk_outside = function()
 	cr_log("frames", f)
 	cr_pos("end", a)
 end
-cr_test("walk_outside", cr_t_walk_outside)
+cr_scummvm_differs("walk_outside") cr_test("walk_outside", cr_t_walk_outside)
 
 -- (one walk in cr_edge from (x0, y0) to (x1, y1))
 cr_walk_case = function(key, x0, y0, x1, y1)
@@ -106,7 +106,7 @@ cr_t_walk_edges = function()
 	cr_walk_case("to_wedge", 1, -1.5, 3.5, -1.5)
 	cr_walk_case("into_off", 0, -1, 0, -3)
 end
-cr_test("walk_edges", cr_t_walk_edges)
+cr_scummvm_differs("walk_edges") cr_test("walk_edges", cr_t_walk_edges)
 
 cr_t_opposite_edge = function()
 	local a = cr_actor("cr_edge.set")
@@ -119,4 +119,4 @@ cr_t_opposite_edge = function()
 	cr_pos("after_right", a)
 	cr_log("ret_none", GetSectorOppositeEdge(a, "no_such"))
 end
-cr_test("opposite_edge", cr_t_opposite_edge)
+cr_scummvm_differs("opposite_edge") cr_test("opposite_edge", cr_t_opposite_edge)

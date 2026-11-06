@@ -5,12 +5,12 @@ cr_t_font = function()
 	cr_log("font", type(CR_FONT))
 	cr_log("again_same", LockFont("cr_font.laf") == CR_FONT)
 end
-cr_test("font", cr_t_font)
+cr_scummvm_differs("font") cr_test("font", cr_t_font)
 
 cr_t_font_missing = function()
 	cr_log("missing", LockFont("no_such.laf"))
 end
-cr_test("font_missing", cr_t_font_missing)
+cr_scummvm_differs("font_missing") cr_test("font_missing", cr_t_font_missing)
 
 cr_t_font_dims_handle = function()
 	local f = cr_fn("GetFontDimensions")
@@ -52,12 +52,12 @@ cr_t_text_objects = function()
 	cr_text_dims("ljustify", "Left", { font = CR_FONT, x = 320, y = 240, ljustify = TRUE })
 	cr_text_dims("localized", "/crt002/", { font = CR_FONT, x = 0, y = 0 })
 end
-cr_test("text_objects", cr_t_text_objects)
+cr_scummvm_differs("text_objects") cr_test("text_objects", cr_t_text_objects)
 
 cr_t_text_no_font = function()
 	cr_text_dims("no_font", "abc", { x = 0, y = 0 })
 end
-cr_test("text_no_font", cr_t_text_no_font)
+cr_scummvm_differs("text_no_font") cr_test("text_no_font", cr_t_text_no_font)
 
 cr_t_text_change = function()
 	local t = MakeTextObject("abc", { font = CR_FONT, x = 10, y = 20 })
@@ -77,14 +77,14 @@ cr_t_text_char_pos_past_end = function()
 	cr_log("past_end", GetTextCharPosition(t, 99))
 	KillTextObject(t)
 end
-cr_test("text_char_pos_past_end", cr_t_text_char_pos_past_end)
+cr_scummvm_differs("text_char_pos_past_end") cr_test("text_char_pos_past_end", cr_t_text_char_pos_past_end)
 
 cr_t_text_char_pos_killed = function()
 	local t = MakeTextObject("abc", { font = CR_FONT, x = 10, y = 20 })
 	KillTextObject(t)
 	cr_log("killed", GetTextCharPosition(t, 1))
 end
-cr_test("text_char_pos_killed", cr_t_text_char_pos_killed)
+cr_scummvm_differs("text_char_pos_killed") cr_test("text_char_pos_killed", cr_t_text_char_pos_killed)
 
 cr_t_blast_print = function()
 	BlastText("blasted", { font = CR_FONT, x = 5, y = 5 })
@@ -130,7 +130,7 @@ cr_t_say_line = function()
 	SetTextSpeed(7)
 	PutActorInSet(a, nil)
 end
-cr_test("say_line", cr_t_say_line)
+cr_scummvm_differs("say_line") cr_test("say_line", cr_t_say_line)
 
 cr_t_say_line_restore = function()
 	ShutUpActor(nil)

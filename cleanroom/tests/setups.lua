@@ -28,7 +28,7 @@ cr_t_setups = function()
 	cr_frames(1)
 	cr_log("out_of_range", GetCurrentSetup("cr_cams.set"))
 end
-cr_test("setups", cr_t_setups)
+cr_scummvm_differs("setups") cr_test("setups", cr_t_setups)
 
 cr_t_setup_kept = function()
 	MakeCurrentSet("cr_cams.set")
@@ -41,7 +41,7 @@ cr_t_setup_kept = function()
 	cr_log("after_return", GetCurrentSetup("cr_cams.set"))
 	cr_log("of_other_set", GetCurrentSetup("cr_flat.set"))
 end
-cr_test("setup_kept", cr_t_setup_kept)
+cr_scummvm_differs("setup_kept") cr_test("setup_kept", cr_t_setup_kept)
 
 cr_t_sector_types = function()
 	MakeCurrentSet("cr_cams.set")

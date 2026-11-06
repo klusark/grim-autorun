@@ -8,6 +8,10 @@
 --
 --   cr_test(name, fn)        adds a test; fn runs in its own task, so it may wait (break_here, cr_frames)
 --   cr_log(key, a, b, c, d)  one observation of the current test; numbers are written with 6 decimals
+--   cr_unstable(key)         the key's value is not meant to repeat run to run (a time, an address): it is not compared
+--   cr_scummvm_differs(name, why, game)  (next to the cr_test) ScummVM is known to give the test's values differently: a
+--                            known difference, not a regression. game: only for that game (CR_GAME) in a file both
+--                            games run (tools/mark_known.py adds the marks from a run)
 --   cr_frames(n)             waits n frames
 --   cr_until(fn, max)        waits until fn() is true or max frames passed; returns the frames waited
 --
@@ -54,6 +58,11 @@ cr_log = function(key, a, b, c, d)
 	cr_out("V " .. s)
 end
 
+-- (compare.py skips a key marked in either log; "(status)" marks how the test ends)
+cr_unstable = function(key)
+	cr_out("U " .. CR_CUR .. "|" .. key)
+end
+
 -- A picture of the screen: run.py puts the box of the bright pixels of it (x0 y0 x1 y1) in the log under key (snaps.py).
 -- The original saves its back buffer at once; ScummVM the next frame it draws: let a frame or two pass before changing what
 -- is on the screen.
@@ -66,6 +75,14 @@ cr_snap = function(key, mode)
 		cr_log(key, "snap:" .. f .. ":dark")
 	else
 		cr_log(key, "snap:" .. f)
+	end
+end
+
+-- (written after the test's BEGIN or SKIP, in both engines' logs; compare.py --known reads it)
+CR_DIFFERS = { }
+cr_scummvm_differs = function(name, why, game)
+	if game == nil or game == CR_GAME then
+		CR_DIFFERS[name] = why or ""
 	end
 end
 
@@ -108,10 +125,16 @@ cr_main = function()
 	while i <= CR_N do
 		if CR_SKIP and CR_SKIP[CR_TESTS[i].name] then
 			cr_out("SKIP " .. CR_TESTS[i].name)
+			if CR_DIFFERS[CR_TESTS[i].name] then
+				cr_out("DIFFERS " .. CR_TESTS[i].name .. "|" .. CR_DIFFERS[CR_TESTS[i].name])
+			end
 		elseif CR_ONLY == nil or CR_ONLY[CR_TESTS[i].name] then
 			CR_CUR = CR_TESTS[i].name
 			CR_DONE = nil
 			cr_out("BEGIN " .. CR_CUR)
+			if CR_DIFFERS[CR_CUR] then
+				cr_out("DIFFERS " .. CR_CUR .. "|" .. CR_DIFFERS[CR_CUR])
+			end
 			id = start_script(cr_task, CR_TESTS[i].fn)
 			f = 0
 			while find_script(id) and f < CR_MAX_FRAMES do

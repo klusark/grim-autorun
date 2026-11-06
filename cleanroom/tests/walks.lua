@@ -31,7 +31,7 @@ cr_t_walk_rates = function()
 		i = i + 1
 	end
 end
-cr_test("walk_rates", cr_t_walk_rates)
+cr_scummvm_differs("walk_rates") cr_test("walk_rates", cr_t_walk_rates)
 
 -- (the target changes after 20 frames)
 cr_t_walk_retarget = function()
@@ -45,7 +45,7 @@ cr_t_walk_retarget = function()
 	break_here()
 	cr_walk_follow("retarget", 300)
 end
-cr_test("walk_retarget", cr_t_walk_retarget)
+cr_scummvm_differs("walk_retarget") cr_test("walk_retarget", cr_t_walk_retarget)
 
 -- (a walk behind the actor: it has to turn round first; with a slow turn rate)
 cr_t_walk_behind = function()
@@ -58,7 +58,7 @@ cr_t_walk_behind = function()
 	break_here()
 	cr_walk_follow("behind", 300)
 end
-cr_test("walk_behind", cr_t_walk_behind)
+cr_scummvm_differs("walk_behind") cr_test("walk_behind", cr_t_walk_behind)
 
 -- (the walk is stopped by putting the actor somewhere else)
 cr_t_walk_interrupted = function()
@@ -74,4 +74,4 @@ cr_t_walk_interrupted = function()
 	cr_frames(10)
 	cr_pos("after_10", CR_A)
 end
-cr_test("walk_interrupted", cr_t_walk_interrupted)
+cr_scummvm_differs("walk_interrupted") cr_test("walk_interrupted", cr_t_walk_interrupted)

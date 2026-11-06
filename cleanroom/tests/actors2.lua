@@ -21,7 +21,7 @@ cr_t_point_and_angles = function()
 	cr_log("yaw_to_above", GetActorYawToPoint(a, { x = 0, y = 0, z = 1 }))
 	PutActorInSet(b, nil)
 end
-cr_test("point_and_angles", cr_t_point_and_angles)
+cr_scummvm_differs("point_and_angles") cr_test("point_and_angles", cr_t_point_and_angles)
 
 -- (TurnActor: the turn keys, one call a frame)
 cr_t_turn_key = function()
@@ -52,7 +52,7 @@ cr_t_turn_key = function()
 	p, y, r = GetActorRot(a)
 	cr_log("end", y, IsActorTurning(a))
 end
-cr_test("turn_key", cr_t_turn_key)
+cr_scummvm_differs("turn_key") cr_test("turn_key", cr_t_turn_key)
 
 cr_t_puck = function()
 	local a = cr_actor("cr_stair.set")
@@ -70,7 +70,7 @@ cr_t_puck = function()
 	x, y, z = GetActorPuckVector(a, TRUE)
 	cr_log("ramp_side_add", x, y, z)
 end
-cr_test("puck", cr_t_puck)
+cr_scummvm_differs("puck") cr_test("puck", cr_t_puck)
 
 -- (WalkActorVector: the stick, relative to the camera of the setup)
 cr_t_walk_vector = function()
@@ -97,7 +97,7 @@ cr_t_walk_vector = function()
 	p, y, r = GetActorRot(a)
 	cr_log("up30_rot", y)
 end
-cr_test("walk_vector", cr_t_walk_vector)
+cr_scummvm_differs("walk_vector") cr_test("walk_vector", cr_t_walk_vector)
 
 -- (an actor walks forward into another; both collide as spheres; actors without a costume have no model to size the sphere)
 cr_t_collide = function()
@@ -126,4 +126,4 @@ cr_t_collide = function()
 	SetActorCollisionMode(b, 0)
 	PutActorInSet(b, nil)
 end
-cr_test("collide", cr_t_collide)
+cr_scummvm_differs("collide") cr_test("collide", cr_t_collide)

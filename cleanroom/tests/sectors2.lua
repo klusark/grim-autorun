@@ -24,7 +24,7 @@ cr_t_sector_active = function()
 	MakeSectorActive("e_left", TRUE)
 	cr_point("left_on", -1, 0, 0)
 end
-cr_test("sector_active", cr_t_sector_active)
+cr_scummvm_differs("sector_active") cr_test("sector_active", cr_t_sector_active)
 
 -- (whether the set remembers a switched sector across a change of set)
 cr_t_sector_active_kept = function()
@@ -38,7 +38,7 @@ cr_t_sector_active_kept = function()
 	cr_point("off_after_return", 0, -3, 0)
 	MakeSectorActive("e_off", FALSE)
 end
-cr_test("sector_active_kept", cr_t_sector_active_kept)
+cr_scummvm_differs("sector_active_kept") cr_test("sector_active_kept", cr_t_sector_active_kept)
 
 cr_t_point_heights = function()
 	MakeCurrentSet("cr_stair.set")
@@ -52,4 +52,4 @@ cr_t_point_heights = function()
 	cr_point("ramp_edge_lo", 0, 0, 0)
 	cr_point("ramp_edge_hi", 0, 1, 0.5)
 end
-cr_test("point_heights", cr_t_point_heights)
+cr_scummvm_differs("point_heights") cr_test("point_heights", cr_t_point_heights)

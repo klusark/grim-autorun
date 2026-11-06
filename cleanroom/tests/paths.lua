@@ -23,24 +23,24 @@ end
 cr_t_path_corner = function()
 	cr_path_case("a_to_c", -1.5, -0.5, 1, 1.5)
 end
-cr_test("path_corner", cr_t_path_corner)
+cr_scummvm_differs("path_corner") cr_test("path_corner", cr_t_path_corner)
 
 cr_t_path_back = function()
 	cr_path_case("c_to_a", 1.5, 1.5, -1.5, -1)
 end
-cr_test("path_back", cr_t_path_back)
+cr_scummvm_differs("path_back") cr_test("path_back", cr_t_path_back)
 
 cr_t_path_same = function()
 	cr_path_case("a_to_b", -1.5, -1, 1.5, -1)
 end
-cr_test("path_same_row", cr_t_path_same)
+cr_scummvm_differs("path_same_row") cr_test("path_same_row", cr_t_path_same)
 
 -- to a point off the floor (in the empty quarter) and far outside
 cr_t_path_off = function()
 	cr_path_case("to_hole", -1.5, -1.5, -1, 1)
 	cr_path_case("to_far", 1, 1, 5, 5)
 end
-cr_test("path_off_floor", cr_t_path_off)
+cr_scummvm_differs("path_off_floor") cr_test("path_off_floor", cr_t_path_off)
 
 -- walking forward into the empty quarter and along the edge of the floor
 cr_t_path_forward = function()
@@ -70,4 +70,4 @@ cr_t_path_forward = function()
 	cr_pos("fwd45_end", a)
 	PutActorInSet(a, nil)
 end
-cr_test("path_forward", cr_t_path_forward)
+cr_scummvm_differs("path_forward") cr_test("path_forward", cr_t_path_forward)

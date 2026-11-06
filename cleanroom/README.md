@@ -15,9 +15,19 @@ python run.py compare logs/original.log logs/scummvm.log --all
 
 A run takes 1-2 s on the original (simtime: no waiting between frames) and about 3 s on ScummVM (fixed 17 ms frames, no frame limit).
 
-The reference must repeat itself. `--save` runs the original several times, and every value that differs between those
-runs goes to `expected/unstable.txt` and is not compared. So far that is `next_order|order`: the original's Lua hashes
-by address. `chore_short` once differed in one run out of seven, so it may need more repeats.
+The reference must repeat itself. A value that is not meant to repeat (a time, a size, an address) is marked in the
+test with `cr_unstable(key)`, and it is not compared. `--save` also runs the original several times, and every other value
+that differs between those runs goes to `expected/unstable.txt` and is not compared either; the file is written again by
+every `--save`, so a value known to vary belongs in the test, not there. `chore_short` once differed in one run out of
+seven, so it may need more repeats.
+
+**Known differences and regressions.** A test that ScummVM is known to get wrong is marked next to its `cr_test`:
+`cr_scummvm_differs("name", "why")` (a third argument, `"grim"` or `"emi"`, limits it to one game in a file both run). The
+ScummVM runs compare with `--known`: a marked test that differs is **known**, a marked one that is the same now is
+**FIXED** (the mark should go), and one that differs without a mark is a **REGRESSION**, which fails the run. A crash of a
+marked test is known as well. `python tools/mark_known.py [--game emi]` sets the marks from the last `run.py scummvm`
+(every renderer's log): it marks every test that differs and unmarks the fixed ones, except marks that give a reason. The
+argument tests get theirs through `tools/args_differs.txt` (`args_differs_emi.txt`), which `tools/gen_args.py` reads.
 
 ## What is needed
 
@@ -36,11 +46,13 @@ by address. `chore_short` once differed in one run out of seven, so it may need 
   The patch applies to upstream `master` and needs nothing from another branch. `scummvm/build.sh` builds it in the
   worktree `~/scummvm-cleanroom` (`git worktree add --detach ../scummvm-cleanroom master` and `git apply` the patch
   first). `SCUMMVM=` selects another exe.
-- **No windows on the screen:** ScummVM and Grim's original run on a desktop of their own (`tools/offscreen.c`, built into
+- **No windows on the screen:** ScummVM and the originals run on a desktop of their own (`tools/offscreen.c`, built into
   `run/offscreen.exe`): they draw as before (OpenGL, DirectDraw), but nothing shows and they cannot take the focus. The
   program and what it starts are in a job that ends with `offscreen.exe`, so killing a run that hangs kills them all. EMI's
-  original cannot start Direct3D on another desktop, so it runs on the user's desktop with grimlaunch's `offscreen` patch:
-  its window opens at -20000,-20000, without a taskbar button, and never takes the focus. `CR_VISIBLE=1` shows them all.
+  original cannot start Direct3D on another desktop ("make sure you are not running any application that takes exclusive
+  control of your hardware"), so it runs with its OpenGL renderer (`Monkey4.exe -gl`). The values are the same as with
+  Direct3D except `GammaEnabled` (1 against nil: what the hardware can do), which is marked unstable. `CR_VISIBLE=1` shows
+  them all.
 
 ## Escape from Monkey Island
 
@@ -65,6 +77,7 @@ game's original is its own reference, so "shared" means the same test source, no
   - `nopause`: the game keeps running when its window is not the active one. Without it, a game started behind other
     windows stops at once (no frames, and the clock of `sleep_for` stands still) and the run looks hung.
   - `windowed`: adds the game's `-w` switch.
+  `run.py` also passes `-gl`: the exe's OpenGL renderer, which starts on the desktop of `offscreen.exe` (Direct3D does not).
 - **The data:** one archive, `local.m4b` (`formats.lab_emi`: LABN with the name table xor 0x96). It holds `_system.lua`,
   the tests (text Lua, which the exe's parser reads), `script.tab` (`formats.text_table_emi`) and `assets_emi.py`'s files.
   ScummVM detects the folder by the loose marker `emitestdata.txt`. The original opens its fixed list of archives
@@ -99,8 +112,9 @@ What runs on EMI (2245 tests):
     with no, nil, string, number, table and function arguments, an actor first for the actor builtins, and the set,
     sector, light and colour families. 28 of these calls crash the original (`expected/emi_crashers.txt`).
 
-ScummVM's EMI on 2026-11-05, with `zz_args_emi`: 387 of 2247 tests differ and 156 crash or hang ScummVM (162 with
-opengl_shaders, which also crashes in `DimRegion`), on all three renderers.
+ScummVM's EMI on 2026-11-06 (upstream master with the patch; the reference from `Monkey4.exe -gl`): 435 of 2247 tests
+differ and 172 crash or hang ScummVM (178 with opengl_shaders, which also crashes in `DimRegion`), on all three renderers.
+All 435 are marked `cr_scummvm_differs`. (2026-11-05, on the grim-actor-fixes branch and against Direct3D: 387 and 156.)
 - **Crashers:** every `ToggleDraw*`, `SectEdit*`, `ImGet*Vol` and `ImPopState` call, `CompleteChore`, `Pitch`,
   `Roll` and `YawCamera` with wrong arguments, `MakeCurrentSet` without a valid set, `GetVisibleThings`,
   `BlastText`, and `PutActorInSet` on an actor after `UnloadActor` (`ea_unloaded_*`: `getactor` gives null and
@@ -132,8 +146,9 @@ Before `zz_args_emi`, 24 of 73 tests differed. The main differences:
 Not done: EMI models, costumes and chores (`.meshb`, `.animb`, EMI's `.cos`), the rotation of a setup's camera, and sharing
 Grim's set, actor and walk tests (they need Grim's points turned over and EMI's sets).
 
-`args_collectgarbage_none|r` is in `expected/unstable.txt` by hand: the count `collectgarbage()` returns changes with
-every edit to the test sources. A full `--save` writes the file again without it.
+The argument tests of the builtins whose results vary are marked unstable by `tools/gen_args.py` (`UNSTABLE`): ticks,
+memory and disk sizes, `ResReport`, `date()`, `tostring` of a function or table, and `collectgarbage()`, whose count changes
+with every edit to the test sources.
 
 ## How it works
 
@@ -154,11 +169,13 @@ run from source text (the exe has the Lua 3.1 parser).
 | `snaps.py` | pictures of the screen (`cr_snap`): reads the .bmp files and logs the box of the bright pixels |
 | `formats.py` | writers: LAB, grim.tab (RCNE), .bm/.zbm (raw, RGB565), .cmp, text .set, text .cos, binary and text .3do (text models may have faces with materials; a header or radius of your own if asked; `model_bounds` works out the box as the original does), .mat (8-bit, one texture a cel), text .key |
 | `assets.py` | the data: the sets (`cr_flat`, `cr_edge`, `cr_stair`, `cr_open`: cr_flat with a far z-buffer, where models are drawn; `cr_ell`: an L of floors), backgrounds, the text table, costumes, drawn models, a keyframe, `cr_extra.lab` |
-| `lua/_system.lua` | the runner (`cr_test`, `cr_log`, `cr_frames`, `cr_until`, `cr_snap`) |
+| `lua/_system.lua` | the runner (`cr_test`, `cr_log`, `cr_unstable`, `cr_scummvm_differs`, `cr_frames`, `cr_until`, `cr_snap`) |
 | `tests/*.lua` | the tests |
 | `expected/original.log` | the original's results, the reference for ScummVM runs |
-| `expected/unstable.txt` | values the original does not repeat run to run (not compared) |
+| `expected/unstable.txt` | values that differed between `--save`'s runs of the original and are not marked `cr_unstable` (not compared) |
 | `scummvm/` | the engine patch and its build script |
+| `tools/mark_known.py` | marks the tests ScummVM gets wrong (`cr_scummvm_differs`) from the last ScummVM run |
+| `tools/args_differs.txt` | the argument tests ScummVM gets wrong (`args_differs_emi.txt` for EMI; read by `gen_args.py`) |
 | `tools/labls.py` | lists the members of a LAB (to look at the layout of the game's formats; nothing is copied) |
 | `tools/read3do.py` | prints the structure of a binary .3do (checks what `formats.model3do` writes) |
 
@@ -266,7 +283,7 @@ where Windows finds room, and that moves by multiples of 64 KB from run to run; 
 Two attempts did not change it, so both were dropped: ASLR off for the process (a creation flag in grimlaunch), and LUA.DLL's
 and the exe's heap calls redirected to a fixed arena from patch.dll (Lua's objects are not allocated there). The first region
 is reserved before patch.dll loads. Fixing it would need patch.dll loaded at the process entry, before the runtimes start.
-Until then, tests must not depend on table order. `--save` keeps any value that varies in `expected/unstable.txt`.
+Until then, tests must not depend on table order (`next_order` marks its order `cr_unstable`).
 
 ## Differences found (ScummVM grim-actor-fixes, 2026-11-05)
 

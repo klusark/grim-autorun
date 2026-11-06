@@ -17,7 +17,7 @@ cr_t_numbers = function()
 	end
 	cr_log("float_cmp", 0.1 + 0.2 == 0.3, 1 / 3 * 3 == 1, 2 ^ 53 + 1 == 2 ^ 53)
 end
-cr_test("numbers", cr_t_numbers)
+cr_scummvm_differs("numbers", nil, "grim") cr_scummvm_differs("numbers", nil, "emi") cr_test("numbers", cr_t_numbers)
 
 cr_t_strings = function()
 	cr_log("strsub", strsub("abcdef", 2, 4), strsub("abcdef", -2), strsub("abcdef", 3), strlen("abcdef"))
@@ -31,7 +31,7 @@ cr_t_strings = function()
 		cr_log("ascii", ascii("A"))
 	end
 end
-cr_test("strings", cr_t_strings)
+cr_scummvm_differs("strings", nil, "grim") cr_scummvm_differs("strings", nil, "emi") cr_test("strings", cr_t_strings)
 
 -- (the order in which next() lists keys depends on the hash of the interpreter: strings, numbers, tables as keys)
 cr_t_next_order = function()
@@ -53,7 +53,7 @@ cr_t_next_order = function()
 		s = s .. tostring(k) .. ","
 		k, v = next(t, k)
 	end
-	cr_log("order", s)
+	cr_unstable("order") cr_log("order", s)  -- (the original hashes by address, and LUA.DLL's heap moves from run to run)
 	local n = 0
 	k, v = nextvar(nil)
 	while k do
@@ -137,4 +137,4 @@ cr_t_builtins = function()
 		i = i + 1
 	end
 end
-cr_test("builtins", cr_t_builtins)
+cr_scummvm_differs("builtins", nil, "grim") cr_scummvm_differs("builtins", nil, "emi") cr_test("builtins", cr_t_builtins)

@@ -97,7 +97,7 @@ cr_t_more_math = function()
 	end
 	cr_log("mod_neg", mod(-1, 5), mod(5.5, -2))
 end
-cr_test("more_math", cr_t_more_math)
+cr_scummvm_differs("more_math", nil, "grim") cr_test("more_math", cr_t_more_math)
 
 cr_t_assert_ok = function()
 	assert(1)
@@ -156,7 +156,7 @@ cr_t_named_task = function()
 		break_here()
 	end
 end
-cr_test("script_names", cr_t_script_names)
+cr_scummvm_differs("script_names", nil, "grim") cr_scummvm_differs("script_names", nil, "emi") cr_test("script_names", cr_t_script_names)
 
 cr_t_misc_engine = function()
 	cr_log("tick_type", type(GetTickCount and GetTickCount()))
@@ -170,7 +170,7 @@ cr_t_misc_engine = function()
 	PrintError("cr error\n")
 	cr_log("ok", 1)
 end
-cr_test("misc_engine", cr_t_misc_engine)
+cr_scummvm_differs("misc_engine", nil, "grim") cr_scummvm_differs("misc_engine", nil, "emi") cr_test("misc_engine", cr_t_misc_engine)
 
 cr_t_file_find = function()
 	local f = FileFindFirst("*.set")

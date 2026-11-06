@@ -19,7 +19,7 @@ cr_t_es_load = function()
 	cr_log("name", GetSectorName(0, 0, 0))
 	cr_log("name_outside", GetSectorName(3, 0, 0))
 end
-cr_test("es_load", cr_t_es_load)
+cr_scummvm_differs("es_load") cr_test("es_load", cr_t_es_load)
 
 cr_t_es_edge = function()
 	MakeCurrentSet("cr_edge.set")
@@ -41,7 +41,7 @@ cr_t_es_edge = function()
 	cr_es_sector("hot_type", -1, 0, 0, 32768)
 	cr_es_sector("any_type", -1, 0, 0, 0)
 end
-cr_test("es_edge", cr_t_es_edge)
+cr_scummvm_differs("es_edge") cr_test("es_edge", cr_t_es_edge)
 
 cr_t_es_stair = function()
 	MakeCurrentSet("cr_stair.set")
@@ -71,7 +71,7 @@ cr_t_es_active = function()
 	cr_es_sector("left_on", -1, 0, 0)
 	cr_log("unknown", IsSectorActive("no_such_sector"))
 end
-cr_test("es_active", cr_t_es_active)
+cr_scummvm_differs("es_active") cr_test("es_active", cr_t_es_active)
 
 cr_t_es_point_in = function()
 	MakeCurrentSet("cr_edge.set")
@@ -91,7 +91,7 @@ cr_t_es_xy_floor = function()
 	cr_es_sector("off_plane", 1, 0, 3)
 	cr_es_sector("far_z", 0, 0, 50)
 end
-cr_test("es_xy_floor", cr_t_es_xy_floor)
+cr_scummvm_differs("es_xy_floor") cr_test("es_xy_floor", cr_t_es_xy_floor)
 
 cr_t_es_setups = function()
 	MakeCurrentSet("cr_two.set")

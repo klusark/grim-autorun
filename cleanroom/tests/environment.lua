@@ -37,7 +37,7 @@ cr_t_camera_set = function()
 	SetCameraPosition(0, -0.5, 6)
 	SetCameraInterest(0, 0, 0)
 end
-cr_test("camera_set", cr_t_camera_set)
+cr_scummvm_differs("camera_set") cr_test("camera_set", cr_t_camera_set)
 
 cr_t_next_setup = function()
 	MakeCurrentSet("cr_cams.set")
@@ -84,7 +84,7 @@ cr_t_lights = function()
 	end
 	cr_log("ok", 1)
 end
-cr_test("lights", cr_t_lights)
+cr_scummvm_differs("lights") cr_test("lights", cr_t_lights)
 
 cr_t_shadows = function()
 	MakeCurrentSet("cr_flat.set")
@@ -105,7 +105,7 @@ cr_t_shadows = function()
 	cr_log("ok", 1)
 	PutActorInSet(a, nil)
 end
-cr_test("shadows", cr_t_shadows)
+cr_scummvm_differs("shadows") cr_test("shadows", cr_t_shadows)
 
 -- (SetShadowColor crashed the original with any arguments in the argument probe; here with the game's own values)
 cr_t_shadow_color = function()
@@ -167,7 +167,7 @@ cr_t_primitives = function()
 	cr_frames(1)
 	cr_log("ok", 1)
 end
-cr_test("primitives", cr_t_primitives)
+cr_scummvm_differs("primitives") cr_test("primitives", cr_t_primitives)
 
 cr_t_images = function()
 	local img = GetImage("cr_obj.bm")
@@ -182,7 +182,7 @@ cr_test("images", cr_t_images)
 cr_t_image_missing = function()
 	cr_log("missing", GetImage("no_such.bm"))
 end
-cr_test("image_missing", cr_t_image_missing)
+cr_scummvm_differs("image_missing") cr_test("image_missing", cr_t_image_missing)
 
 cr_t_object_states = function()
 	MakeCurrentSet("cr_flat.set")
@@ -217,7 +217,7 @@ cr_t_text_settings = function()
 	PurgeText()
 	ExpireText()
 end
-cr_test("text_settings", cr_t_text_settings)
+cr_scummvm_differs("text_settings") cr_test("text_settings", cr_t_text_settings)
 
 cr_t_controls = function()
 	cr_log("return", GetControlState(13))
@@ -233,7 +233,7 @@ cr_test("controls", cr_t_controls)
 cr_t_control_out_of_range = function()
 	cr_log("big", GetControlState(9999))
 end
-cr_test("control_out_of_range", cr_t_control_out_of_range)
+cr_scummvm_differs("control_out_of_range") cr_test("control_out_of_range", cr_t_control_out_of_range)
 
 cr_t_movies_idle = function()
 	cr_log("playing", IsMoviePlaying())
@@ -243,4 +243,4 @@ cr_t_movies_idle = function()
 	PauseMovie(FALSE)
 	cr_log("ok", 1)
 end
-cr_test("movies_idle", cr_t_movies_idle)
+cr_scummvm_differs("movies_idle") cr_test("movies_idle", cr_t_movies_idle)

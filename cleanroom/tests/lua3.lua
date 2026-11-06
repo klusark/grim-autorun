@@ -24,7 +24,7 @@ cr_t_number_text = function()
 	cr_log("tonumber_text", tonumber("1.5e2"), tonumber("  -7 "), tonumber("1,5"), tonumber(""))
 	cr_log("compare", "10" < "9", "a" < "B", "abc" < "abd")
 end
-cr_test("number_text", cr_t_number_text)
+cr_scummvm_differs("number_text", nil, "grim") cr_scummvm_differs("number_text", nil, "emi") cr_test("number_text", cr_t_number_text)
 
 cr_t_task_control = function()
 	CR_TICKS = 0

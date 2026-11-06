@@ -55,7 +55,7 @@ cr_t_sight_visible = function()
 	PutActorInSet(wide, nil)
 	PutActorInSet(a, nil)
 end
-cr_test("sight_visible", cr_t_sight_visible)
+cr_scummvm_differs("sight_visible") cr_test("sight_visible", cr_t_sight_visible)
 
 cr_t_sight_look = function()
 	MakeCurrentSet("cr_open.set")
@@ -122,4 +122,4 @@ cr_t_sight_turn = function()
 	PutActorInSet(b, nil)
 	PutActorInSet(a, nil)
 end
-cr_test("sight_turn", cr_t_sight_turn)
+cr_scummvm_differs("sight_turn") cr_test("sight_turn", cr_t_sight_turn)

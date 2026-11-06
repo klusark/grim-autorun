@@ -29,7 +29,7 @@ cr_t_model_costume = function()
 	cr_log("keys_last", CR_LV)
 	PutActorInSet(a, nil)
 end
-cr_test("model_costume", cr_t_model_costume)
+cr_scummvm_differs("model_costume") cr_test("model_costume", cr_t_model_costume)
 
 cr_node = function(key, a, n)
 	local x, y, z = GetActorNodeLocation(a, n)
@@ -53,7 +53,7 @@ cr_t_model_nodes = function()
 	cr_log("rect", GetActorRect(a))
 	PutActorInSet(a, nil)
 end
-cr_test("model_nodes", cr_t_model_nodes)
+cr_scummvm_differs("model_nodes") cr_test("model_nodes", cr_t_model_nodes)
 
 -- (a walks forward into b; collision as boxes (1) and as spheres (2), the size from the model)
 cr_collide_case = function(key, mode, scale)
@@ -91,4 +91,4 @@ cr_t_model_collide = function()
 	cr_collide_case("sphere", 2, nil)
 	cr_collide_case("sphere_half", 2, 0.5)
 end
-cr_test("model_collide", cr_t_model_collide)
+cr_scummvm_differs("model_collide") cr_test("model_collide", cr_t_model_collide)

@@ -42,7 +42,7 @@ cr_t_attr_scale = function()
 	cr_log("timescale_back", GetActorTimeScale(a))
 	PutActorInSet(a, nil)
 end
-cr_test("attr_scale", cr_t_attr_scale)
+cr_scummvm_differs("attr_scale") cr_test("attr_scale", cr_t_attr_scale)
 
 cr_t_attr_rot_parts = function()
 	local a = cr_attr_actor("cr_attr2")
@@ -74,7 +74,7 @@ cr_t_attr_rates = function()
 	cr_log("walk_rate_zero", GetActorWalkRate(a))
 	PutActorInSet(a, nil)
 end
-cr_test("attr_rates", cr_t_attr_rates)
+cr_scummvm_differs("attr_rates") cr_test("attr_rates", cr_t_attr_rates)
 
 cr_t_attr_talk_color = function()
 	local a = cr_attr_actor("cr_attr4")
@@ -120,7 +120,7 @@ cr_t_costume_stack = function()
 	cr_log("load", type(LoadCostume("cr_luav.cos")), type(LoadCostume("no_such.cos")))
 	PutActorInSet(a, nil)
 end
-cr_test("costume_stack", cr_t_costume_stack)
+cr_scummvm_differs("costume_stack") cr_test("costume_stack", cr_t_costume_stack)
 
 cr_t_actor_chores = function()
 	local a = cr_attr_actor("cr_attr7")
@@ -145,7 +145,7 @@ cr_t_actor_chores = function()
 	cr_log("stopped_all", IsActorChoring(a, nil, FALSE, "cr_box.cos"))
 	PutActorInSet(a, nil)
 end
-cr_test("actor_chores", cr_t_actor_chores)
+cr_scummvm_differs("actor_chores") cr_test("actor_chores", cr_t_actor_chores)
 
 cr_t_chore_fade = function()
 	local a = cr_attr_actor("cr_attr8")
@@ -158,7 +158,7 @@ cr_t_chore_fade = function()
 	cr_log("fade_out_choring", IsActorChoring(a, 0, FALSE, "cr_box.cos"), CR_LV)
 	PutActorInSet(a, nil)
 end
-cr_test("chore_fade", cr_t_chore_fade)
+cr_scummvm_differs("chore_fade") cr_test("chore_fade", cr_t_chore_fade)
 
 -- (the walk chore is chore 2 of cr_box.cos, the looping one: CR_LV follows it while the actor walks)
 cr_t_walk_chore = function()
@@ -181,7 +181,7 @@ cr_t_walk_chore = function()
 	cr_log("after", CR_LV, IsActorMoving(a), IsActorResting(a))
 	PutActorInSet(a, nil)
 end
-cr_test("walk_chore", cr_t_walk_chore)
+cr_scummvm_differs("walk_chore") cr_test("walk_chore", cr_t_walk_chore)
 
 -- (the zero-length chore as the rest chore: this hung the original)
 cr_t_rest_chore_zero = function()
@@ -210,7 +210,7 @@ cr_t_turn_chores = function()
 	cr_log("left_trace", s)
 	PutActorInSet(a, nil)
 end
-cr_test("turn_chores", cr_t_turn_chores)
+cr_scummvm_differs("turn_chores") cr_test("turn_chores", cr_t_turn_chores)
 
 -- (the head: joints 1 2 2 of cr_box.3do (body, head, head); the head looks at a point)
 cr_t_head_look = function()
@@ -227,7 +227,7 @@ cr_t_head_look = function()
 	cr_log("looking_released", CR_LOOKING(a))
 	PutActorInSet(a, nil)
 end
-cr_test("head_look", cr_t_head_look)
+cr_scummvm_differs("head_look") cr_test("head_look", cr_t_head_look)
 
 cr_t_visibility = function()
 	local a = cr_attr_actor("cr_attr12")
@@ -261,7 +261,7 @@ cr_t_put_at_interest = function()
 	end
 	PutActorInSet(a, nil)
 end
-cr_test("put_at_interest", cr_t_put_at_interest)
+cr_scummvm_differs("put_at_interest") cr_test("put_at_interest", cr_t_put_at_interest)
 
 cr_t_drive = function()
 	local a = cr_attr_actor("cr_attr14")
@@ -296,7 +296,7 @@ cr_t_walk_avoiding = function()
 	PutActorInSet(a, nil)
 	PutActorInSet(b, nil)
 end
-cr_test("walk_avoiding", cr_t_walk_avoiding)
+cr_scummvm_differs("walk_avoiding") cr_test("walk_avoiding", cr_t_walk_avoiding)
 
 cr_t_selected_actor = function()
 	local a = cr_attr_actor("cr_attr17")

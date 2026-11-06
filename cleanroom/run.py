@@ -114,7 +114,7 @@ def lint():
         return True
     stub = os.path.join(BUILD, "_lint_stub.lua")
     with open(stub, "wb") as f:
-        f.write(b"cr_test = function(n, f) end\r\nseterrormethod = function(f) end\r\ndofile = function(f) end\r\n")
+        f.write(b"cr_test = function(n, f) end\r\ncr_scummvm_differs = function(n, w, g) end\r\nseterrormethod = function(f) end\r\ndofile = function(f) end\r\n")
     # (the files of the game that runs: one of the other game's cannot stop its run)
     files = [os.path.join(HERE, "lua", "_system.lua")] + [os.path.join(TESTS, t) for t in test_files()]
     ok = True
@@ -281,12 +281,18 @@ def run_engine(engine, only=None, fresh=False):
 
 
 def compare_with(reference, engine, crashed):
-    rc = compare.main([reference, os.path.join(LOGS, engine + ".log"), "--unstable", UNSTABLE])
+    other = os.path.join(LOGS, engine + ".log")
+    rc = compare.main([reference, other, "--unstable", UNSTABLE, "--known"])
     with open(os.path.join(LOGS, "scummvm_crashers_%s.txt" % RENDERER), "w") as f:
         f.write("".join(n + "\n" for n in crashed))
     if crashed:
-        print("crashed or hung ScummVM (a bug): %s" % ", ".join(crashed))
-        rc = 1
+        # (a crash of a test marked cr_scummvm_differs is a known one)
+        marks = compare.known(*[compare.parse(open(p, encoding="latin-1").read().splitlines())[1] for p in (reference, other)])
+        new = [n for n in crashed if n not in marks]
+        print("crashed or hung ScummVM (a bug): %s%s" % (", ".join(crashed), "; not marked: %s" % ", ".join(new) if new else
+                                                        "; all marked cr_scummvm_differs"))
+        if new:
+            rc = 1
     return rc
 
 
@@ -484,9 +490,10 @@ def original_once(which="original"):
     if os.path.exists(log):
         os.remove(log)
     t = time.time()
-    # (EMI's Direct3D does not start on a desktop of its own: its window opens on the user's, off the screen, without the focus)
-    launch = [os.path.join(d, "grimlaunch.exe")] + (["--with", "offscreen"] if GAME == "emi" and not VISIBLE else []) + [exe]
-    p = subprocess.Popen(launch if GAME == "emi" else offscreen(launch), cwd=d, stdout=subprocess.DEVNULL,
+    # (EMI's Direct3D does not start on a desktop of its own; its OpenGL renderer (-gl) does, and gives the same values: only
+    # GammaEnabled, which says what the hardware can do, differs, and it is not compared)
+    launch = [os.path.join(d, "grimlaunch.exe"), exe] + (["-gl"] if GAME == "emi" else [])
+    p = subprocess.Popen(offscreen(launch), cwd=d, stdout=subprocess.DEVNULL,
                          stderr=subprocess.DEVNULL, env=dict(os.environ, GRIM_INI=os.path.join(d, "grim.ini")))
     # (a run that writes nothing to grimdebug.log for CR_STALL seconds hangs: it is killed, and so is every game started from
     # our run folder; copies elsewhere, a game being played or other tools' builds, are not touched)
@@ -513,7 +520,7 @@ def renderer_diff(r0, r1):
     def load(r):
         return compare.parse(open(os.path.join(LOGS, "scummvm_%s.log" % r), encoding="latin-1").read().splitlines())[1]
     t0, t1 = load(r0), load(r1)
-    unstable = compare.load_unstable(UNSTABLE)
+    unstable = compare.load_unstable(UNSTABLE) | compare.marked(t0, t1)
     diff = [n for n in t0 if n in t1 and
             compare.diff_values(t0[n]["values"], t1[n]["values"], 1e-6, n, unstable, 1e-3)]
     print("---- %s against %s: %d of %d tests differ%s" % (r1, r0, len(diff), len(t0), (": " + ", ".join(diff[:40]) +
@@ -602,8 +609,13 @@ def main():
             run_engine("original", a.only)
             path = os.path.join(LOGS, "original_%d.log" % (i + 1))
             shutil.copyfile(os.path.join(LOGS, "original.log"), path)
-            runs.append(compare.parse(open(path).read().splitlines()))
-        unstable = sorted(compare.unstable_keys(runs))
+            lines = open(path).read().splitlines()
+            # (a run that did not get to the end is no reference: the expected files are left as they are)
+            if not any(l.startswith("SUMMARY") for l in lines):
+                sys.exit("original: run %d did not reach SUMMARY; nothing saved" % (i + 1))
+            runs.append(compare.parse(lines))
+        # (keys the tests mark with cr_unstable are not compared anyway: unstable.txt has the others)
+        unstable = sorted(compare.unstable_keys(runs) - compare.marked(*[t for _, t in runs]))
         os.makedirs(os.path.dirname(EXPECTED), exist_ok=True)
         shutil.copyfile(os.path.join(LOGS, "original.log"), EXPECTED)
         with open(UNSTABLE, "w", newline="\n") as f:
