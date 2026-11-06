@@ -6,6 +6,8 @@
  * patches/grim/debuglog.py points them at these exports, which append the message to
  * grimdebug.log next to the executable. */
 
+#define _CRT_SECURE_NO_WARNINGS
+
 #include <windows.h>
 #include <stdio.h>
 #include <string.h>

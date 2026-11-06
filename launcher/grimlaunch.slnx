@@ -1,0 +1,13 @@
+<Solution>
+  <Configurations>
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Project Path="patch.vcxproj" Id="d0eb8e41-422d-4c1b-bf66-03a4c07ad49a">
+    <Platform Solution="Debug|x64" Project="Win32" />
+    <Build Solution="Release|x64" Project="false" />
+  </Project>
+  <Project Path="grimlaunch.vcxproj" Id="0c5aa775-d2fd-46fb-a8ba-34c68735b9f2">
+    <BuildDependency Project="patch.vcxproj" />
+  </Project>
+</Solution>
