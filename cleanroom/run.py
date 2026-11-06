@@ -328,7 +328,9 @@ def scummvm_once():
     with open(ini, "w") as f:
         f.write("[scummvm]\nconfirm_exit=false\nfullscreen=false\ngfx_mode=opengl\n"
                 # (no first-run question about update checks: it would wait for a click)
-                "updates_check=0\n\n"
+                "updates_check=0\n"
+                # (no waiting for the screen's refresh at each picture drawn: with it a run takes 5 times as long)
+                "vsync=false\n\n"
                 "[cleanroom]\ngameid=%s\nengineid=grim\ndescription=%s engine test data, renderer %s\nextra=Test data\n"
                 "path=%s\\\nlanguage=en\nplatform=windows\ncheck_gamedata=false\nfullscreen=false\n"
                 "speech_mute=true\nsim_frame_ms=17\nrenderer=%s\n" % ("monkey4" if GAME == "emi" else "grim",
@@ -338,15 +340,10 @@ def scummvm_once():
     if os.path.exists(raw):
         os.remove(raw)
     env = dict(os.environ, PATH=UCRT64 + os.pathsep + os.environ.get("PATH", ""))
-    cmd = [SCUMMVM, "--config=" + ini, "--savepath=" + saves, "--debugflags=scripts", "--logfile=" + raw]
-    # (--sim-fps, a fixed 17 ms a frame like the original's simtime patch, is in the autorun branches only; without it the
-    # frame times are the real ones and what is measured per frame differs run to run)
-    helptext = subprocess.run([SCUMMVM, "--help"], capture_output=True, text=True, env=env).stdout
-    if "--sim-fps" in helptext:
-        cmd += ["--sim-fps=60", "--engine-speed=0"]
-    else:
-        print("scummvm: this build has no --sim-fps: frame times are real, per-frame values will not match the original")
-    cmd.append("cleanroom")
+    # (every frame is 17 ms, like the original's simtime patch: sim_frame_ms in the ini, grim-test-data.patch. No frame limit:
+    # the frames go as fast as they can)
+    cmd = [SCUMMVM, "--config=" + ini, "--savepath=" + saves, "--debugflags=scripts", "--logfile=" + raw,
+           "--engine-speed=0", "cleanroom"]
     t = time.time()
     p = subprocess.Popen(offscreen(cmd), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, env=env, cwd=d)
     size, last = -1, time.time()
