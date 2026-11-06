@@ -20,7 +20,7 @@
 //   nopause    the game goes on when its window is not the active one (it stops otherwise)
 //   offscreen  the window opens 20000 pixels off the screen and never takes the focus (for unattended runs)    (off)
 //   f11        F11 runs lua_dofile("grimpatch.bin")
-//   debugmode  the game's own debug switches -log (debug.log of its engine messages) and -fps (hotkey), and the scripts' debug keys (see patchEmiDebugmode)    (off)
+//   debugmode  the game's own debug switches -log (debug.log of its engine messages) and -fps (hotkey), and the scripts' debug keys (see patchEmiDebugmode), and the jump menu (Ctrl+Alt+J)    (off)
 //   undo640    puts the desktop mode back first thing, when the exe has the 640x480 compatibility setting (below)
 //   windowed   the game's own -w switch is added to the command line unless you pass it
 //
@@ -556,16 +556,27 @@ if debugButtonHandler and SampleButtonHandler and not debugmode_orig_handler the
 end
 )LUA";
 
-static void patchEmiDebugmode() {
-	static const DWORD LOG = 0x004d4eec, FPS = 0x004d4eee, CALLBACK_JUMP = 0x00407bec;
+// The jump menu. _system.lua loads _jumpscripts.lua only when test_build is set (it is FALSE), and it defines input_boot_parameter, which
+// Ctrl+Alt+J of _controls.lua calls (an InputDialog asking for a jump number; jump_script then sets the act, the set, the inventory and
+// the story flags). Without the file loaded the key calls a nil function.
+static const char JUMP_LUA[] = R"LUA(
+if not input_boot_parameter then
+	dofile("_jumpscripts.lua")
+	PrintDebug("debugmode: jump menu (Ctrl+Alt+J) loaded")
+end
+)LUA";
+
+// (test_build is not set: the scripts read it only for this load and for the cameraman loop's display_setup_name, which needs
+// setup_name_showing, and nothing ever sets that.)
+
+// Lua code run after _system.lua; the patches add to it, patchEmiPostSystem puts it in the exe
+static std::string g_postSystemLua;
+
+static void patchEmiPostSystem() {
 	static const DWORD AFTER_SYSTEM = 0x0040f6fa, LUA_DOSTRING = 0x00442320;
-	expect(CALLBACK_JUMP, bytes({0x84, 0xc0, 0x74, 0x63}), "the EMI log callback choice");   // test al,al; je default
 	expect(AFTER_SYSTEM, bytes({0x83, 0xc4, 0x04, 0x85, 0xc0, 0x74, 0x03}), "the EMI call of _system.lua");   // add esp,4; test eax,eax; je ok
-	write(LOG, bytes({0x01}));
-	write(FPS, bytes({0x01}));
-	write(CALLBACK_JUMP + 2, bytes({0xeb}));                                                    // jmp default
 	// after lua_dofile("_system.lua"): add esp,4; if it worked (eax == 0), lua_dostring(chunk); then test eax,eax and on to the je
-	DWORD chunk = cstring(DEBUG_LUA);
+	DWORD chunk = cstring(g_postSystemLua);
 	auto build = [&](DWORD va) {
 		std::string c = bytes({0x83, 0xc4, 0x04, 0x85, 0xc0, 0x75, 0x00});                     // add esp,4; test eax,eax; jnz done
 		size_t jnz = c.size() - 1;
@@ -581,6 +592,17 @@ static void patchEmiDebugmode() {
 	write(va, build(va));
 	write(AFTER_SYSTEM, jmp(AFTER_SYSTEM, va));
 }
+
+static void patchEmiDebugmode() {
+	static const DWORD LOG = 0x004d4eec, FPS = 0x004d4eee, CALLBACK_JUMP = 0x00407bec;
+	expect(CALLBACK_JUMP, bytes({0x84, 0xc0, 0x74, 0x63}), "the EMI log callback choice");   // test al,al; je default
+	write(LOG, bytes({0x01}));
+	write(FPS, bytes({0x01}));
+	write(CALLBACK_JUMP + 2, bytes({0xeb}));                                                    // jmp default
+	g_postSystemLua += DEBUG_LUA;
+	g_postSystemLua += JUMP_LUA;
+}
+
 
 static const struct { const char *name; void (*apply)(); bool def; int games; } PATCHES[] = {
 	{"debuglog", patchDebuglog, true, GRIM | REMASTERED},
@@ -872,6 +894,8 @@ int main(int argc, char **argv) {
 				p.apply();
 			printf("applied %s\n", p.name);
 		}
+	if (game == EMI && !g_postSystemLua.empty())
+		patchEmiPostSystem();
 
 	if (resumeDelay) {
 		printf("pid %lu, resumed in %d ms\n", pi.dwProcessId, resumeDelay);
