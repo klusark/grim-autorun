@@ -67,7 +67,11 @@ cleanroom/logs/
 
 
 .vs/
-# Visual Studio build output of launcher/
+# Visual Studio: the projects of launcher/ and their build output
+launcher/*.slnx
+launcher/*.vcxproj
+launcher/*.vcxproj.filters
+launcher/*.vcxproj.user
 launcher/Debug/
 launcher/Release/
 launcher/x64/
