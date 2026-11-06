@@ -64,3 +64,13 @@ cleanroom/build_emi/
 cleanroom/run/
 cleanroom/logs/
 !cleanroom/expected/*.log
+
+
+.vs/
+# Visual Studio build output of launcher/
+launcher/Debug/
+launcher/Release/
+launcher/x64/
+launcher/grimlaunch/
+launcher/patch/
+patch/
