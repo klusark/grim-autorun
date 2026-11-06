@@ -14,7 +14,7 @@ python run.py original --save --only a,b     # new or changed tests: only theirs
 python run.py compare logs/original.log logs/scummvm.log --all
 ```
 
-A run takes 1-2 s on the original (simtime: no waiting between frames) and about 3 s on ScummVM with `--sim-fps`.
+A run takes 1-2 s on the original (simtime: no waiting between frames) and about 3 s on ScummVM (fixed 17 ms frames, no frame limit).
 
 The reference must repeat itself. `--save` runs the original several times, and every value that differs between those
 runs goes to `expected/unstable.txt` and is not compared. So far that is `next_order|order`: the original's Lua hashes
@@ -32,10 +32,11 @@ by address. `chore_short` once differed in one run out of seven, so it may need 
 - **ScummVM:** a build with `scummvm/grim-test-data.patch` (a detection entry for the marker file `grimtestdata.txt`,
   flag `GF_TESTDATA`: no `gfupd101.exe`, no `grim-patch.lab`, no md5 check, loose files and the folder's own LABs;
   `PrintDebug("CRSNAP:<file>")` saves a picture of the screen; an `error()` ends ScummVM at once, with its message in the
-  log, instead of opening the debugger and waiting there).
-  `scummvm/build.sh` builds it in the worktree `~/scummvm-cleanroom` (`git worktree add --detach ../scummvm-cleanroom
-  <branch>` and `git apply` the patch first). `SCUMMVM=` selects another exe. Without `--sim-fps` (branches without the
-  autorun options) the frame times are real ones and the per-frame values do not match.
+  log, instead of opening the debugger and waiting there; `sim_frame_ms` in the ini makes every frame that long, like the
+  original's simtime patch, and then only one frame in 8 is drawn, and those of a change of setup, mode or set).
+  The patch applies to upstream `master` and needs nothing from another branch. `scummvm/build.sh` builds it in the
+  worktree `~/scummvm-cleanroom` (`git worktree add --detach ../scummvm-cleanroom master` and `git apply` the patch
+  first). `SCUMMVM=` selects another exe.
 - **No windows on the screen:** ScummVM and Grim's original run on a desktop of their own (`tools/offscreen.c`, built into
   `run/offscreen.exe`): they draw as before (OpenGL, DirectDraw), but nothing shows and they cannot take the focus. The
   program and what it starts are in a job that ends with `offscreen.exe`, so killing a run that hangs kills them all. EMI's
