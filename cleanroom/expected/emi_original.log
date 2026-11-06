@@ -1,4 +1,4 @@
-START 2245 tests
+START 2247 tests
 BEGIN numbers
 V numbers|arith|3.500000 1024.000000 -2.333333 1.#INF00
 V numbers|tostring|"0.333333" "100" "1e+015" "-0.5"
@@ -24,7 +24,7 @@ V strings|concat|"a12.5" "10"
 V strings|ascii|65.000000
 END strings
 BEGIN next_order
-V next_order|order|"49,98,7,manny,lupe,eva,chepito,velasco,olivia,salvador,domino,meche,glottis,112,21,70,119,63,105,28,14,77,126,56,35,84,133,42,91,140,"
+V next_order|order|"49,98,manny,lupe,eva,chepito,velasco,olivia,salvador,domino,meche,glottis,7,63,112,21,70,119,105,28,14,77,126,56,35,84,133,42,91,140,"
 V next_order|globals_counted|1.000000
 END next_order
 BEGIN tasks
@@ -489,6 +489,12 @@ V ea_overworld|sector|0.000000
 V ea_overworld|removed|1.000000 0.000000 1.000000
 V ea_overworld|sector_removed|0.000000
 END ea_overworld
+BEGIN ea_unloaded_out
+V ea_unloaded_out|r|nil
+END ea_unloaded_out
+BEGIN ea_unloaded_in
+V ea_unloaded_in|r|nil
+END ea_unloaded_in
 BEGIN ee_sort_order
 V ee_sort_order|default|0.000000
 V ee_sort_order|set|7.000000
@@ -2335,22 +2341,22 @@ BEGIN args_GetCurrentSetup_s_tab
 V args_GetCurrentSetup_s_tab|r|0.000000
 END args_GetCurrentSetup_s_tab
 BEGIN args_GetDiskFreeSpace_none
-V args_GetDiskFreeSpace_none|r|119853.828125
+V args_GetDiskFreeSpace_none|r|113834.929688
 END args_GetDiskFreeSpace_none
 BEGIN args_GetDiskFreeSpace_nil
-V args_GetDiskFreeSpace_nil|r|119853.828125
+V args_GetDiskFreeSpace_nil|r|113834.929688
 END args_GetDiskFreeSpace_nil
 BEGIN args_GetDiskFreeSpace_str
-V args_GetDiskFreeSpace_str|r|119853.828125
+V args_GetDiskFreeSpace_str|r|113834.929688
 END args_GetDiskFreeSpace_str
 BEGIN args_GetDiskFreeSpace_num
-V args_GetDiskFreeSpace_num|r|119853.828125
+V args_GetDiskFreeSpace_num|r|113834.929688
 END args_GetDiskFreeSpace_num
 BEGIN args_GetDiskFreeSpace_tab
-V args_GetDiskFreeSpace_tab|r|119853.828125
+V args_GetDiskFreeSpace_tab|r|113834.929688
 END args_GetDiskFreeSpace_tab
 BEGIN args_GetDiskFreeSpace_fn
-V args_GetDiskFreeSpace_fn|r|119853.828125
+V args_GetDiskFreeSpace_fn|r|113834.929688
 END args_GetDiskFreeSpace_fn
 BEGIN args_GetFontDimensions_none
 V args_GetFontDimensions_none|r|nil
@@ -2862,7 +2868,7 @@ BEGIN args_ImStateHasEnded_str
 V args_ImStateHasEnded_str|r|nil
 END args_ImStateHasEnded_str
 BEGIN args_ImStateHasEnded_num
-V args_ImStateHasEnded_num|r|96.000000
+V args_ImStateHasEnded_num|r|nil
 END args_ImStateHasEnded_num
 BEGIN args_ImStateHasEnded_tab
 V args_ImStateHasEnded_tab|r|nil
@@ -6485,7 +6491,7 @@ BEGIN args_ceil_fn
 ERROR args_ceil_fn bad argument #1 to function `ceil' (number expected)
 FAILED args_ceil_fn
 BEGIN args_collectgarbage_none
-V args_collectgarbage_none|r|5318.000000
+V args_collectgarbage_none|r|5345.000000
 END args_collectgarbage_none
 BEGIN args_collectgarbage_nil
 ERROR args_collectgarbage_nil bad argument #1 to function `collectgarbage' (number expected)
@@ -6521,7 +6527,7 @@ BEGIN args_cos_fn
 ERROR args_cos_fn bad argument #1 to function `cos' (number expected)
 FAILED args_cos_fn
 BEGIN args_date_none
-V args_date_none|r|"11/05/26 14:29:04"
+V args_date_none|r|"11/05/26 19:16:54"
 END args_date_none
 BEGIN args_date_nil
 ERROR args_date_nil bad argument #1 to function `date' (string expected)
@@ -7269,10 +7275,10 @@ BEGIN args_tostring_num
 V args_tostring_num|r|"1.5"
 END args_tostring_num
 BEGIN args_tostring_tab
-V args_tostring_tab|r|"table: 0E44C9C0"
+V args_tostring_tab|r|"table: 0E4BCEA0"
 END args_tostring_tab
 BEGIN args_tostring_fn
-V args_tostring_fn|r|"function: 027A52C0"
+V args_tostring_fn|r|"function: 02726E60"
 END args_tostring_fn
 BEGIN args_type_none
 ERROR args_type_none API error - attempt to push a NOOBJECT
@@ -7292,4 +7298,4 @@ END args_type_tab
 BEGIN args_type_fn
 V args_type_fn|r|"function" -4.000000
 END args_type_fn
-SUMMARY 2245 tests, 246 failed
+SUMMARY 2247 tests, 246 failed
