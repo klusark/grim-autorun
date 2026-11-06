@@ -295,7 +295,7 @@ Argument probe (`zz_args.lua`, 4580 calls; classified from the logs):
   `IsActorLooking`, `GetLightPosition` / `Intensity` / `Type` / `Angles`, `IsLightOn`, `FindLight`, `PutActorAtOrigin`,
   `WalkActorToInterest`, `SnapToPlane`, `GetSectorVertices`, `ScreenToWorld`, `GetTickCount`, `ascii`, `exp`, `log`,
   `log10`, `atan2`, `getenv`, `rename`.
-- 36 builtins crash or hang ScummVM with arguments the original takes (145 calls, `logs/scummvm_known_crashers.txt`): the
+- 36 builtins crash or hang ScummVM with arguments the original takes (145 calls, `expected/scummvm_crashers_opengl.txt`, skipped by default; `--fresh` runs them again): the
   object state builtins (`NewObjectState`, `SendObjectToFront` / `Back`, `SetObjectType`), `SetActorColormap`, the text
   builtins with a missing or wrong font (`LockFont`, `MakeTextObject`, `BlastText`, `SayLine`), `GetImage`,
   `MakeCurrentSet` / `MakeCurrentSetup` of a missing set or setup, the shadow builtins (`SetActorShadowPlane` /

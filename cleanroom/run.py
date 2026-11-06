@@ -18,7 +18,8 @@ build_emi/, run/emi/ and logs/emi/; its data go into one archive, local.m4b (the
 CR_GAME is "grim" or "emi".
 
 A test that crashes or hangs an engine is found and skipped (README.md). ScummVM's are kept in
-logs/scummvm_known_crashers_<renderer>.txt, skipped and reported on the next runs; --fresh runs them again.
+expected/scummvm_crashers_<renderer>.txt (committed), skipped and reported on the next runs; --fresh runs them again
+and rewrites the list (the ones that no longer crash drop out).
 
 ScummVM runs every test once with each renderer of Grim (RENDERERS: OpenGL, OpenGL with shaders, the software TinyGL):
 logs/scummvm_<renderer>.log and logs/scummvm_<renderer>_raw.log; logs/scummvm.log is the first renderer's.
@@ -218,7 +219,16 @@ RENDERER = RENDERERS[0]
 
 def svm_known():
     """The tests that crashed or hung ScummVM with the current renderer."""
-    return os.path.join(LOGS, "scummvm_known_crashers_%s.txt" % RENDERER)
+    prefix = "emi_" if GAME == "emi" else ""
+    return os.path.join(HERE, "expected", "%sscummvm_crashers_%s.txt" % (prefix, RENDERER))
+
+
+def write_known(names):
+    """Keeps ScummVM's crashers in expected/ (committed: they are not found again on each machine)."""
+    os.makedirs(os.path.dirname(svm_known()), exist_ok=True)
+    with open(svm_known(), "w", newline="\n") as f:
+        f.write("# tests that crash or hang ScummVM (%s renderer; found by run.py); skipped, run.py --fresh tries them again\n" % RENDERER)
+        f.write("".join(n + "\n" for n in sorted(names)))
 
 
 def run_engine(engine, only=None, fresh=False):
@@ -262,9 +272,7 @@ def run_engine(engine, only=None, fresh=False):
         suspect = None
         # (kept at once: a run that is stopped before it ends loses none of the crashers it found)
         if engine == "scummvm":
-            os.makedirs(LOGS, exist_ok=True)
-            with open(svm_known(), "w", newline="\n") as f:
-                f.write("".join(n + "\n" for n in sorted(known | set(new))))
+            write_known(known | set(new))
     if engine == "original" and new:
         with open(CRASHERS, "w", newline="\n") as f:
             f.write("# tests that crash the original (found by run.py); skipped on both engines\n")
@@ -275,8 +283,7 @@ def run_engine(engine, only=None, fresh=False):
         f.write("\n".join(lines) + "\n")
     print("%s: %d result lines in %s" % (engine, len(lines), out))
     if engine == "scummvm":
-        with open(svm_known(), "w", newline="\n") as f:
-            f.write("".join(n + "\n" for n in sorted(known | set(new))))
+        write_known(known | set(new))
     return lines, (sorted(known) + new if engine == "scummvm" else [])
 
 
@@ -586,7 +593,7 @@ def main():
     ap.add_argument("--renderer", help="scummvm: only these renderers (comma separated; default: %s)" % ",".join(RENDERERS))
     ap.add_argument("--game", choices=["grim", "emi"], default="grim", help="the game whose engine is tested (default grim)")
     ap.add_argument("--fresh", action="store_true",
-                    help="scummvm: run the tests that crashed or hung ScummVM before again (logs/scummvm_known_crashers.txt)")
+                    help="scummvm: run the tests that crashed or hung ScummVM before again (expected/scummvm_crashers_<renderer>.txt)")
     a = ap.parse_args()
     set_game(a.game)
     if a.game == "emi" and a.what == "remastered":
