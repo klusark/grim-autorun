@@ -5,7 +5,7 @@ file of the game's data. See README.md.
   python run.py scummvm [--only T1,T2]     runs ScummVM with each of its renderers, compares each with expected/original.log
                    [--renderer R,R]        only these renderers (opengl, opengl_shaders, software; CR_RENDERERS too)
   python run.py original [--only T]        runs the original exe through grimlaunch.exe, compares with the expected log
-  python run.py original --save            ... and makes the run the new expected log
+  python run.py original --save            ... and makes the whole run the new expected log (never a part of it)
   python run.py remastered [--only T]      runs the Grim Fandango Remastered exe (debuglog patch only), compares with the expected log
   python run.py both                       both engines, compared with each other
   python run.py compare A.log B.log        compares two result logs
@@ -508,14 +508,6 @@ def original_once(which="original"):
     return read_lines(log)
 
 
-def test_of(line):
-    """The test a line of a result log is about (None for START and SUMMARY)."""
-    parts = line.split(" ", 1)
-    if len(parts) < 2 or parts[0] in ("START", "SUMMARY"):
-        return None
-    return parts[1].split("|")[0].split(" ")[0]
-
-
 def renderer_diff(r0, r1):
     """Prints the tests whose values differ between two renderers' runs (beyond 1e-6)."""
     def load(r):
@@ -582,7 +574,7 @@ def main():
     ap.add_argument("what", choices=["build", "scummvm", "original", "remastered", "both", "compare"])
     ap.add_argument("logs", nargs="*")
     ap.add_argument("--only", help="run one test")
-    ap.add_argument("--save", action="store_true", help="original: the run becomes expected/original.log")
+    ap.add_argument("--save", action="store_true", help="original: the whole run becomes expected/original.log (not with --only)")
     ap.add_argument("--repeat", type=int, default=3, help="original --save: runs, to find the unstable values")
     ap.add_argument("--renderer", help="scummvm: only these renderers (comma separated; default: %s)" % ",".join(RENDERERS))
     ap.add_argument("--game", choices=["grim", "emi"], default="grim", help="the game whose engine is tested (default grim)")
@@ -601,6 +593,9 @@ def main():
     if a.what == "scummvm":
         return run_scummvm_all(EXPECTED, a.only, a.fresh, renderers)
     if a.what == "original" and a.save:
+        # (the expected log is always a whole run: tests saved into an older one end up in another order than they run)
+        if a.only:
+            sys.exit("--save writes the whole expected log: run it without --only")
         # (the reference must repeat itself: the values that differ between runs are kept in unstable.txt and not compared)
         runs = []
         for i in range(a.repeat):
@@ -610,18 +605,7 @@ def main():
             runs.append(compare.parse(open(path).read().splitlines()))
         unstable = sorted(compare.unstable_keys(runs))
         os.makedirs(os.path.dirname(EXPECTED), exist_ok=True)
-        if a.only and os.path.exists(EXPECTED):
-            # (--only: the tests run replace theirs in the expected log, the others stay)
-            new = open(os.path.join(LOGS, "original.log")).read().splitlines()
-            ran = set(test_of(l) for l in new) - {None}
-            old = [l for l in open(EXPECTED).read().splitlines() if test_of(l) not in ran]
-            end = [l for l in old if test_of(l) is None and not l.startswith("START")]
-            old = [l for l in old if l not in end]
-            with open(EXPECTED, "w", newline="\n") as f:
-                f.write("".join(l + "\n" for l in old + [l for l in new if test_of(l) is not None] + end))
-            unstable = sorted(set(unstable) | set(k for k in read_names(UNSTABLE) if k.split("|")[0] not in ran))
-        else:
-            shutil.copyfile(os.path.join(LOGS, "original.log"), EXPECTED)
+        shutil.copyfile(os.path.join(LOGS, "original.log"), EXPECTED)
         with open(UNSTABLE, "w", newline="\n") as f:
             f.write("# test|key values that differed between %d runs of the original; not compared\n" % a.repeat)
             f.write("".join(k + "\n" for k in unstable))

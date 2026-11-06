@@ -10,7 +10,6 @@ python run.py original --save    # run the original 3 times (--repeat N), keep i
 python run.py scummvm            # run on ScummVM and compare with expected/original.log
 python run.py both               # run both and compare them with each other
 python run.py scummvm --only chore_keys      # one test
-python run.py original --save --only a,b     # new or changed tests: only theirs are replaced in the expected log
 python run.py compare logs/original.log logs/scummvm.log --all
 ```
 
