@@ -202,3 +202,18 @@ cr_t_ea_overworld = function()
 	cr_log("sector_removed", GetActorSector(a, 4096))
 end
 cr_test("ea_overworld", cr_t_ea_overworld)
+
+-- an actor's handle after UnloadActor: the original takes it out of a set or puts it in one without trouble
+cr_t_ea_unloaded_out = function()
+	local a = cr_ea_actor("cr_flat.set")
+	UnloadActor(a)
+	cr_log("r", PutActorInSet(a, nil))
+end
+cr_test("ea_unloaded_out", cr_t_ea_unloaded_out)
+
+cr_t_ea_unloaded_in = function()
+	local a = cr_ea_actor("cr_flat.set")
+	UnloadActor(a)
+	cr_log("r", PutActorInSet(a, "cr_flat.set"))
+end
+cr_test("ea_unloaded_in", cr_t_ea_unloaded_in)

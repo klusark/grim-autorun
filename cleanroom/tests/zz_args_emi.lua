@@ -18,10 +18,10 @@ cr_test("args_setup", cr_t_args_setup)
 -- origin facing 0. Otherwise a call that breaks the shared actor makes the calls after it fail, and run.py blames them)
 cr_args_for = function(name)
 	if CR_ARGS_FOR ~= name then
-		CR_ARGS_FOR = name
-		if CR_ARGS_ACTOR then
+		if CR_ARGS_ACTOR and CR_ARGS_FOR ~= "UnloadActor" then
 			PutActorInSet(CR_ARGS_ACTOR, nil)
 		end
+		CR_ARGS_FOR = name
 		MakeCurrentSet("cr_flat.set")
 		CR_ARGS_ACTOR = LoadActor("cr_args_" .. name)
 		PutActorInSet(CR_ARGS_ACTOR, "cr_flat.set")

@@ -99,7 +99,17 @@ What runs on EMI (2245 tests):
     with no, nil, string, number, table and function arguments, an actor first for the actor builtins, and the set,
     sector, light and colour families. 28 of these calls crash the original (`expected/emi_crashers.txt`).
 
-ScummVM's EMI on 2026-11-05 (opengl), before `zz_args_emi`: 24 of 73 tests differed. The main differences:
+ScummVM's EMI on 2026-11-05, with `zz_args_emi`: 387 of 2247 tests differ and 156 crash or hang ScummVM (162 with
+opengl_shaders, which also crashes in `DimRegion`), on all three renderers.
+- **Crashers:** every `ToggleDraw*`, `SectEdit*`, `ImGet*Vol` and `ImPopState` call, `CompleteChore`, `Pitch`,
+  `Roll` and `YawCamera` with wrong arguments, `MakeCurrentSet` without a valid set, `GetVisibleThings`,
+  `BlastText`, and `PutActorInSet` on an actor after `UnloadActor` (`ea_unloaded_*`: `getactor` gives null and
+  `Lua_V2::PutActorInSet` uses it). The original runs all of them.
+- **Differences in the argument calls:** mostly builtins ScummVM lacks or stubs (`IsLightOn`, `IsActorLooking`,
+  `GetActorFOV`, `GetCamera*`, `GetLayer*`, `GetGroupVolume`, `Draw3DLine`, `DimScreen`, `PrintMessage`...),
+  `LoadActor` with wrong names, and the actor rates and yaws below.
+
+Before `zz_args_emi`, 24 of 73 tests differed. The main differences:
 - **Builtins:** 139 names exist on one engine and not the other. ScummVM lacks `GetActorFOV`, `GetLayerFrame`,
   `GetGroupVolume` and `GetPhysicalBytes`, among others. It has `Is3DHardwareEnabled` and `EnableDebugKeys`, which
   Monkey4.exe does not.

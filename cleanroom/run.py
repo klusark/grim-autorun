@@ -115,8 +115,8 @@ def lint():
     stub = os.path.join(BUILD, "_lint_stub.lua")
     with open(stub, "wb") as f:
         f.write(b"cr_test = function(n, f) end\r\nseterrormethod = function(f) end\r\ndofile = function(f) end\r\n")
-    files = [os.path.join(HERE, "lua", "_system.lua")] + sorted(
-        os.path.join(HERE, "tests", t) for t in os.listdir(os.path.join(HERE, "tests")) if t.endswith(".lua"))
+    # (the files of the game that runs: one of the other game's cannot stop its run)
+    files = [os.path.join(HERE, "lua", "_system.lua")] + [os.path.join(TESTS, t) for t in test_files()]
     ok = True
     for path in files:
         out = subprocess.run([exe, dll, stub, path], capture_output=True, text=True, cwd=LUA31, timeout=30)
@@ -232,7 +232,7 @@ def run_engine(engine, only=None, fresh=False):
     once = {"original": original_once, "remastered": remastered_once}.get(engine, scummvm_once)
     lines = []
     suspect = None
-    for _ in range(400):
+    for _ in range(2000):
         build(only, skip)
         if not lint():
             sys.exit(2)
@@ -260,6 +260,11 @@ def run_engine(engine, only=None, fresh=False):
         skip.update(group)
         new.extend(group)
         suspect = None
+        # (kept at once: a run that is stopped before it ends loses none of the crashers it found)
+        if engine == "scummvm":
+            os.makedirs(LOGS, exist_ok=True)
+            with open(svm_known(), "w", newline="\n") as f:
+                f.write("".join(n + "\n" for n in sorted(known | set(new))))
     if engine == "original" and new:
         with open(CRASHERS, "w", newline="\n") as f:
             f.write("# tests that crash the original (found by run.py); skipped on both engines\n")

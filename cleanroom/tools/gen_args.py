@@ -217,6 +217,12 @@ def main():
     if EMI:
         # (no costume of EMI's yet, no font, image or object state)
         out = [l for l in out if "SetActorCostume" not in l]
+        # (UnloadActor's calls free the actor: ScummVM crashes when the next builtin takes the freed actor out of the set, and
+        # run.py blamed each builtin after it in turn. emi_actors' ea_unloaded has that call by itself)
+        i = out.index("\t\tCR_ARGS_FOR = name")
+        assert out[i + 1] == "\t\tif CR_ARGS_ACTOR then"
+        out[i:i + 2] = ['\t\tif CR_ARGS_ACTOR and CR_ARGS_FOR ~= "UnloadActor" then']
+        out.insert(i + 3, "\t\tCR_ARGS_FOR = name")
     path = os.path.join(HERE, "tests", "zz_args_emi.lua" if EMI else "zz_args.lua")
     with open(path, "w", newline="\n") as f:
         f.write("\n".join(out) + "\n")
