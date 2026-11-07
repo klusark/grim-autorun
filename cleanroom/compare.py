@@ -6,6 +6,8 @@ The reference is normally the original's run (expected/original.log). Per test i
   DIFF      a value differs, a key is missing or extra, or the test ended differently (END / FAILED)
   MISSING   the test is not in the other log
 A Lua error message (ERROR lines) is engine-specific text, so only the fact that a test raised one is compared.
+(a test that is the same with no value to compare is not listed, only counted)
+--only: the other log is a partial run (run.py --only): the tests it does not have are left out, not MISSING.
 --unstable FILE: test|key values the reference does not repeat run to run are not compared (expected/unstable.txt).
 Keys a test marks with cr_unstable (U lines) in either log are not compared either.
 --known: the other log is ScummVM's, and a test marked with cr_scummvm_differs (DIFFERS lines, in either log) is
@@ -160,6 +162,7 @@ def main(argv):
     files = []
     unstable_path = None
     use_known = False
+    partial = False
     i = 0
     while i < len(argv):
         if argv[i] == "--tol":
@@ -175,6 +178,8 @@ def main(argv):
             show_all = True
         elif argv[i] == "--known":
             use_known = True
+        elif argv[i] == "--only":
+            partial = True
         else:
             files.append(argv[i])
         i += 1
@@ -194,12 +199,16 @@ def main(argv):
     bad = 0
     near = 0
     n_known = []
+    n_absent = 0
     fixed = []
     print("reference %s\nother     %s" % tuple(files))
     for name in order_a + [n for n in order_b if n not in ta]:
         a, b = ta.get(name), tb.get(name)
         if a is None:
             print("%-26s EXTRA (not in the reference)" % name)
+            continue
+        if partial and (b is None or b["status"] == "skipped"):
+            n_absent += 1
             continue
         if b is None:
             print("%-26s MISSING" % name)
@@ -229,18 +238,19 @@ def main(argv):
                 print(l)
             if len(lines) > 12 and not show_all:
                 print("  ... %d more (--all)" % (len(lines) - 12))
-        else:
+        elif len(a["values"]) - skipped > 0 or skipped:
             print("%-26s same (%d values)%s" % (name, len(a["values"]) - skipped,
                                                   (", %d unstable in the reference not compared" % skipped) if skipped else ""))
-    same = len(order_a) - bad - near - len(n_known) - len(fixed)
+    total = len(order_a) - n_absent
+    same = total - bad - near - len(n_known) - len(fixed)
     if use_known:
         print("%d of %d tests differ without a cr_scummvm_differs mark (regressions), %d differ as marked (known), "
               "%d marked are the same now (fixed), %d are close (within %g), %d the same" %
-              (bad, len(order_a), len(n_known), len(fixed), near, close, same))
+              (bad, total, len(n_known), len(fixed), near, close, same))
         if fixed:
             print("fixed, take the mark out: %s" % ", ".join(fixed))
     else:
-        print("%d of %d tests differ, %d are close (within %g), %d the same" % (bad, len(order_a), near, close, same))
+        print("%d of %d tests differ, %d are close (within %g), %d the same" % (bad, total, near, close, same))
     return 1 if bad else 0
 
 

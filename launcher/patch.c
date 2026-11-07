@@ -134,11 +134,175 @@ static LuaIsFn luaIsNil;
 static LuaIsFn luaIsString;
 static LuaGetStringFn luaGetString;
 
+/* A crash of the game leaves grimcrash.dmp (a minidump: exception, modules, stacks) next to the exe, for cleanroom/tools/crashstack.py.
+ * The filter lets the crash go on (Windows' own handling and the exit code stay as they were). dbghelp.dll is loaded only then. */
+typedef BOOL (WINAPI *MiniDumpWriteDumpFn)(HANDLE, DWORD, HANDLE, int, void *, void *, void *);
+
+typedef struct { DWORD thread; EXCEPTION_POINTERS *pointers; BOOL clientPointers; } CrashInfo;   /* MINIDUMP_EXCEPTION_INFORMATION (packed on x86) */
+
+static LONG WINAPI crashFilter(EXCEPTION_POINTERS *ep) {
+	static volatile LONG writing;
+	char path[MAX_PATH + 16], *slash;
+	HMODULE dbg;
+	MiniDumpWriteDumpFn write;
+	HANDLE f;
+	CrashInfo info;
+
+	if (InterlockedExchange(&writing, 1))   /* (an exception while the dump is written) */
+		return EXCEPTION_CONTINUE_SEARCH;
+	if (GetModuleFileNameA(NULL, path, MAX_PATH) && (dbg = LoadLibraryA("dbghelp.dll")) != NULL &&
+	    (write = (MiniDumpWriteDumpFn)GetProcAddress(dbg, "MiniDumpWriteDump")) != NULL) {
+		slash = strrchr(path, '\\');
+		strcpy(slash ? slash + 1 : path, "grimcrash.dmp");
+		f = CreateFileA(path, GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+		if (f != INVALID_HANDLE_VALUE) {
+			info.thread = GetCurrentThreadId();
+			info.pointers = ep;
+			info.clientPointers = FALSE;
+			write(GetCurrentProcess(), GetCurrentProcessId(), f, 0 /* MiniDumpNormal */, &info, NULL, NULL);
+			CloseHandle(f);
+		}
+	}
+	InterlockedExchange(&writing, 0);
+	return EXCEPTION_CONTINUE_SEARCH;
+}
+
+/* The Remastered installs its own unhandled-exception filter (Steam's), which replaces the one above, and the game also ends itself
+ * with exit() on some errors. So the exe's imports of ExitProcess and TerminateProcess (of itself) are pointed at functions that write
+ * the same dump first, with the stack of the thread that ends the process and a made-up exception record: code EXIT_CODE_MARK, the
+ * exit code as its first parameter and the caller as its address. A crash that goes through the game's own filter ends here as well,
+ * and the faulting frames are still on that stack. A clean exit writes a dump too (cleanroom/run.py reads it only for a run that
+ * did not finish). */
+#define EXIT_CODE_MARK 0xE0455849u
+
+static void (WINAPI *realExitProcess)(UINT);
+static BOOL (WINAPI *realTerminateProcess)(HANDLE, UINT);
+
+static void dumpExit(UINT code, void *caller) {
+	CONTEXT ctx;
+	EXCEPTION_RECORD rec;
+	EXCEPTION_POINTERS ep;
+
+	memset(&rec, 0, sizeof rec);
+	RtlCaptureContext(&ctx);
+	rec.ExceptionCode = EXIT_CODE_MARK;
+	rec.ExceptionAddress = caller;
+	rec.NumberParameters = 1;
+	rec.ExceptionInformation[0] = code;
+	ep.ExceptionRecord = &rec;
+	ep.ContextRecord = &ctx;
+	crashFilter(&ep);
+}
+
+static void WINAPI hookedExitProcess(UINT code) {
+	dumpExit(code, __builtin_return_address(0));
+	realExitProcess(code);
+}
+
+static BOOL WINAPI hookedTerminateProcess(HANDLE h, UINT code) {
+	if (h == GetCurrentProcess() || GetProcessId(h) == GetCurrentProcessId())
+		dumpExit(code, __builtin_return_address(0));
+	return realTerminateProcess(h, code);
+}
+
+static void (__cdecl *realUnderscoreExit)(int);
+static void (__cdecl *realAmsgExit)(int);
+static void (__cdecl *realCrtExit)(int);
+static void (__cdecl *realTerminate)(void);
+
+static void __cdecl hookedUnderscoreExit(int code) {
+	dumpExit((UINT)code, __builtin_return_address(0));
+	realUnderscoreExit(code);
+}
+
+static void __cdecl hookedCrtExit(int code) {
+	dumpExit((UINT)code, __builtin_return_address(0));
+	realCrtExit(code);
+}
+
+static void __cdecl hookedAmsgExit(int code) {
+	dumpExit((UINT)code, __builtin_return_address(0));
+	realAmsgExit(code);
+}
+
+static void __cdecl hookedTerminate(void) {
+	dumpExit(0xFFFFFFFFu, __builtin_return_address(0));
+	realTerminate();
+}
+
+/* Points the exe's import of dll!fn (any dll when dll is NULL) at newFn; the old target is returned. */
+static void *hookImport(const char *dll, const char *fn, void *newFn) {
+	BYTE *base = (BYTE *)GetModuleHandleA(NULL);
+	IMAGE_NT_HEADERS *nt = (IMAGE_NT_HEADERS *)(base + ((IMAGE_DOS_HEADER *)base)->e_lfanew);
+	IMAGE_DATA_DIRECTORY dir = nt->OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_IMPORT];
+	IMAGE_IMPORT_DESCRIPTOR *d;
+
+	if (!dir.VirtualAddress)
+		return NULL;
+	for (d = (IMAGE_IMPORT_DESCRIPTOR *)(base + dir.VirtualAddress); d->Name; d++) {
+		IMAGE_THUNK_DATA *names, *slots;
+		if (dll && _stricmp((const char *)(base + d->Name), dll) != 0)
+			continue;
+		names = (IMAGE_THUNK_DATA *)(base + (d->OriginalFirstThunk ? d->OriginalFirstThunk : d->FirstThunk));
+		slots = (IMAGE_THUNK_DATA *)(base + d->FirstThunk);
+		for (; names->u1.AddressOfData; names++, slots++) {
+			DWORD old;
+			void *was;
+			if (IMAGE_SNAP_BY_ORDINAL(names->u1.Ordinal) ||
+			    strcmp((const char *)((IMAGE_IMPORT_BY_NAME *)(base + names->u1.AddressOfData))->Name, fn) != 0)
+				continue;
+			if (!VirtualProtect(&slots->u1.Function, sizeof(void *), PAGE_READWRITE, &old))
+				return NULL;
+			was = (void *)slots->u1.Function;
+			slots->u1.Function = (ULONG_PTR)newFn;
+			VirtualProtect(&slots->u1.Function, sizeof(void *), old, &old);
+			return was;
+		}
+	}
+	return NULL;
+}
+
+static void logLine(const char *level, const char *text);
+
+/* Every exception of a fatal kind (access violation, illegal instruction...) is told in grimdebug.log when it is raised, before any handler
+ * of the game sees it: a game that catches it and goes on or quits leaves no other trace. The tests only read the "CR " lines. */
+static LONG WINAPI logException(EXCEPTION_POINTERS *ep) {
+	static volatile LONG count;
+	EXCEPTION_RECORD *r = ep->ExceptionRecord;
+	HMODULE mod = NULL;
+	char name[MAX_PATH] = "?", text[MAX_PATH + 160], *slash;
+
+	switch (r->ExceptionCode) {
+	case 0xC0000005: case 0xC000001D: case 0xC0000094: case 0xC0000096: case 0xC000008C: case 0xC0000374: case 0xC0000409:
+		if (InterlockedIncrement(&count) > 200)
+			break;
+		if (GetModuleHandleExA(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS | GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT, (LPCSTR)r->ExceptionAddress, &mod))
+			GetModuleFileNameA(mod, name, MAX_PATH);
+		slash = strrchr(name, '\\');
+		sprintf(text, "exception 0x%08lX at %s+0x%lX%s", (unsigned long)r->ExceptionCode, slash ? slash + 1 : name,
+		        (unsigned long)((BYTE *)r->ExceptionAddress - (BYTE *)mod),
+		        r->ExceptionCode == 0xC0000005 && r->NumberParameters >= 2 ? (r->ExceptionInformation[0] ? ", writing" : ", reading") : "");
+		if (r->ExceptionCode == 0xC0000005 && r->NumberParameters >= 2)
+			sprintf(text + strlen(text), " address 0x%lX", (unsigned long)r->ExceptionInformation[1]);
+		logLine("EXC", text);
+		break;
+	}
+	return EXCEPTION_CONTINUE_SEARCH;
+}
+
 BOOL WINAPI DllMain(HINSTANCE inst, DWORD reason, LPVOID reserved) {
 	(void)inst;
 	(void)reserved;
 	if (reason == DLL_PROCESS_ATTACH) {
 		InitializeCriticalSection(&logLock);
+		SetUnhandledExceptionFilter(crashFilter);
+		AddVectoredExceptionHandler(1, logException);
+		realExitProcess = (void (WINAPI *)(UINT))hookImport("kernel32.dll", "ExitProcess", (void *)hookedExitProcess);
+		realTerminateProcess = (BOOL (WINAPI *)(HANDLE, UINT))hookImport("kernel32.dll", "TerminateProcess", (void *)hookedTerminateProcess);
+		realUnderscoreExit = (void (__cdecl *)(int))hookImport(NULL, "_exit", (void *)hookedUnderscoreExit);   /* (the Remastered's: MSVCR100) */
+		realCrtExit = (void (__cdecl *)(int))hookImport(NULL, "exit", (void *)hookedCrtExit);
+		realAmsgExit = (void (__cdecl *)(int))hookImport(NULL, "_amsg_exit", (void *)hookedAmsgExit);
+		realTerminate = (void (__cdecl *)(void))hookImport(NULL, "?terminate@@YAXXZ", (void *)hookedTerminate);
 		/* installHook(); not used: it is for the grimrun.lua experiment */
 	} else if (reason == DLL_PROCESS_DETACH) {
 		if (logFile)

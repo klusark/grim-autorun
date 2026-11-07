@@ -18,8 +18,8 @@ build_emi/, run/emi/ and logs/emi/; its data go into one archive, local.m4b (the
 CR_GAME is "grim" or "emi".
 
 A test that crashes or hangs an engine is found and skipped (README.md). ScummVM's are kept in
-expected/scummvm_crashers_<renderer>.txt (committed), skipped and reported on the next runs; --fresh runs them again
-and rewrites the list (the ones that no longer crash drop out).
+expected/scummvm_crashers_<renderer>.txt and the Remastered's in expected/remastered_crashers.txt (committed), skipped and
+reported on the next runs; --fresh runs them again (the original's too) and rewrites the list (the ones that no longer crash drop out).
 
 ScummVM runs every test once with each renderer of Grim (RENDERERS: OpenGL, OpenGL with shaders, the software TinyGL):
 logs/scummvm_<renderer>.log and logs/scummvm_<renderer>_raw.log; logs/scummvm.log is the first renderer's.
@@ -27,8 +27,8 @@ logs/scummvm_<renderer>.log and logs/scummvm_<renderer>_raw.log; logs/scummvm.lo
 Results go to logs/<engine>.log (only the CR lines, normalised) and logs/<engine>_raw.log (the whole engine log).
 Environment: SCUMMVM (scummvm.exe), GRIM_INSTALL (the folder the original exe and its DLLs are copied from, default
 C:\\GOG Games\\GRIMDATA), CR_VISIBLE=1 (the engines' windows on the screen; otherwise they run on a desktop of their own,
-tools/offscreen.c), EMI_INSTALL (the same for Monkey4.exe, default C:\\GOG Games\\Escape from Monkey Island), CR_TIMEOUT
-(seconds a run may take, default 120)."""
+tools/offscreen.c), EMI_INSTALL (the same for Monkey4.exe, default C:\\GOG Games\\Escape from Monkey Island), CR_STALL
+(seconds without a new line in the engine's log before a run counts as hung and is killed, default 2; CR_STARTUP, default 30, until the first line)."""
 import argparse
 import os
 import re
@@ -39,6 +39,7 @@ import time
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
+sys.path.insert(0, os.path.join(HERE, "tools"))
 import assets  # noqa: E402
 import assets_emi  # noqa: E402
 import formats  # noqa: E402
@@ -55,7 +56,6 @@ UNSTABLE = os.path.join(HERE, "expected", "unstable.txt")
 SCUMMVM = os.environ.get("SCUMMVM", r"C:\msys64\home\Joel\scummvm-cleanroom\build\scummvm.exe")
 GRIM_INSTALL = os.environ.get("GRIM_INSTALL", r"C:\GOG Games\GRIMDATA")
 REMASTERED_INSTALL = os.environ.get("REMASTERED_INSTALL", "C:/Program Files (x86)/Steam/steamapps/common/Grim Fandango Remastered")
-TIMEOUT = int(os.environ.get("CR_TIMEOUT", "120"))
 
 # The program files of the original (not data): the exe, its DLLs and the two small files iMUSE and the HMI driver read
 PROGRAM_FILES = ["GRIMFANDANGO.exe", "LUA.DLL", "IMUSE.DLL", "CHORE.DLL", "NULLMUSE.DLL", "HMIFXFP.DLL", "HMIFXLIB.DLL",
@@ -129,7 +129,7 @@ def lint():
     return ok
 
 
-def build(only=None, skip=()):
+def build(only=None, skip=(), start=None, fails=0):
     """Writes the data as loose files into build/ (no archive: both engines read loose files from the game folder);
     returns the build folder. build/cr_manifest.txt lists them, so that a run folder can drop files of an older build."""
     # (Windows may hold a file of the folder for a moment after an engine that crashed: retry for a few seconds)
@@ -154,6 +154,8 @@ def build(only=None, skip=()):
     if only:
         head += "CR_ONLY = { }\n" + "".join('CR_ONLY["%s"] = 1\n' % n for n in only.split(","))
     # (tests that crash or hang an engine: the runner writes SKIP for them)
+    if start:
+        head += 'CR_FROM = "%s"\nCR_FAILS0 = %d\n' % (start, fails)
     head += "CR_SKIP = { }\n" + "".join('CR_SKIP["%s"] = 1\n' % n for n in sorted(skip))
     files["_cr_tests.lua"] = formats.lua_text(head + "".join('dofile("cr_%s")\n' % t for t in tests))
     for t in tests:
@@ -223,6 +225,17 @@ def svm_known():
     return os.path.join(HERE, "expected", "%sscummvm_crashers_%s.txt" % (prefix, RENDERER))
 
 
+REM_CRASHERS = os.path.join(HERE, "expected", "remastered_crashers.txt")
+
+
+def write_rem_known(names):
+    """Keeps the Remastered's crashers in expected/ (committed), like ScummVM's: skipped on the next runs, --fresh tries them again."""
+    os.makedirs(os.path.dirname(REM_CRASHERS), exist_ok=True)
+    with open(REM_CRASHERS, "w", newline="\n") as f:
+        f.write("# tests that crash or hang the Remastered (found by run.py); skipped, run.py remastered --fresh tries them again\n")
+        f.write("".join(n + "\n" for n in sorted(names)))
+
+
 def write_known(names):
     """Keeps ScummVM's crashers in expected/ (committed: they are not found again on each machine)."""
     os.makedirs(os.path.dirname(svm_known()), exist_ok=True)
@@ -231,23 +244,84 @@ def write_known(names):
         f.write("".join(n + "\n" for n in sorted(names)))
 
 
+RUN_EXIT = None   # the exit code of the last run (None: killed by run.py)
+RUN_KILLED = 0   # seconds, when the last run was killed by run.py (it wrote nothing to its log that long); else 0
+RUN_START = 0.0   # when the engine of the last run was started (the crash dump of that run is newer)
+
+
+def crash_backtrace(engine):
+    """The backtrace of the dump Windows wrote when the last run crashed (in CrashDumps of %LOCALAPPDATA%), or why there is none."""
+    exe = SCUMMVM if engine == "scummvm" else "Monkey4.exe" if GAME == "emi" else "GrimFandango.exe" if engine == "remastered" else "GRIMFANDANGO.exe"
+    import crashstack
+    if RUN_KILLED:
+        return "hung: %s wrote nothing to its log for %g s and was killed by run.py (no crash, so no dump or backtrace)" % (os.path.basename(exe), RUN_KILLED)
+    # (the original and the Remastered write grimcrash.dmp next to their exe: patch.dll's crash filter)
+    own = os.path.join(RUN, engine, "grimcrash.dmp")
+    if engine != "scummvm" and os.path.exists(own) and os.path.getmtime(own) >= RUN_START - 2:
+        dump = own
+    else:
+        dump = crashstack.newest_dump(os.path.basename(exe), RUN_START - 2)
+    if not dump:
+        return "no crash dump of %s since the run started (it died by itself and wrote no dump), exit code %s" % (
+            os.path.basename(exe), "?" if RUN_EXIT is None else "0x%X" % (RUN_EXIT & 0xFFFFFFFF))
+    try:
+        if engine == "scummvm":
+            trace = crashstack.backtrace(dump, exe)
+        else:   # (the names of the exe's functions come from Ghidra: tools/export_ghidra_symbols.py)
+            game = "remastered" if engine == "remastered" else "emi" if GAME == "emi" else "grim"
+            trace = crashstack.backtrace(dump, symbols_file=os.path.join(HERE, "tools", "symbols", game + ".txt"), exe_name=os.path.basename(exe))
+        return "%s\n%s" % (dump, trace)
+    except Exception as e:   # (a dump that does not parse must not stop the run)
+        return "%s: could not read the dump: %s" % (dump, e)
+
+
+def keep_crash_log(engine, name):
+    """The next run overwrites logs/<engine>_raw.log: keep the part that says why the test died (from 40 lines before its
+    BEGIN to the end) as logs/crashes/<engine>_<renderer>_<test>.log."""
+    raw = os.path.join(LOGS, engine + "_raw.log")
+    if not os.path.exists(raw):
+        return
+    lines = open(raw, "rb").read().decode("latin-1").splitlines()
+    at = max((i for i, l in enumerate(lines) if l.rstrip().endswith("CR BEGIN " + name)), default=0)
+    d = os.path.join(LOGS, "crashes")
+    os.makedirs(d, exist_ok=True)
+    out = os.path.join(d, "%s_%s_%s.log" % (engine, RENDERER if engine == "scummvm" else "exe", name))
+    with open(out, "w", newline="\n") as f:
+        f.write("==== backtrace\n" + crash_backtrace(engine) + "\n\n==== log (from 40 lines before the test)\n")
+        f.write("\n".join(lines[max(0, at - 40):]) + "\n")
+    print("%s: why it died: %s" % (engine, out))
+
+
+def file_tests(name):
+    """The names of the tests of the test file that defines test `name`, in order (empty if it is not found)."""
+    for t in test_files():
+        names = re.findall(r'cr_test\("([^"]+)"', open(os.path.join(TESTS, t)).read())
+        if name in names:
+            return names
+    return []
+
+
 def run_engine(engine, only=None, fresh=False):
     """Runs an engine until the run reaches SUMMARY: a test that crashes or hangs it is skipped and the run is repeated.
     The original's crashers are kept in expected/crashers.txt (both engines skip them: there is no reference); ScummVM's are
     returned (bugs). Writes logs/<engine>.log; returns (lines, ScummVM's crashers)."""
-    skip = read_names(CRASHERS)
-    known = set() if fresh or engine != "scummvm" else read_names(svm_known()) - skip
+    # (--fresh: the original runs the tests that crashed it before again, too; the list is written again at the end)
+    skip = set() if fresh and engine == "original" else read_names(CRASHERS)
+    known = set() if fresh or engine not in ("scummvm", "remastered") else (read_names(svm_known()) if engine == "scummvm" else read_names(REM_CRASHERS)) - skip
     skip |= known
     new = []
     once = {"original": original_once, "remastered": remastered_once}.get(engine, scummvm_once)
     lines = []
-    suspect = None
+    prefix = []   # the results of the runs before a crash, up to the file that crashed (the next run starts at that file)
+    start = None
     for _ in range(2000):
-        build(only, skip)
+        build(only, skip, start, sum(1 for l in prefix if l.startswith("FAILED ")))
         if not lint():
             sys.exit(2)
         snaps.clear(os.path.join(RUN, engine))
         lines = snaps.resolve(once(), os.path.join(RUN, engine))
+        if start:
+            lines = [l for l in lines if not l.startswith("START ")]
         if any(l.startswith("SUMMARY") for l in lines):
             break
         name = unfinished(lines)
@@ -255,11 +329,9 @@ def run_engine(engine, only=None, fresh=False):
             print("%s: the run ended without SUMMARY and no test was running; see logs/%s_raw.log" % (engine, engine))
             break
         # (a test is skipped only when the run dies in it twice in a row: the original also crashes now and then by itself)
-        if name != suspect:
-            print("%s: the run died in %s; run again to confirm" % (engine, name))
-            suspect = name
-            continue
-        print("%s: %s crashed or hung the engine twice; skipped, run again" % (engine, name))
+        # (one death is a crasher: no confirming run, on either engine)
+        print("%s: %s crashed or hung the engine; skipped, run again" % (engine, name))
+        keep_crash_log(engine, name)
         group = [name]
         # (the valid call of a builtin crashes: every call that changes one position of it is skipped with it)
         m = re.match(r"^(args_.+)_p0$", name)
@@ -269,14 +341,27 @@ def run_engine(engine, only=None, fresh=False):
             print("%s: and the %d calls of its positions" % (engine, len(group) - 1))
         skip.update(group)
         new.extend(group)
-        suspect = None
+        # (the next run starts at the first test of the crashed test's file; what ran before that file is kept)
+        names = file_tests(name)
+        cut = min((i for i, l in enumerate(lines) if l.partition(" ")[0] in ("BEGIN", "SKIP") and l.partition(" ")[2] in names), default=None)
+        if names and cut is not None:
+            prefix += lines[:cut]
+            start = names[0]
+            print("%s: the next run starts at %s (the first test of the file of %s)" % (engine, start, name))
+        else:
+            prefix, start = [], None
         # (kept at once: a run that is stopped before it ends loses none of the crashers it found)
         if engine == "scummvm":
             write_known(known | set(new))
-    if engine == "original" and new:
+        elif engine == "remastered":
+            write_rem_known(known | set(new))
+    if engine == "remastered" and fresh and not new:
+        write_rem_known(set())
+    if engine == "original" and (new or fresh):
         with open(CRASHERS, "w", newline="\n") as f:
             f.write("# tests that crash the original (found by run.py); skipped on both engines\n")
             f.write("".join(n + "\n" for n in sorted(skip)))
+    lines = prefix + lines
     os.makedirs(LOGS, exist_ok=True)
     out = os.path.join(LOGS, engine + ".log")
     with open(out, "w", newline="\n") as f:
@@ -287,9 +372,9 @@ def run_engine(engine, only=None, fresh=False):
     return lines, (sorted(known) + new if engine == "scummvm" else [])
 
 
-def compare_with(reference, engine, crashed):
+def compare_with(reference, engine, crashed, only=None):
     other = os.path.join(LOGS, engine + ".log")
-    rc = compare.main([reference, other, "--unstable", UNSTABLE, "--known"])
+    rc = compare.main([reference, other, "--unstable", UNSTABLE, "--known"] + (["--only"] if only else []))
     with open(os.path.join(LOGS, "scummvm_crashers_%s.txt" % RENDERER), "w") as f:
         f.write("".join(n + "\n" for n in crashed))
     if crashed:
@@ -326,7 +411,8 @@ def offscreen(cmd):
 
 # ---- ScummVM
 
-STALL = int(os.environ.get("CR_STALL", "15"))
+STALL = float(os.environ.get("CR_STALL", "2"))      # seconds without a new log line before a run counts as hung
+STARTUP = float(os.environ.get("CR_STARTUP", "30"))   # the same until the first line (the engine is starting)
 
 
 def scummvm_once():
@@ -357,7 +443,9 @@ def scummvm_once():
     # the frames go as fast as they can)
     cmd = [SCUMMVM, "--config=" + ini, "--savepath=" + saves, "--debugflags=scripts", "--logfile=" + raw,
            "--engine-speed=0", "cleanroom"]
-    t = time.time()
+    global RUN_START, RUN_KILLED
+    t = RUN_START = time.time()
+    RUN_KILLED = 0
     p = subprocess.Popen(offscreen(cmd), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, env=env, cwd=d)
     size, last = -1, time.time()
     while p.poll() is None:
@@ -365,12 +453,16 @@ def scummvm_once():
         n = os.path.getsize(raw) if os.path.exists(raw) else 0
         if n != size:
             size, last = n, time.time()
-        if time.time() - last > STALL or time.time() - t > TIMEOUT:
+        limit = STALL if n else STARTUP
+        if time.time() - last > limit:
             p.kill()
             p.wait()
-            print("scummvm: killed (%s)" % ("no log for %d s" % STALL if time.time() - t <= TIMEOUT else "timeout"))
+            RUN_KILLED = limit
+            print("scummvm: killed (no log for %g s)" % limit)
             break
-    print("scummvm: %.1f s" % (time.time() - t))
+    global RUN_EXIT
+    RUN_EXIT = None if RUN_KILLED else p.returncode
+    print("scummvm: %.1f s, exit code %s" % (time.time() - t, "none (killed)" if RUN_EXIT is None else "0x%X" % (RUN_EXIT & 0xFFFFFFFF)))
     return read_lines(raw)
 
 
@@ -496,7 +588,9 @@ def original_once(which="original"):
     log = os.path.join(d, "grimdebug.log")
     if os.path.exists(log):
         os.remove(log)
-    t = time.time()
+    global RUN_START, RUN_KILLED
+    t = RUN_START = time.time()
+    RUN_KILLED = 0
     # (EMI's Direct3D does not start on a desktop of its own; its OpenGL renderer (-gl) does, and gives the same values: only
     # GammaEnabled, which says what the hardware can do, differs, and it is not compared)
     launch = [os.path.join(d, "grimlaunch.exe"), exe] + (["-gl"] if GAME == "emi" else [])
@@ -510,12 +604,16 @@ def original_once(which="original"):
         n = os.path.getsize(log) if os.path.exists(log) else 0
         if n != size:
             size, last = n, time.time()
-        if time.time() - last > STALL or time.time() - t > TIMEOUT:
-            print("original: killed (%s)" % ("no log for %d s" % STALL if time.time() - t <= TIMEOUT else "timeout"))
+        limit = STALL if n else STARTUP
+        if time.time() - last > limit:
+            RUN_KILLED = limit
+            print("original: killed (no log for %g s)" % limit)
             kill_own_original(d)
             p.kill()
             break
-    print("%s: %.1f s" % (which, time.time() - t))
+    global RUN_EXIT
+    RUN_EXIT = None if RUN_KILLED else p.returncode
+    print("%s: %.1f s, exit code %s" % (which, time.time() - t, "none (killed)" if RUN_EXIT is None else "0x%X" % (RUN_EXIT & 0xFFFFFFFF)))
     if os.path.exists(log):
         os.makedirs(LOGS, exist_ok=True)
         shutil.copyfile(log, os.path.join(LOGS, which + "_raw.log"))
@@ -547,7 +645,7 @@ def run_scummvm_all(reference, only, fresh, renderers):
             src = os.path.join(LOGS, "scummvm" + suffix)
             if os.path.exists(src):
                 shutil.copyfile(src, os.path.join(LOGS, "scummvm_%s%s" % (r, suffix)))
-        rcs.append((r, compare_with(reference, "scummvm", crashed)))
+        rcs.append((r, compare_with(reference, "scummvm", crashed, only)))
         # (what the reference has that this renderer gives differently, against the first renderer: a difference between
         # the renderers themselves)
         if r != renderers[0]:
@@ -594,7 +692,11 @@ def main():
     ap.add_argument("--game", choices=["grim", "emi"], default="grim", help="the game whose engine is tested (default grim)")
     ap.add_argument("--fresh", action="store_true",
                     help="scummvm: run the tests that crashed or hung ScummVM before again (expected/scummvm_crashers_<renderer>.txt)")
+    ap.add_argument("--visible", action="store_true", help="show the engines' windows on the screen (same as CR_VISIBLE=1)")
     a = ap.parse_args()
+    if a.visible:
+        global VISIBLE
+        VISIBLE = True
     set_game(a.game)
     if a.game == "emi" and a.what == "remastered":
         sys.exit("the Remastered is Grim's")
@@ -624,19 +726,21 @@ def main():
         # (keys the tests mark with cr_unstable are not compared anyway: unstable.txt has the others)
         unstable = sorted(compare.unstable_keys(runs) - compare.marked(*[t for _, t in runs]))
         os.makedirs(os.path.dirname(EXPECTED), exist_ok=True)
-        shutil.copyfile(os.path.join(LOGS, "original.log"), EXPECTED)
+        # (without the DIFFERS lines: they are the tests' marks for ScummVM, not what the original did; ScummVM's log has them)
+        with open(os.path.join(LOGS, "original.log"), newline="") as src, open(EXPECTED, "w", newline="") as dst:
+            dst.writelines(l for l in src if not l.startswith("DIFFERS "))
         with open(UNSTABLE, "w", newline="\n") as f:
             f.write("# test|key values that differed between %d runs of the original; not compared\n" % a.repeat)
             f.write("".join(k + "\n" for k in unstable))
         print("saved %s (%d unstable values: %s)" % (EXPECTED, len(unstable), ", ".join(unstable) or "none"))
         return 0
     if a.what == "remastered":
-        run_engine("remastered", a.only)
-        return compare.main([EXPECTED, os.path.join(LOGS, "remastered.log"), "--unstable", UNSTABLE])
+        run_engine("remastered", a.only, fresh=a.fresh)
+        return compare.main([EXPECTED, os.path.join(LOGS, "remastered.log"), "--unstable", UNSTABLE] + (["--only"] if a.only else []))
     if a.what == "original":
-        run_engine("original", a.only)
-        return compare.main([EXPECTED, os.path.join(LOGS, "original.log"), "--unstable", UNSTABLE])
-    run_engine("original", a.only)
+        run_engine("original", a.only, fresh=a.fresh)
+        return compare.main([EXPECTED, os.path.join(LOGS, "original.log"), "--unstable", UNSTABLE] + (["--only"] if a.only else []))
+    run_engine("original", a.only, fresh=a.fresh)
     shutil.copyfile(os.path.join(LOGS, "original.log"), os.path.join(LOGS, "original_both.log"))
     return run_scummvm_all(os.path.join(LOGS, "original_both.log"), a.only, a.fresh, renderers)
 

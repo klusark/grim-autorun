@@ -359,14 +359,28 @@ static void patchRemasteredSimtime() {
 	write(clock, le32(1000));
 	DWORD ticks = alloc(6, 1);
 	write(ticks, bytes({0xa1}) + le32(clock) + bytes({0xc3}));                                                  // mov eax,[clock]; ret
-	DWORD swap = alloc(16, 1);
-	write(swap, bytes({0x81, 0x05}) + le32(clock) + le32(g_simtimeMs) + bytes({0xff, 0x25}) + le32(IAT_SWAP + g_delta));   // add [clock],ms; jmp [swap]
+	// (the game also sets its swap interval through wglSwapIntervalEXT, which the thunk above does not reach: every swap turns vsync
+	// off again, through the real import)
+	DWORD swap = alloc(32, 1);
+	write(swap, bytes({0x6a, 0x00, 0xff, 0x15}) + le32(0x0057147C + g_delta) + bytes({0x83, 0xc4, 0x04}) +    // push 0; call [SetSwapInterval]; add esp,4
+	             bytes({0x81, 0x05}) + le32(clock) + le32(g_simtimeMs) + bytes({0xff, 0x25}) + le32(IAT_SWAP + g_delta));   // add [clock],ms; jmp [swap]
 	DWORD delay = alloc(16, 1);
 	write(delay, bytes({0x8b, 0x44, 0x24, 0x04, 0x01, 0x05}) + le32(clock) + bytes({0xc3}));                  // mov eax,[esp+4]; add [clock],eax; ret
 	write(THUNK_GETTICKS + g_delta, jmp(THUNK_GETTICKS + g_delta, ticks));
 	write(THUNK_SWAP + g_delta, jmp(THUNK_SWAP + g_delta, swap));
 	write(THUNK_DELAY + g_delta, jmp(THUNK_DELAY + g_delta, delay));
 	write(THUNK_INTERVAL + g_delta, bytes({0x33, 0xc0, 0xc3}));                                               // xor eax,eax; ret
+	// The game's timer in seconds (0x4e7850) and its frame pacing read SDL_GetPerformanceCounter / Frequency, which are the real
+	// clock: the run stays in real time and spins. They read the same clock now: a tick is a millisecond, 1000 ticks a second.
+	static const DWORD THUNK_PERFCTR = 0x0054CDC4, THUNK_PERFFREQ = 0x0054CDCA;
+	expect(THUNK_PERFCTR + g_delta, thunk(0x005714B4), "the SDL_GetPerformanceCounter thunk");
+	expect(THUNK_PERFFREQ + g_delta, thunk(0x005714B0), "the SDL_GetPerformanceFrequency thunk");
+	DWORD perfctr = alloc(8, 1);
+	write(perfctr, bytes({0xa1}) + le32(clock) + bytes({0x33, 0xd2, 0xc3}));                                    // mov eax,[clock]; xor edx,edx; ret
+	DWORD perffreq = alloc(8, 1);
+	write(perffreq, bytes({0xb8}) + le32(1000) + bytes({0x33, 0xd2, 0xc3}));                                    // mov eax,1000; xor edx,edx; ret
+	write(THUNK_PERFCTR + g_delta, jmp(THUNK_PERFCTR + g_delta, perfctr));
+	write(THUNK_PERFFREQ + g_delta, jmp(THUNK_PERFFREQ + g_delta, perffreq));
 	write(CALL_GETTICKCOUNT + g_delta, bytes({0xe8}) + le32(ticks - (CALL_GETTICKCOUNT + g_delta + 5)) + bytes({0x90}));   // call ticks; nop
 }
 

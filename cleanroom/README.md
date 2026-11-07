@@ -5,6 +5,8 @@ only data made here (Lua, sets, bitmaps, a colormap, a text table, costumes). Th
 not assert anything; it logs what it observes (`cr_log`), and `compare.py` checks ScummVM's values against the
 original's, value by value.
 
+Run it with the MSYS2 venv (`~/venv/bin/python.exe`, UCRT Python 3.14); nothing beyond the standard library is needed.
+
 ```sh
 python run.py original --save    # run the original 3 times (--repeat N), keep it as expected/original.log
 python run.py scummvm            # run on ScummVM and compare with expected/original.log
@@ -12,6 +14,10 @@ python run.py both               # run both and compare them with each other
 python run.py scummvm --only chore_keys      # one test
 python run.py compare logs/original.log logs/scummvm.log --all
 ```
+
+**Crashes.** When a test kills an engine, `logs/crashes/<engine>_<renderer>_<test>.log` starts with a backtrace read from the
+Windows crash dump (`%LOCALAPPDATA%\CrashDumps`, `tools/crashstack.py`; function names for ScummVM from `nm`, module+offset for the
+retail exes), then the engine's log. Windows writes dumps only for some processes (ScummVM's so far); with none the file says so.
 
 A run takes 1-2 s on the original (simtime: no waiting between frames) and about 3 s on ScummVM (fixed 17 ms frames, no frame limit).
 
@@ -235,7 +241,7 @@ CXX="ccache g++" CC="ccache gcc" CXXFLAGS="--coverage -O0 -g" LDFLAGS="--coverag
 sed -i 's/^CXXFLAGS := \(.*\)$/CXXFLAGS := \1 -DCR_GCOV/' config.mk   # Exit() writes the counters (see below)
 make -j16
 find . -name '*.gcda' -delete
-SCUMMVM='C:\msys64\home\Joel\scummvm-cleanroom\build-cov\scummvm.exe' CR_TIMEOUT=1500 python run.py scummvm
+SCUMMVM='C:\msys64\home\Joel\scummvm-cleanroom\build-cov\scummvm.exe' CR_STALL=60 CR_STARTUP=120 python run.py scummvm
 python ~/grimL_ar/tools/covreport.py <outdir> 'C:\msys64\home\Joel\scummvm-cleanroom\build-cov' 'C:\msys64\home\Joel\scummvm-cleanroom'
 ```
 

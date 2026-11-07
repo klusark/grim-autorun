@@ -121,6 +121,13 @@ end
 cr_main = function()
 	local i = 1
 	local id, f
+	-- (CR_FROM: a run that goes on after a crash starts at the first test of the file that crashed; CR_FAILS0: failures before)
+	if CR_FROM then
+		while i <= CR_N and CR_TESTS[i].name ~= CR_FROM do
+			i = i + 1
+		end
+		CR_FAILS = CR_FAILS0 or 0
+	end
 	cr_out("START " .. CR_N .. " tests")
 	while i <= CR_N do
 		if CR_SKIP and CR_SKIP[CR_TESTS[i].name] then

@@ -1,0 +1,18 @@
+# tests that crash or hang ScummVM (opengl renderer; found by run.py); skipped, run.py --fresh tries them again
+args_CompleteChore_fn
+args_CompleteChore_nil
+args_CompleteChore_none
+args_CompleteChore_num
+args_CompleteChore_str
+args_CompleteChore_tab
+args_GetSoundVolume_fn
+args_GetSoundVolume_nil
+args_GetSoundVolume_none
+args_GetSoundVolume_num
+args_GetSoundVolume_str
+args_GetSoundVolume_tab
+args_ImGetMusicVol_nil
+args_ImGetMusicVol_none
+args_ImGetMusicVol_str
+ea_unloaded_in
+ea_unloaded_out
