@@ -72,7 +72,7 @@ cr_snap = function(key, mode)
 	CR_SNAP_N = CR_SNAP_N + 1
 	local f = "crsnap" .. CR_SNAP_N .. ".bmp"
 	PrintDebug("CRSNAP:" .. f)
-	if mode == "dark" or mode == "lit" then
+	if mode == "dark" or mode == "lit" or mode == "count" then
 		cr_log(key, "snap:" .. f .. ":" .. mode)
 	else
 		cr_log(key, "snap:" .. f)

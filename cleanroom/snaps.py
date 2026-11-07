@@ -5,14 +5,15 @@ patch.dll (Render_SaveScreenshotBmp, its back buffer at once) and on ScummVM thr
 and the log gets `key = "snap:<file>"`. After a run, resolve() replaces each of those values by the box of the bright pixels
 of the file (x0 y0 x1 y1, inclusive): the tests draw white text on the dark backgrounds of assets.py, so the box is that of
 the text. "none" when nothing is bright, "missing" when the file was not written. cr_snap(key, "dark"): the box of the
-pixels darker than any background (a shadow); cr_snap(key, "lit"): the box of the others (what an iris leaves open)."""
+pixels darker than any background (a shadow); cr_snap(key, "lit"): the box of the others (what an iris leaves open);
+cr_snap(key, "count"): the box of the bright pixels and how many there are (x0 y0 x1 y1 n: how thick a line is)."""
 import os
 import re
 import struct
 
 BRIGHT = 180  # (the backgrounds are at most 120 in any channel; ScummVM's screenshot is grey)
 
-SNAP = re.compile(r'^(V [^|]*\|[^|]*\|)"snap:([A-Za-z0-9_.]+)(:dark|:lit)?"$')
+SNAP = re.compile(r'^(V [^|]*\|[^|]*\|)"snap:([A-Za-z0-9_.]+)(:dark|:lit|:count)?"$')
 DARK = 30  # (cr_snap(key, "dark"): the box of the pixels darker than any background, a shadow)
 
 
@@ -47,6 +48,8 @@ def bright_box(path, mode=None):
                 ys.append(y)
     if not xs:
         return None
+    if mode == "count":
+        return min(xs), min(ys), max(xs), max(ys), len(xs)
     return min(xs), min(ys), max(xs), max(ys)
 
 
