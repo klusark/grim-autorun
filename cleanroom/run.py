@@ -174,7 +174,7 @@ def copy_data(dest):
     os.makedirs(dest, exist_ok=True)
     old = os.path.join(dest, MANIFEST)
     if os.path.exists(old):
-        for name in open(old).read().split():
+        for name in open(old).read().splitlines():
             p = os.path.join(dest, name)
             if os.path.isfile(p):
                 os.remove(p)

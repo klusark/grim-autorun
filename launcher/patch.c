@@ -285,6 +285,32 @@ static LONG WINAPI logException(EXCEPTION_POINTERS *ep) {
 		if (r->ExceptionCode == 0xC0000005 && r->NumberParameters >= 2)
 			sprintf(text + strlen(text), " address 0x%lX", (unsigned long)r->ExceptionInformation[1]);
 		logLine("EXC", text);
+		/* (and the words on the stack that point into the exe's code, from the faulting stack pointer up: the return addresses
+		 * of the calls, with some stray ones; the dumps are written later, from other stacks) */
+		{
+			BYTE *base = (BYTE *)GetModuleHandleA(NULL);
+			IMAGE_NT_HEADERS *nt = (IMAGE_NT_HEADERS *)(base + ((IMAGE_DOS_HEADER *)base)->e_lfanew);
+			DWORD lo = (DWORD)base + nt->OptionalHeader.BaseOfCode, hi = lo + nt->OptionalHeader.SizeOfCode;
+#if defined(_M_IX86) || defined(__i386__)
+			DWORD *sp = (DWORD *)ep->ContextRecord->Esp;
+#else
+			DWORD *sp = NULL;
+#endif
+			MEMORY_BASIC_INFORMATION mbi;
+			int i, n = 0;
+			char *t = text;
+			t += sprintf(t, "stack:");
+			if (sp && VirtualQuery(sp, &mbi, sizeof(mbi))) {
+				DWORD *end = (DWORD *)((BYTE *)mbi.BaseAddress + mbi.RegionSize);
+				for (i = 0; sp + i < end && i < 2048 && n < 24; i++) {
+					if (sp[i] >= lo && sp[i] < hi) {
+						t += sprintf(t, " %08lX", (unsigned long)sp[i]);
+						n++;
+					}
+				}
+			}
+			logLine("EXC", text);
+		}
 		break;
 	}
 	return EXCEPTION_CONTINUE_SEARCH;

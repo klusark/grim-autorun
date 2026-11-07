@@ -243,6 +243,16 @@ def files():
     # sounds (formats.wav: 16-bit PCM): a short tone and a long one
     out["cr_tone.wav"] = F.wav(0.5)
     out["cr_long.wav"] = F.wav(3.0, freq=220.0)
+    # movies (formats.snm): 160 x 120, 15 frames a second; white for 90 frames (6 s), and one that goes from grey to white
+    out["cr_white.snm"] = F.snm(160, 120, [F.rgb565(255, 255, 255)] * 90)
+    out["cr_steps.snm"] = F.snm(160, 120, [F.rgb565(v, v, v) for v in range(130, 255, 25)])
+    # music (formats.imus): the files iMUSE's state and sequence tables name for ImSetState / ImSetSequence (the name and
+    # ".IMC"). Two states that loop; the file of states 1002-1007 with a hook 8 jump in the middle; a sequence that plays once
+    # and ends with the "_end" marker
+    out["1001 - Manny's Office.IMC"] = F.imus(2.0, freq=262.0)
+    out["1008 - Domino's Office.IMC"] = F.imus(2.0, freq=294.0)
+    out["1002 - Mr. Frustration.IMC"] = F.imus(2.0, freq=330.0, hook_jump=(8, 100))
+    out["2001 - Climb Rope.IMC"] = F.imus(1.0, freq=392.0, loop=False, marker="_end")
     # a font: space 4 pixels, digits 6, upper case 8, the rest 5 (an advance of one more pixel each)
     out["cr_font.laf"] = F.font(lambda c: 4 if c == 32 else 6 if 48 <= c <= 57 else 8 if 65 <= c <= 90 else 5)
     out["cr_box.cos"] = F.costume(*BOX_COSTUME)

@@ -516,6 +516,7 @@ args_IsSectorActive_none
 args_IsSectorActive_num
 args_IsSectorActive_str
 args_IsSectorActive_tab
+args_JustLoaded_none
 args_LocalizeString_num
 args_LocalizeString_p0
 args_LocalizeString_p1_big
@@ -860,6 +861,10 @@ args_UnlockSound_num
 args_UnlockSound_str
 args_UnlockSound_tab
 args_WalkActorForward_a
+args_WalkActorForward_a_nil
+args_WalkActorForward_a_num
+args_WalkActorForward_a_str
+args_WalkActorForward_a_tab
 args_WalkActorToInterest_a
 args_WalkActorToInterest_a_nil
 args_WalkActorToInterest_a_num
@@ -902,7 +907,15 @@ args_getenv_num
 args_getenv_str
 args_log10_num
 args_log_num
+args_newtag_fn
+args_newtag_nil
+args_newtag_none
+args_newtag_num
+args_newtag_str
+args_newtag_tab
 args_nextvar_nil
+args_random_none
+args_random_num
 args_strlen_str
 args_strlower_str
 args_strupper_str

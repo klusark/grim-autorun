@@ -17,6 +17,8 @@ args_SetActorTurnChores_p2_neg
 args_SetActorTurnChores_p3_neg
 args_WalkActorForward_a
 args_WalkActorForward_a_nil
+args_WalkActorForward_a_num
 args_WalkActorForward_a_str
+args_WalkActorForward_a_tab
 save_data_none
 text_dims_killed

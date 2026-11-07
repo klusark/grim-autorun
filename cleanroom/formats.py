@@ -470,3 +470,78 @@ def wav(seconds, rate=22050, freq=440.0, channels=1, amplitude=8000):
     fmt = struct.pack("<HHIIHH", 1, channels, rate, rate * channels * 2, channels * 2, 16)
     body = b"WAVE" + b"fmt " + struct.pack("<I", len(fmt)) + fmt + b"data" + struct.pack("<I", len(frames)) + frames
     return b"RIFF" + struct.pack("<I", len(body)) + body
+
+
+def snm(width, height, colours, frame_us=66667, rate=22050):
+    """A SMUSH movie as Grim's (gzipped SANM): one Bl16 frame per colour, each a whole frame of that RGB565 colour, raw
+    (Blocky16 mode 0: the 560-byte frame header, then width * height pixels, little endian). SHDR as Insane_ReadFrameHeader
+    (0x4bd7c0) and ScummVM's SmushDecoder read it: x, y, width, height at +4..+10, the time of a frame in us at +14, the size
+    of the largest frame at +18 (more than 0), a 1024-byte palette; FLHD with a Bl16 of the frame size and the Wave header (declared 8
+    bytes: the rate and the channels, then the total size of the audio). Every frame has its Wave too: the sample count (big
+    endian) and VIMA data of silence (all zero: step index 0, predictor 0, codes 0), as the game's movies all have sound."""
+    import gzip
+
+    def chunk(tag, body):
+        return tag + struct.pack(">I", len(body)) + body + (b"\0" if len(body) & 1 else b"")
+
+    samples = rate * frame_us // 1000000
+    wave = struct.pack(">i", samples) + bytes(3 + samples)
+    frames = []
+    for i, c in enumerate(colours):
+        head = bytearray(560)
+        # (the original's Blocky16_DecodeFrame 0x4ccd00 takes the frame's size from +8 and +12; +0x228, the pixel format, 0:
+        # 8, 16 bits. ScummVM's Blocky16 has the size from SHDR)
+        struct.pack_into("<HH", head, 8, width, 0)
+        struct.pack_into("<HH", head, 12, height, 0)
+        struct.pack_into("<H", head, 16, i)          # (sequence number: frame 0 starts the delta buffers)
+        head[18] = 0                                  # (mode 0: raw)
+        head[19] = 0                                  # (no buffer swap)
+        struct.pack_into("<H", head, 32, c)           # (the colour the delta buffers start with)
+        frames.append(chunk(b"FRME", chunk(b"Bl16", bytes(head) + struct.pack("<H", c) * (width * height)) + chunk(b"Wave", wave)))
+    biggest = max(len(f) for f in frames)
+    shdr = bytearray(struct.pack("<BBHHHHHHII", 1, 1, len(colours), 0, 0, width, height, 0, frame_us, biggest))
+    shdr += bytes(1024) + struct.pack("<H", 0)
+    # (FLHD's Bl16 goes to the same Blocky16_Prepare: the frame size and pixel format, 16 bits)
+    flhd = chunk(b"Bl16", struct.pack("<HHHH", 0, width, height, 2)) + b"Wave" + struct.pack(">I", 8) + struct.pack("<II", rate, 1) + struct.pack("<I", 2 * samples * len(colours))
+    body = chunk(b"SHDR", bytes(shdr)) + chunk(b"FLHD", flhd) + b"".join(frames)
+    return gzip.compress(b"SANM" + struct.pack(">I", len(body)) + body, mtime=0)
+
+
+def imus(seconds, rate=22050, freq=330.0, loop=True, marker=None, hook_jump=None, amplitude=6000):
+    """iMUSE's own sound format, as the game's music (.IMC; uncompressed, no MCMP): 'iMUS', a MAP and the DATA of 16-bit mono
+    PCM (a sine tone), laid out as IMuse::createSoundHeader writes it: FRMT (offset, endianness 0, word size, rate,
+    channels), the regions, STOP; every offset is a position in the file. Two regions of half the tone each, with a TEXT
+    marker between them when `marker` is given (iMUSE's triggers: "_end" and the like) and, at the end, a JUMP back to the
+    start (hook 0: taken unless the track's hook is 128) when `loop`. `hook_jump` (hook id, fade ms): a JUMP in the
+    middle back to the start, taken only when the track has that hook (ImSetState to a state of the same file with it)."""
+    n = int(seconds * rate) & ~1
+    pcm = b"".join(struct.pack("<h", int(amplitude * math.sin(2 * math.pi * freq * i / rate))) for i in range(n))
+    half = (len(pcm) // 4) * 2
+
+    def block(tag, *fields):
+        body = b"".join(struct.pack(">I", f & 0xFFFFFFFF) for f in fields)
+        return tag + struct.pack(">I", len(body)) + body
+
+    def text(offset, s):
+        body = struct.pack(">I", offset) + s.encode("latin-1") + b"\0"
+        return b"TEXT" + struct.pack(">I", len(body)) + body
+
+    def build(data_at):
+        m = block(b"FRMT", data_at, 0, 16, rate, 1)
+        m += block(b"REGN", data_at, half)
+        if hook_jump:
+            m += block(b"JUMP", data_at + half, data_at, hook_jump[0], hook_jump[1])
+        if marker:
+            m += text(data_at + half, marker)
+        m += block(b"REGN", data_at + half, len(pcm) - half)
+        if loop:
+            m += block(b"JUMP", data_at + len(pcm), data_at, 0, 0)
+        m += block(b"STOP", data_at + len(pcm))
+        return b"MAP " + struct.pack(">I", len(m)) + m
+
+    # (the map's size moves the data: build it once to know where the data is)
+    head = 16 + len(build(0)) - 8 + 8
+    mp = build(head)
+    body = mp + b"DATA" + struct.pack(">I", len(pcm)) + pcm
+    out = b"iMUS" + struct.pack(">I", len(body)) + body
+    return out

@@ -488,6 +488,21 @@ Hand-written tests, besides the per-frame walk and turn values:
   same params (`ImGetParam` play count, group, priority, volume, pan; out-of-range values clamped the same; a sound
   started twice has a play count of 2). Neither ends a sound or advances a fade within the test: the original runs on
   `NULLMUSE.DLL` with no sound driver, and ScummVM's iMUSE runs on the wall clock, which the 17 ms frames outrun.
+- Movies (`movie.lua`, 2026-11-07: `formats.snm`, gzipped SMUSH as the game's: SHDR, FLHD, FRME frames of raw Blocky16
+  (mode 0) with silent VIMA sound). The original's Insane player reads more of a frame than ScummVM: the frame size at +8
+  and +12 of each Bl16 header (`Blocky16_DecodeFrame` 0x4ccd00) and the size and pixel format of FLHD's Bl16
+  (`Blocky16_Prepare` 0x4cc3c0); without them it reaches an error message that crashes in `sprintf`. Both play the movie
+  by real time while the test's frames run far faster: the tests wait for seconds of `date` (and raise their frame
+  limit, `cr_allow_frames`). The same on both: the place on the screen (clipped at its edge; 0 0 without a place;
+  fullscreen is not scaled), the end of a movie, looping, StopMovie, a missing movie. `PauseMovie` is the other way
+  round: the original pauses with nil (FALSE) and goes on with TRUE (`Lua_PauseMovie`: `Movie_SetPaused(lua_isnil(arg))`),
+  though the game's pause menu calls `PauseMovie(TRUE)` to pause; ScummVM pauses with TRUE. The original leaves the last
+  frame of a movie that another replaced (it redraws what changed). TinyGL crashed on the second movie of a run:
+  `GfxTinyGL::releaseMovieFrame` deleted the frame's blit image and kept the pointer (fixed on klusark's `cleanroom`).
+- Music (`music.lua`: `formats.imus`, iMUSE's own format with a MAP of regions, a TEXT marker and JUMPs, under the names
+  of the state and sequence tables: `1001 - Manny's Office.IMC` and others). `ImSetState` / `ImSetSequence` open, stream
+  and jump in ScummVM; `ImGetParam` by file name sees no music on either engine (the scripts never open it by name), so
+  the tests show that the changes run, the same on both.
 - `IsMoviePlaying` / `IsFullscreenMoviePlaying` are true on ScummVM as it starts (`aa_boot.lua`): the `MoviePlayer` starts
   with `_videoFinished` false, until a movie call deinits it, so the argument probe's values depend on what ran before.
 - `GetTextObjectDimensions` of a killed text object crashes ScummVM (`TextObject::getBitmapWidth` with no object,
@@ -506,5 +521,6 @@ The builtins no test calls are the ones left out on purpose: the dialogs, SetGam
 (`TEST`, `quiet`, `vfx`, `debug`, `SpewStartup`) and the CD helpers.
 
 Binary models are written without faces (`formats.model3do`); text models can have faces (`formats.model3do_text`).
-Sounds are uncompressed .wav only (no .imu, no MCMP); movies (.snm), lip sync (.lip), compressed bitmaps (codec 3) and
-binary keyframes have no writer yet.
+Sounds are uncompressed: .wav and iMUSE's .IMC/.imu without MCMP. Movies are raw Blocky16 frames only (no delta modes);
+EMI's movies are Bink (no free encoder) and its music (`FullMonkeyMap.imt` and AIFF or VIMA tracks) has no writer yet.
+Lip sync (.lip), compressed bitmaps (codec 3) and binary keyframes have no writer yet.

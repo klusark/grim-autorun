@@ -25,6 +25,10 @@ FALSE = nil
 CR_TESTS = { }
 CR_N = 0
 CR_MAX_FRAMES = 1200
+-- (a test that waits for real time, as the movies do, sets its own limit: cr_allow_frames(n), for this test only)
+cr_allow_frames = function(n)
+	CR_ALLOWED = n
+end
 CR_CUR = "-"
 CR_DONE = nil
 CR_FAILS = 0
@@ -144,9 +148,10 @@ cr_main = function()
 			if CR_DIFFERS[CR_CUR] then
 				cr_out("DIFFERS " .. CR_CUR .. "|" .. CR_DIFFERS[CR_CUR])
 			end
+			CR_ALLOWED = nil
 			id = start_script(cr_task, CR_TESTS[i].fn)
 			f = 0
-			while find_script(id) and f < CR_MAX_FRAMES do
+			while find_script(id) and f < (CR_ALLOWED or CR_MAX_FRAMES) do
 				break_here()
 				f = f + 1
 			end
