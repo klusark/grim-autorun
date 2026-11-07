@@ -7,7 +7,7 @@ is compared with expected/original.log. A test that differs with any renderer ge
 same with every renderer loses it. The marks go next to the test:
   - a hand-written test: cr_scummvm_differs("name") in front of its cr_test("name", ...), on the same line (no line
     number changes: some results hold them); a test made under a computed name ("draw_" .. name) gets it at the end of
-    the file that makes it. In a file both games run, the mark names the game: cr_scummvm_differs("name", nil, "grim").
+    the file that makes it. In a file both games run (tests/common/), the mark names the game: cr_scummvm_differs("name", nil, "grim").
     A mark with a reason (cr_scummvm_differs("name", "why")) is never removed.
   - an argument test of tools/gen_args.py: its name in tools/args_differs.txt (args_differs_emi.txt), and gen_args.py is
     run again.
@@ -20,6 +20,7 @@ import sys
 HERE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, HERE)
 import compare  # noqa: E402
+import testfiles  # noqa: E402
 
 EMI = "--game" in sys.argv and sys.argv[sys.argv.index("--game") + 1] == "emi"
 if "--game" in sys.argv:
@@ -39,19 +40,11 @@ def parse(path):
 TAIL = "\n-- (ScummVM differs: tools/mark_known.py)\n"
 
 
-def games_of(path):
-    """The games of a test file as run.py reads them: "-- games: grim emi" near the top, grim when there is none."""
-    m = re.search(r"-- games:([a-z ]+?)\s*$", open(path, encoding="latin-1").read(4000), re.M)
-    return m.group(1).split() if m else ["grim"]
+games_of = testfiles.games_of
 
 
 def test_files():
-    out = []
-    for f in sorted(os.listdir(os.path.join(HERE, "tests"))):
-        p = os.path.join(HERE, "tests", f)
-        if f.endswith(".lua") and not f.startswith("zz_args") and ("emi" if EMI else "grim") in games_of(p):
-            out.append(p)
-    return out
+    return [p for p in testfiles.files("emi" if EMI else "grim") if not os.path.basename(p).startswith("zz_args")]
 
 
 def main():

@@ -1,4 +1,4 @@
--- EMI's actors without a costume: placing, turning, walking, sectors, the overworld (y up, the floor is x-z)  -- games: emi
+-- EMI's actors without a costume: placing, turning, walking, sectors, the overworld (y up, the floor is x-z)
 
 cr_ea_actor = function(set, nofollow)
 	MakeCurrentSet(set)

@@ -1,4 +1,4 @@
--- The rest of the interpreter's builtins: raw access, tag methods, globals, random numbers, the extra math, errors, scripts  -- games: grim emi
+-- The rest of the interpreter's builtins: raw access, tag methods, globals, random numbers, the extra math, errors, scripts
 
 cr_t_raw = function()
 	local t = { a = 1 }

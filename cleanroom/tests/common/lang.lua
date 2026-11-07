@@ -1,4 +1,4 @@
--- The Lua 3.1 language itself: upvalues, varargs, methods, strings, control flow, operators and their errors  -- games: grim emi
+-- The Lua 3.1 language itself: upvalues, varargs, methods, strings, control flow, operators and their errors
 
 cr_t_upvalues = function()
 	local base = 10

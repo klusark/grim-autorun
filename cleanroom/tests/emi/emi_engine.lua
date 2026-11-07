@@ -1,4 +1,4 @@
--- EMI's own builtins that need no costume: actor attributes, camera, overworld, layers, text, sound groups  -- games: emi
+-- EMI's own builtins that need no costume: actor attributes, camera, overworld, layers, text, sound groups
 
 cr_ee_actor = function()
 	MakeCurrentSet("cr_flat.set")

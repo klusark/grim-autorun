@@ -10,9 +10,9 @@ file of the game's data. See README.md.
   python run.py both                       both engines, compared with each other
   python run.py compare A.log B.log        compares two result logs
   python run.py <command> --game emi       the same for Escape from Monkey Island: the original Monkey4.exe v1.1 (through
-                                           grimlaunch.exe) and ScummVM's EMI; the test files whose "-- games:" names emi
+                                           grimlaunch.exe) and ScummVM's EMI; the test files of tests/common/ and tests/emi/
 
-Each test file names the games it runs on with "-- games: grim emi" at the end of its first line (none: grim only). Each game's original
+The test files are in tests/common/ (both games), tests/grim/ and tests/emi/ (testfiles.py). Each game's original
 is its own reference: expected/original.log for Grim, expected/emi_original.log for EMI. The EMI runs keep their files in
 build_emi/, run/emi/ and logs/emi/; its data go into one archive, local.m4b (the original reads no loose Lua). The Lua global
 CR_GAME is "grim" or "emi".
@@ -45,6 +45,7 @@ import assets_emi  # noqa: E402
 import formats  # noqa: E402
 import compare  # noqa: E402
 import snaps  # noqa: E402
+import testfiles  # noqa: E402
 
 ROOT = os.path.dirname(HERE)
 BUILD = os.path.join(HERE, "build")
@@ -67,7 +68,6 @@ EMI_INSTALL = os.environ.get("EMI_INSTALL", r"C:\GOG Games\Escape from Monkey Is
 EMI_PROGRAM_FILES = ["Monkey4.exe", "Mss32.dll", "binkw32.dll", "Mp3dec.asi", "Chorus.flt", "Reverb3.flt", "Sdelay.flt"]
 EMI_ARCHIVE = "local.m4b"
 EMI_MARKER = "emitestdata.txt"
-TESTS = os.path.join(HERE, "tests")
 GAME = "grim"
 
 
@@ -84,17 +84,9 @@ def set_game(game):
         CRASHERS = os.path.join(HERE, "expected", "emi_crashers.txt")
 
 
-def test_games(path):
-    """The games a test file runs on: "-- games: grim emi" at the end of a line near its top (the first line, so that no line number
-    of the file changes: some results hold them), grim when it has none."""
-    with open(path, encoding="latin-1") as f:
-        m = re.search(r"-- games:([a-z ]+?)\s*$", f.read(4000), re.M)
-    return m.group(1).split() if m else ["grim"]
-
-
 def test_files():
-    """The test files of the current game."""
-    return sorted(f for f in os.listdir(TESTS) if f.endswith(".lua") and GAME in test_games(os.path.join(TESTS, f)))
+    """The test files of the current game (their paths), in the order they run."""
+    return testfiles.files(GAME)
 
 
 MINGW32 = r"C:\msys64\mingw32\bin"
@@ -117,7 +109,7 @@ def lint():
     with open(stub, "wb") as f:
         f.write(b"cr_test = function(n, f) end\r\ncr_scummvm_differs = function(n, w, g) end\r\nseterrormethod = function(f) end\r\ndofile = function(f) end\r\n")
     # (the files of the game that runs: one of the other game's cannot stop its run)
-    files = [os.path.join(HERE, "lua", "_system.lua")] + [os.path.join(TESTS, t) for t in test_files()]
+    files = [os.path.join(HERE, "lua", "_system.lua")] + test_files()
     ok = True
     for path in files:
         out = subprocess.run([exe, dll, stub, path], capture_output=True, text=True, cwd=LUA31, timeout=30)
@@ -157,9 +149,9 @@ def build(only=None, skip=(), start=None, fails=0):
     if start:
         head += 'CR_FROM = "%s"\nCR_FAILS0 = %d\n' % (start, fails)
     head += "CR_SKIP = { }\n" + "".join('CR_SKIP["%s"] = 1\n' % n for n in sorted(skip))
-    files["_cr_tests.lua"] = formats.lua_text(head + "".join('dofile("cr_%s")\n' % t for t in tests))
+    files["_cr_tests.lua"] = formats.lua_text(head + "".join('dofile("cr_%s")\n' % os.path.basename(t) for t in tests))
     for t in tests:
-        files["cr_" + t] = formats.lua_text(open(os.path.join(HERE, "tests", t)).read())
+        files["cr_" + os.path.basename(t)] = formats.lua_text(open(t).read())
     files["_system.lua"] = formats.lua_text(open(os.path.join(HERE, "lua", "_system.lua")).read())
     if GAME == "emi":
         # (ScummVM stops when there is no script.tab; the original reads its Lua from archives only)
@@ -295,7 +287,7 @@ def keep_crash_log(engine, name):
 def file_tests(name):
     """The names of the tests of the test file that defines test `name`, in order (empty if it is not found)."""
     for t in test_files():
-        names = re.findall(r'cr_test\("([^"]+)"', open(os.path.join(TESTS, t)).read())
+        names = re.findall(r'cr_test\("([^"]+)"', open(t).read())
         if name in names:
             return names
     return []
@@ -336,7 +328,7 @@ def run_engine(engine, only=None, fresh=False):
         # (the valid call of a builtin crashes: every call that changes one position of it is skipped with it)
         m = re.match(r"^(args_.+)_p0$", name)
         if m:
-            text = "".join(open(os.path.join(TESTS, t)).read() for t in test_files() if t.startswith("zz_args"))
+            text = "".join(open(t).read() for t in test_files() if os.path.basename(t).startswith("zz_args"))
             group += sorted(set(re.findall(r'cr_test\("(%s_p[1-9][0-9]*_[a-z]+)"' % re.escape(m.group(1)), text)))
             print("%s: and the %d calls of its positions" % (engine, len(group) - 1))
         skip.update(group)

@@ -1,4 +1,4 @@
--- Frame time: PerSecond(1000) is the frame time in ms; around set changes, chores and the first frames of a task  -- games: grim emi
+-- Frame time: PerSecond(1000) is the frame time in ms; around set changes, chores and the first frames of a task
 
 cr_dt_trace = function(n)
 	local s = ""

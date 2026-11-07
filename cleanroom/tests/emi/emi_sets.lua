@@ -1,4 +1,4 @@
--- EMI's sets, setups and sectors (assets_emi.py): binary .setb, the floor in the x-z plane, y up  -- games: emi
+-- EMI's sets, setups and sectors (assets_emi.py): binary .setb, the floor in the x-z plane, y up
 -- (the sets are Grim's turned over: Grim's y is EMI's z. A point is given as x, y (height), z)
 
 cr_es_sector = function(key, x, y, z, t)

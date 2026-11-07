@@ -2,12 +2,14 @@
 
 The builtins are the function globals the builtins test logs (fn_<name>) in expected/original.log (the original's) and in
 logs/scummvm.log (ScummVM's). A builtin counts as covered when a test file calls it by name, other than in the
-generated argument probe (tests/zz_args.lua, which only calls with wrong arguments); probed counts the ones that file calls."""
+generated argument probe (tests/grim/zz_args.lua, which only calls with wrong arguments); probed counts the ones that file calls."""
 import os
 import re
 import sys
 
 HERE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, HERE)
+import testfiles  # noqa: E402
 FN = re.compile(r"^V builtins\|fn_([A-Za-z_0-9]+)\|")
 
 
@@ -28,10 +30,9 @@ def called(files):
 def main():
     orig = builtins(os.path.join(HERE, "expected", "original.log"))
     svm = builtins(os.path.join(HERE, "logs", "scummvm.log"))
-    tests = os.path.join(HERE, "tests")
-    files = [os.path.join(tests, f) for f in sorted(os.listdir(tests)) if f.endswith(".lua") and f != "zz_args.lua"]
+    files = [p for p in testfiles.all_files() if os.path.basename(p) != "zz_args.lua"]
     used = called(files)
-    probe = os.path.join(tests, "zz_args.lua")
+    probe = os.path.join(testfiles.TESTS, "grim", "zz_args.lua")
     probed = called([probe]) if os.path.exists(probe) else set()
     names = sorted(orig | svm)
     cov = [n for n in names if n in used]

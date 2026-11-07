@@ -1,4 +1,4 @@
--- More of the interpreter: patterns, number formatting, task control  -- games: grim emi
+-- More of the interpreter: patterns, number formatting, task control
 
 cr_t_patterns = function()
 	cr_log("digits", strfind("abc 123 def", "%d+"))
