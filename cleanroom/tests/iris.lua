@@ -19,10 +19,6 @@ cr_iris_reset = function()
 	cr_frames(3)
 end
 
--- (stock ScummVM is also a frame ahead: it adds the frame time in the frame of the call; the iris fix in
--- ~/scummvm-cleanroom makes OpenGL the same as the original, the software renderer keeps its edge)
-CR_IRIS_AHEAD = "software renderer: TinyGL blacks one more column and row on the right and bottom edges of the iris (stock ScummVM: also a frame ahead, the frame time added in the frame of the call)"
-
 cr_iris_test = function(name, fn)
 	cr_test("iris_" .. name, function()
 		MakeCurrentSet("cr_flat.set")
@@ -65,7 +61,6 @@ cr_iris_test("none", function(k)
 end)
 
 -- closing over 170 ms (10 frames) around the centre, every frame, then long after
-cr_scummvm_differs("iris_down", CR_IRIS_AHEAD)
 cr_iris_test("down", function(k)
 	IrisDown(320, 240, 170)
 	cr_iris_watch("f", 13)
@@ -74,7 +69,6 @@ cr_iris_test("down", function(k)
 end)
 
 -- opening over 170 ms from closed
-cr_scummvm_differs("iris_up", CR_IRIS_AHEAD)
 cr_iris_test("up", function(k)
 	IrisDown(320, 240, 17)
 	cr_frames(5)
@@ -86,7 +80,6 @@ cr_iris_test("up", function(k)
 end)
 
 -- off the centre: the rectangle closes on (100, 400) and opens from (500, 100)
-cr_scummvm_differs("iris_corner", CR_IRIS_AHEAD)
 cr_iris_test("corner", function(k)
 	IrisDown(100, 400, 170)
 	cr_iris_watch("down", 12, 3)
@@ -96,14 +89,12 @@ cr_iris_test("corner", function(k)
 end)
 
 -- a longer one: 680 ms (40 frames), every 8 frames
-cr_scummvm_differs("iris_long", CR_IRIS_AHEAD)
 cr_iris_test("long", function(k)
 	IrisDown(320, 240, 680)
 	cr_iris_watch("f", 48, 8)
 end)
 
 -- IrisUp while IrisDown is half way: the opening starts from closed, not from where the closing was
-cr_scummvm_differs("iris_reverse", CR_IRIS_AHEAD)
 cr_iris_test("reverse", function(k)
 	IrisDown(320, 240, 340)
 	cr_frames(10)

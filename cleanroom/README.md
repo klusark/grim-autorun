@@ -395,8 +395,8 @@ Hand-written tests, besides the per-frame walk and turn values:
   (0x486d00) blacks out the screen outside a rectangle from (t x, t y) to (640 - t (640 - x), 480 - t (480 - y)) (1 - t for
   IrisUp; t is a float, each edge truncated on its own). Stock ScummVM's iris is a frame ahead (it adds the frame time in
   the frame of the call; the original's first frame is t = 0: an `IrisUp(x, y, 1)` shows one black frame) and rounds the
-  right and bottom edges differently; the iris fix in `~/scummvm-cleanroom` (engines/grim/iris.cpp) makes OpenGL match to
-  the pixel. The software renderer (TinyGL) still blacks one more column and row on the right and bottom. The sign of the time is the
+  right and bottom edges differently, and TinyGL blacked one more column and row there; with the fix (klusark's branch
+  grim-iris-timing, in `~/scummvm-cleanroom` too) all three renderers match to the pixel. The sign of the time is the
   direction on the original (`IrisDown(-ms)` opens); ScummVM ends a negative time at once. The original redraws only what
   changed: an iris started again from open leaves the old black until it closes back past it. A closed iris stays closed
   through `MakeCurrentSet`, and text objects are drawn over it, on both. `IrisComplete` (1 when no iris runs or it is
