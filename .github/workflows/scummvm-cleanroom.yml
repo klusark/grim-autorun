@@ -40,6 +40,10 @@ jobs:
     runs-on: windows-latest
     timeout-minutes: 150
     steps:
+      # (the runner's git writes CRLF on Windows: the patch, with LF, would not apply to ScummVM's files)
+      - name: LF line ends
+        run: git config --global core.autocrlf false
+
       - name: Check out grim_tools
         uses: actions/checkout@v4
         with:
