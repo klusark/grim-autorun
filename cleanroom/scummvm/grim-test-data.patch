@@ -145,7 +145,7 @@ index c84f3cc2a3e..5a96b59a9bc 100644
  		_frameTime = 0;
  	}
  
-@@ -985,6 +1005,21 @@ void GrimEngine::drawNormalMode() {
+@@ -985,6 +1005,25 @@ void GrimEngine::drawNormalMode() {
  	_currSet->drawBitmaps(ObjectState::OBJSTATE_OVERLAY);
  }
  
@@ -154,7 +154,11 @@ index c84f3cc2a3e..5a96b59a9bc 100644
 +// patch.dll); the frames are not drawn at the same times on the two, so the scene is drawn here at once.
 +void GrimEngine::saveSnap(const char *file) {
 +	updateDisplayScene();
-+	Bitmap *frame = g_driver->getScreenshot(640, 480, false);
++	// (TinyGL draws when the frame is presented, which only one frame in 8 is: storeDisplay presents it first. The stored
++	// display is stored again before each of its uses, so taking it here changes nothing else)
++	if (_softRenderer)
++		g_driver->storeDisplay();
++	Bitmap *frame = g_driver->getScreenshot(640, 480, _softRenderer);
 +	if (frame) {
 +		frame->setActiveImage(0);
 +		Common::DumpFile out;
@@ -167,7 +171,7 @@ index c84f3cc2a3e..5a96b59a9bc 100644
  void GrimEngine::doFlip() {
  	_frameCounter++;
  	// When possible, flip the buffer
-@@ -1152,7 +1187,20 @@ void GrimEngine::mainLoop() {
+@@ -1152,7 +1191,20 @@ void GrimEngine::mainLoop() {
  			}
  		}
  
@@ -189,7 +193,7 @@ index c84f3cc2a3e..5a96b59a9bc 100644
  			// Draw the display scene before doing the luaUpdate.
  			// This give a large performance boost as OpenGL stores commands
  			// in a queue on the gpu to be rendered later. When doFlip is
-@@ -1162,7 +1210,10 @@ void GrimEngine::mainLoop() {
+@@ -1162,7 +1214,10 @@ void GrimEngine::mainLoop() {
  			updateDisplayScene();
  		}
  

@@ -4,14 +4,15 @@ A test calls cr_snap(key): PrintDebug("CRSNAP:<file>") saves a frame to <file> i
 patch.dll (Render_SaveScreenshotBmp, its back buffer at once) and on ScummVM through the test patch (the next frame drawn),
 and the log gets `key = "snap:<file>"`. After a run, resolve() replaces each of those values by the box of the bright pixels
 of the file (x0 y0 x1 y1, inclusive): the tests draw white text on the dark backgrounds of assets.py, so the box is that of
-the text. "none" when nothing is bright, "missing" when the file was not written."""
+the text. "none" when nothing is bright, "missing" when the file was not written. cr_snap(key, "dark"): the box of the
+pixels darker than any background (a shadow); cr_snap(key, "lit"): the box of the others (what an iris leaves open)."""
 import os
 import re
 import struct
 
 BRIGHT = 180  # (the backgrounds are at most 120 in any channel; ScummVM's screenshot is grey)
 
-SNAP = re.compile(r'^(V [^|]*\|[^|]*\|)"snap:([A-Za-z0-9_.]+)(:dark)?"$')
+SNAP = re.compile(r'^(V [^|]*\|[^|]*\|)"snap:([A-Za-z0-9_.]+)(:dark|:lit)?"$')
 DARK = 30  # (cr_snap(key, "dark"): the box of the pixels darker than any background, a shadow)
 
 
@@ -34,12 +35,14 @@ def read_bmp(path):
     return w, abs(h), rows
 
 
-def bright_box(path, dark=False):
+def bright_box(path, mode=None):
+    """mode None: the bright pixels; "dark": the darker than any background; "lit": the others."""
     w, h, rows = read_bmp(path)
     xs, ys = [], []
     for y, row in enumerate(rows):
         for x, (r, g, b) in enumerate(row):
-            if (r < DARK and g < DARK and b < DARK) if dark else (r >= BRIGHT and g >= BRIGHT and b >= BRIGHT):
+            dark = r < DARK and g < DARK and b < DARK
+            if dark if mode == "dark" else not dark if mode == "lit" else (r >= BRIGHT and g >= BRIGHT and b >= BRIGHT):
                 xs.append(x)
                 ys.append(y)
     if not xs:
@@ -65,6 +68,6 @@ def resolve(lines, folder):
         if not os.path.exists(path):
             out.append(m.group(1) + "missing")
             continue
-        box = bright_box(path, bool(m.group(3)))
+        box = bright_box(path, m.group(3)[1:] if m.group(3) else None)
         out.append(m.group(1) + ("none" if box is None else " ".join("%.6f" % v for v in box)))
     return out

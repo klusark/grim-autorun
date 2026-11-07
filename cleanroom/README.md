@@ -209,7 +209,11 @@ What Lua cannot read can be looked at on the screen: `cr_snap(key)` saves a pict
 box of its bright pixels (`x0 y0 x1 y1`, or `none`). The tests draw white text on the dark backgrounds, so the box is that
 of the text. The call is `PrintDebug("CRSNAP:<file>")`: on the original, patch.dll saves the back buffer with the game's own
 screenshot function (`Render_SaveScreenshotBmp` 0x487340, the Backspace+S debug key; only on v1.01, whose bytes it checks);
-on ScummVM, the test patch draws the scene and saves it (ScummVM's picture is grey, which does not change the box).
+on ScummVM, the test patch draws the scene and saves it (ScummVM's picture is grey, which does not change the box; with
+TinyGL it presents the frame first, as only one in 8 is). `cr_snap(key, "dark")` gives the box of the pixels darker than
+any background (a shadow), `cr_snap(key, "lit")` the box of the others (what an iris leaves open). The original's picture is
+the frame drawn before the call, ScummVM's the scene as it is at the call: a picture right after a change in the same frame
+differs for that reason alone, so the tests let a frame pass first.
 
 `compare.py` puts a test in one of three classes. `same`: equal within 1e-6. `close`: all differing values are numbers
 within 1e-3 (`--close`). `DIFF`: anything else.
@@ -226,7 +230,8 @@ Original-only traps found so far:
 - A chore of length 0 as an actor's rest chore hangs the original.
 - `FreeObjectState` frees the bitmap of the object state: a set with that bitmap as its background crashes when it is
   loaded afterwards. Object states and images in the tests use `cr_obj.bm` for that reason.
-- `IrisUp` / `IrisDown` without a running iris never return. `NextSetup` / `PreviousSetup` in a set with one setup and
+- `IrisUp` / `IrisDown` with a time of 0 stop the original (elapsed / time is 0 / 0; the argument probe's valid call has
+  it, so all its iris calls are skipped). `NextSetup` / `PreviousSetup` in a set with one setup and
   `MakeCurrentSetup` of a setup that does not exist crash.
 - The rest of the crashes with wrong arguments are listed in `expected/crashers.txt` (found by the argument probe).
 
@@ -385,6 +390,17 @@ Hand-written tests, besides the per-frame walk and turn values:
   the screen into six at the left; the original keeps it on one line (11 to 627). The off-screen position matches, except
   at the corners (a few pixels). A model without faces is never drawn: both use the off-screen position for an actor with
   such a costume, so the placement above a drawn actor is not tested yet.
+- The iris (`iris.lua`, with `cr_snap(key, "lit")`). On the original `IrisDown(x, y, ms)` / `IrisUp` store the clock, x, y
+  and the time (IrisUp: negated); each frame `Engine_RenderFrame` takes t = |elapsed / time| and `Render_DrawIris`
+  (0x486d00) blacks out the screen outside a rectangle from (t x, t y) to (640 - t (640 - x), 480 - t (480 - y)) (1 - t for
+  IrisUp; t is a float, each edge truncated on its own). Stock ScummVM's iris is a frame ahead (it adds the frame time in
+  the frame of the call; the original's first frame is t = 0: an `IrisUp(x, y, 1)` shows one black frame) and rounds the
+  right and bottom edges differently; the iris fix in `~/scummvm-cleanroom` (engines/grim/iris.cpp) makes OpenGL match to
+  the pixel. The software renderer (TinyGL) still blacks one more column and row on the right and bottom. The sign of the time is the
+  direction on the original (`IrisDown(-ms)` opens); ScummVM ends a negative time at once. The original redraws only what
+  changed: an iris started again from open leaves the old black until it closes back past it. A closed iris stays closed
+  through `MakeCurrentSet`, and text objects are drawn over it, on both. `IrisComplete` (1 when no iris runs or it is
+  closed; 0 for the 12 frames of a 170 ms one) and `IrisClear` (the screen open at once) are not in ScummVM.
 - Renderers: `run.py scummvm` runs every test with each of Grim's renderers (`opengl`, `opengl_shaders`, `software`
   TinyGL; `--renderer` picks some), one log each (`logs/scummvm_<renderer>.log`). 2026-11-05: 3950, 3953 and 3954 tests the
   same as the original. With shaders, `WorldToScreen` is wrong (nil for points on the floor, the centre of the screen for

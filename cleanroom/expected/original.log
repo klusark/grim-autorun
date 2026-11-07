@@ -1,4 +1,4 @@
-START 4940 tests
+START 4954 tests
 BEGIN attr_scale
 V attr_scale|scale|2.000000
 V attr_scale|scale_half|0.500000
@@ -505,7 +505,7 @@ V strings|ascii|65.000000
 END strings
 BEGIN next_order
 U next_order|order
-V next_order|order|"chepito,49,98,glottis,7,salvador,105,olivia,14,63,eva,112,21,meche,70,119,28,manny,velasco,126,56,lupe,35,133,84,domino,77,42,91,140,"
+V next_order|order|"49,manny,velasco,domino,7,lupe,105,98,14,63,140,112,21,chepito,70,35,119,glottis,28,77,salvador,126,56,olivia,133,84,eva,42,meche,91,"
 V next_order|globals_counted|1.000000
 END next_order
 BEGIN tasks
@@ -1296,6 +1296,163 @@ BEGIN head_actor
 V head_actor|actor|265.000000 161.000000 350.000000 243.000000
 V head_actor|actor_node|-0.084575 0.230169 0.965767
 END head_actor
+BEGIN iris_none
+V iris_none|open|0.000000 0.000000 639.000000 479.000000
+END iris_none
+BEGIN iris_down
+V iris_down|f_1|0.000000 0.000000 639.000000 479.000000
+V iris_down|f_2|32.000000 24.000000 607.000000 455.000000
+V iris_down|f_3|64.000000 48.000000 575.000000 431.000000
+V iris_down|f_4|96.000000 72.000000 543.000000 407.000000
+V iris_down|f_5|128.000000 96.000000 511.000000 383.000000
+V iris_down|f_6|160.000000 120.000000 479.000000 359.000000
+V iris_down|f_7|192.000000 144.000000 447.000000 335.000000
+V iris_down|f_8|223.000000 167.000000 416.000000 312.000000
+V iris_down|f_9|256.000000 192.000000 383.000000 287.000000
+V iris_down|f_10|287.000000 215.000000 352.000000 264.000000
+V iris_down|f_11|none
+V iris_down|f_12|none
+V iris_down|f_13|none
+V iris_down|later|none
+END iris_down
+BEGIN iris_up
+V iris_up|closed|none
+V iris_up|f_1|none
+V iris_up|f_2|287.000000 215.000000 352.000000 264.000000
+V iris_up|f_3|256.000000 192.000000 383.000000 287.000000
+V iris_up|f_4|223.000000 167.000000 416.000000 312.000000
+V iris_up|f_5|192.000000 144.000000 447.000000 335.000000
+V iris_up|f_6|160.000000 120.000000 479.000000 359.000000
+V iris_up|f_7|128.000000 96.000000 511.000000 383.000000
+V iris_up|f_8|96.000000 72.000000 543.000000 407.000000
+V iris_up|f_9|64.000000 48.000000 575.000000 431.000000
+V iris_up|f_10|32.000000 24.000000 607.000000 455.000000
+V iris_up|f_11|0.000000 0.000000 639.000000 479.000000
+V iris_up|f_12|0.000000 0.000000 639.000000 479.000000
+V iris_up|f_13|0.000000 0.000000 639.000000 479.000000
+V iris_up|later|0.000000 0.000000 639.000000 479.000000
+END iris_up
+BEGIN iris_corner
+V iris_corner|down_3|20.000000 80.000000 531.000000 463.000000
+V iris_corner|down_6|50.000000 200.000000 369.000000 439.000000
+V iris_corner|down_9|80.000000 320.000000 207.000000 415.000000
+V iris_corner|down_12|none
+V iris_corner|up_3|400.000000 80.000000 527.000000 175.000000
+V iris_corner|up_6|250.000000 50.000000 569.000000 289.000000
+V iris_corner|up_9|100.000000 20.000000 611.000000 403.000000
+V iris_corner|up_12|0.000000 0.000000 639.000000 479.000000
+END iris_corner
+BEGIN iris_long
+V iris_long|f_8|55.000000 41.000000 584.000000 438.000000
+V iris_long|f_16|120.000000 90.000000 519.000000 389.000000
+V iris_long|f_24|183.000000 137.000000 456.000000 342.000000
+V iris_long|f_32|247.000000 185.000000 392.000000 294.000000
+V iris_long|f_40|312.000000 234.000000 327.000000 245.000000
+V iris_long|f_48|none
+END iris_long
+BEGIN iris_reverse
+V iris_reverse|half|143.000000 107.000000 496.000000 372.000000
+V iris_reverse|f_1|none
+V iris_reverse|f_2|303.000000 227.000000 336.000000 252.000000
+V iris_reverse|f_3|287.000000 215.000000 352.000000 264.000000
+V iris_reverse|f_4|272.000000 204.000000 367.000000 275.000000
+V iris_reverse|f_5|256.000000 192.000000 383.000000 287.000000
+V iris_reverse|f_6|240.000000 180.000000 399.000000 299.000000
+V iris_reverse|later|0.000000 0.000000 639.000000 479.000000
+END iris_reverse
+BEGIN iris_restart
+V iris_restart|half|143.000000 107.000000 496.000000 372.000000
+V iris_restart|f_2|143.000000 107.000000 496.000000 372.000000
+V iris_restart|f_4|143.000000 107.000000 496.000000 372.000000
+V iris_restart|f_6|143.000000 107.000000 496.000000 372.000000
+V iris_restart|f_8|143.000000 107.000000 496.000000 372.000000
+V iris_restart|f_10|143.000000 107.000000 496.000000 372.000000
+V iris_restart|f_12|176.000000 132.000000 463.000000 347.000000
+V iris_restart|f_14|207.000000 155.000000 432.000000 324.000000
+V iris_restart|f_16|240.000000 180.000000 399.000000 299.000000
+END iris_restart
+BEGIN iris_negative_down
+V iris_negative_down|f_2|287.000000 215.000000 352.000000 264.000000
+V iris_negative_down|f_4|223.000000 167.000000 416.000000 312.000000
+V iris_negative_down|f_6|160.000000 120.000000 479.000000 359.000000
+V iris_negative_down|f_8|96.000000 72.000000 543.000000 407.000000
+V iris_negative_down|f_10|32.000000 24.000000 607.000000 455.000000
+V iris_negative_down|f_12|0.000000 0.000000 639.000000 479.000000
+END iris_negative_down
+BEGIN iris_negative_up
+V iris_negative_up|f_2|32.000000 24.000000 607.000000 455.000000
+V iris_negative_up|f_4|96.000000 72.000000 543.000000 407.000000
+V iris_negative_up|f_6|160.000000 120.000000 479.000000 359.000000
+V iris_negative_up|f_8|223.000000 167.000000 416.000000 312.000000
+V iris_negative_up|f_10|287.000000 215.000000 352.000000 264.000000
+V iris_negative_up|f_12|none
+END iris_negative_up
+BEGIN iris_set_change
+V iris_set_change|new_set|none
+V iris_set_change|back|none
+END iris_set_change
+BEGIN iris_text
+V iris_text|open|300.000000 227.000000 360.000000 236.000000
+V iris_text|closed|300.000000 227.000000 360.000000 236.000000
+V iris_text|half|300.000000 227.000000 360.000000 236.000000
+END iris_text
+BEGIN iris_complete
+V iris_complete|idle_0|1.000000
+V iris_complete|idle_1|1.000000
+V iris_complete|down_0|0.000000
+V iris_complete|down_1|0.000000
+V iris_complete|down_2|0.000000
+V iris_complete|down_3|0.000000
+V iris_complete|down_4|0.000000
+V iris_complete|down_5|0.000000
+V iris_complete|down_6|0.000000
+V iris_complete|down_7|0.000000
+V iris_complete|down_8|0.000000
+V iris_complete|down_9|0.000000
+V iris_complete|down_10|0.000000
+V iris_complete|down_11|0.000000
+V iris_complete|down_12|1.000000
+V iris_complete|closed_0|1.000000
+V iris_complete|closed_1|1.000000
+V iris_complete|up_0|1.000000
+V iris_complete|up_1|0.000000
+V iris_complete|up_2|0.000000
+V iris_complete|up_3|0.000000
+V iris_complete|up_4|0.000000
+V iris_complete|up_5|0.000000
+V iris_complete|up_6|0.000000
+V iris_complete|up_7|0.000000
+V iris_complete|up_8|0.000000
+V iris_complete|up_9|0.000000
+V iris_complete|up_10|0.000000
+V iris_complete|up_11|0.000000
+V iris_complete|up_12|1.000000
+V iris_complete|open_0|1.000000
+V iris_complete|open_1|1.000000
+END iris_complete
+BEGIN iris_complete_negative
+V iris_complete_negative|down_0|0.000000
+V iris_complete_negative|down_1|0.000000
+V iris_complete_negative|down_2|0.000000
+V iris_complete_negative|down_3|0.000000
+V iris_complete_negative|down_4|0.000000
+V iris_complete_negative|down_5|0.000000
+V iris_complete_negative|down_6|0.000000
+V iris_complete_negative|down_7|0.000000
+V iris_complete_negative|down_8|0.000000
+V iris_complete_negative|down_9|0.000000
+V iris_complete_negative|down_10|0.000000
+V iris_complete_negative|down_11|0.000000
+V iris_complete_negative|down_12|1.000000
+END iris_complete_negative
+BEGIN iris_clear
+V iris_clear|half_done_0|1.000000
+V iris_clear|half|0.000000 0.000000 639.000000 479.000000
+V iris_clear|half_later|0.000000 0.000000 639.000000 479.000000
+V iris_clear|closed_done_0|1.000000
+V iris_clear|closed_later|0.000000 0.000000 639.000000 479.000000
+V iris_clear|up_later|0.000000 0.000000 639.000000 479.000000
+END iris_clear
 BEGIN kf_rest
 V kf_rest|rest_body|-1.000000 0.000000 0.000000
 V kf_rest|rest_head|-1.000000 0.000000 1.700000
@@ -5371,7 +5528,7 @@ V args_GetActorNodeLocation_p2_tab|r|nil
 END args_GetActorNodeLocation_p2_tab
 BEGIN args_GetActorNodeLocation_p2_neg
 U args_GetActorNodeLocation_p2_neg|r
-V args_GetActorNodeLocation_p2_neg|r|0.000000 0.000000 0.000000
+V args_GetActorNodeLocation_p2_neg|r|0.000000 0.000000 -0.000000
 END args_GetActorNodeLocation_p2_neg
 SKIP args_GetActorNodeLocation_p2_big
 BEGIN args_GetActorPos_none
@@ -6343,27 +6500,27 @@ V args_GetCurrentSetup_p1_tab|r|nil
 END args_GetCurrentSetup_p1_tab
 BEGIN args_GetDiskFreeSpace_none
 U args_GetDiskFreeSpace_none|r
-V args_GetDiskFreeSpace_none|r|108994.250000
+V args_GetDiskFreeSpace_none|r|100653.593750
 END args_GetDiskFreeSpace_none
 BEGIN args_GetDiskFreeSpace_nil
 U args_GetDiskFreeSpace_nil|r
-V args_GetDiskFreeSpace_nil|r|108994.250000
+V args_GetDiskFreeSpace_nil|r|100653.593750
 END args_GetDiskFreeSpace_nil
 BEGIN args_GetDiskFreeSpace_str
 U args_GetDiskFreeSpace_str|r
-V args_GetDiskFreeSpace_str|r|108994.250000
+V args_GetDiskFreeSpace_str|r|100653.593750
 END args_GetDiskFreeSpace_str
 BEGIN args_GetDiskFreeSpace_num
 U args_GetDiskFreeSpace_num|r
-V args_GetDiskFreeSpace_num|r|108994.250000
+V args_GetDiskFreeSpace_num|r|100653.593750
 END args_GetDiskFreeSpace_num
 BEGIN args_GetDiskFreeSpace_tab
 U args_GetDiskFreeSpace_tab|r
-V args_GetDiskFreeSpace_tab|r|108994.250000
+V args_GetDiskFreeSpace_tab|r|100653.593750
 END args_GetDiskFreeSpace_tab
 BEGIN args_GetDiskFreeSpace_fn
 U args_GetDiskFreeSpace_fn|r
-V args_GetDiskFreeSpace_fn|r|108994.250000
+V args_GetDiskFreeSpace_fn|r|100653.593750
 END args_GetDiskFreeSpace_fn
 SKIP args_GetFontDimensions_none
 SKIP args_GetFontDimensions_nil
@@ -6576,27 +6733,27 @@ V args_GetLightType_l_tab|r|"omni"
 END args_GetLightType_l_tab
 BEGIN args_GetMemoryUsage_none
 U args_GetMemoryUsage_none|r
-V args_GetMemoryUsage_none|r|10828049.000000
+V args_GetMemoryUsage_none|r|11334989.000000
 END args_GetMemoryUsage_none
 BEGIN args_GetMemoryUsage_nil
 U args_GetMemoryUsage_nil|r
-V args_GetMemoryUsage_nil|r|10829184.000000
+V args_GetMemoryUsage_nil|r|11336324.000000
 END args_GetMemoryUsage_nil
 BEGIN args_GetMemoryUsage_str
 U args_GetMemoryUsage_str|r
-V args_GetMemoryUsage_str|r|10830304.000000
+V args_GetMemoryUsage_str|r|11337444.000000
 END args_GetMemoryUsage_str
 BEGIN args_GetMemoryUsage_num
 U args_GetMemoryUsage_num|r
-V args_GetMemoryUsage_num|r|10831624.000000
+V args_GetMemoryUsage_num|r|11338564.000000
 END args_GetMemoryUsage_num
 BEGIN args_GetMemoryUsage_tab
 U args_GetMemoryUsage_tab|r
-V args_GetMemoryUsage_tab|r|10832848.000000
+V args_GetMemoryUsage_tab|r|11339788.000000
 END args_GetMemoryUsage_tab
 BEGIN args_GetMemoryUsage_fn
 U args_GetMemoryUsage_fn|r
-V args_GetMemoryUsage_fn|r|10833965.000000
+V args_GetMemoryUsage_fn|r|11340905.000000
 END args_GetMemoryUsage_fn
 BEGIN args_GetPhysicalBytes_none
 V args_GetPhysicalBytes_none|r|2147483648.000000
@@ -7122,27 +7279,27 @@ V args_GetTextSpeed_fn|r|7.000000
 END args_GetTextSpeed_fn
 BEGIN args_GetTickCount_none
 U args_GetTickCount_none|r
-V args_GetTickCount_none|r|544702912.000000
+V args_GetTickCount_none|r|609841920.000000
 END args_GetTickCount_none
 BEGIN args_GetTickCount_nil
 U args_GetTickCount_nil|r
-V args_GetTickCount_nil|r|544702912.000000
+V args_GetTickCount_nil|r|609841920.000000
 END args_GetTickCount_nil
 BEGIN args_GetTickCount_str
 U args_GetTickCount_str|r
-V args_GetTickCount_str|r|544702912.000000
+V args_GetTickCount_str|r|609841920.000000
 END args_GetTickCount_str
 BEGIN args_GetTickCount_num
 U args_GetTickCount_num|r
-V args_GetTickCount_num|r|544702912.000000
+V args_GetTickCount_num|r|609841920.000000
 END args_GetTickCount_num
 BEGIN args_GetTickCount_tab
 U args_GetTickCount_tab|r
-V args_GetTickCount_tab|r|544702912.000000
+V args_GetTickCount_tab|r|609841920.000000
 END args_GetTickCount_tab
 BEGIN args_GetTickCount_fn
 U args_GetTickCount_fn|r
-V args_GetTickCount_fn|r|544702912.000000
+V args_GetTickCount_fn|r|609841920.000000
 END args_GetTickCount_fn
 BEGIN args_GetTranslationMode_none
 V args_GetTranslationMode_none|r|0.000000
@@ -9428,7 +9585,9 @@ END args_NewObjectState_nil
 BEGIN args_NewObjectState_str
 V args_NewObjectState_str|r|userdata
 END args_NewObjectState_str
-SKIP args_NewObjectState_num
+BEGIN args_NewObjectState_num
+V args_NewObjectState_num|r|userdata
+END args_NewObjectState_num
 BEGIN args_NewObjectState_tab
 V args_NewObjectState_tab|r|userdata
 END args_NewObjectState_tab
@@ -9444,7 +9603,9 @@ END args_NewObjectState_p1_nil
 BEGIN args_NewObjectState_p1_str
 V args_NewObjectState_p1_str|r|userdata
 END args_NewObjectState_p1_str
-SKIP args_NewObjectState_p1_num
+BEGIN args_NewObjectState_p1_num
+V args_NewObjectState_p1_num|r|userdata
+END args_NewObjectState_p1_num
 BEGIN args_NewObjectState_p1_tab
 V args_NewObjectState_p1_tab|r|userdata
 END args_NewObjectState_p1_tab
@@ -10646,27 +10807,27 @@ V args_ReadRegistryValue_p1_tab|r|nil
 END args_ReadRegistryValue_p1_tab
 BEGIN args_ResReport_none
 U args_ResReport_none|r
-V args_ResReport_none|r|11478238.000000
+V args_ResReport_none|r|11419137.000000
 END args_ResReport_none
 BEGIN args_ResReport_nil
 U args_ResReport_nil|r
-V args_ResReport_nil|r|11479509.000000
+V args_ResReport_nil|r|11420408.000000
 END args_ResReport_nil
 BEGIN args_ResReport_str
 U args_ResReport_str|r
-V args_ResReport_str|r|11480765.000000
+V args_ResReport_str|r|11421664.000000
 END args_ResReport_str
 BEGIN args_ResReport_num
 U args_ResReport_num|r
-V args_ResReport_num|r|11482021.000000
+V args_ResReport_num|r|11423320.000000
 END args_ResReport_num
 BEGIN args_ResReport_tab
 U args_ResReport_tab|r
-V args_ResReport_tab|r|11483381.000000
+V args_ResReport_tab|r|11424680.000000
 END args_ResReport_tab
 BEGIN args_ResReport_fn
 U args_ResReport_fn|r
-V args_ResReport_fn|r|11484630.000000
+V args_ResReport_fn|r|11425929.000000
 END args_ResReport_fn
 BEGIN args_ResetTextures_none
 V args_ResetTextures_none|r|nil
@@ -15708,7 +15869,7 @@ ERROR args_ceil_fn bad argument #1 to function `ceil' (number expected)
 FAILED args_ceil_fn
 BEGIN args_collectgarbage_none
 U args_collectgarbage_none|r
-V args_collectgarbage_none|r|942.000000
+V args_collectgarbage_none|r|7987.000000
 END args_collectgarbage_none
 BEGIN args_collectgarbage_nil
 ERROR args_collectgarbage_nil bad argument #1 to function `collectgarbage' (number expected)
@@ -15746,7 +15907,7 @@ ERROR args_cos_fn bad argument #1 to function `cos' (number expected)
 FAILED args_cos_fn
 BEGIN args_date_none
 U args_date_none|r
-V args_date_none|r|"11/06/26 08:31:03"
+V args_date_none|r|"11/07/26 02:36:42"
 END args_date_none
 BEGIN args_date_nil
 ERROR args_date_nil bad argument #1 to function `date' (string expected)
@@ -16513,11 +16674,11 @@ V args_tostring_num|r|"1.5"
 END args_tostring_num
 BEGIN args_tostring_tab
 U args_tostring_tab|r
-V args_tostring_tab|r|"table: 04366BDC"
+V args_tostring_tab|r|"table: 0855326C"
 END args_tostring_tab
 BEGIN args_tostring_fn
 U args_tostring_fn|r
-V args_tostring_fn|r|"function: 04000BFC"
+V args_tostring_fn|r|"function: 03EE437C"
 END args_tostring_fn
 BEGIN args_type_none
 ERROR args_type_none API error - attempt to push a NOOBJECT
@@ -16537,4 +16698,4 @@ END args_type_tab
 BEGIN args_type_fn
 V args_type_fn|r|"function" -4.000000
 END args_type_fn
-SUMMARY 4940 tests, 255 failed
+SUMMARY 4954 tests, 255 failed

@@ -63,7 +63,8 @@ cr_unstable = function(key)
 	cr_out("U " .. CR_CUR .. "|" .. key)
 end
 
--- A picture of the screen: run.py puts the box of the bright pixels of it (x0 y0 x1 y1) in the log under key (snaps.py).
+-- A picture of the screen: run.py puts the box of the bright pixels of it (x0 y0 x1 y1) in the log under key (snaps.py);
+-- mode "dark": of the pixels darker than any background, "lit": of the others.
 -- The original saves its back buffer at once; ScummVM the next frame it draws: let a frame or two pass before changing what
 -- is on the screen.
 CR_SNAP_N = 0
@@ -71,8 +72,8 @@ cr_snap = function(key, mode)
 	CR_SNAP_N = CR_SNAP_N + 1
 	local f = "crsnap" .. CR_SNAP_N .. ".bmp"
 	PrintDebug("CRSNAP:" .. f)
-	if mode == "dark" then
-		cr_log(key, "snap:" .. f .. ":dark")
+	if mode == "dark" or mode == "lit" then
+		cr_log(key, "snap:" .. f .. ":" .. mode)
 	else
 		cr_log(key, "snap:" .. f)
 	end
