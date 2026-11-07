@@ -186,3 +186,6 @@ Rule: every function that is decoded gets a name (and a plate comment for what i
 | 0x004635a0 / 0x00463680 / 0x00463760 | (GL device vtable +0x54/+0x58/+0x5c) | fixed function directional/point/spot light setters; no callers found |
 | 0x004a00a0 (Grim) | Lua_GetAngleBetweenActors | unsigned angle between the walker heading axis and the 3D direction to the other actor (delta normalized with its vertical part, not flattened) |
 | 0x0041af40 (EMI, Monkey4.exe) | Lua_GetAngleBetweenActors | acos(dot((sin yaw, 0, cos yaw), normalized 3D delta)), degrees, unsigned; actor yaw = +0xb4 |
+| 0x00451800 | rdLight_CalcFaceIntensity | (was rdKeyframe_InterpolateNode) flat face light for face light mode 2; every light treated as omni at the face's first vertex, normal negated for back faces |
+| 0x00450060 | Matrix34_TransformPoint | (was Vec3_Sub) out = a*R + t |
+| 0x0044efd0 | Matrix34_InvertRigid | (was Matrix_Transpose) rotation transposed, translation -(R^T t) |
