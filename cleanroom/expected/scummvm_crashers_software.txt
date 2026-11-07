@@ -1,19 +1,1 @@
 # tests that crash or hang ScummVM (software renderer; found by run.py); skipped, run.py --fresh tries them again
-args_GetActorNodeLocation_p2_neg
-args_ImFadeParam_p1_neg
-args_ImGetParam_p1_neg
-args_ImSetParam_p1_neg
-args_ImStopSound_p1_neg
-args_MakeCurrentSetup_p1_neg
-args_NewObjectState_p3_nil
-args_NewObjectState_p3_tab
-args_SetActiveShadow_p2_big
-args_SetActiveShadow_p2_neg
-args_SetActorHead_p2_big
-args_SetActorHead_p3_big
-args_SetActorHead_p4_big
-args_SetActorTurnChores_c_chore_neg
-args_SetActorTurnChores_p2_neg
-args_SetActorTurnChores_p3_neg
-save_data_none
-text_dims_killed
