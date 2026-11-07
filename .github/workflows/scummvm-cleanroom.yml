@@ -1,0 +1,162 @@
+# The clean-room engine tests (cleanroom/, see its README) against ScummVM: builds ScummVM (upstream master by default) with
+# cleanroom/scummvm/grim-test-data.patch and runs `run.py scummvm` for Grim and for EMI, compared with the expected logs of
+# the originals (cleanroom/expected/). The originals themselves are not run here (no game files on the runner).
+# The job fails when a test differs without a cr_scummvm_differs mark, or crashes ScummVM without one.
+name: ScummVM clean-room tests
+
+on:
+  workflow_dispatch:
+    inputs:
+      scummvm_repo:
+        description: ScummVM repository to test
+        default: scummvm/scummvm
+      scummvm_ref:
+        description: Branch, tag or commit of it
+        default: master
+      renderers:
+        description: Grim's renderers (comma separated)
+        default: opengl,opengl_shaders,software
+  schedule:
+    - cron: "23 5 * * *"
+  push:
+    branches: [main]
+    paths:
+      - "cleanroom/**"
+      - ".github/workflows/scummvm-cleanroom.yml"
+
+concurrency:
+  group: scummvm-cleanroom-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  SCUMMVM_REPO: ${{ inputs.scummvm_repo || 'scummvm/scummvm' }}
+  SCUMMVM_REF: ${{ inputs.scummvm_ref || 'master' }}
+  CR_RENDERERS: ${{ inputs.renderers || 'opengl,opengl_shaders,software' }}
+  # (Mesa's software OpenGL, llvmpipe, next to scummvm.exe: the runner has no GPU)
+  MESA_VERSION: "26.2.4"
+
+jobs:
+  scummvm:
+    runs-on: windows-latest
+    timeout-minutes: 150
+    steps:
+      - name: Check out grim_tools
+        uses: actions/checkout@v4
+        with:
+          path: grim_tools
+
+      - name: Check out ScummVM
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ env.SCUMMVM_REPO }}
+          ref: ${{ env.SCUMMVM_REF }}
+          path: scummvm
+
+      # (the runner's own MSYS2 at C:\msys64, the path run.py and its tools use)
+      - name: MSYS2 packages
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: UCRT64
+          release: false
+          update: false
+          install: make
+          pacboy: >-
+            toolchain:p ccache:p SDL2:p zlib:p libpng:p libjpeg-turbo:p freetype:p
+            libvorbis:p flac:p libmad:p faad2:p a52dec:p libmpeg2:p libtheora:p fribidi:p
+
+      - name: ccache
+        uses: actions/cache@v4
+        with:
+          path: ccache
+          key: ccache-ucrt64-${{ github.run_id }}
+          restore-keys: ccache-ucrt64-
+
+      - name: Build ScummVM with the test patch
+        shell: msys2 {0}
+        env:
+          CCACHE_DIR: ${{ github.workspace }}\ccache
+          CCACHE_MAXSIZE: 1G
+        run: |
+          cd scummvm
+          echo "ScummVM $SCUMMVM_REPO $SCUMMVM_REF: $(git rev-parse HEAD) $(git log -1 --format=%s)" | tee -a "$GITHUB_STEP_SUMMARY"
+          git apply ../grim_tools/cleanroom/scummvm/grim-test-data.patch
+          mkdir build && cd build
+          CXX="ccache g++" CC="ccache gcc" ../configure --disable-all-engines --enable-engines=grim,monkey4 --enable-release \
+            --disable-libcurl --disable-sdlnet --disable-cloud --disable-updates --disable-tts
+          make -j$(nproc)
+          ccache -s
+
+      - name: Mesa llvmpipe
+        shell: pwsh
+        run: |
+          $url = "https://github.com/pal1000/mesa-dist-win/releases/download/$env:MESA_VERSION/mesa3d-$env:MESA_VERSION-release-mingw.7z"
+          Invoke-WebRequest -Uri $url -OutFile mesa.7z
+          7z x -y -omesa mesa.7z | Out-Null
+          foreach ($f in "opengl32.dll", "libgallium_wgl.dll", "dxil.dll") { Copy-Item "mesa\x64\$f" scummvm\build\ }
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Grim
+        id: grim
+        continue-on-error: true
+        shell: pwsh
+        env:
+          GALLIUM_DRIVER: llvmpipe
+          # (the windows on the runner's desktop; the runner is slower than a desk machine)
+          CR_VISIBLE: "1"
+          CR_STALL: "30"
+          CR_STARTUP: "120"
+        run: |
+          $env:SCUMMVM = "$env:GITHUB_WORKSPACE\scummvm\build\scummvm.exe"
+          python grim_tools\cleanroom\run.py scummvm 2>&1 | Tee-Object grim.txt
+          exit $LASTEXITCODE
+
+      - name: EMI
+        id: emi
+        continue-on-error: true
+        shell: pwsh
+        env:
+          GALLIUM_DRIVER: llvmpipe
+          CR_VISIBLE: "1"
+          CR_STALL: "30"
+          CR_STARTUP: "120"
+          CR_RENDERERS: opengl,software
+        run: |
+          $env:SCUMMVM = "$env:GITHUB_WORKSPACE\scummvm\build\scummvm.exe"
+          python grim_tools\cleanroom\run.py scummvm --game emi 2>&1 | Tee-Object emi.txt
+          exit $LASTEXITCODE
+
+      - name: Summary
+        if: always()
+        shell: pwsh
+        run: |
+          foreach ($g in "grim", "emi") {
+            if (-not (Test-Path "$g.txt")) { continue }
+            Add-Content $env:GITHUB_STEP_SUMMARY "### $g`n``````"
+            Get-Content "$g.txt" | Where-Object { $_ -match '^==== |REGRESSION|tests differ|crashed or hung|not marked|fixed, take the mark out' } |
+              ForEach-Object { if ($_.Length -gt 400) { $_.Substring(0, 400) + " ..." } else { $_ } } |
+              Add-Content $env:GITHUB_STEP_SUMMARY
+            Add-Content $env:GITHUB_STEP_SUMMARY "``````"
+          }
+
+      - name: Logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cleanroom-logs
+          path: |
+            grim.txt
+            emi.txt
+            grim_tools/cleanroom/logs/
+          if-no-files-found: ignore
+
+      - name: Result
+        if: always()
+        shell: pwsh
+        run: |
+          if ("${{ steps.grim.outcome }}" -ne "success" -or "${{ steps.emi.outcome }}" -ne "success") {
+            Write-Error "Grim: ${{ steps.grim.outcome }}, EMI: ${{ steps.emi.outcome }} (regressions or new crashers: see the summary and the logs)"
+            exit 1
+          }
