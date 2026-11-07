@@ -4,6 +4,9 @@
 # one without the test patch (upstream master) gets cleanroom/scummvm/grim-test-data.patch with "apply_patch". The
 # originals themselves are not run here (no game files on the runner).
 # The job fails when a test differs without a cr_scummvm_differs mark, or crashes ScummVM without one.
+# The job "coverage" runs the same tests (both games, every renderer) on a gcov build of the same ScummVM and writes the
+# coverage of engines/grim and graphics/tinygl (autorun/tools/covreport.py --all) to the run's summary, with the pages of
+# every file as the artifact "coverage". It does not fail the run.
 name: ScummVM clean-room tests
 
 on:
@@ -20,7 +23,7 @@ on:
         type: boolean
         default: false
       renderers:
-        description: Grim's renderers (comma separated)
+        description: Renderers, for Grim and EMI (comma separated)
         default: opengl,opengl_shaders,software
   schedule:
     - cron: "23 5 * * *"
@@ -133,7 +136,6 @@ jobs:
           CR_VISIBLE: "1"
           CR_STALL: "30"
           CR_STARTUP: "120"
-          CR_RENDERERS: opengl,software
         run: |
           $env:SCUMMVM = "$env:GITHUB_WORKSPACE\scummvm\build\scummvm.exe"
           python grim_tools\cleanroom\run.py scummvm --game emi 2>&1 | Tee-Object emi.txt
@@ -171,3 +173,109 @@ jobs:
             Write-Error "Grim: ${{ steps.grim.outcome }}, EMI: ${{ steps.emi.outcome }} (regressions or new crashers: see the summary and the logs)"
             exit 1
           }
+
+  coverage:
+    runs-on: windows-latest
+    timeout-minutes: 340
+    steps:
+      - name: LF line ends
+        run: git config --global core.autocrlf false
+
+      - name: Check out grim_tools
+        uses: actions/checkout@v4
+        with:
+          path: grim_tools
+
+      - name: Check out ScummVM
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ env.SCUMMVM_REPO }}
+          ref: ${{ env.SCUMMVM_REF }}
+          path: scummvm
+
+      - name: MSYS2 packages
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: UCRT64
+          release: false
+          update: false
+          install: make git
+          pacboy: >-
+            toolchain:p ccache:p SDL2:p zlib:p libpng:p libjpeg-turbo:p freetype:p
+            libvorbis:p flac:p libmad:p faad2:p a52dec:p libmpeg2:p libtheora:p fribidi:p
+
+      - name: ccache
+        uses: actions/cache@v4
+        with:
+          path: ccache
+          key: ccache-cov-ucrt64-${{ github.run_id }}
+          restore-keys: ccache-cov-ucrt64-
+
+      # (gcov, -O0; -DCR_GCOV: the test patch writes the counters in Exit() and every 200 tests, see cleanroom/README.md)
+      - name: Build ScummVM with gcov
+        shell: msys2 {0}
+        env:
+          CCACHE_DIR: ${{ github.workspace }}\ccache
+          CCACHE_MAXSIZE: 1G
+        run: |
+          cd scummvm
+          echo "ScummVM $SCUMMVM_REPO $SCUMMVM_REF: $(git rev-parse HEAD) $(git log -1 --format=%s)" | tee -a "$GITHUB_STEP_SUMMARY"
+          if [ -n "$APPLY_PATCH" ]; then git apply ../grim_tools/cleanroom/scummvm/grim-test-data.patch; fi
+          mkdir build && cd build
+          CXX="ccache g++" CC="ccache gcc" CXXFLAGS="--coverage -O0" LDFLAGS="--coverage" ../configure \
+            --disable-all-engines --enable-engines=grim,monkey4 \
+            --disable-libcurl --disable-sdlnet --disable-cloud --disable-updates --disable-tts
+          sed -i 's/^CXXFLAGS := \(.*\)$/CXXFLAGS := \1 -DCR_GCOV/' config.mk
+          make -j$(nproc)
+          find . -name '*.gcda' -delete
+          ccache -s
+
+      - name: Mesa llvmpipe
+        shell: pwsh
+        run: |
+          $url = "https://github.com/pal1000/mesa-dist-win/releases/download/$env:MESA_VERSION/mesa3d-$env:MESA_VERSION-release-mingw.7z"
+          Invoke-WebRequest -Uri $url -OutFile mesa.7z
+          7z x -y -omesa mesa.7z | Out-Null
+          foreach ($f in "opengl32.dll", "libgallium_wgl.dll", "dxil.dll") { Copy-Item "mesa\x64\$f" scummvm\build\ }
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      # (the results do not matter here, only what ran: a failing game does not stop the other or the report)
+      - name: Tests
+        continue-on-error: true
+        shell: pwsh
+        env:
+          GALLIUM_DRIVER: llvmpipe
+          CR_VISIBLE: "1"
+          CR_STALL: "90"
+          CR_STARTUP: "240"
+        run: |
+          $env:SCUMMVM = "$env:GITHUB_WORKSPACE\scummvm\build\scummvm.exe"
+          python grim_tools\cleanroom\run.py scummvm 2>&1 | Tee-Object grim.txt | Select-String '^==== '
+          python grim_tools\cleanroom\run.py scummvm --game emi 2>&1 | Tee-Object emi.txt | Select-String '^==== '
+          exit 0
+
+      - name: Report
+        if: always()
+        shell: pwsh
+        run: |
+          $sha = git -C scummvm rev-parse --short HEAD
+          python grim_tools\autorun\tools\covreport.py coverage "$env:GITHUB_WORKSPACE\scummvm\build" "$env:GITHUB_WORKSPACE\scummvm" --all `
+            --title "the clean-room tests (Grim and EMI, renderers $env:CR_RENDERERS) on $env:SCUMMVM_REPO $env:SCUMMVM_REF ($sha)"
+          Add-Content $env:GITHUB_STEP_SUMMARY "### Coverage`n``````"
+          Get-Content coverage\summary.txt | Select-Object -First 60 | Add-Content $env:GITHUB_STEP_SUMMARY
+          Add-Content $env:GITHUB_STEP_SUMMARY "``````"
+          Add-Content $env:GITHUB_STEP_SUMMARY "Each file with the lines never run: the artifact ``coverage`` (index.html)."
+
+      - name: Coverage pages
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage
+          path: |
+            coverage/
+            grim.txt
+            emi.txt
+          if-no-files-found: ignore

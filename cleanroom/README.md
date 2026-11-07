@@ -250,6 +250,11 @@ compared with the expected logs here; the originals are not run there. The job f
 a mark; the summary lists them and the logs are kept as an artifact. The marks follow upstream master: a test that only
 the fixes in progress make the same is "fixed" there (its mark stays until upstream has the fix).
 
+Both games run with every renderer (`opengl`, `opengl_shaders`, `software`). A second job, `coverage`, builds the same
+ScummVM with gcov (as below), runs both games with every renderer on it and writes the coverage of engines/grim and
+graphics/tinygl (`covreport.py --all`, every part with its total) to the run's summary; the page of each file, with the
+lines never run, is the artifact `coverage` (`index.html`). Its results are not compared and it never fails the run.
+
 ## Coverage of ScummVM
 
 A gcov build of the cleanroom worktree measures which lines of engines/grim the tests run:
