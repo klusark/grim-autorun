@@ -507,6 +507,113 @@ def snm(width, height, colours, frame_us=66667, rate=22050):
     return gzip.compress(b"SANM" + struct.pack(">I", len(body)) + body, mtime=0)
 
 
+class _Bits:
+    """A bit writer in Bink's order: each value's low bit first, packed into 32-bit little-endian words."""
+
+    def __init__(self):
+        self.acc = 0
+        self.n = 0
+
+    def put(self, nbits, v):
+        assert 0 <= v < (1 << nbits), (nbits, v)
+        self.acc |= v << self.n
+        self.n += nbits
+
+    def align32(self):
+        self.n = (self.n + 31) & ~31
+
+    def bytes(self):
+        assert self.n % 32 == 0
+        return self.acc.to_bytes(self.n // 8, "little")
+
+
+def _yuv(rgb):
+    """RGB to the ITU-R BT.601 YUV (16-235) that Bink decodes with."""
+    r, g, b = rgb
+    y = 16 + 0.257 * r + 0.504 * g + 0.098 * b
+    u = 128 - 0.148 * r - 0.291 * g + 0.439 * b
+    v = 128 + 0.439 * r - 0.368 * g - 0.071 * b
+    return tuple(max(0, min(255, int(round(c)))) for c in (y, u, v))
+
+
+def _bink_plane(bits, blocks_w, blocks_h, value, width):
+    """One plane of a Bink 1 frame (BIKi) whose 8x8 blocks are all fill blocks (block type 6, one colour each): value(bx, by)
+    gives a block's byte. As ScummVM's BinkDecoder::decodePlane (and FFmpeg's bink_decode_plane) read it: the Huffman tree
+    of each bundle (4 bits; tree 0 sends raw nibbles, and the colours have 16 more for their high nibbles), then per row of
+    blocks each bundle whose values are used up reads a count (n == 0: no more of it in this plane) and its values. Here every
+    row brings its block types (all the same: the flag 1 and 6) and its colours; the other bundles get 0 on the first row.
+    width: the plane's width in pixels (the bundles' count lengths follow from it)."""
+    lg = lambda x: x.bit_length() - 1  # noqa: E731
+    w = max(width, 8)
+    cbw = (width + 7) >> 3
+    n_bt = lg((w >> 3) + 511) + 1
+    n_sub = lg(((w + 7) >> 4) + 511) + 1
+    n_col = lg(cbw * 64 + 511) + 1
+    n_small = lg((w >> 3) + 511) + 1        # (motion x, y, the two DCs)
+    n_pat = lg((cbw << 3) + 511) + 1
+    n_run = lg(cbw * 48 + 511) + 1
+    for source in range(9):                 # (block types, sub block types, colours, pattern, x, y, intra DC, inter DC, run)
+        if source == 2:
+            for _ in range(16):
+                bits.put(4, 0)
+        if source not in (6, 7):
+            bits.put(4, 0)
+    for by in range(blocks_h):
+        bits.put(n_bt, blocks_w)
+        bits.put(1, 1)
+        bits.put(4, 6)
+        if by == 0:
+            bits.put(n_sub, 0)
+        row = [value(bx, by) for bx in range(blocks_w)]
+        bits.put(n_col, blocks_w)
+        if all(v == row[0] for v in row):
+            bits.put(1, 1)
+            bits.put(4, row[0] >> 4)
+            bits.put(4, row[0] & 15)
+        else:
+            bits.put(1, 0)
+            for v in row:
+                bits.put(4, v >> 4)
+                bits.put(4, v & 15)
+        if by == 0:
+            for n in (n_pat, n_small, n_small, n_small, n_small, n_run):
+                bits.put(n, 0)
+    bits.align32()
+
+
+def bik(width, height, frames, fps=15):
+    """A Bink 1 movie, revision i (BIKi, as EMI's movies; ScummVM's BinkDecoder and the original's binkw32.dll read it), with
+    no sound track. frames: one per frame, either an RGB colour (the whole frame) or a function (x, y) -> RGB, asked once per
+    8 x 8 block at its top-left pixel (the colour planes, at half size, once per 16 x 16). Every block is a fill block, every
+    frame a key frame. The header: 'BIKi', the size after the first 8 bytes, the frame count, the largest frame, the frame
+    count again, width, height, the frame rate (num, den), flags, the number of audio tracks (0); then the frame offsets (bit 0:
+    key frame) and one more, the end of the file. A frame of BIKi starts with 32 bits, the byte offset of the second plane in
+    the frame; then Y and the two colour planes (V first: BIKi swaps them), each at a 32-bit boundary."""
+    yw, yh = (width + 7) >> 3, (height + 7) >> 3
+    cw, ch = (width + 15) >> 4, (height + 15) >> 4
+    packets = []
+    for f in frames:
+        at = f if callable(f) else (lambda x, y, c=f: c)
+        y_of = lambda bx, by: _yuv(at(bx * 8, by * 8))[0]        # noqa: E731
+        c_of = lambda bx, by: _yuv(at(bx * 16, by * 16))          # noqa: E731
+        luma = _Bits()
+        _bink_plane(luma, yw, yh, y_of, width)
+        chroma = _Bits()
+        _bink_plane(chroma, cw, ch, lambda bx, by: c_of(bx, by)[2], width >> 1)
+        _bink_plane(chroma, cw, ch, lambda bx, by: c_of(bx, by)[1], width >> 1)
+        y = luma.bytes()
+        packets.append(struct.pack("<I", 4 + len(y)) + y + chroma.bytes())
+    n = len(packets)
+    head_size = 44 + 4 * (n + 1)
+    offsets, pos = [], head_size
+    for p in packets:
+        offsets.append(pos | 1)
+        pos += len(p)
+    offsets.append(pos)
+    head = b"BIKi" + struct.pack("<IIIIIIIIII", pos - 8, n, max(len(p) for p in packets), n, width, height, fps, 1, 0, 0)
+    return head + struct.pack("<%dI" % (n + 1), *offsets) + b"".join(packets)
+
+
 def imus(seconds, rate=22050, freq=330.0, loop=True, marker=None, hook_jump=None, amplitude=6000):
     """iMUSE's own sound format, as the game's music (.IMC; uncompressed, no MCMP): 'iMUS', a MAP and the DATA of 16-bit mono
     PCM (a sine tone), laid out as IMuse::createSoundHeader writes it: FRMT (offset, endianness 0, word size, rate,

@@ -157,12 +157,15 @@ def build(only=None, skip=(), start=None, fails=0):
         # (ScummVM stops when there is no script.tab; the original reads its Lua from archives only)
         files["script.tab"] = formats.text_table_emi(assets.TEXT)
         files = {EMI_ARCHIVE: formats.lab_emi(files)}
+        # (outside the archive: the movies, which both engines open as files of Movies/)
+        files.update(assets_emi.loose_files())
         files[EMI_MARKER] = b"Escape from Monkey Island engine test data, see grim_tools/cleanroom/README.md\r\n"
     else:
         # (ScummVM detects the test data by this file)
         files[MARKER] = b"Grim engine test data, see grim_tools/cleanroom/README.md\r\n"
     files[MANIFEST] = ("\n".join(sorted(files) + [MANIFEST]) + "\n").encode("ascii")
     for name, data in files.items():
+        os.makedirs(os.path.dirname(os.path.join(BUILD, name)), exist_ok=True)
         with open(os.path.join(BUILD, name), "wb") as f:
             f.write(data)
     print("built %s: %d files, %d test files (%s)" % (BUILD, len(files), len(tests), GAME))
@@ -178,8 +181,11 @@ def copy_data(dest):
             p = os.path.join(dest, name)
             if os.path.isfile(p):
                 os.remove(p)
-    for f in os.listdir(BUILD):
-        shutil.copyfile(os.path.join(BUILD, f), os.path.join(dest, f))
+    for root, _, names in os.walk(BUILD):
+        sub = os.path.relpath(root, BUILD)
+        os.makedirs(os.path.join(dest, sub), exist_ok=True)
+        for f in names:
+            shutil.copyfile(os.path.join(root, f), os.path.join(dest, sub, f))
 
 
 CRASHERS = os.path.join(HERE, "expected", "crashers.txt")

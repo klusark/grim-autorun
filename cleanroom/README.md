@@ -271,8 +271,7 @@ at once (a fast fail 0xC0000409, a corrupt heap 0xC0000374) skips every handler,
 every 200 tests (`PrintDebug("CRGCOV")`: `__gcov_dump()` and `__gcov_reset()` in a `CR_GCOV` build, nothing otherwise):
 a crash loses only what ran since. 2026-11-05: 42.3% of the lines (11596 of 27397, without lua, emi, remastered, tinygl).
 2026-11-07: 41.7% (10357 of 24864) before and 49.0% (12192 of 24868) after the tests of saving and loading (`save.lua`),
-sounds of our own (`sound.lua`), the registry, the primitives and the start-up state. What is left is mostly movies (no
-data of ours yet), iMUSE's music (its state tables) and streaming, the shader renderer (the tests use `gfx_mode=opengl`),
+sounds of our own (`sound.lua`), the registry, the primitives and the start-up state. What is left is mostly iMUSE's music (its state tables) and streaming, the shader renderer (the tests use `gfx_mode=opengl`),
 and the debugger.
 
 ## Wrong arguments and coverage
@@ -507,8 +506,23 @@ Hand-written tests, besides the per-frame walk and turn values:
   with `_videoFinished` false, until a movie call deinits it, so the argument probe's values depend on what ran before.
 - `GetTextObjectDimensions` of a killed text object crashes ScummVM (`TextObject::getBitmapWidth` with no object,
   `text_dims_killed`); the original gives a number.
-- Somewhere in the argument probe ScummVM corrupts its heap: `WalkActorForward` with the probe's actor dies (0xC0000409,
-  0xC0000374) in the `_a`, `_a_nil` or `_a_str` call, a different one from run to run, never when those calls run alone.
+- ScummVM's crashes in the argument probe at `WalkActorForward` (0xC0000409, 0xC0000374, in a different call from run
+  to run) came from earlier calls (found by bisecting the tests, then gdb; fixed on klusark's `cleanroom`, 2026-11-07):
+  `SetActorShadowValid` on an actor with no active shadow slot wrote `_shadowArray[-1]` and corrupted the heap, and
+  `Actor::getSphereInfo` asserted on a costume without a model (the walking actor collides with every actor of the set).
+  Two more showed once the run went on: any registry key ScummVM does not know (`WriteRegistryValue("CrSavePass", ...)`
+  of `save.lua`) was the music volume, which was 0 after the next load (`ImGetMusicVol`); and after a movie that is not
+  there (Theora fallback) the SMUSH player deleted the Theora decoder that `~MoviePlayer` then closed and deleted again,
+  crashing ScummVM on the way out.
+- EMI's movies (`emi_movie.lua`, 2026-11-07: `formats.bik`, Bink 1 revision i as the game's movies, written as
+  `Movies/<name>.m4b`). The writer uses only what both decoders must have: every 8 x 8 block a fill block, each bundle's
+  Huffman tree 0 (raw nibbles), no sound track, every frame a key frame; the 32 bits that start a BIKi frame are the
+  byte offset of its second plane (the game's movies have it so; ScummVM and FFmpeg skip it). The original's
+  `binkw32.dll` (1999) and ScummVM's `BinkDecoder` both play them to the end (ScummVM's frame is exactly the colour
+  written). The original opens `Movies/<name>.m4b` as a file (`CreateFileA`, then `BinkOpen`), the Bink data at 0 when
+  there is no SMUSH subtitle header; it replaces a name's extension by `.m4b`, where ScummVM added a second one
+  (fixed on `cleanroom`). `StopMovie` while a movie plays crashes the original (an access violation at 0x422711, in its
+  movie player, after `StopMovie` paused the Bink and deleted the player): not tested.
 - 2D primitives (`primitives.lua`, `cr_snap(key, "count")`). The original draws them in software (`rdPrimit2_DrawLine`):
   lines with both ends and 4-connected (a step in x or in y, never both), an outline as four such lines, a filled
   rectangle row by row, `DrawPolygon` as an open polyline of up to 250 points. Every ScummVM renderer leaves out the end of
@@ -522,5 +536,5 @@ The builtins no test calls are the ones left out on purpose: the dialogs, SetGam
 
 Binary models are written without faces (`formats.model3do`); text models can have faces (`formats.model3do_text`).
 Sounds are uncompressed: .wav and iMUSE's .IMC/.imu without MCMP. Movies are raw Blocky16 frames only (no delta modes);
-EMI's movies are Bink (no free encoder) and its music (`FullMonkeyMap.imt` and AIFF or VIMA tracks) has no writer yet.
+EMI's movies are Bink with fill blocks only (no DCT, motion or sound) and its music (`FullMonkeyMap.imt` and AIFF or VIMA tracks) has no writer yet.
 Lip sync (.lip), compressed bitmaps (codec 3) and binary keyframes have no writer yet.

@@ -41,3 +41,11 @@ def files():
            dict(CAMERA, name="two_b", background="cr_edge.til", position=(1.0, 6.0, -0.5), fov=40.0)]
     out["cr_two.setb"] = F.set_binary(two, [LIGHT], emi_sectors(A.SETS["cr_flat"][1]))
     return out
+
+
+def loose_files():
+    """The files beside the archive. The movies (formats.bik, as the .m4b of Movies/: both engines open Movies/<name>.m4b
+    as a file, and with no SMUSH subtitle header the Bink data start at 0): 160 x 120 at 15 frames a second, white for 90
+    frames (6 s), and 5 frames from grey to white."""
+    return {"Movies/cr_white.m4b": F.bik(160, 120, [(255, 255, 255)] * 90),
+            "Movies/cr_steps.m4b": F.bik(160, 120, [(v, v, v) for v in range(130, 255, 25)])}
