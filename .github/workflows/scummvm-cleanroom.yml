@@ -59,7 +59,7 @@ jobs:
           msystem: UCRT64
           release: false
           update: false
-          install: make
+          install: make git
           pacboy: >-
             toolchain:p ccache:p SDL2:p zlib:p libpng:p libjpeg-turbo:p freetype:p
             libvorbis:p flac:p libmad:p faad2:p a52dec:p libmpeg2:p libtheora:p fribidi:p
