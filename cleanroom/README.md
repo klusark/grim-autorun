@@ -242,11 +242,13 @@ Original-only traps found so far:
 
 `.github/workflows/scummvm-cleanroom.yml` runs `run.py scummvm` for Grim and EMI on a Windows runner every night, on a
 push that changes `cleanroom/`, and by hand (Actions, "Run workflow": another repository or branch of ScummVM, other
-renderers). It builds upstream master with `scummvm/grim-test-data.patch` in the runner's MSYS2 (UCRT64, ccache), gives
-it Mesa's software OpenGL (llvmpipe, `opengl32.dll` next to `scummvm.exe`: the runner has no GPU) and compares with the
-expected logs here; the originals are not run there. The job fails on a regression or a crash without a mark; the
-summary lists them and the logs are kept as an artifact. The marks follow upstream master: a test fixed only on a branch
-(the iris of grim-iris-timing) is a regression on master until the fix is merged.
+renderers). It builds the branch `cleanroom` of klusark/scummvm: the test patch as a commit of its own and, after it, the
+fixes in progress of `~/scummvm-cleanroom` (push the worktree's work there to test it). For a branch without the test
+patch (upstream master), "apply_patch" applies `scummvm/grim-test-data.patch`. The build is in the runner's MSYS2 (UCRT64,
+ccache), with Mesa's software OpenGL (llvmpipe, `opengl32.dll` next to `scummvm.exe`: the runner has no GPU), and it is
+compared with the expected logs here; the originals are not run there. The job fails on a regression or a crash without
+a mark; the summary lists them and the logs are kept as an artifact. The marks follow upstream master: a test that only
+the fixes in progress make the same is "fixed" there (its mark stays until upstream has the fix).
 
 ## Coverage of ScummVM
 

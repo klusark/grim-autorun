@@ -1,6 +1,8 @@
-# The clean-room engine tests (cleanroom/, see its README) against ScummVM: builds ScummVM (upstream master by default) with
-# cleanroom/scummvm/grim-test-data.patch and runs `run.py scummvm` for Grim and for EMI, compared with the expected logs of
-# the originals (cleanroom/expected/). The originals themselves are not run here (no game files on the runner).
+# The clean-room engine tests (cleanroom/, see its README) against ScummVM: builds the branch cleanroom of klusark/scummvm
+# (the test patch and the fixes in progress, as in ~/scummvm-cleanroom) and runs `run.py scummvm` for Grim and for EMI,
+# compared with the expected logs of the originals (cleanroom/expected/). Another repository or branch can be given by hand;
+# one without the test patch (upstream master) gets cleanroom/scummvm/grim-test-data.patch with "apply_patch". The
+# originals themselves are not run here (no game files on the runner).
 # The job fails when a test differs without a cr_scummvm_differs mark, or crashes ScummVM without one.
 name: ScummVM clean-room tests
 
@@ -9,10 +11,14 @@ on:
     inputs:
       scummvm_repo:
         description: ScummVM repository to test
-        default: scummvm/scummvm
+        default: klusark/scummvm
       scummvm_ref:
         description: Branch, tag or commit of it
-        default: master
+        default: cleanroom
+      apply_patch:
+        description: Apply cleanroom/scummvm/grim-test-data.patch (for a branch without it, as upstream master)
+        type: boolean
+        default: false
       renderers:
         description: Grim's renderers (comma separated)
         default: opengl,opengl_shaders,software
@@ -29,8 +35,9 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  SCUMMVM_REPO: ${{ inputs.scummvm_repo || 'scummvm/scummvm' }}
-  SCUMMVM_REF: ${{ inputs.scummvm_ref || 'master' }}
+  SCUMMVM_REPO: ${{ inputs.scummvm_repo || 'klusark/scummvm' }}
+  SCUMMVM_REF: ${{ inputs.scummvm_ref || 'cleanroom' }}
+  APPLY_PATCH: ${{ inputs.apply_patch && '1' || '' }}
   CR_RENDERERS: ${{ inputs.renderers || 'opengl,opengl_shaders,software' }}
   # (Mesa's software OpenGL, llvmpipe, next to scummvm.exe: the runner has no GPU)
   MESA_VERSION: "26.2.4"
@@ -75,7 +82,7 @@ jobs:
           key: ccache-ucrt64-${{ github.run_id }}
           restore-keys: ccache-ucrt64-
 
-      - name: Build ScummVM with the test patch
+      - name: Build ScummVM
         shell: msys2 {0}
         env:
           CCACHE_DIR: ${{ github.workspace }}\ccache
@@ -83,7 +90,7 @@ jobs:
         run: |
           cd scummvm
           echo "ScummVM $SCUMMVM_REPO $SCUMMVM_REF: $(git rev-parse HEAD) $(git log -1 --format=%s)" | tee -a "$GITHUB_STEP_SUMMARY"
-          git apply ../grim_tools/cleanroom/scummvm/grim-test-data.patch
+          if [ -n "$APPLY_PATCH" ]; then git apply ../grim_tools/cleanroom/scummvm/grim-test-data.patch; fi
           mkdir build && cd build
           CXX="ccache g++" CC="ccache gcc" ../configure --disable-all-engines --enable-engines=grim,monkey4 --enable-release \
             --disable-libcurl --disable-sdlnet --disable-cloud --disable-updates --disable-tts
