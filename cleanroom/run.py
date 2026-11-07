@@ -285,9 +285,10 @@ def keep_crash_log(engine, name):
 
 
 def file_tests(name):
-    """The names of the tests of the test file that defines test `name`, in order (empty if it is not found)."""
+    """The names of the tests of the test file that defines test `name`, in order (empty if it is not found). Only the names
+    written out: a computed one (cr_test("iris_" .. name, ...)) is not a test's name."""
     for t in test_files():
-        names = re.findall(r'cr_test\("([^"]+)"', open(t).read())
+        names = re.findall(r'cr_test\("([^"]+)",', open(t).read())
         if name in names:
             return names
     return []

@@ -240,6 +240,9 @@ def files():
     # a small bitmap of its own for object states and images: the original frees a bitmap with the object state that used
     # it, and a set whose background it was crashes when loaded afterwards
     out["cr_obj.bm"] = F.bitmap(64, 48, F.checker(64, 48, 8, (200, 50, 50), (50, 50, 200)))
+    # sounds (formats.wav: 16-bit PCM): a short tone and a long one
+    out["cr_tone.wav"] = F.wav(0.5)
+    out["cr_long.wav"] = F.wav(3.0, freq=220.0)
     # a font: space 4 pixels, digits 6, upper case 8, the rest 5 (an advance of one more pixel each)
     out["cr_font.laf"] = F.font(lambda c: 4 if c == 32 else 6 if 48 <= c <= 57 else 8 if 65 <= c <= 90 else 5)
     out["cr_box.cos"] = F.costume(*BOX_COSTUME)

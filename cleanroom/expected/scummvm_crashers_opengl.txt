@@ -5,7 +5,6 @@ args_ImGetParam_p1_neg
 args_ImSetParam_p1_neg
 args_ImStopSound_p1_neg
 args_MakeCurrentSetup_p1_neg
-args_NewObjectState_num
 args_NewObjectState_p3_nil
 args_NewObjectState_p3_tab
 args_SetActiveShadow_p2_big
@@ -16,3 +15,8 @@ args_SetActorHead_p4_big
 args_SetActorTurnChores_c_chore_neg
 args_SetActorTurnChores_p2_neg
 args_SetActorTurnChores_p3_neg
+args_WalkActorForward_a
+args_WalkActorForward_a_nil
+args_WalkActorForward_a_str
+save_data_none
+text_dims_killed

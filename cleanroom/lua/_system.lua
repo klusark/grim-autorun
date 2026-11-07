@@ -28,6 +28,7 @@ CR_MAX_FRAMES = 1200
 CR_CUR = "-"
 CR_DONE = nil
 CR_FAILS = 0
+CR_RAN = 0
 
 cr_out = function(s)
 	PrintDebug("CR " .. s .. "\n")
@@ -158,6 +159,12 @@ cr_main = function()
 			else
 				CR_FAILS = CR_FAILS + 1
 				cr_out("FAILED " .. CR_CUR)
+			end
+			-- (a coverage build of ScummVM writes its counters now and then, so that a crash loses only the last ones;
+			-- the other engines ignore it)
+			CR_RAN = CR_RAN + 1
+			if mod(CR_RAN, 200) == 0 then
+				PrintDebug("CRGCOV")
 			end
 		end
 		i = i + 1

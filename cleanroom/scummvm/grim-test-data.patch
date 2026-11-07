@@ -231,12 +231,21 @@ index 3bd29bd1803..fc6b8feaa82 100644
  	bool _softRenderer;
  
 diff --git a/engines/grim/lua_v1.cpp b/engines/grim/lua_v1.cpp
-index c577f59f1a8..ae231bacf9a 100644
+index c577f59..3393866 100644
 --- a/engines/grim/lua_v1.cpp
 +++ b/engines/grim/lua_v1.cpp
-@@ -78,6 +78,13 @@ void Lua_V1::new_dofile() {
+@@ -77,7 +77,30 @@ void Lua_V1::new_dofile() {
+ 
  // Debugging message functions
  
++#ifdef CR_GCOV
++// (a coverage build of the engine tests, grim_tools/cleanroom, built with -DCR_GCOV: the counters are written before the
++// engine quits, as it may crash on the way out, and when the tests ask (PrintDebug("CRGCOV")): a crash that ends the
++// process at once (a fast fail, a corrupt heap) loses only what ran since)
++extern "C" void __gcov_dump(void);
++extern "C" void __gcov_reset(void);
++#endif
++
  void Lua_V1::PrintDebug() {
 +	if (g_grim->isTestData()) {
 +		lua_Object msgObj = lua_getparam(1);
@@ -244,20 +253,21 @@ index c577f59f1a8..ae231bacf9a 100644
 +			g_grim->saveSnap(lua_getstring(msgObj) + 7);
 +			return;
 +		}
++		if (lua_isstring(msgObj) && !strcmp(lua_getstring(msgObj), "CRGCOV")) {
++#ifdef CR_GCOV
++			// (the counts so far into the .gcda files, and from zero again)
++			__gcov_dump();
++			__gcov_reset();
++#endif
++			return;
++		}
 +	}
  	if (!Debug::isChannelEnabled(Debug::Scripts))
  		return;
  	Common::String msg("Debug: ");
-@@ -516,7 +523,16 @@ void Lua_V1::GetControlState() {
- 	}
+@@ -517,6 +540,9 @@ void Lua_V1::GetControlState() {
  }
  
-+#ifdef CR_GCOV
-+// (a coverage build of the engine tests, grim_tools/cleanroom, built with -DCR_GCOV: the counters are written before the
-+// engine quits, as it may crash on the way out)
-+extern "C" void __gcov_dump(void);
-+#endif
-+
  void Lua_V1::Exit() {
 +#ifdef CR_GCOV
 +	__gcov_dump();

@@ -461,3 +461,12 @@ def font(widths, height=10, base=8):
         data += bytes(pix)
     head = struct.pack("<8I", 256, len(data), height + 2, base, 2, 0, 0, 255)
     return head + struct.pack("<256H", *range(256)) + recs + data
+
+
+def wav(seconds, rate=22050, freq=440.0, channels=1, amplitude=8000):
+    """A RIFF WAVE of 16-bit PCM: a sine tone of `seconds` (what iMUSE plays, uncompressed, as ScummVM reads it)."""
+    n = int(seconds * rate)
+    frames = b"".join(struct.pack("<h", int(amplitude * math.sin(2 * math.pi * freq * i / rate))) * channels for i in range(n))
+    fmt = struct.pack("<HHIIHH", 1, channels, rate, rate * channels * 2, channels * 2, 16)
+    body = b"WAVE" + b"fmt " + struct.pack("<I", len(fmt)) + fmt + b"data" + struct.pack("<I", len(frames)) + frames
+    return b"RIFF" + struct.pack("<I", len(body)) + body

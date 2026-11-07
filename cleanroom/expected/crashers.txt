@@ -81,8 +81,10 @@ args_IrisUp_p3_str
 args_IrisUp_p3_tab
 args_IrisUp_str
 args_IrisUp_tab
+args_NewObjectState_num
 args_NewObjectState_p1_big
 args_NewObjectState_p1_neg
+args_NewObjectState_p1_num
 args_SetActorShadowPlane_a
 args_SetActorShadowPlane_a_nil
 args_SetActorShadowPlane_a_tab
@@ -120,4 +122,5 @@ args_SnapToPlane_tab
 font_dims_handle
 font_dims_name
 rest_chore_zero
+save_emergency_font
 shadow_color

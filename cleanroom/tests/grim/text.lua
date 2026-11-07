@@ -140,3 +140,12 @@ cr_t_say_line_restore = function()
 	cr_log("speed", GetTextSpeed())
 end
 cr_test("say_line_restore", cr_t_say_line_restore)
+
+-- the dimensions of a text object that was killed (ScummVM: a text object handle of the pool, no longer there)
+cr_t_text_dims_killed = function()
+	local t = MakeTextObject("Gone", { font = LockFont("cr_font.laf"), x = 10, y = 10 })
+	KillTextObject(t)
+	cr_log("killed", GetTextObjectDimensions(t))
+	cr_log("after", 1)
+end
+cr_scummvm_differs("text_dims_killed") cr_test("text_dims_killed", cr_t_text_dims_killed)

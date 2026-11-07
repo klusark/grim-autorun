@@ -254,10 +254,14 @@ python ~/grimL_ar/tools/covreport.py <outdir> 'C:\msys64\home\Joel\scummvm-clean
 ```
 
 `SCUMMVM` must be a Windows path. After the whole suite ScummVM crashes on the way out (0xC0000005 after `exit()`), which
-loses the counters: with `-DCR_GCOV` the test patch calls `__gcov_dump()` in `Exit()` first. 2026-11-05: 42.3% of the lines
-(11596 of 27397, without lua, emi, remastered, tinygl), from 38.5% before the drawn models, keyframes, the costume
-components, the archive, paths, heads and shadows. What is left is mostly sound and movies (no data of ours yet), the
-shader renderer (the tests use `gfx_mode=opengl`), saving and loading, and the debugger.
+loses the counters: with `-DCR_GCOV` the test patch calls `__gcov_dump()` in `Exit()` first. A crash that ends the process
+at once (a fast fail 0xC0000409, a corrupt heap 0xC0000374) skips every handler, so the runner also asks for the counters
+every 200 tests (`PrintDebug("CRGCOV")`: `__gcov_dump()` and `__gcov_reset()` in a `CR_GCOV` build, nothing otherwise):
+a crash loses only what ran since. 2026-11-05: 42.3% of the lines (11596 of 27397, without lua, emi, remastered, tinygl).
+2026-11-07: 41.7% (10357 of 24864) before and 49.0% (12192 of 24868) after the tests of saving and loading (`save.lua`),
+sounds of our own (`sound.lua`), the registry, the primitives and the start-up state. What is left is mostly movies (no
+data of ours yet), iMUSE's music (its state tables) and streaming, the shader renderer (the tests use `gfx_mode=opengl`),
+and the debugger.
 
 ## Wrong arguments and coverage
 
@@ -448,16 +452,47 @@ Hand-written tests, besides the per-frame walk and turn values:
   that ran without a break_here() for a really long time!"); ScummVM lets it run.
 - `TextFileGetLine` / `TextFileGetLineCount` read the game folder on the original; ScummVM looks in the saves folder.
 - Registry: an unset value reads 96 on ScummVM (nil on the original); numbers come back as strings on the original.
+  `registry.lua` (2026-11-07): on the original only the keys of `grim.ini` (`good_times`, `GrimDataDir`) have values;
+  ScummVM fills the game's keys from its own configuration (volumes, text speed, gamma, ... as numbers, the TRUE/FALSE ones
+  as strings) and has no `good_times`. A value written is read back on both; digits written as a string read back as a
+  number on ScummVM, as a string on the original.
 - Number text: the original's C runtime writes 3-digit exponents (`1e+015`) and `1.#INF`; `tonumber("0x10")` is nil.
   `LocalizeString("no slashes")` gives `"//no slashes"` on the original. `FunctionName` is written differently.
 - `GetMemoryUsage` and `GetTickCount` are numbers on the original, nil on ScummVM.
 - About 87 Lua builtins exist only on the original; `sleep_for`, `pause_script`, `unpause_script` only on ScummVM.
+- Saving and loading (`save.lua`, 2026-11-07). `Save(file)` / `Load(file)` happen between frames, and the Load brings the
+  Lua tasks back: a test goes on after its `Save` a second time (the registry, which is not in a save, tells the two passes
+  apart). The game saves from its menu, in `RenderModeUser(TRUE)`: the original's `Engine_LoadGame` leaves mode 4 (no actor
+  moves, no chore advances) until `RenderModeUser(nil)`; ScummVM goes on at once (`save_mode`). Actors (place, attributes,
+  costumes, a walk), sets (setup, sectors, lights), text objects, primitives, object states and Lua values (tables,
+  functions, a task) come back the same on both. `SubmitSaveGameData` reads its strings from index 0; without a
+  `system.saveGameCallback` the original writes none and `GetSaveGameData` is an empty table, ScummVM ends with "Unable to
+  find requested section of savegame!" (`save_data_none`, a crasher); for a save that is not there ScummVM returns a table,
+  the original nil. On the original, after `SetEmergencyFont` every Load crashes when it draws a text object
+  (`TextObject_Draw` 0x48ca13, no font: `zy_save_emergency.lua`, last), and so did a Load when the task that saved runs a
+  closure with upvalues (in `Lua.dll`): the save tests are one function, their cases in a table. `SetTextSpeed` is not in a
+  save on the original.
+- Sounds (`sound.lua`: `cr_tone.wav` and `cr_long.wav`, 16-bit PCM, `formats.wav`). Both engines start them and give the
+  same params (`ImGetParam` play count, group, priority, volume, pan; out-of-range values clamped the same; a sound
+  started twice has a play count of 2). Neither ends a sound or advances a fade within the test: the original runs on
+  `NULLMUSE.DLL` with no sound driver, and ScummVM's iMUSE runs on the wall clock, which the 17 ms frames outrun.
+- `IsMoviePlaying` / `IsFullscreenMoviePlaying` are true on ScummVM as it starts (`aa_boot.lua`): the `MoviePlayer` starts
+  with `_videoFinished` false, until a movie call deinits it, so the argument probe's values depend on what ran before.
+- `GetTextObjectDimensions` of a killed text object crashes ScummVM (`TextObject::getBitmapWidth` with no object,
+  `text_dims_killed`); the original gives a number.
+- Somewhere in the argument probe ScummVM corrupts its heap: `WalkActorForward` with the probe's actor dies (0xC0000409,
+  0xC0000374) in the `_a`, `_a_nil` or `_a_str` call, a different one from run to run, never when those calls run alone.
+- 2D primitives (`primitives.lua`, `cr_snap(key, "count")`). The original draws them in software (`rdPrimit2_DrawLine`):
+  lines with both ends and 4-connected (a step in x or in y, never both), an outline as four such lines, a filled
+  rectangle row by row, `DrawPolygon` as an open polyline of up to 250 points. Every ScummVM renderer leaves out the end of
+  a line and draws diagonals 8-connected; the outlines of OpenGL and TinyGL are a pixel wider and taller (`LINE_LOOP`
+  through `x2 + 1`; the shader renderer's four quads match); `DrawPolygon` draws only two of the three segments of 4 points.
 
 ## Not done yet
 
-The builtins no test calls are the ones left out on purpose: the dialogs, Load/Save, SetGamma, execute, debug-only ones
+The builtins no test calls are the ones left out on purpose: the dialogs, SetGamma, execute, debug-only ones
 (`TEST`, `quiet`, `vfx`, `debug`, `SpewStartup`) and the CD helpers.
 
 Binary models are written without faces (`formats.model3do`); text models can have faces (`formats.model3do_text`).
-Sounds (.imu, .wav), movies (.snm), lip sync (.lip), compressed bitmaps (codec 3) and binary keyframes have no writer
-yet.
+Sounds are uncompressed .wav only (no .imu, no MCMP); movies (.snm), lip sync (.lip), compressed bitmaps (codec 3) and
+binary keyframes have no writer yet.
