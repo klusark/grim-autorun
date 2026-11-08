@@ -693,6 +693,22 @@ def bomp_decode(coded, size):
     return bytes(out[:size])
 
 
+def blocky2(width, height, blocks, rest=b"\xf6"):
+    """The data of a Blocky16 mode 2 frame (ScummVM Blocky16::decode2): the codes of one 8 x 8 block after another, left to
+    right, top to bottom. blocks: {(bx, by): the block's codes}; every other block is `rest` (0xf6: delta buffer 0 at the
+    same place). A block's codes (level 1, 8 x 8): below 0xf5 a copy of delta buffer 1 at the offset of that entry of the
+    motion table; 0xf5 and a 16-bit offset (in pixels, rows included), the same; 0xf6 delta buffer 0 at the same place;
+    0xf7 an index of the interpolation table and two bytes (indexes of the colour table at +40 of the header), 0xf8 the
+    index and two 16-bit colours: the block cut in two by that table's edge; 0xf9-0xfc a colour of the header at +24; 0xfd
+    an index of the colour table; 0xfe a 16-bit colour; 0xff four blocks of the next level (4 x 4, then 2 x 2, whose 0xff
+    and 0xf8 are 4 raw pixels and 0xf7 4 indexes of the colour table)."""
+    out = bytearray()
+    for by in range((height + 7) // 8):
+        for bx in range((width + 7) // 8):
+            out += blocks.get((bx, by), rest)
+    return bytes(out)
+
+
 def snm(width, height, colours, frame_us=66667, rate=22050, fill=None):
     """A SMUSH movie as Grim's (gzipped SANM): one Bl16 frame per colour, each a whole frame of that RGB565 colour, raw
     (Blocky16 mode 0: the 560-byte frame header, then width * height pixels, little endian). SHDR as Insane_ReadFrameHeader
@@ -711,11 +727,25 @@ def snm(width, height, colours, frame_us=66667, rate=22050, fill=None):
     # (a frame is a colour, raw, or (mode, colour): Blocky16 mode 6 indexes the 256-colour table at +40 of the header with
     # a byte a pixel; 8 the same with the bytes BOMP coded (bomp); 5 the 16-bit pixels BOMP coded, their size at +36; 3 and 4
     # copy a delta buffer, which keeps the colour at +32 of frame 0 when no frame swaps the buffers)
+    # Mode 2 (blocky2): (2, (data, swap, params, table)): the block codes, the buffer swap at +19 (1: the frame becomes delta
+    # buffer 1), the 4 colours at +24 and the colour table at +40 ({index: colour})
     if fill is None:
         fill = colours[0] if isinstance(colours[0], int) else colours[0][1]
     for i, c in enumerate(colours):
         mode, c = (0, c) if isinstance(c, int) else c
         head = bytearray(560)
+        if mode == 2:
+            data, swap, params, table = c
+            struct.pack_into("<HH", head, 8, width, 0)
+            struct.pack_into("<HH", head, 12, height, 0)
+            struct.pack_into("<H", head, 16, i)
+            head[18], head[19] = 2, swap
+            struct.pack_into("<H", head, 32, fill)
+            struct.pack_into("<4H", head, 24, *params)
+            for k, v in table.items():
+                struct.pack_into("<H", head, 40 + 2 * k, v)
+            frames.append(chunk(b"FRME", chunk(b"Bl16", bytes(head) + data) + chunk(b"Wave", wave)))
+            continue
         # (the original's Blocky16_DecodeFrame 0x4ccd00 takes the frame's size from +8 and +12; +0x228, the pixel format, 0:
         # 8, 16 bits. ScummVM's Blocky16 has the size from SHDR)
         struct.pack_into("<HH", head, 8, width, 0)

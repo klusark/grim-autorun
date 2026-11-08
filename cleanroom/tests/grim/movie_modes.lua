@@ -3,7 +3,7 @@
 -- Seen through cr_snap (the box of the bright pixels: the whole screen when the frames are white) while they play.
 -- (cr_wait_s is movie.lua's)
 
-cr_mode_test = function(mode)
+cr_mode_test = function(mode, snap)
 	cr_test("movie_mode" .. mode, function()
 		cr_allow_frames(1000000000)
 		MakeCurrentSet("cr_flat.set")
@@ -11,7 +11,7 @@ cr_mode_test = function(mode)
 		cr_log("start", StartMovie("cr_mode" .. %mode .. ".snm", nil, 0, 0))
 		cr_wait_s(2)
 		cr_log("playing", IsMoviePlaying())
-		cr_snap("snap")
+		cr_snap("snap", %snap)
 		StopMovie()
 		cr_frames(2)
 	end)
@@ -22,3 +22,7 @@ cr_mode_test(8)
 cr_mode_test(5)
 cr_mode_test(3)
 cr_mode_test(4)
+-- Mode 2 (assets._mode2_frames): the blocks of a frame each coded its own way, copies of the frame before (a delta buffer,
+-- at an offset of its own or of the motion table), colours, smaller blocks, blocks cut by the interpolation table's edges:
+-- the box of the white pixels and how many there are
+cr_mode_test(2, "count")

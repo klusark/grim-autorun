@@ -241,6 +241,43 @@ BIN_FILES = {"cr_bin.lua": BIN_CHUNK, "cr_bin_short.lua": BIN_CHUNK[:40],
 FONT = F.font(lambda c: 4 if c == 32 else 6 if 48 <= c <= 57 else 8 if 65 <= c <= 90 else 5)
 
 
+def _mode2_frames(F, grey, white):
+    """The Blocky16 mode 2 frames of cr_mode2.snm (movie_modes.lua): frame A, every block delta buffer 0 (grey) but a white
+    one at block (10, 10), becomes delta buffer 1 (swap 1); then 44 frames B (no swap) that draw each code once, white or
+    grey, many of them copies out of A: what is white is the fingerprint (cr_snap "count")."""
+    import struct
+    h, i, u = (lambda v: struct.pack("<h", v)), (lambda v: struct.pack("<I", v)), (lambda v: struct.pack("<H", v))
+    W, G = u(white), u(grey)
+    params = (white, grey, white, grey)          # (0xf9 and 0xfb white)
+    table = {0: grey, 1: white}
+    a = F.blocky2(640, 480, {(10, 10): b"\xfe" + W})
+    l3 = lambda *c: b"".join(c)
+    b = {
+        # copies of A's white block (80..87, 80..87): the whole of it, half of it, by the motion table around it
+        (20, 10): b"\xf5" + h(-80),
+        (30, 10): b"\xf5" + h(84 - 240),
+        # (the table's entries: 0x64 is (-3, -2), 0x9d (-6, 3), 0xb5 (4, 6), 0x4d (0, -5), 0x8a (2, 1); 0 (0, 0), 0x10 far)
+        (10, 10): bytes([0x64]), (11, 10): bytes([0x9d]), (10, 9): bytes([0xb5]), (10, 11): bytes([0x4d]), (9, 10): bytes([0x8a]),
+        (13, 10): bytes([0]), (12, 10): bytes([0xf4]), (10, 12): bytes([0x10]),
+        # colours
+        (40, 10): b"\xfe" + W, (41, 10): b"\xfd\x01", (42, 10): b"\xf9", (43, 10): b"\xfa", (44, 10): b"\xfb", (45, 10): b"\xfc",
+        # four 4 x 4 of 2 x 2 blocks
+        (50, 10): b"\xff" + l3(
+            b"\xfe" + W,
+            b"\xff" + b"\xff" + W + G + W + W + b"\xf8" + G + W + G + W + b"\xf7\x01\x00\x01\x01" + b"\xfe" + W,
+            b"\xff" + b"\xfd\x01" + b"\xf9" + b"\xfa" + b"\xf6",
+            b"\xff" + b"\xf5" + h(80 - 404) + bytes([5]) + b"\xfb" + b"\xfc"),
+        (51, 10): b"\xff" + l3(b"\xfd\x01", b"\xf9", b"\xf8\x03" + i(white | grey << 16), b"\xf7\x46" + u(0x0001)),
+        (52, 10): b"\xff" + l3(b"\xf6", b"\xf5" + h(80 - 416), bytes([0x20]), b"\xfb"),
+        (53, 10): b"\xff" + l3(b"\xfa", b"\xfe" + G, b"\xfc", b"\xf8\x80" + i(grey | white << 16)),
+        # the 8 x 8 blocks cut by an edge of the interpolation table
+        (60, 20): b"\xf8\x00" + i(white | grey << 16), (61, 20): b"\xf8\x25" + i(white | grey << 16),
+        (62, 20): b"\xf8\x80" + i(white | grey << 16), (63, 20): b"\xf8\xff" + i(white | grey << 16),
+        (64, 20): b"\xf7\xc8" + u(0x0001), (65, 20): b"\xf7\x10" + u(0x0100),
+    }
+    return [(2, (a, 1, params, table))] + [(2, (F.blocky2(640, 480, b), 0, params, table))] * 44
+
+
 def files():
     out = {}
     out["cr_box.3do"] = F.model3do(*BOX_MODEL)
@@ -299,6 +336,7 @@ def files():
     grey, white = F.rgb565(60, 60, 60), F.rgb565(255, 255, 255)
     for m in (6, 8, 5, 3, 4):
         out["cr_mode%d.snm" % m] = F.snm(640, 480, [grey, grey] + [(m, white)] * 45, fill=white)
+    out["cr_mode2.snm"] = F.snm(640, 480, [grey, grey] + _mode2_frames(F, grey, white), fill=grey)
     # music (formats.imus): the files iMUSE's state and sequence tables name for ImSetState / ImSetSequence (the name and
     # ".IMC"). Two states that loop; the file of states 1002-1007 with a hook 8 jump in the middle; a sequence that plays once
     # and ends with the "_end" marker

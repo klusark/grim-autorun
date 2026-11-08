@@ -178,6 +178,11 @@ The other Blocky16 modes (`movie_modes.lua`; `formats.snm` takes `(mode, colour)
 mode 6 (a 256-colour table), 8 (the table, BOMP coded), 5 (BOMP-coded pixels), 3 and 4 (a copy of a delta buffer), each a
 640 x 480 movie (the original leaves the last frame of an earlier movie, which a smaller one would not cover): the same
 on both.
+Mode 2 (`formats.blocky2`, `assets._mode2_frames`): a frame whose block (10, 10) is white becomes delta buffer 1, then
+the frames after it code each block another way: copies of that frame (an offset of their own, entries of the motion
+table near the white block), the colours (+24, the table at +40, a 16-bit one), blocks of 4 x 4 and 2 x 2 (raw pixels
+among them), blocks cut by the interpolation tables' edges. `cr_snap(key, "count")`: the same 726 white pixels on both,
+block by block (2026-11-08).
 
 EMI's music (`emi_music.lua`, `assets_emi.music`): `Textures/FullMonkeyMap.imt` (`formats.imt`) with 110 states (ScummVM
 wants at least 100) over two files in both music sets (`Textures/spago`, `Textures/mego`), each a RIFF WAVE of format 0x55
@@ -630,7 +635,7 @@ The builtins no test calls are the ones left out on purpose: the dialogs, SetGam
 
 Binary models are written without faces (`formats.model3do`); text models can have faces (`formats.model3do_text`).
 Sounds are .wav, iMUSE's .IMC and MCMP (stored or VIMA blocks: "1008 - Domino's Office.IMC", "2001 - Climb Rope.IMC" and
-the voices); VIMA is written mono, without escapes. Movies are raw Blocky16 frames only (no delta modes);
+the voices); VIMA is written mono, without escapes. Movies are Blocky16 modes 0, 2-6 and 8 (no mode 1 or 7: ScummVM has neither);
 EMI's movies are Bink with fill blocks only (no DCT, motion or sound) and its music (`FullMonkeyMap.imt` and AIFF or VIMA tracks) has no writer yet.
 Keyframes are text or binary (`formats.keyframe_binary`, `keyframe_bin.lua`: each engine plays the binary slide as the
 text one; a binary file's fps does not change a chore's length on either). Bitmaps are raw or codec 3 (`formats.codec3`: `cr_obj.bm` and `cr_cams.bm`; both
