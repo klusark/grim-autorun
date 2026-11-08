@@ -866,7 +866,8 @@ def sklb(joints):
     return out
 
 
-def meshb(name, vertices, faces, bones=None, normal=(0.0, 1.0, 0.0), colour=(255, 255, 255, 255), texture="default.tga"):
+def meshb(name, vertices, faces, bones=None, normal=(0.0, 1.0, 0.0), colour=(255, 255, 255, 255), texture="default.tga",
+          textured=False):
     """An EMI mesh (.meshb, type 19): its name, a radius, a centre and its box (min, max), one texture set with one texture
     (none of the faces use it), the vertices, a normal, a colour (RGBA) and texture coordinates (0, 0) each, the faces (no texture, 16-bit vertex
     indices, three a triangle) and, with `bones` ([(joint name, [vertex index, ...])]), the bones: each vertex follows the
@@ -883,8 +884,12 @@ def meshb(name, vertices, faces, bones=None, normal=(0.0, 1.0, 0.0), colour=(255
     out += struct.pack("<3f", *normal) * len(vertices)
     out += bytes(colour) * len(vertices)
     out += struct.pack("<2f", 0.0, 0.0) * len(vertices)
-    # (one face: the flags of the game's (0x304), no texture, then the index count and the indices of every triangle)
-    out += struct.pack("<I", 1) + struct.pack("<III", 0x304, 0, 3 * len(faces))
+    # (one face: the flags of the game's (0x304), no texture (or, `textured`, texture 0), then the index count and the
+    # indices of every triangle)
+    out += struct.pack("<I", 1) + struct.pack("<II", 0x304, 1 if textured else 0)
+    if textured:
+        out += struct.pack("<I", 0)
+    out += struct.pack("<I", 3 * len(faces))
     out += b"".join(struct.pack("<3H", *tri) for tri in faces)
     if bones:
         out += struct.pack("<II", 1, len(bones))
@@ -908,6 +913,18 @@ def animb(name, seconds, bones):
         for values, t in keys:
             out += struct.pack("<%df" % len(values), *values) + struct.pack("<f", t)
     return out
+
+
+def sprb(name, texture, width, height, pos=(0.0, 0.0, 0.0), colour=(255, 255, 255, 255)):
+    """An EMI sprite (.sprb, ScummVM sprite.cpp, Sprite::loadBinary): its name, 40 bytes (ten floats, as in the game's
+    sprites), its texture (a .tga, loaded as a material), flags (903, as the game's), its width and height, its position,
+    the alpha, red, green and blue of its four corners (32-bit ints), their texture coordinates, and flags (131844)."""
+    out = _la_string(name) + struct.pack("<10f", 0.5, 0.5, 0.5, 0.0, -0.5, -0.5, -0.5, 0.5, 0.5, 0.5)
+    out += _la_string(texture) + struct.pack("<I2f3f", 903, width, height, *pos)
+    r, g, b, a = colour
+    out += struct.pack("<4i", a, r, g, b) * 4
+    out += struct.pack("<8f", 0.0, 0.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0)
+    return out + struct.pack("<I", 131844)
 
 
 def imus(seconds, rate=22050, freq=330.0, loop=True, marker=None, hook_jump=None, amplitude=6000):
@@ -1151,3 +1168,24 @@ def imt(entries):
         out.append('.playFile trim 127 "%s"' % f)
     out.append("*/")
     return ("\r\n".join(out) + "\r\n").encode("ascii")
+
+
+def patchr(old, new, target=None):
+    """A ScummVM patch file (.patchr, engines/grim/patchr.cpp: a file X is read through X.patchr, or X_1.patchr and on,
+    when its MD5 matches; ScummVM only, the original has no such thing): 'PATR', version 2.0, flags (2: the control
+    stream compressed), the MD5 of the first 5000 bytes of the file it patches and that file's size, the new size and the
+    sizes of the control, diff and extra streams; then the three streams, each gzipped. One instruction: copy the old
+    file xor the diff over its length (or the new one's, if shorter), then the extra bytes. `target`: the file whose MD5
+    and size go in the header (another one than `old` makes a patch that does not apply)."""
+    import gzip
+    import hashlib
+    target = old if target is None else target
+    n = min(len(old), len(new))
+    diff = bytes(a ^ b for a, b in zip(old[:n], new[:n]))
+    extra = new[n:]
+    ctrl = struct.pack("<IIi", n, len(extra), 0)
+    zc, zd, ze = (gzip.compress(x, mtime=0) for x in (ctrl, diff, extra))
+    head = b"PATR" + struct.pack("<HHI", 2, 0, 2) + hashlib.md5(target[:5000]).digest()
+    head += struct.pack("<IIIII", len(target), len(new), len(zc), len(zd), len(ze))
+    assert len(head) == 48
+    return head + zc + zd + ze

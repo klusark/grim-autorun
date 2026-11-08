@@ -187,6 +187,14 @@ the state stack, the music set and the volume run the same on both; `ImStateHasE
 `run.py` starts every engine with stdin closed: when `readfrom` fails, ScummVM's `read` falls back to the process's
 stdin, and an open one (a shell's) blocked it in `lex_read`.
 
+ScummVM's patch files (`patchr.lua`, Grim, ScummVM only; `formats.patchr`): a loose file read through the first of its
+`.patchr`, `_1.patchr`, ... whose MD5 matches (a patch for another file, then the right one), by `dofile` and by `read`
+(whose put-back seeks the patched file back). The original has none and reads the file as it is (marked).
+
+EMI's text objects (`emi_text.lua`, with the font of Grim's data in EMI's archive: `assets.FONT`): a font named by its file,
+dimensions and character positions the same on both; `GetFontDimensions` crashes Monkey4.exe. EMI's sprites and textured
+meshes (`ec_sprite`; `formats.sprb`, `meshb(textured=True)`, a .tga material): loaded and played the same on both.
+
 EMI's sounds and voices (`emi_sound.lua`, 2026-11-07; `formats.aiff` for `.aif`, the voices `.wVC` as MCMP with VIMA blocks,
 and a `.lip`). `LoadSound` of a file that is not there is nil, and `PlayLoadedSoundFrom` plays with five arguments (both
 fixed on klusark's `cleanroom`); a voiced line goes until ShutUpActor on both. Left: `PlayLoadedSound(h, nil, volume)`

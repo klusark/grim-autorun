@@ -233,6 +233,10 @@ BIN_FILES = {"cr_bin.lua": BIN_CHUNK, "cr_bin_short.lua": BIN_CHUNK[:40],
              "cr_bin_old.lua": BIN_CHUNK[:4] + bytes([0x30]) + BIN_CHUNK[5:]}
 
 
+# a font: space 4 pixels, digits 6, upper case 8, the rest 5 (an advance of one more pixel each); EMI's data has it too
+FONT = F.font(lambda c: 4 if c == 32 else 6 if 48 <= c <= 57 else 8 if 65 <= c <= 90 else 5)
+
+
 def files():
     out = {}
     out["cr_box.3do"] = F.model3do(*BOX_MODEL)
@@ -300,8 +304,8 @@ def files():
     out["1008 - Domino's Office.IMC"] = F.mcmp(*F.imus_split(F.imus(2.0, freq=294.0)))
     out["1002 - Mr. Frustration.IMC"] = F.imus(2.0, freq=330.0, hook_jump=(8, 100))
     out["2001 - Climb Rope.IMC"] = F.mcmp(*F.imus_split(F.imus(1.0, freq=392.0, loop=False, marker="_end")), vima_blocks=False)
-    # a font: space 4 pixels, digits 6, upper case 8, the rest 5 (an advance of one more pixel each)
-    out["cr_font.laf"] = F.font(lambda c: 4 if c == 32 else 6 if 48 <= c <= 57 else 8 if 65 <= c <= 90 else 5)
+    # (the font, FONT)
+    out["cr_font.laf"] = FONT
     out["cr_box.cos"] = F.costume(*BOX_COSTUME)
     out["cr_luav.cos"] = F.costume(*LUAV_COSTUME)
     out.update(BIN_FILES)
@@ -341,8 +345,17 @@ def files():
     return out
 
 
+PATCH_OLD = F.lua_text('CR_PATCHED = "no"\nCR_PATCH_LINE = 1\n')
+PATCH_NEW = F.lua_text('CR_PATCHED = "yes"\nCR_PATCH_LINE = 2\nCR_PATCH_MORE = "added"\n')
+
+
 def loose_files():
     return {"grim.tab": F.text_table(TEXT),
+            # (ScummVM's patch files, patchr.lua: the file, a patch for another file, then one for it: "no" becomes "yes",
+            # and a line more)
+            "cr_patch_target.lua": PATCH_OLD,
+            "cr_patch_target.lua.patchr": F.patchr(PATCH_OLD, PATCH_NEW, target=b"another file"),
+            "cr_patch_target.lua_1.patchr": F.patchr(PATCH_OLD, PATCH_NEW),
             # (three lines for TextFileGetLine; the second starts at 7)
             "cr_lines.txt": b"line1\r\nline2\r\nline3\r\n",
             # (a file the dofile test runs)

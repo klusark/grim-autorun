@@ -44,6 +44,7 @@ def files():
     out["cr_two.setb"] = F.set_binary(two, [LIGHT], emi_sectors(A.SETS["cr_flat"][1]))
     out.update(costumes())
     out.update(A.BIN_FILES)
+    out["cr_font.laf"] = A.FONT
     # sounds (formats.aiff, EMI's .aif): a short tone and a long one
     out["cr_tone.aif"] = F.aiff(0.5)
     out["cr_long.aif"] = F.aiff(3.0, freq=220.0)
@@ -83,6 +84,17 @@ def costumes():
     out["cr_ebox_lift.animb"] = F.animb("cr_ebox_lift", 1.0, [
         ("body", 3, 1, [((0.0, 0.9, 0.0), 0.0), ((0.0, 1.4, 0.0), 1.0)]),
         ("root", 4, 1, [(IDENTITY, 0.0), ((0.0, q, 0.0, q), 1.0)]),
+    ])
+    # a sprite (formats.sprb) on a texture of its own, and the box mesh with its faces on a texture (cr_etex.mesh): the
+    # sprite costume shows the sprite and a textured box
+    out["cr_tex.tga"] = F.tga(32, 32, [(220, 220, 220)] * (32 * 32), bpp=32)
+    out["cr_spr.sprb"] = F.sprb("cr_spr.spr", "cr_tex.tga", 0.5, 0.5, (0.0, 1.0, 0.0))
+    out["cr_etex.meshb"] = F.meshb("cr_etex", EBOX_VERTS, EBOX_TRIS, bones=[("root", [0, 1, 2, 3]), ("body", [4, 5, 6, 7])],
+                                   texture="cr_tex.tga", textured=True)
+    out["cr_esprite.cosb"] = F.cosb([
+        ("wear_default", 1000.0, [("!skelcr_ebox.skl", 0, -1, [(0.0, 1)]), ("!meshcr_etex.mesh", 1, -1, [(0.0, 1)]),
+                                  ("!sprtcr_spr.spr", 0, -1, [(0.0, 1)]), (lv, 0, -1, [(0.0, 9)])]),
+        ("hide", 1.0, [("!sprtcr_spr.spr", 0, -1, [(0.0, 0)]), (lv, 0, -1, [(0.0, 8)])]),
     ])
     out["cr_ebox.cosb"] = F.cosb([
         ("wear_default", 1000.0, [("!skelcr_ebox.skl", 0, -1, [(0.0, 1)]), ("!meshcr_ebox.mesh", 1, -1, [(0.0, 1)])]),

@@ -1,4 +1,4 @@
-START 2286 tests
+START 2288 tests
 BEGIN numbers
 V numbers|arith|3.500000 1024.000000 -2.333333 1.#INF00
 V numbers|tostring|"0.333333" "100" "1e+015" "-0.5"
@@ -25,7 +25,7 @@ V strings|ascii|65.000000
 END strings
 BEGIN next_order
 U next_order|order
-V next_order|order|"49,98,7,manny,lupe,eva,chepito,velasco,olivia,14,domino,meche,glottis,112,21,salvador,119,63,105,28,77,126,56,35,84,70,133,42,91,140,"
+V next_order|order|"49,98,7,eva,chepito,velasco,olivia,salvador,domino,14,lupe,meche,glottis,manny,21,70,119,63,105,28,77,126,56,35,84,133,112,42,91,140,"
 V next_order|globals_counted|1.000000
 END next_order
 BEGIN tasks
@@ -537,6 +537,10 @@ END ec_head
 BEGIN ec_preferences
 V ec_preferences|missing|1.000000
 END ec_preferences
+BEGIN ec_sprite
+V ec_sprite|wear|9.000000 1.000000
+V ec_sprite|hidden|8.000000 1.000000 1.000000
+END ec_sprite
 BEGIN ee_sort_order
 V ee_sort_order|default|0.000000
 V ee_sort_order|set|7.000000
@@ -653,7 +657,7 @@ V emi_movie_missing|second|1.000000
 V emi_movie_missing|ended|1.000000
 END emi_movie_missing
 BEGIN em_states
-V em_states|ended_never_played|240.000000 240.000000
+V em_states|ended_never_played|192.000000 192.000000
 V em_states|ok|1.000000
 END em_states
 BEGIN em_loop
@@ -780,6 +784,13 @@ V eso_voice|at_once|1.000000
 V eso_voice|going|1.000000
 V eso_voice|shut_up|nil
 END eso_voice
+BEGIN et_text
+V et_text|type|"userdata"
+V et_text|dims|0.193750
+V et_text|changed|0.303125
+V et_text|char_pos|0.065625
+V et_text|second|0.018750
+END et_text
 BEGIN upvalues
 V upvalues|upvalue_frozen|11.000000
 V upvalues|global_counter|2.000000
@@ -2596,27 +2607,27 @@ V args_GetCurrentSetup_s_tab|r|0.000000
 END args_GetCurrentSetup_s_tab
 BEGIN args_GetDiskFreeSpace_none
 U args_GetDiskFreeSpace_none|r
-V args_GetDiskFreeSpace_none|r|92259.015625
+V args_GetDiskFreeSpace_none|r|92481.656250
 END args_GetDiskFreeSpace_none
 BEGIN args_GetDiskFreeSpace_nil
 U args_GetDiskFreeSpace_nil|r
-V args_GetDiskFreeSpace_nil|r|92259.015625
+V args_GetDiskFreeSpace_nil|r|92481.656250
 END args_GetDiskFreeSpace_nil
 BEGIN args_GetDiskFreeSpace_str
 U args_GetDiskFreeSpace_str|r
-V args_GetDiskFreeSpace_str|r|92259.015625
+V args_GetDiskFreeSpace_str|r|92481.656250
 END args_GetDiskFreeSpace_str
 BEGIN args_GetDiskFreeSpace_num
 U args_GetDiskFreeSpace_num|r
-V args_GetDiskFreeSpace_num|r|92259.015625
+V args_GetDiskFreeSpace_num|r|92481.656250
 END args_GetDiskFreeSpace_num
 BEGIN args_GetDiskFreeSpace_tab
 U args_GetDiskFreeSpace_tab|r
-V args_GetDiskFreeSpace_tab|r|92259.015625
+V args_GetDiskFreeSpace_tab|r|92481.656250
 END args_GetDiskFreeSpace_tab
 BEGIN args_GetDiskFreeSpace_fn
 U args_GetDiskFreeSpace_fn|r
-V args_GetDiskFreeSpace_fn|r|92259.015625
+V args_GetDiskFreeSpace_fn|r|92481.656250
 END args_GetDiskFreeSpace_fn
 BEGIN args_GetFontDimensions_none
 V args_GetFontDimensions_none|r|nil
@@ -6761,7 +6772,7 @@ ERROR args_ceil_fn bad argument #1 to function `ceil' (number expected)
 FAILED args_ceil_fn
 BEGIN args_collectgarbage_none
 U args_collectgarbage_none|r
-V args_collectgarbage_none|r|2072.000000
+V args_collectgarbage_none|r|2966.000000
 END args_collectgarbage_none
 BEGIN args_collectgarbage_nil
 ERROR args_collectgarbage_nil bad argument #1 to function `collectgarbage' (number expected)
@@ -6799,7 +6810,7 @@ ERROR args_cos_fn bad argument #1 to function `cos' (number expected)
 FAILED args_cos_fn
 BEGIN args_date_none
 U args_date_none|r
-V args_date_none|r|"11/08/26 00:15:25"
+V args_date_none|r|"11/08/26 00:40:48"
 END args_date_none
 BEGIN args_date_nil
 ERROR args_date_nil bad argument #1 to function `date' (string expected)
@@ -7548,11 +7559,11 @@ V args_tostring_num|r|"1.5"
 END args_tostring_num
 BEGIN args_tostring_tab
 U args_tostring_tab|r
-V args_tostring_tab|r|"table: 135F4940"
+V args_tostring_tab|r|"table: 134FFB80"
 END args_tostring_tab
 BEGIN args_tostring_fn
 U args_tostring_fn|r
-V args_tostring_fn|r|"function: 026E1530"
+V args_tostring_fn|r|"function: 027E0D90"
 END args_tostring_fn
 BEGIN args_type_none
 ERROR args_type_none API error - attempt to push a NOOBJECT
@@ -7581,4 +7592,4 @@ V lex_binary|short|nil
 ERROR lex_binary binary file cr_bin_old.lua too old: version=0x30; expected at least 0x31
 V lex_binary|old|nil
 END lex_binary
-SUMMARY 2286 tests, 247 failed
+SUMMARY 2288 tests, 247 failed
