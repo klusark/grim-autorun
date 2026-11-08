@@ -445,7 +445,9 @@ def scummvm_once():
     global RUN_START, RUN_KILLED
     t = RUN_START = time.time()
     RUN_KILLED = 0
-    p = subprocess.Popen(offscreen(cmd), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, env=env, cwd=d)
+    # (stdin closed: ScummVM's Lua read() falls back to the process's stdin when readfrom failed, and an open one blocks it)
+    p = subprocess.Popen(offscreen(cmd), stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+                         env=env, cwd=d)
     size, last = -1, time.time()
     while p.poll() is None:
         time.sleep(0.3)
@@ -593,7 +595,7 @@ def original_once(which="original"):
     # (EMI's Direct3D does not start on a desktop of its own; its OpenGL renderer (-gl) does, and gives the same values: only
     # GammaEnabled, which says what the hardware can do, differs, and it is not compared)
     launch = [os.path.join(d, "grimlaunch.exe"), exe] + (["-gl"] if GAME == "emi" else [])
-    p = subprocess.Popen(offscreen(launch), cwd=d, stdout=subprocess.DEVNULL,
+    p = subprocess.Popen(offscreen(launch), cwd=d, stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL,
                          stderr=subprocess.DEVNULL, env=dict(os.environ, GRIM_INI=os.path.join(d, "grim.ini")))
     # (a run that writes nothing to grimdebug.log for CR_STALL seconds hangs: it is killed, and so is every game started from
     # our run folder; copies elsewhere, a game being played or other tools' builds, are not touched)

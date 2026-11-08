@@ -95,5 +95,22 @@ def loose_files():
     """The files beside the archive. The movies (formats.bik, as the .m4b of Movies/: both engines open Movies/<name>.m4b
     as a file, and with no SMUSH subtitle header the Bink data start at 0): 160 x 120 at 15 frames a second, white for 90
     frames (6 s), and 5 frames from grey to white."""
-    return {"Movies/cr_white.m4b": F.bik(160, 120, [(255, 255, 255)] * 90),
-            "Movies/cr_steps.m4b": F.bik(160, 120, [(v, v, v) for v in range(130, 255, 25)])}
+    out = {"Movies/cr_white.m4b": F.bik(160, 120, [(255, 255, 255)] * 90),
+           "Movies/cr_steps.m4b": F.bik(160, 120, [(v, v, v) for v in range(130, 255, 25)])}
+    out.update(music())
+    return out
+
+
+def music():
+    """EMI's music, as the game's sits beside its archives (emi_music.lua): Textures/FullMonkeyMap.imt (formats.imt) with
+    states 1 to 110 (ScummVM wants at least 100), the odd ones A\\cr_one.m4b in sync group 1, the even ones A\\cr_loop.m4b in
+    group 2; the files (formats.emi_music: MP3 frames of silence, 3 s) in both music sets, Textures/spago and
+    Textures/mego; cr_loop's .jmm loops from 2 s back to 0.5 s."""
+    out = {"Textures/FullMonkeyMap.imt": F.imt([(i, 1 if i % 2 else 2, "state", "A\\cr_one.m4b" if i % 2 else "A\\cr_loop.m4b")
+                                                for i in range(1, 111)])}
+    for d in ("spago", "mego"):
+        out["Textures/%s/A/cr_one.m4b" % d] = F.emi_music(3.0)
+        out["Textures/%s/A/cr_one.jmm" % d] = F.jmm(0.0)
+        out["Textures/%s/A/cr_loop.m4b" % d] = F.emi_music(3.0)
+        out["Textures/%s/A/cr_loop.jmm" % d] = F.jmm(0.0, 2000.0, 500.0)
+    return out

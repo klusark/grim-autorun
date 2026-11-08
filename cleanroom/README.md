@@ -169,6 +169,24 @@ with its globals cleared and the garbage collected. EMI's head (`ec_head`): Monk
 not (no script of either game calls it). ScummVM's `GetResidualVMPreference` (`ec_preferences`, ScummVM only): an EMI
 volume below 25 wrapped round to the loudest (fixed).
 
+iMUSE playing for seconds of the clock (`music_live.lua`): the states of `music.lua` one after another, a sequence to
+its `_end` marker, the music's volume, sounds faded and panned, a voiced line with lip sync. The original has no sound
+driver and does not move a sound on, so only what does not depend on how far a sound got is compared; the test is for
+ScummVM's iMUSE, which mixes, dispatches and runs its triggers by real time.
+
+The other Blocky16 modes (`movie_modes.lua`; `formats.snm` takes `(mode, colour)` frames, `formats.bomp` codes BOMP):
+mode 6 (a 256-colour table), 8 (the table, BOMP coded), 5 (BOMP-coded pixels), 3 and 4 (a copy of a delta buffer), each a
+640 x 480 movie (the original leaves the last frame of an earlier movie, which a smaller one would not cover): the same
+on both.
+
+EMI's music (`emi_music.lua`, `assets_emi.music`): `Textures/FullMonkeyMap.imt` (`formats.imt`) with 110 states (ScummVM
+wants at least 100) over two files in both music sets (`Textures/spago`, `Textures/mego`), each a RIFF WAVE of format 0x55
+holding MP3 frames of silence (`formats.emi_music`, `mp3_silence`), and a `.jmm` (`formats.jmm`: a loop). States,
+the state stack, the music set and the volume run the same on both; `ImStateHasEnded` of a state that never played is
+128 on the original and 1 on ScummVM, and `ImGetMillisecondPosition` without music was 0 on ScummVM against -1 (fixed).
+`run.py` starts every engine with stdin closed: when `readfrom` fails, ScummVM's `read` falls back to the process's
+stdin, and an open one (a shell's) blocked it in `lex_read`.
+
 EMI's sounds and voices (`emi_sound.lua`, 2026-11-07; `formats.aiff` for `.aif`, the voices `.wVC` as MCMP with VIMA blocks,
 and a `.lip`). `LoadSound` of a file that is not there is nil, and `PlayLoadedSoundFrom` plays with five arguments (both
 fixed on klusark's `cleanroom`); a voiced line goes until ShutUpActor on both. Left: `PlayLoadedSound(h, nil, volume)`

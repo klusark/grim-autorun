@@ -636,7 +636,43 @@ def wav(seconds, rate=22050, freq=440.0, channels=1, amplitude=8000):
     return b"RIFF" + struct.pack("<I", len(body)) + body
 
 
-def snm(width, height, colours, frame_us=66667, rate=22050):
+def bomp(data):
+    """BOMP coding (ScummVM blocky16.cpp, bompDecode): a control byte, the count less 1 in its upper 7 bits and in its low bit
+    1 for a run (one byte, repeated) or 0 for that many bytes as they are; at most 128 bytes a control byte."""
+    out = bytearray()
+    i, n = 0, len(data)
+    while i < n:
+        run = 1
+        while i + run < n and run < 128 and data[i + run] == data[i]:
+            run += 1
+        if run >= 3:
+            out += bytes([((run - 1) << 1) | 1, data[i]])
+            i += run
+            continue
+        j = i
+        while j < n and j - i < 128 and not (j + 2 < n and data[j] == data[j + 1] == data[j + 2]):
+            j += 1
+        out += bytes([(j - i - 1) << 1]) + data[i:j]
+        i = j
+    return bytes(out)
+
+
+def bomp_decode(coded, size):
+    """bompDecode (to check `bomp`)."""
+    out, i = bytearray(), 0
+    while len(out) < size:
+        c = coded[i]
+        num = (c >> 1) + 1
+        if c & 1:
+            out += bytes([coded[i + 1]]) * num
+            i += 2
+        else:
+            out += coded[i + 1:i + 1 + num]
+            i += 1 + num
+    return bytes(out[:size])
+
+
+def snm(width, height, colours, frame_us=66667, rate=22050, fill=None):
     """A SMUSH movie as Grim's (gzipped SANM): one Bl16 frame per colour, each a whole frame of that RGB565 colour, raw
     (Blocky16 mode 0: the 560-byte frame header, then width * height pixels, little endian). SHDR as Insane_ReadFrameHeader
     (0x4bd7c0) and ScummVM's SmushDecoder read it: x, y, width, height at +4..+10, the time of a frame in us at +14, the size
@@ -651,17 +687,36 @@ def snm(width, height, colours, frame_us=66667, rate=22050):
     samples = rate * frame_us // 1000000
     wave = struct.pack(">i", samples) + bytes(3 + samples)
     frames = []
+    # (a frame is a colour, raw, or (mode, colour): Blocky16 mode 6 indexes the 256-colour table at +40 of the header with
+    # a byte a pixel; 8 the same with the bytes BOMP coded (bomp); 5 the 16-bit pixels BOMP coded, their size at +36; 3 and 4
+    # copy a delta buffer, which keeps the colour at +32 of frame 0 when no frame swaps the buffers)
+    if fill is None:
+        fill = colours[0] if isinstance(colours[0], int) else colours[0][1]
     for i, c in enumerate(colours):
+        mode, c = (0, c) if isinstance(c, int) else c
         head = bytearray(560)
         # (the original's Blocky16_DecodeFrame 0x4ccd00 takes the frame's size from +8 and +12; +0x228, the pixel format, 0:
         # 8, 16 bits. ScummVM's Blocky16 has the size from SHDR)
         struct.pack_into("<HH", head, 8, width, 0)
         struct.pack_into("<HH", head, 12, height, 0)
         struct.pack_into("<H", head, 16, i)          # (sequence number: frame 0 starts the delta buffers)
-        head[18] = 0                                  # (mode 0: raw)
+        head[18] = mode
         head[19] = 0                                  # (no buffer swap)
-        struct.pack_into("<H", head, 32, c)           # (the colour the delta buffers start with)
-        frames.append(chunk(b"FRME", chunk(b"Bl16", bytes(head) + struct.pack("<H", c) * (width * height)) + chunk(b"Wave", wave)))
+        struct.pack_into("<H", head, 32, fill)        # (the colour the delta buffers start with)
+        pixels = struct.pack("<H", c) * (width * height)
+        if mode == 0:
+            data = pixels
+        elif mode in (6, 8):
+            struct.pack_into("<H", head, 40, c)
+            data = bytes(width * height) if mode == 6 else bomp(bytes(width * height))
+        elif mode == 5:
+            struct.pack_into("<I", head, 36, len(pixels))
+            data = bomp(pixels)
+        elif mode in (3, 4):
+            data = b""
+        else:
+            raise ValueError("mode %d" % mode)
+        frames.append(chunk(b"FRME", chunk(b"Bl16", bytes(head) + data) + chunk(b"Wave", wave)))
     biggest = max(len(f) for f in frames)
     shdr = bytearray(struct.pack("<BBHHHHHHII", 1, 1, len(colours), 0, 0, width, height, 0, frame_us, biggest))
     shdr += bytes(1024) + struct.pack("<H", 0)
@@ -1055,3 +1110,44 @@ def lip(entries, end):
     16 bits little endian. The last entry is `end`, with silence: an entry lasts until the next one starts."""
     rows = list(entries) + [(end, 0x5F)]
     return b"LIP!" + struct.pack("<i", len(rows)) + b"".join(struct.pack("<hH", t, p) for t, p in rows)
+
+
+# EMI's music (ScummVM engines/grim/emi/sound/emisound.cpp, mp3track.cpp): Textures/FullMonkeyMap.imt names a file for
+# each music state; the files (under Textures/spago/ and Textures/mego/) are a RIFF WAVE header of format 0x55 (MP3)
+# with MP3 frames as its data, and a .jmm beside each gives its start and its loop.
+
+def mp3_silence(seconds):
+    """MPEG-1 Layer III frames of silence, mono, 44100 Hz, 128 kbit/s: each a header (FF FB 90 C0), 17 bytes of side
+    information and its main data, all zero (no granule has any data: the decoder gives silence). 417 bytes and 1152
+    samples a frame."""
+    frame = b"\xff\xfb\x90\xc0" + bytes(417 - 4)
+    return frame * max(1, int(seconds * 44100 / 1152))
+
+
+def emi_music(seconds):
+    """A music file of EMI's (.m4b under Textures/spago): RIFF WAVE, fmt of format 0x55 (MPEG layer 3), 1 channel,
+    22050 Hz, as the game's have it, then the MP3 frames as the data chunk."""
+    data = mp3_silence(seconds)
+    fmt = struct.pack("<HHIIHH", 0x55, 1, 22050, 44100, 2, 16)
+    body = b"WAVE" + b"fmt " + struct.pack("<I", len(fmt)) + fmt + b"data" + struct.pack("<I", len(data)) + data
+    return b"RIFF" + struct.pack("<I", len(body)) + body
+
+
+def jmm(start_ms, loop_end_ms=None, loop_start_ms=None):
+    """The cue points of a music file (.jmm): .start in ms and, for a loop, .jump from its end back to its start."""
+    out = ".start %f\r\n\r\n" % start_ms
+    if loop_end_ms is not None:
+        out += ".jump %f %f -1 0 0 0 0 0 \r\n" % (loop_end_ms, loop_start_ms)
+    return (out + ".end -1.000000\r\n").encode("ascii")
+
+
+def imt(entries):
+    """EMI's music table (Textures/FullMonkeyMap.imt): between /* and */, a .cueButton (the state's id, a place on the
+    composer's map, its sync group and type, state or episode) and a .playFile (trim 127 and the file, under the music
+    set's folder, with a backslash) for each. entries: [(id, sync, type, file)]."""
+    out = ["/*"]
+    for i, sync, type_, f in entries:
+        out.append('.cueButton id %d x 0 y 0 sync %d type %-7s ""' % (i, sync, type_))
+        out.append('.playFile trim 127 "%s"' % f)
+    out.append("*/")
+    return ("\r\n".join(out) + "\r\n").encode("ascii")

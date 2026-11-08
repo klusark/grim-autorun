@@ -285,6 +285,12 @@ def files():
     # movies (formats.snm): 160 x 120, 15 frames a second; white for 90 frames (6 s), and one that goes from grey to white
     out["cr_white.snm"] = F.snm(160, 120, [F.rgb565(255, 255, 255)] * 90)
     out["cr_steps.snm"] = F.snm(160, 120, [F.rgb565(v, v, v) for v in range(130, 255, 25)])
+    # the other Blocky16 modes (movie_modes.lua): the whole screen (640 x 480: the original leaves the last frame of an
+    # earlier movie, which a smaller one would not cover), 2 grey frames, raw, then 45 white ones (3 s) in mode 6, 8, 5, 3 or
+    # 4 (3 and 4 copy the delta buffers, which start white)
+    grey, white = F.rgb565(60, 60, 60), F.rgb565(255, 255, 255)
+    for m in (6, 8, 5, 3, 4):
+        out["cr_mode%d.snm" % m] = F.snm(640, 480, [grey, grey] + [(m, white)] * 45, fill=white)
     # music (formats.imus): the files iMUSE's state and sequence tables name for ImSetState / ImSetSequence (the name and
     # ".IMC"). Two states that loop; the file of states 1002-1007 with a hook 8 jump in the middle; a sequence that plays once
     # and ends with the "_end" marker
