@@ -4,6 +4,8 @@ EMI's world has y up: the original finds the sector of a point in the x-z plane 
 see emi_sets.lua). The sets are Grim's (assets.SETS) turned over: a Grim point (x, y, z) is the EMI point (x, z, y). They are
 binary .setb (formats.set_binary): the original reads a text .set only in its own format, which has no colormaps or z-buffers,
 and ScummVM reads only Grim's text format. Their backgrounds are .til (formats.til; the original crashes drawing a set without one)."""
+import math
+
 import assets as A
 import formats as F
 
@@ -40,6 +42,43 @@ def files():
     two = [dict(CAMERA, name="two_a", background="cr_flat.til"),
            dict(CAMERA, name="two_b", background="cr_edge.til", position=(1.0, 6.0, -0.5), fov=40.0)]
     out["cr_two.setb"] = F.set_binary(two, [LIGHT], emi_sectors(A.SETS["cr_flat"][1]))
+    out.update(costumes())
+    return out
+
+
+# A box 0.6 x 1.8 x 0.6 m (y up): its lower corners follow the joint "root", its upper ones "body" (0.9 m up)
+EBOX_VERTS = [(x, y, z) for y in (0.0, 1.8) for x in (-0.3, 0.3) for z in (-0.3, 0.3)]
+EBOX_TRIS = [(0, 1, 3), (0, 3, 2), (4, 6, 7), (4, 7, 5), (0, 4, 5), (0, 5, 1),
+             (2, 3, 7), (2, 7, 6), (0, 2, 6), (0, 6, 4), (1, 5, 7), (1, 7, 3)]
+IDENTITY = (0.0, 0.0, 0.0, 1.0)
+
+
+def costumes():
+    """EMI costumes (formats.cosb) and what they use. cr_lv.cos: Lua Variable tracks only (CR_LV), as Grim's
+    LUAV_COSTUME: "keys" (1 s, CR_LV 1 at 0, 2 at 0.1 s, 3 at 0.25 s, 4 at 1 s), "short" (0.05 s), "loop" (0.3 s), "endless"
+    (a length of 1000: no end). cr_ebox.cos: a skeleton (root, body), the box mesh on it, "wear_default" (endless: the
+    skeleton and the mesh), "lift" (1 s: the animation cr_ebox_lift, which moves body 0.5 m up and turns root a quarter
+    about y, and CR_LV 7 at its start)."""
+    out = {}
+    lv = "!luavCR_LV"
+    out["cr_lv.cosb"] = F.cosb([
+        ("keys", 1.0, [(lv, 0, -1, [(0.0, 1), (0.1, 2), (0.25, 3), (1.0, 4)])]),
+        ("short", 0.05, [(lv, 0, -1, [(0.0, 10), (0.05, 11)])]),
+        ("loop", 0.3, [(lv, 0, -1, [(0.0, 20), (0.15, 21)])]),
+        ("endless", 1000.0, [(lv, 0, -1, [(0.0, 30)])]),
+    ])
+    out["cr_ebox.sklb"] = F.sklb([("root", "no_parent", (0.0, 0.0, 0.0), IDENTITY), ("body", "root", (0.0, 0.9, 0.0), IDENTITY)])
+    out["cr_ebox.meshb"] = F.meshb("cr_ebox", EBOX_VERTS, EBOX_TRIS,
+                                   bones=[("root", [0, 1, 2, 3]), ("body", [4, 5, 6, 7])])
+    q = math.sqrt(0.5)
+    out["cr_ebox_lift.animb"] = F.animb("cr_ebox_lift", 1.0, [
+        ("body", 3, 1, [((0.0, 0.9, 0.0), 0.0), ((0.0, 1.4, 0.0), 1.0)]),
+        ("root", 4, 1, [(IDENTITY, 0.0), ((0.0, q, 0.0, q), 1.0)]),
+    ])
+    out["cr_ebox.cosb"] = F.cosb([
+        ("wear_default", 1000.0, [("!skelcr_ebox.skl", 0, -1, [(0.0, 1)]), ("!meshcr_ebox.mesh", 1, -1, [(0.0, 1)])]),
+        ("lift", 1.0, [("!animcr_ebox_lift.anim", 0, -1, [(0.0, 1)]), (lv, 0, -1, [(0.0, 7)])]),
+    ])
     return out
 
 

@@ -1,4 +1,4 @@
-START 5015 tests
+START 5018 tests
 BEGIN boot_state
 V boot_state|movie_playing|nil
 V boot_state|fullscreen_movie_playing|nil
@@ -511,7 +511,7 @@ V strings|ascii|65.000000
 END strings
 BEGIN next_order
 U next_order|order
-V next_order|order|"49,98,chepito,7,56,28,glottis,14,salvador,63,112,olivia,21,eva,35,119,105,meche,77,126,70,manny,velasco,84,133,lupe,42,91,domino,140,"
+V next_order|order|"salvador,49,98,olivia,7,eva,meche,105,14,63,140,112,manny,velasco,70,119,lupe,28,77,domino,126,56,35,133,84,chepito,42,21,glottis,91,"
 V next_order|globals_counted|1.000000
 END next_order
 BEGIN tasks
@@ -1736,6 +1736,24 @@ BEGIN kf_markers
 V kf_markers|markers_system|"table"
 V kf_markers|markers_seen|" nil nil"
 END kf_markers
+BEGIN kfb_text
+V kfb_text|rest_box|170.000000 207.000000 274.000000 267.000000
+V kfb_text|f30_box|170.000000 207.000000 274.000000 267.000000
+V kfb_text|frames|118.000000
+V kfb_text|end_box|170.000000 207.000000 274.000000 267.000000
+END kfb_text
+BEGIN kfb_slide
+V kfb_slide|rest_box|170.000000 207.000000 274.000000 267.000000
+V kfb_slide|f30_box|170.000000 207.000000 274.000000 267.000000
+V kfb_slide|frames|118.000000
+V kfb_slide|end_box|170.000000 207.000000 274.000000 267.000000
+END kfb_slide
+BEGIN kfb_fast
+V kfb_fast|rest_box|170.000000 207.000000 274.000000 267.000000
+V kfb_fast|f30_box|170.000000 207.000000 274.000000 267.000000
+V kfb_fast|frames|118.000000
+V kfb_fast|end_box|170.000000 207.000000 274.000000 267.000000
+END kfb_fast
 BEGIN lab_files
 V lab_files|check_archive|1.000000
 V lab_files|check_member|1.000000
@@ -2981,18 +2999,18 @@ V registry_keys|RenderingMode|"nil"
 V registry_keys|Fullscreen|"nil"
 END registry_keys
 BEGIN registry_write
-V registry_write|LastSavedGame|"3" 1.000000
-V registry_write|TextSpeed|"5" 1.000000
-V registry_write|Gamma|"1" 1.000000
 V registry_write|SpeechMode|"2" 1.000000
 V registry_write|MovementMode|"FALSE" 1.000000
 V registry_write|MusicVolume|"90" 1.000000
 V registry_write|Transcript|"FALSE" 1.000000
 V registry_write|VoiceEffects|"FALSE" 1.000000
+V registry_write|SfxVolume|"80" 1.000000
+V registry_write|Gamma|"1" 1.000000
 V registry_write|VoiceVolume|"70" 1.000000
 V registry_write|JoystickEnabled|"FALSE" 1.000000
-V registry_write|SfxVolume|"80" 1.000000
+V registry_write|LastSavedGame|"3" 1.000000
 V registry_write|GrimLastSet|"cr_flat.set" 1.000000
+V registry_write|TextSpeed|"5" 1.000000
 END registry_write
 BEGIN registry_kinds
 V registry_kinds|string_digits|"string" "12"
@@ -3032,14 +3050,14 @@ END save_mode
 BEGIN save_actor_attrs
 V save_actor_attrs|changed|7.000000
 V save_actor_attrs|pass|"loading"
+V save_actor_attrs|kept_talk_color|1.000000
+V save_actor_attrs|kept_look_rate|1.000000
 V save_actor_attrs|kept_timescale|1.000000
+V save_actor_attrs|kept_sector|1.000000
 V save_actor_attrs|kept_walk_rate|1.000000
+V save_actor_attrs|kept_costume|1.000000
 V save_actor_attrs|kept_rot|"5 -180 -3 nil nil" "5 -182.793 -3 nil nil"
 V save_actor_attrs|kept_pos|1.000000
-V save_actor_attrs|kept_talk_color|1.000000
-V save_actor_attrs|kept_costume|1.000000
-V save_actor_attrs|kept_sector|1.000000
-V save_actor_attrs|kept_look_rate|1.000000
 END save_actor_attrs
 BEGIN save_walking
 V save_walking|saved_pos|0.024042 0.024041 0.000000
@@ -3061,9 +3079,9 @@ END save_chore
 BEGIN save_set
 V save_set|changed|4.000000
 V save_set|pass|"loading"
+V save_set|kept_active|1.000000
 V save_set|kept_off|1.000000
 V save_set|kept_setup|1.000000
-V save_set|kept_active|1.000000
 V save_set|kept_right|1.000000
 V save_set|kept_left|1.000000
 END save_set
@@ -3078,9 +3096,9 @@ BEGIN save_text
 V save_text|changed|2.000000
 V save_text|pass|"loading"
 V save_text|kept_d3|1.000000
+V save_text|kept_speed|"4" "7"
 V save_text|kept_d2|1.000000
 V save_text|kept_d1|1.000000
-V save_text|kept_speed|"4" "7"
 V save_text|loaded_snap|100.000000 47.000000 534.000000 306.000000 1158.000000
 END save_text
 BEGIN save_primitives
@@ -3100,9 +3118,9 @@ V save_lua|pass|"loading"
 V save_lua|kept_f|1.000000
 V save_lua|kept_task|1.000000
 V save_lua|kept_s|1.000000
-V save_lua|kept_deep|1.000000
 V save_lua|kept_n|1.000000
 V save_lua|kept_self|1.000000
+V save_lua|kept_deep|1.000000
 V save_lua|task_counts|1.000000
 END save_lua
 BEGIN sector_active
@@ -3260,8 +3278,8 @@ V sound_params|group|"1 0 3 100 90 0"
 V sound_params|stopped|"0 0 -4 -4 -4 -4"
 END sound_params
 BEGIN sound_fade
-V sound_fade|trace|"127/64 127/64 127/64 127/64 127/64 127/64 127/64 127/64 127/64 127/64 127/64 127/64 127/64 127/64 120/67 120/67 120/67 120/67 120/67 120/67 120/67 120/67 120/67 120/67 120/67 "
-V sound_fade|after|"1 0 1 64 120 67"
+V sound_fade|trace|"127/64 127/64 127/64 127/64 127/64 127/64 127/64 127/64 127/64 127/64 127/64 127/64 127/64 127/64 127/64 127/64 127/64 127/64 127/64 127/64 127/64 127/64 127/64 127/64 127/64 "
+V sound_fade|after|"1 0 1 64 127 64"
 END sound_fade
 BEGIN sound_twice
 V sound_twice|two|"2 0 1 64 127 64"
@@ -5943,7 +5961,7 @@ V args_GetActorNodeLocation_p2_tab|r|nil
 END args_GetActorNodeLocation_p2_tab
 BEGIN args_GetActorNodeLocation_p2_neg
 U args_GetActorNodeLocation_p2_neg|r
-V args_GetActorNodeLocation_p2_neg|r|0.000000 -0.000000 0.000000
+V args_GetActorNodeLocation_p2_neg|r|0.000000 0.000000 0.000000
 END args_GetActorNodeLocation_p2_neg
 SKIP args_GetActorNodeLocation_p2_big
 BEGIN args_GetActorPos_none
@@ -6915,27 +6933,27 @@ V args_GetCurrentSetup_p1_tab|r|nil
 END args_GetCurrentSetup_p1_tab
 BEGIN args_GetDiskFreeSpace_none
 U args_GetDiskFreeSpace_none|r
-V args_GetDiskFreeSpace_none|r|92290.882813
+V args_GetDiskFreeSpace_none|r|92257.734375
 END args_GetDiskFreeSpace_none
 BEGIN args_GetDiskFreeSpace_nil
 U args_GetDiskFreeSpace_nil|r
-V args_GetDiskFreeSpace_nil|r|92290.882813
+V args_GetDiskFreeSpace_nil|r|92257.734375
 END args_GetDiskFreeSpace_nil
 BEGIN args_GetDiskFreeSpace_str
 U args_GetDiskFreeSpace_str|r
-V args_GetDiskFreeSpace_str|r|92290.882813
+V args_GetDiskFreeSpace_str|r|92257.734375
 END args_GetDiskFreeSpace_str
 BEGIN args_GetDiskFreeSpace_num
 U args_GetDiskFreeSpace_num|r
-V args_GetDiskFreeSpace_num|r|92290.882813
+V args_GetDiskFreeSpace_num|r|92257.734375
 END args_GetDiskFreeSpace_num
 BEGIN args_GetDiskFreeSpace_tab
 U args_GetDiskFreeSpace_tab|r
-V args_GetDiskFreeSpace_tab|r|92290.882813
+V args_GetDiskFreeSpace_tab|r|92257.734375
 END args_GetDiskFreeSpace_tab
 BEGIN args_GetDiskFreeSpace_fn
 U args_GetDiskFreeSpace_fn|r
-V args_GetDiskFreeSpace_fn|r|92290.882813
+V args_GetDiskFreeSpace_fn|r|92257.734375
 END args_GetDiskFreeSpace_fn
 SKIP args_GetFontDimensions_none
 SKIP args_GetFontDimensions_nil
@@ -7148,27 +7166,27 @@ V args_GetLightType_l_tab|r|"omni"
 END args_GetLightType_l_tab
 BEGIN args_GetMemoryUsage_none
 U args_GetMemoryUsage_none|r
-V args_GetMemoryUsage_none|r|11146920.000000
+V args_GetMemoryUsage_none|r|11346318.000000
 END args_GetMemoryUsage_none
 BEGIN args_GetMemoryUsage_nil
 U args_GetMemoryUsage_nil|r
-V args_GetMemoryUsage_nil|r|11148055.000000
+V args_GetMemoryUsage_nil|r|11347453.000000
 END args_GetMemoryUsage_nil
 BEGIN args_GetMemoryUsage_str
 U args_GetMemoryUsage_str|r
-V args_GetMemoryUsage_str|r|11149175.000000
+V args_GetMemoryUsage_str|r|11348773.000000
 END args_GetMemoryUsage_str
 BEGIN args_GetMemoryUsage_num
 U args_GetMemoryUsage_num|r
-V args_GetMemoryUsage_num|r|11150495.000000
+V args_GetMemoryUsage_num|r|11349893.000000
 END args_GetMemoryUsage_num
 BEGIN args_GetMemoryUsage_tab
 U args_GetMemoryUsage_tab|r
-V args_GetMemoryUsage_tab|r|11151719.000000
+V args_GetMemoryUsage_tab|r|11351117.000000
 END args_GetMemoryUsage_tab
 BEGIN args_GetMemoryUsage_fn
 U args_GetMemoryUsage_fn|r
-V args_GetMemoryUsage_fn|r|11152836.000000
+V args_GetMemoryUsage_fn|r|11352234.000000
 END args_GetMemoryUsage_fn
 BEGIN args_GetPhysicalBytes_none
 V args_GetPhysicalBytes_none|r|2147483648.000000
@@ -7694,27 +7712,27 @@ V args_GetTextSpeed_fn|r|7.000000
 END args_GetTextSpeed_fn
 BEGIN args_GetTickCount_none
 U args_GetTickCount_none|r
-V args_GetTickCount_none|r|677614400.000000
+V args_GetTickCount_none|r|679852928.000000
 END args_GetTickCount_none
 BEGIN args_GetTickCount_nil
 U args_GetTickCount_nil|r
-V args_GetTickCount_nil|r|677614400.000000
+V args_GetTickCount_nil|r|679852928.000000
 END args_GetTickCount_nil
 BEGIN args_GetTickCount_str
 U args_GetTickCount_str|r
-V args_GetTickCount_str|r|677614400.000000
+V args_GetTickCount_str|r|679852928.000000
 END args_GetTickCount_str
 BEGIN args_GetTickCount_num
 U args_GetTickCount_num|r
-V args_GetTickCount_num|r|677614400.000000
+V args_GetTickCount_num|r|679852928.000000
 END args_GetTickCount_num
 BEGIN args_GetTickCount_tab
 U args_GetTickCount_tab|r
-V args_GetTickCount_tab|r|677614400.000000
+V args_GetTickCount_tab|r|679852928.000000
 END args_GetTickCount_tab
 BEGIN args_GetTickCount_fn
 U args_GetTickCount_fn|r
-V args_GetTickCount_fn|r|677614400.000000
+V args_GetTickCount_fn|r|679852928.000000
 END args_GetTickCount_fn
 BEGIN args_GetTranslationMode_none
 V args_GetTranslationMode_none|r|0.000000
@@ -11218,27 +11236,27 @@ V args_ReadRegistryValue_p1_tab|r|nil
 END args_ReadRegistryValue_p1_tab
 BEGIN args_ResReport_none
 U args_ResReport_none|r
-V args_ResReport_none|r|11763103.000000
+V args_ResReport_none|r|11439382.000000
 END args_ResReport_none
 BEGIN args_ResReport_nil
 U args_ResReport_nil|r
-V args_ResReport_nil|r|11764374.000000
+V args_ResReport_nil|r|11440653.000000
 END args_ResReport_nil
 BEGIN args_ResReport_str
 U args_ResReport_str|r
-V args_ResReport_str|r|11765630.000000
+V args_ResReport_str|r|11441909.000000
 END args_ResReport_str
 BEGIN args_ResReport_num
 U args_ResReport_num|r
-V args_ResReport_num|r|11766886.000000
+V args_ResReport_num|r|11443565.000000
 END args_ResReport_num
 BEGIN args_ResReport_tab
 U args_ResReport_tab|r
-V args_ResReport_tab|r|11768246.000000
+V args_ResReport_tab|r|11444925.000000
 END args_ResReport_tab
 BEGIN args_ResReport_fn
 U args_ResReport_fn|r
-V args_ResReport_fn|r|11769495.000000
+V args_ResReport_fn|r|11446174.000000
 END args_ResReport_fn
 BEGIN args_ResetTextures_none
 V args_ResetTextures_none|r|nil
@@ -16280,7 +16298,7 @@ ERROR args_ceil_fn bad argument #1 to function `ceil' (number expected)
 FAILED args_ceil_fn
 BEGIN args_collectgarbage_none
 U args_collectgarbage_none|r
-V args_collectgarbage_none|r|4816.000000
+V args_collectgarbage_none|r|7594.000000
 END args_collectgarbage_none
 BEGIN args_collectgarbage_nil
 ERROR args_collectgarbage_nil bad argument #1 to function `collectgarbage' (number expected)
@@ -16318,7 +16336,7 @@ ERROR args_cos_fn bad argument #1 to function `cos' (number expected)
 FAILED args_cos_fn
 BEGIN args_date_none
 U args_date_none|r
-V args_date_none|r|"11/07/26 21:26:19"
+V args_date_none|r|"11/07/26 22:03:39"
 END args_date_none
 BEGIN args_date_nil
 ERROR args_date_nil bad argument #1 to function `date' (string expected)
@@ -17085,11 +17103,11 @@ V args_tostring_num|r|"1.5"
 END args_tostring_num
 BEGIN args_tostring_tab
 U args_tostring_tab|r
-V args_tostring_tab|r|"table: 0869EB7C"
+V args_tostring_tab|r|"table: 08709E5C"
 END args_tostring_tab
 BEGIN args_tostring_fn
 U args_tostring_fn|r
-V args_tostring_fn|r|"function: 0406B1BC"
+V args_tostring_fn|r|"function: 0400ABCC"
 END args_tostring_fn
 BEGIN args_type_none
 ERROR args_type_none API error - attempt to push a NOOBJECT
@@ -17109,4 +17127,4 @@ END args_type_tab
 BEGIN args_type_fn
 V args_type_fn|r|"function" -4.000000
 END args_type_fn
-SUMMARY 5015 tests, 255 failed
+SUMMARY 5018 tests, 255 failed

@@ -168,10 +168,18 @@ def _draw_model(name, mat):
 
 # A keyframe of 2 s (30 frames at 15 a second) that slides the body node 1 m to +x and turns it 90 degrees (yaw), and the
 # same back; the markers at frames 10 and 20
-SLIDE_KEY = F.keyframe_text(30, 15.0, 4, [
+SLIDE_NODES = [
     (1, "body", [(0.0, 0, (0, 0, 0), (0, 0, 0), (1.0 / 29, 0, 0), (0, 90.0 / 29, 0)),
                  (29.0, 0, (1.0, 0, 0), (0, 90.0, 0), (0, 0, 0), (0, 0, 0))]),
-], markers=[(10.0, 1), (20.0, 2)])
+]
+SLIDE_KEY = F.keyframe_text(30, 15.0, 4, SLIDE_NODES, markers=[(10.0, 1), (20.0, 2)])
+# the same in the binary format (formats.keyframe_binary), and a binary one that gives 30 frames a second (ScummVM plays
+# every keyframe at 15)
+SLIDE_NAMES = {0: "root", 2: "head", 3: "arm"}
+SLIDE_KEY_BIN = F.keyframe_binary(30, 15.0, 4, SLIDE_NODES, markers=[(10.0, 1), (20.0, 2)], name="cr_slide_b.key",
+                                  names=SLIDE_NAMES)
+SLIDE_KEY_FAST = F.keyframe_binary(30, 30.0, 4, SLIDE_NODES, markers=[(10.0, 1), (20.0, 2)], name="cr_slide_f.key",
+                                   names=SLIDE_NAMES)
 
 # component ids: 0 the model, 1 the Lua Variable (BOX_COSTUME's chores use 1), 2 the colormap, 3 the keyframe
 DRAW_COMPONENTS = [("MMDL", -1, "cr_dbox.3do"), ("LUAV", -1, "CR_LV"), ("CMAP", 0, "cr_pal.cmp")]
@@ -234,6 +242,8 @@ def files():
     out["cr_dbox.3do"] = _draw_model("cr_dbox.3do", "cr_white.mat")
     out["cr_gbox.3do"] = _draw_model("cr_gbox.3do", "cr_grey.mat")
     out["cr_slide.key"] = SLIDE_KEY
+    out["cr_slide_b.key"] = SLIDE_KEY_BIN
+    out["cr_slide_f.key"] = SLIDE_KEY_FAST
     out["cr_two.mat"] = F.material(8, 8, indices=[255, 150])
     out["cr_two.3do"] = F.model3do_text("cr_two.3do", [("left", SMALL_BOX), ("right", SMALL_BOX)], TWO_NODES,
                                         materials=["cr_white.mat", "cr_two.mat"],
@@ -248,6 +258,8 @@ def files():
     out["cr_dbox.cos"] = F.costume(DRAW_COMPONENTS, BOX_COSTUME[1])
     out["cr_gbox.cos"] = F.costume([("MMDL", -1, "cr_gbox.3do")] + DRAW_COMPONENTS[1:], BOX_COSTUME[1])
     out["cr_kbox.cos"] = F.costume(DRAW_COMPONENTS + [("KEYF", 0, "cr_slide.key")], KEY_CHORES)
+    out["cr_kbbox.cos"] = F.costume(DRAW_COMPONENTS + [("KEYF", 0, "cr_slide_b.key")], KEY_CHORES)
+    out["cr_kfbox.cos"] = F.costume(DRAW_COMPONENTS + [("KEYF", 0, "cr_slide_f.key")], KEY_CHORES)
     for m in list(HEADER_MODELS) + ["cr_meshx", "cr_nodex", "cr_float"] + list(FORMAT_MODELS):
         out[m + ".cos"] = F.costume([("MMDL", -1, m + ".3do"), ("LUAV", -1, "CR_LV")], BOX_COSTUME[1])
     # a small bitmap of its own for object states and images: the original frees a bitmap with the object state that used

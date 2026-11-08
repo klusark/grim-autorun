@@ -150,8 +150,18 @@ Before `zz_args_emi`, 24 of 73 tests differed. The main differences:
 - **The interpreter:** number text (`1.#INF`, three-digit exponents), `tonumber` of a hex string, `ascii`, function
   names, and `sleep_for` (7 frames against 8).
 
-Not done: EMI models, costumes and chores (`.meshb`, `.animb`, EMI's `.cos`), the rotation of a setup's camera, and sharing
-Grim's set, actor and walk tests (they need Grim's points turned over and EMI's sets).
+EMI's costumes (`emi_costume.lua`, 2026-11-07; `assets_emi.costumes`: `formats.cosb`, `sklb`, `meshb`, `animb`).
+Monkey4.exe has no `SetActorCostume` or `IsActorChoring`: `PlayActorChore(actor, chore name, costume, looping, fade)` puts
+the costume on the actor and gives the chore's handle. `cr_lv.cos` has Lua Variable tracks only (`!luavCR_LV`);
+`cr_ebox.cos` a skeleton, a box mesh on it and an animation. What the original needs of them, found by crashing it: the
+root joint's parent is named `no_parent` (an empty name crashes it), and a mesh has one minimum and one maximum after its
+centre (not two boxes) and at least one texture set. Both engines play the keys at the same frames once ScummVM counts the
+first frame of a chore (it started a chore one frame late, in Grim too: fixed on klusark's `cleanroom`); a chore handle
+is a number on the original and userdata on ScummVM, and a missing chore gives 2 against nil.
+
+Not done: the rotation of a setup's camera, EMI's textured meshes and what a skeleton or an animation does to the mesh
+(no pictures of the original's EMI), and sharing Grim's set, actor and walk tests (they need Grim's points turned over and
+EMI's sets).
 
 The argument tests of the builtins whose results vary are marked unstable by `tools/gen_args.py` (`UNSTABLE`): ticks,
 memory and disk sizes, `ResReport`, `date()`, `tostring` of a function or table, and `collectgarbage()`, whose count changes
@@ -552,5 +562,6 @@ Binary models are written without faces (`formats.model3do`); text models can ha
 Sounds are .wav, iMUSE's .IMC and MCMP (stored or VIMA blocks: "1008 - Domino's Office.IMC", "2001 - Climb Rope.IMC" and
 the voices); VIMA is written mono, without escapes. Movies are raw Blocky16 frames only (no delta modes);
 EMI's movies are Bink with fill blocks only (no DCT, motion or sound) and its music (`FullMonkeyMap.imt` and AIFF or VIMA tracks) has no writer yet.
-Binary keyframes have no writer yet. Bitmaps are raw or codec 3 (`formats.codec3`: `cr_obj.bm` and `cr_cams.bm`; both
+Keyframes are text or binary (`formats.keyframe_binary`, `keyframe_bin.lua`: each engine plays the binary slide as the
+text one; a binary file's fps does not change a chore's length on either). Bitmaps are raw or codec 3 (`formats.codec3`: `cr_obj.bm` and `cr_cams.bm`; both
 engines decode them to the same pixels, so every test that draws them is unchanged).

@@ -542,6 +542,26 @@ def keyframe_text(frames, fps, joints, nodes, markers=(), flags=0, type_=0):
     return ("\r\n".join(out) + "\r\n").encode("ascii")
 
 
+def keyframe_binary(frames, fps, joints, nodes, markers=(), flags=0, type_=0, name="cr.key", names=None):
+    """A binary .key (ScummVM KeyframeAnim::loadBinary): 'FYEK', the name (36 bytes), then at 40 the flags, the joint
+    count, the type, the fps (float), at 56 the frame count, the joint count, 0 and the marker count; the marker frames
+    (floats) at 72 and their values at 104, 8 of each; from 136 one record a joint: its node's name (32 bytes), the joint
+    index, the entry count, 0, and the entries (frame, flags, x y z, pitch yaw roll, their deltas: floats, the flags a
+    32-bit int). nodes as in keyframe_text; a joint without one has no entries, under its name in `names`."""
+    assert len(markers) <= 8
+    h = b"FYEK" + _fixed(name, 36) + struct.pack("<IIIfIIII", flags, joints, type_, fps, frames, joints, 0, len(markers))
+    h += b"".join(struct.pack("<f", f) for f, _ in markers) + b"\0" * (4 * (8 - len(markers)))
+    h += b"".join(struct.pack("<I", v) for _, v in markers) + b"\0" * (4 * (8 - len(markers)))
+    assert len(h) == 136
+    by = {index: (nm, entries) for index, nm, entries in nodes}
+    for j in range(joints):
+        nm, entries = by.get(j, ((names or {}).get(j, ""), []))
+        h += _fixed(nm, 32) + struct.pack("<III", j, len(entries), 0)
+        for frame, eflags, pos, rot, dpos, drot in entries:
+            h += struct.pack("<fI12f", frame, eflags, *(tuple(pos) + tuple(rot) + tuple(dpos) + tuple(drot)))
+    return h
+
+
 def box(sx, sy, sz, z0=0.0):
     """The 8 corners of a box centred on the z axis, from z0 up."""
     return [(x, y, z) for x in (-sx / 2, sx / 2) for y in (-sy / 2, sy / 2) for z in (z0, z0 + sz)]
@@ -716,6 +736,83 @@ def bik(width, height, frames, fps=15):
     offsets.append(pos)
     head = b"BIKi" + struct.pack("<IIIIIIIIII", pos - 8, n, max(len(p) for p in packets), n, width, height, fps, 1, 0, 0)
     return head + struct.pack("<%dI" % (n + 1), *offsets) + b"".join(packets)
+
+
+# EMI's costumes, skeletons, meshes and animations (ScummVM engines/grim/emi: costumeemi.cpp, skeleton.cpp, modelemi.cpp,
+# animationemi.cpp). A costume names its parts without the "b" of their files (clv.skl is clv.sklb).
+
+def _la_string(s):
+    """A string as EMI's binary files have it: its length with the closing zero, then the string and the zero."""
+    b = s.encode("ascii") + b"\0"
+    return struct.pack("<I", len(b)) + b
+
+
+def cosb(chores):
+    """An EMI costume (.cosb): the chore count, then each chore: its name, its length in seconds (1000: no end) and its
+    tracks. A track names its component ("!" and a 4-letter type: "!skelcr.skl", "!meshcr.mesh", "!animcr.anim",
+    "!luavCR_LV"), a flag word, its parent component (-1: none) and its keys (time in seconds, value: floats).
+    chores: [(name, length, [(component, flag, parent, [(time, value), ...]), ...])]."""
+    out = struct.pack("<I", len(chores))
+    for name, length, tracks in chores:
+        out += _la_string(name) + struct.pack("<fI", length, len(tracks))
+        for comp, flag, parent, keys in tracks:
+            out += _la_string(comp) + struct.pack("<IiI", flag, parent, len(keys))
+            out += b"".join(struct.pack("<ff", t, v) for t, v in keys)
+    return out
+
+
+def sklb(joints):
+    """An EMI skeleton (.sklb): the joint count, then each joint: its name and its parent's (32 bytes each; "no_parent" for the root, as the game's: the original looks the parent up by name and
+    crashes on an empty one),
+    its position (x y z) and its rotation (a quaternion x y z w). joints: [(name, parent, pos, quat)]."""
+    out = struct.pack("<I", len(joints))
+    for name, parent, pos, quat in joints:
+        out += _fixed(name, 32) + _fixed(parent, 32) + struct.pack("<7f", *(tuple(pos) + tuple(quat)))
+    return out
+
+
+def meshb(name, vertices, faces, bones=None, normal=(0.0, 1.0, 0.0), colour=(255, 255, 255, 255), texture="default.tga"):
+    """An EMI mesh (.meshb, type 19): its name, a radius, a centre and its box (min, max), one texture set with one texture
+    (none of the faces use it), the vertices, a normal, a colour (RGBA) and texture coordinates (0, 0) each, the faces (no texture, 16-bit vertex
+    indices, three a triangle) and, with `bones` ([(joint name, [vertex index, ...])]), the bones: each vertex follows the
+    one joint it is listed under, with weight 1."""
+    xs, ys, zs = zip(*vertices)
+    lo, hi = (min(xs), min(ys), min(zs)), (max(xs), max(ys), max(zs))
+    centre = tuple((a + b) / 2 for a, b in zip(lo, hi))
+    radius = max(math.sqrt(sum((v[i] - centre[i]) ** 2 for i in range(3))) for v in vertices)
+    out = _la_string(name) + struct.pack("<4f", radius, *centre) + struct.pack("<6f", *(lo + hi))
+    # (one texture set of one texture, as the game's meshes have at least that; the faces use none)
+    out += struct.pack("<III", 1, 0, 1) + _la_string(texture) + struct.pack("<I", 0)
+    out += struct.pack("<II", 19, len(vertices))
+    out += b"".join(struct.pack("<3f", *v) for v in vertices)
+    out += struct.pack("<3f", *normal) * len(vertices)
+    out += bytes(colour) * len(vertices)
+    out += struct.pack("<2f", 0.0, 0.0) * len(vertices)
+    # (one face: the flags of the game's (0x304), no texture, then the index count and the indices of every triangle)
+    out += struct.pack("<I", 1) + struct.pack("<III", 0x304, 0, 3 * len(faces))
+    out += b"".join(struct.pack("<3H", *tri) for tri in faces)
+    if bones:
+        out += struct.pack("<II", 1, len(bones))
+        out += b"".join(_la_string(j) for j, _ in bones)
+        infos = sorted((v, i) for i, (_, vs) in enumerate(bones) for v in vs)
+        out += struct.pack("<I", len(infos))
+        # (each vertex: incFac 1 moves on to the next vertex after this joint)
+        out += b"".join(struct.pack("<IIf", 1, i, 1.0) for _, i in infos)
+    else:
+        out += struct.pack("<I", 0)
+    return out
+
+
+def animb(name, seconds, bones):
+    """An EMI animation (.animb): its name, its length in seconds and its bones. A bone names a joint, its operation (3 a
+    translation, 4 a rotation), a priority, a third word and its keys: x y z (and w for a rotation, a quaternion), then the
+    time in seconds. bones: [(joint, operation, priority, [(values, time), ...])]."""
+    out = _la_string(name) + struct.pack("<fI", seconds, len(bones))
+    for joint, op, priority, keys in bones:
+        out += _la_string(joint) + struct.pack("<IIII", op, priority, 0, len(keys))
+        for values, t in keys:
+            out += struct.pack("<%df" % len(values), *values) + struct.pack("<f", t)
+    return out
 
 
 def imus(seconds, rate=22050, freq=330.0, loop=True, marker=None, hook_jump=None, amplitude=6000):
