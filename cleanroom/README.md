@@ -524,6 +524,18 @@ Hand-written tests, besides the per-frame walk and turn values:
     `GetActorRect` gives x, y, width, height on the original and x0, y0, x1, y1 (1 or 2 pixels larger) on ScummVM.
   - The line of a drawn actor is above the rectangle it was drawn in on both, 2 pixels lower on the original.
   - The components (material cel, mesh shown or hidden, sprite, bitmap) do the same on both.
+  - Lit models (`zz_lit.lua`, 2026-11-08: after the saves, as with them before it the original crashed in their loads now and then: the white box with lighting mode 3 in `cr_lit.set`, black, with an omni, a direct and
+    a spot light; `cr_snap(key, "mean")`). The original draws it at the light level of its vertices (the 5th number of a
+    vertex line, `formats.model3do_text` `vertex_light`: 1 gives 248, 0.5 gives 121, 0 black) whatever the lights do: none
+    of them adds anything (rdModel_DrawMesh lights the mesh in mode 3 with rdLight_CalcVertexIntensities, which starts each
+    vertex from that level; why no light of the set reaches the box is not known yet: its software renderer?
+    `Last3DDevice` is none in the run). ScummVM ignores the vertices' level and lights the box with the set's lights (colour
+    15 15 15, as the game's sets: ScummVM divides the intensity by 15). Found and fixed on `cleanroom`: a light turned off
+    went on lighting the models in OpenGL and TinyGL (`Set::setupLights` left the GL slots past the lights that are on as
+    an earlier frame had them), and TinyGL's spot lights lit nothing (`tglLightfv` passed a spot direction of zeros).
+    OpenGL and TinyGL now give the same (a spot 239 or so); with shaders a spot is dimmer (33) and, with no light on, the
+    box is lit unless its vertices' level is 0. A box rolled 120 degrees faces away from the direct light and is black on
+    all of them (the original draws it at 248).
   - Keyframes: the box moves the same way on the screen, but `GetActorNodeLocation` on the original stays at the rest
     position while the keyframe plays; ScummVM gives the animated position. A Lua Variable track in a costume that also has
     a model never sets its variable on ScummVM (it does in a costume of only a Lua Variable). `GetActorChores` is a table

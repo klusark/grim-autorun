@@ -523,13 +523,15 @@ def model3do(name, meshes, nodes, header=None):
     return out
 
 
-def model3do_text(name, meshes, nodes, radius=None, insert=(0.0, 0.0, 0.0), materials=(), faces=None, lighting=3):
+def model3do_text(name, meshes, nodes, radius=None, insert=(0.0, 0.0, 0.0), materials=(), faces=None, lighting=3,
+                  vertex_light=1.0):
     """The same model as model3do, in the text .3do format (the one the original's rdModel3_LoadEntryText parses when a file
     does not start with LDOM). It has no bounding box or centre, only a radius (by default the one the original works out:
     it replaces the one of the file in rdModel3_LoadPostProcess, as it does a binary header's).
     materials: the .mat names; faces: {mesh index: [(material index, [vertex indices])]}, each face with the texture
     vertices of the corners of the texture; lighting: the lighting mode of every mesh and face (0: none, the colours of
-    the texture as they are; 3: lit)."""
+    the texture as they are; 3: lit); vertex_light: the light level of every vertex (the 5th number of a vertex line: what
+    the original's rdLight_CalcVertexIntensities starts each vertex from, zz_lit.lua)."""
     g = lambda v: "%.6f" % v
     faces = faces or {}
     out = ["section: header", "3do 2.1", "section: modelresource", "materials %d" % len(materials)]
@@ -543,7 +545,8 @@ def model3do_text(name, meshes, nodes, radius=None, insert=(0.0, 0.0, 0.0), mate
         mf = faces.get(i, [])
         out += ["mesh %d" % i, "name " + mname, "radius " + g(mr), "shadow 0", "geometrymode 4",
                 "lightingmode %d" % lighting, "texturemode 0", "vertices %d" % len(verts)]
-        out += ["%d: %s 1.0" % (k, " ".join(g(c) for c in v)) for k, v in enumerate(verts)]
+        out += ["%d: %s %s" % (k, " ".join(g(c) for c in v), "1.0" if vertex_light == 1.0 else g(vertex_light))
+                for k, v in enumerate(verts)]
         out += ["texture vertices %d" % (len(corners) if mf else 0)]
         out += ["%d: %s %s" % (k, g(u), g(v)) for k, (u, v) in enumerate(corners)] if mf else []
         out += ["vertex normals"]

@@ -70,6 +70,16 @@ SETS = {
 }
 
 
+# the lights of cr_lit.set (zz_lit.lua), all white: an omni light 3 m above the origin, a direct one straight down, a spot
+# 3 m above pointing down (umbra 15, penumbra 25 degrees). Colour 15 15 15, as the game's sets have it (ScummVM divides
+# the intensity by 15: 255 would light 17 times over)
+_W15 = (15, 15, 15)
+LIT_LIGHTS = [dict(name="cr_omni", type="omni", position=(0.0, 0.0, 3.0), intensity=1.0, color=_W15),
+              dict(name="cr_dir", type="direct", position=(0.0, 0.0, 0.0), direction=(0.0, 0.0, -1.0), intensity=1.0,
+                   color=_W15),
+              dict(name="cr_spot", type="spot", position=(0.0, 0.0, 3.0), direction=(0.0, 0.0, -1.0), intensity=1.0,
+                   umbra=15.0, penumbra=25.0, color=_W15)]
+
 # the sets whose z-buffer is far (0): the models in them are drawn
 OPEN_SETS = {"cr_open"}
 
@@ -299,6 +309,12 @@ def files():
     out["cr_grey.mat"] = F.material(8, 8, 150)
     out["cr_dbox.3do"] = _draw_model("cr_dbox.3do", "cr_white.mat")
     out["cr_gbox.3do"] = _draw_model("cr_gbox.3do", "cr_grey.mat")
+    # (zz_lit.lua: the white draw box lit, lighting mode 3, its vertices at light level 1, a half and 0)
+    for n, level in (("cr_lbox", 1.0), ("cr_lbox_half", 0.5), ("cr_lbox_dark", 0.0)):
+        out[n + ".3do"] = F.model3do_text(n + ".3do", [("body", DRAW_BOX)], BOX_MODEL[2], materials=["cr_white.mat"],
+                                          faces={0: [(0, f) for f in DRAW_FACES]}, lighting=3, vertex_light=level)
+        out[n + ".cos"] = F.costume([("MMDL", -1, n + ".3do"), ("LUAV", -1, "CR_LV"), ("CMAP", 0, "cr_pal.cmp")],
+                                    BOX_COSTUME[1])
     out["cr_slide.key"] = SLIDE_KEY
     out["cr_slide_b.key"] = SLIDE_KEY_BIN
     out["cr_slide_f.key"] = SLIDE_KEY_FAST
@@ -371,6 +387,10 @@ def files():
         out[name + ".zbm"] = zfar if name in OPEN_SETS else znear
         setup = dict(CAMERA, name=name + "_0", background=name + ".bm", zbuffer=name + ".zbm")
         out[name + ".set"] = F.set_file(["cr_pal.cmp"], [setup], [LIGHT], sectors)
+    # zz_lit.lua: cr_open with a black background and LIT_LIGHTS
+    out["cr_lit.bm"] = F.bitmap(W, H, F.checker(W, H, 40, (0, 0, 0), (0, 0, 0)))
+    out["cr_lit.set"] = F.set_file(["cr_pal.cmp"], [dict(CAMERA, name="cr_lit_0", background="cr_lit.bm", zbuffer="cr_open.zbm")],
+                                   LIT_LIGHTS, SETS["cr_open"][1])
     # a set of three setups (cameras): above, from the south at an angle and rolled, and from the east with a narrow fov
     # (compressed, codec 3)
     out["cr_cams.bm"] = F.bitmap(W, H, F.checker(W, H, 80, (90, 90, 40), (120, 120, 60)), codec=3)

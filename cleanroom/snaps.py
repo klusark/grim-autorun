@@ -6,14 +6,16 @@ and the log gets `key = "snap:<file>"`. After a run, resolve() replaces each of 
 of the file (x0 y0 x1 y1, inclusive): the tests draw white text on the dark backgrounds of assets.py, so the box is that of
 the text. "none" when nothing is bright, "missing" when the file was not written. cr_snap(key, "dark"): the box of the
 pixels darker than any background (a shadow); cr_snap(key, "lit"): the box of the others (what an iris leaves open);
-cr_snap(key, "count"): the box of the bright pixels and how many there are (x0 y0 x1 y1 n: how thick a line is)."""
+cr_snap(key, "count"): the box of the bright pixels and how many there are (x0 y0 x1 y1 n: how thick a line is);
+cr_snap(key, "mean"): the box of the pixels that are not dark, how many there are and their mean brightness ((r + g + b) / 3,
+to a tenth: a lit model on a black background, zz_lit.lua)."""
 import os
 import re
 import struct
 
 BRIGHT = 180  # (the backgrounds are at most 120 in any channel; ScummVM's screenshot is grey)
 
-SNAP = re.compile(r'^(V [^|]*\|[^|]*\|)"snap:([A-Za-z0-9_.]+)(:dark|:lit|:count)?"$')
+SNAP = re.compile(r'^(V [^|]*\|[^|]*\|)"snap:([A-Za-z0-9_.]+)(:dark|:lit|:count|:mean)?"$')
 DARK = 30  # (cr_snap(key, "dark"): the box of the pixels darker than any background, a shadow)
 
 
@@ -39,15 +41,18 @@ def read_bmp(path):
 def bright_box(path, mode=None):
     """mode None: the bright pixels; "dark": the darker than any background; "lit": the others."""
     w, h, rows = read_bmp(path)
-    xs, ys = [], []
+    xs, ys, total = [], [], 0
     for y, row in enumerate(rows):
         for x, (r, g, b) in enumerate(row):
             dark = r < DARK and g < DARK and b < DARK
-            if dark if mode == "dark" else not dark if mode == "lit" else (r >= BRIGHT and g >= BRIGHT and b >= BRIGHT):
+            if dark if mode == "dark" else not dark if mode in ("lit", "mean") else (r >= BRIGHT and g >= BRIGHT and b >= BRIGHT):
                 xs.append(x)
                 ys.append(y)
+                total += r + g + b
     if not xs:
         return None
+    if mode == "mean":
+        return min(xs), min(ys), max(xs), max(ys), len(xs), round(total / 3.0 / len(xs), 1)
     if mode == "count":
         return min(xs), min(ys), max(xs), max(ys), len(xs)
     return min(xs), min(ys), max(xs), max(ys)
