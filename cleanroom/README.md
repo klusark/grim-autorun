@@ -353,8 +353,9 @@ Hand-written tests, besides the per-frame walk and turn values:
 - The original eases into `TurnActorTo`; ScummVM turns at a constant rate. `WalkActorForward` into a wall slides on the
   original and stops dead on ScummVM; a model actor walking into the outer wall stops on the original and slides on
   ScummVM. `WalkActorToAvoiding` does not move the actor on ScummVM.
-- ScummVM does not fire the LUAV keys of a costume, with or without a model (`CR_LV` is never set); the original does,
-  at the frame times the chore keys give. Turn chores are not played on ScummVM. `IsActorChoring(a, nil)` gives the chore
+- ScummVM did not fire the LUAV keys of a costume (`CR_LV` was never set): its text splitter lowercases a costume, so
+  the component set `cr_lv`; the original keeps the name's case (fixed on klusark's `cleanroom`, 2026-11-07). Both set
+  it at the frame times the chore keys give. Turn chores are not played on ScummVM. `IsActorChoring(a, nil)` gives the chore
   on the original, 0 on ScummVM; `GetActorChores` is nil on ScummVM. Chore fades differ.
 - `GetActorNodeLocation` on the original gives the node offsets of the model without the actor's position or turn
   (the faceless model is never drawn, which may be what updates them). ScummVM gives world positions.
@@ -503,6 +504,14 @@ Hand-written tests, besides the per-frame walk and turn values:
   though the game's pause menu calls `PauseMovie(TRUE)` to pause; ScummVM pauses with TRUE. The original leaves the last
   frame of a movie that another replaced (it redraws what changed). TinyGL crashed on the second movie of a run:
   `GfxTinyGL::releaseMovieFrame` deleted the frame's blit image and kept the pointer (fixed on klusark's `cleanroom`).
+- Voices and lip sync (`lipsync.lua`, 2026-11-07). `SayLine(a, "/id/")` plays `<id>.wav` through iMUSE and reads
+  `<id>.lip` (`formats.lip`: `LIP!`, the count, then the start in 16 ms ticks and the phoneme of each entry); the voices are
+  MCMP with the RIFF header stored and the samples in VIMA blocks, as the game's (`formats.mcmp`, `formats.vima`: the
+  encoder runs the decoder of `vima.cpp` and picks the code nearest each sample). A talking costume (`cr_talk.cos`)
+  sets `CR_LV` per chore: the first phoneme's shape plays (d: shape 2), a voice without a lip sync file mumbles, a lip
+  sync file of silence plays stop_talk, ShutUpActor ends in stop_talk, the same on both. ScummVM plays stop_talk inside
+  SayLine, the original on the next frame (the value at once differs). The original does not move a voice on (no sound
+  driver), so only the start of a line is compared.
 - Music (`music.lua`: `formats.imus`, iMUSE's own format with a MAP of regions, a TEXT marker and JUMPs, under the names
   of the state and sequence tables: `1001 - Manny's Office.IMC` and others). `ImSetState` / `ImSetSequence` open, stream
   and jump in ScummVM; `ImGetParam` by file name sees no music on either engine (the scripts never open it by name), so
@@ -540,6 +549,7 @@ The builtins no test calls are the ones left out on purpose: the dialogs, SetGam
 (`TEST`, `quiet`, `vfx`, `debug`, `SpewStartup`) and the CD helpers.
 
 Binary models are written without faces (`formats.model3do`); text models can have faces (`formats.model3do_text`).
-Sounds are uncompressed: .wav and iMUSE's .IMC/.imu without MCMP. Movies are raw Blocky16 frames only (no delta modes);
+Sounds are .wav, iMUSE's .IMC and MCMP (stored or VIMA blocks: "1008 - Domino's Office.IMC", "2001 - Climb Rope.IMC" and
+the voices); VIMA is written mono, without escapes. Movies are raw Blocky16 frames only (no delta modes);
 EMI's movies are Bink with fill blocks only (no DCT, motion or sound) and its music (`FullMonkeyMap.imt` and AIFF or VIMA tracks) has no writer yet.
-Lip sync (.lip), compressed bitmaps (codec 3) and binary keyframes have no writer yet.
+Compressed bitmaps (codec 3) and binary keyframes have no writer yet.

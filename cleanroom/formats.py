@@ -652,3 +652,152 @@ def imus(seconds, rate=22050, freq=330.0, loop=True, marker=None, hook_jump=None
     body = mp + b"DATA" + struct.pack(">I", len(pcm)) + pcm
     out = b"iMUS" + struct.pack(">I", len(body)) + body
     return out
+
+
+# VIMA, the ADPCM of iMUSE's compressed sounds (ScummVM engines/grim/movie/codecs/vima.cpp, decompressVima): a step index
+# picks how many bits the next sample's code has (4 to 7) and the step it scales; a code with all its low bits set is an
+# escape followed by the 16-bit sample itself.
+_VIMA_STEPS = [
+    7, 8, 9, 10, 11, 12, 13, 14, 16, 17, 19, 21, 23, 25, 28, 31, 34, 37, 41, 45, 50, 55, 60, 66, 73, 80, 88, 97, 107, 118,
+    130, 143, 157, 173, 190, 209, 230, 253, 279, 307, 337, 371, 408, 449, 494, 544, 598, 658, 724, 796, 876, 963, 1060,
+    1166, 1282, 1411, 1552, 1707, 1878, 2066, 2272, 2499, 2749, 3024, 3327, 3660, 4026, 4428, 4871, 5358, 5894, 6484,
+    7132, 7845, 8630, 9493, 10442, 11487, 12635, 13899, 15289, 16818, 18500, 20350, 22385, 24623, 27086, 29794, 32767]
+_VIMA_BITS = [4] * 45 + [5] * 14 + [6] * 17 + [7] * 13
+_VIMA_MOVES = {
+    4: [-1, -1, -1, -1, 1, 2, 4, 6],
+    5: [-1] * 8 + [1, 1, 1, 2, 2, 4, 5, 6],
+    6: [-1] * 16 + [1, 1, 1, 1, 1, 2, 2, 2, 2, 4, 4, 4, 5, 5, 6, 6],
+    7: [-1] * 32 + [1] * 10 + [2] * 8 + [4] * 6 + [5] * 4 + [6] * 4,
+}
+
+
+def _vima_table():
+    t = [0] * (64 * len(_VIMA_STEPS))
+    for start in range(64):
+        for i, step in enumerate(_VIMA_STEPS):
+            put, count, v = 0, 32, step
+            while count:
+                if start & count:
+                    put += v
+                count >>= 1
+                v >>= 1
+            t[start + 64 * i] = put
+    return t
+
+
+_VIMA_TABLE = _vima_table()
+
+
+def _vima_delta(pos, nbits, mag):
+    """The change a code of magnitude `mag` makes at step index `pos` (without its sign)."""
+    d = _VIMA_TABLE[(mag << (7 - nbits)) | (pos << 6)]
+    if mag:
+        d += _VIMA_STEPS[pos] >> (nbits - 1)
+    return d
+
+
+def vima(samples, pos=0):
+    """One mono VIMA block of 16-bit samples: the step index and the first value (3 bytes), then the codes, most significant
+    bit first. Each code is the one the decoder turns into the value nearest the sample (the encoder runs the decoder),
+    with two zero bytes at the end for the decoder's read ahead."""
+    out = [samples[0] if samples else 0]
+    word = out[0]
+    head = bytes([pos]) + struct.pack(">h", word)
+    acc, nacc, data = 0, 0, bytearray()
+
+    def put(v, n):
+        nonlocal acc, nacc
+        acc = (acc << n) | v
+        nacc += n
+        while nacc >= 8:
+            nacc -= 8
+            data.append((acc >> nacc) & 0xFF)
+        acc &= (1 << nacc) - 1
+
+    # (the first sample is the start value: a code of 0 keeps it)
+    for i, s in enumerate(samples):
+        nbits = _VIMA_BITS[pos]
+        high = 1 << (nbits - 1)
+        best = None
+        for mag in range(high - 1):
+            d = _vima_delta(pos, nbits, mag)
+            for neg in (0, 1):
+                w = max(-0x8000, min(0x7FFF, word - d if neg else word + d))
+                if best is None or abs(w - s) < best[0]:
+                    best = (abs(w - s), mag, neg, w)
+        _, mag, neg, word = best
+        put((high if neg else 0) | mag, nbits)
+        pos = max(0, min(88, pos + _VIMA_MOVES[nbits][mag]))
+    if nacc:
+        put(0, 8 - nacc)
+    return head + bytes(data) + b"\0\0"
+
+
+def vima_decode(block, count):
+    """decompressVima for one mono block (to check the encoder): `count` 16-bit samples."""
+    pos, word = block[0], struct.unpack(">h", block[1:3])[0]
+    src = 3
+    bits = (block[src] << 8) | block[src + 1]
+    src += 2
+    ptr, out = 0, []
+    for _ in range(count):
+        nbits = _VIMA_BITS[pos]
+        ptr += nbits
+        high = 1 << (nbits - 1)
+        low = high - 1
+        val = (bits >> (16 - ptr)) & (high | low)
+        if ptr > 7:
+            bits = ((bits & 0xFF) << 8) | (block[src] if src < len(block) else 0)
+            src += 1
+            ptr -= 8
+        if val & high:
+            val ^= high
+        else:
+            high = 0
+        if val == low:
+            raise ValueError("an escape: the encoder writes none")
+        d = _vima_delta(pos, nbits, val)
+        word = max(-0x8000, min(0x7FFF, word - d if high else word + d))
+        out.append(word)
+        pos = max(0, min(88, pos + _VIMA_MOVES[nbits][val]))
+    return out
+
+
+def mcmp(head, pcm, vima_blocks=True):
+    """iMUSE's compressed container (the game's .IMC and voice files): 'MCMP', the block count, then per block the codec
+    (an index into the names), the decoded size and the stored size (big endian), the size of the codec names and the
+    names ("NULL", "VIMA"), then the blocks. The first block is `head` stored as it is (the iMUS or RIFF header up to its
+    data), then `pcm` (16-bit little-endian mono) in blocks of 8192 bytes, VIMA or, without `vima_blocks`, stored as
+    they are (codec 0)."""
+    blocks = [(0, len(head), head)]
+    for i in range(0, len(pcm), 8192):
+        part = pcm[i:i + 8192]
+        if vima_blocks:
+            samples = list(struct.unpack("<%dh" % (len(part) // 2), part))
+            blocks.append((1, len(part), vima(samples)))
+        else:
+            blocks.append((0, len(part), part))
+    names = b"NULL\0VIMA\0"
+    table = b"".join(struct.pack(">BII", c, n, len(d)) for c, n, d in blocks)
+    return b"MCMP" + struct.pack(">H", len(blocks)) + table + struct.pack(">H", len(names)) + names + b"".join(d for _, _, d in blocks)
+
+
+def imus_split(data):
+    """An iMUS file (`imus`) as its header, up to and with the DATA tag and size, and its sound data."""
+    i = data.index(b"DATA") + 8
+    return data[:i], data[i:]
+
+
+def wav_split(data):
+    """A RIFF file (`wav`) as its header, up to and with the data chunk's tag and size (44 bytes), and its samples: the
+    game's voices and sounds are MCMP files with that header stored and the samples in VIMA blocks."""
+    i = data.index(b"data") + 8
+    return data[:i], data[i:]
+
+
+def lip(entries, end):
+    """A lip sync file (.lip, read by iMUSE with the voice of the same name and by ScummVM's LipSync): 'LIP!', the entry
+    count, then the entries, each the time it starts in 16 ms ticks and a phoneme (the IPA code point: 0x5F is silence),
+    16 bits little endian. The last entry is `end`, with silence: an entry lasts until the next one starts."""
+    rows = list(entries) + [(end, 0x5F)]
+    return b"LIP!" + struct.pack("<i", len(rows)) + b"".join(struct.pack("<hH", t, p) for t, p in rows)

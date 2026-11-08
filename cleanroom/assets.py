@@ -11,6 +11,11 @@ TEXT = [
     ("crt001", "Clean room text one"),
     ("crt002", "Second line, with punctuation: 1, 2; 3."),
     ("crt003", "x"),
+    # (lines with a voice: lipsync.lua)
+    ("crtv01", "Voice one"),
+    ("crtv02", "Voice two"),
+    ("crtv03", "Voice three"),
+    ("crtv04", "Voice four"),
     # (wider than the screen in cr_font.laf: 107 characters of 5 and 6 pixels)
     ("crt004", "a line of text that is much too long to fit on the screen in one piece, so that it is clamped at both edges"),
 ]
@@ -83,6 +88,14 @@ BOX_MODEL = ("cr_box.3do", [("body", F.box(0.4, 0.3, 1.8))],
 # the same chores as LUAV_COSTUME, on the model costume (the Lua Variable is component 1)
 BOX_COSTUME = ([("MMDL", -1, "cr_box.3do"), ("LUAV", -1, "CR_LV")],
                [(name, length, [(1, keys) for _, keys in tracks]) for name, length, tracks in LUAV_COSTUME[1]])
+
+# A talking costume: the box model and a Lua Variable (CR_LV) set by each chore at its start, so that a test sees which
+# chore plays. Chore 0 is stop_talk (100), 1-9 the lip sync shapes (1-9, what LipSync's phoneme table names), 10 the mumble
+# (50); SetActorTalkChore(a, i + 1, i) gives the actor shape i
+TALK_COSTUME = ([("MMDL", -1, "cr_box.3do"), ("LUAV", -1, "CR_LV")],
+                [("stop_talk", 100, [(1, [(0, 100)])])] +
+                [("talk_%d" % i, 100, [(1, [(0, i)])]) for i in range(1, 10)] +
+                [("mumble", 100, [(1, [(0, 50)])])])
 
 # The body box again, with a header (radius, bounding box, centre) that is not the one of its vertices. The original works
 # them out from the mesh (rdModel3_LoadPostProcess) whatever the header says; ScummVM since dc7e5c2 reads the header (and
@@ -249,14 +262,25 @@ def files():
     # music (formats.imus): the files iMUSE's state and sequence tables name for ImSetState / ImSetSequence (the name and
     # ".IMC"). Two states that loop; the file of states 1002-1007 with a hook 8 jump in the middle; a sequence that plays once
     # and ends with the "_end" marker
+    # (1008 is compressed as the game's music is, formats.mcmp: the iMUS header stored, the sound in VIMA blocks; 2001 is
+    # in MCMP blocks stored as they are)
     out["1001 - Manny's Office.IMC"] = F.imus(2.0, freq=262.0)
-    out["1008 - Domino's Office.IMC"] = F.imus(2.0, freq=294.0)
+    out["1008 - Domino's Office.IMC"] = F.mcmp(*F.imus_split(F.imus(2.0, freq=294.0)))
     out["1002 - Mr. Frustration.IMC"] = F.imus(2.0, freq=330.0, hook_jump=(8, 100))
-    out["2001 - Climb Rope.IMC"] = F.imus(1.0, freq=392.0, loop=False, marker="_end")
+    out["2001 - Climb Rope.IMC"] = F.mcmp(*F.imus_split(F.imus(1.0, freq=392.0, loop=False, marker="_end")), vima_blocks=False)
     # a font: space 4 pixels, digits 6, upper case 8, the rest 5 (an advance of one more pixel each)
     out["cr_font.laf"] = F.font(lambda c: 4 if c == 32 else 6 if 48 <= c <= 57 else 8 if 65 <= c <= 90 else 5)
     out["cr_box.cos"] = F.costume(*BOX_COSTUME)
     out["cr_luav.cos"] = F.costume(*LUAV_COSTUME)
+    out["cr_talk.cos"] = F.costume(*TALK_COSTUME)
+    # voices (SayLine plays "<message id>.wav" and lip syncs it with "<message id>.lip"), stored as the game's are: MCMP
+    # with the RIFF header and the samples in VIMA blocks. crtv01 has a lip sync file (d, o, f: shapes 2, 7, 4), crtv02 has
+    # none (the mumble), crtv03 only a lip sync file, crtv04 a lip sync file of silence only
+    for name in ("crtv01", "crtv02", "crtv04"):
+        out[name + ".wav"] = F.mcmp(*F.wav_split(F.wav(1.0, freq=200.0)))
+    out["crtv01.lip"] = F.lip([(0, 0x64), (20, 0x6F), (40, 0x66)], 62)
+    out["crtv03.lip"] = F.lip([(0, 0x64)], 62)
+    out["crtv04.lip"] = F.lip([], 62)
     out["cr_pal.cmp"] = F.colormap([(i, i, i) for i in range(256)])
     # The z-buffers: 0xffff everywhere (the background is in front of every model: nothing is drawn; ScreenToWorld gives
     # points on the floor) or, for the sets of OPEN_SETS, 0 (the background is the farthest: the models are drawn;
