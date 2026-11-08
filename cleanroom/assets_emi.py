@@ -38,6 +38,11 @@ def files():
     # cr_flat as Grim has it, the floor in the x-y plane
     out["cr_xyflat.setb"] = F.set_binary([dict(CAMERA, name="cr_xyflat_0", background="cr_flat.til")], [LIGHT],
                                          A.SETS["cr_flat"][1])
+    # cr_flat with two shadows (emi_attach.lua's eat_shadow): one from the light, one from a point of its own
+    out["cr_shadows.setb"] = F.set_binary([dict(CAMERA, name="cr_shadows_0", background="cr_flat.til")], [LIGHT],
+                                          emi_sectors(A.SETS["cr_flat"][1]),
+                                          shadows=[("cr_shadow1", LIGHT["name"], (0.0, 3.0, 0.0), ["floor"], (20, 20, 20)),
+                                                   ("cr_shadow2", "", (1.0, 4.0, 1.0), ["floor"], (40, 0, 0))])
     # two setups, to switch between
     two = [dict(CAMERA, name="two_a", background="cr_flat.til"),
            dict(CAMERA, name="two_b", background="cr_edge.til", position=(1.0, 6.0, -0.5), fov=40.0)]

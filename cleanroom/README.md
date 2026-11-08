@@ -195,6 +195,12 @@ EMI's text objects (`emi_text.lua`, with the font of Grim's data in EMI's archiv
 dimensions and character positions the same on both; `GetFontDimensions` crashes Monkey4.exe. EMI's sprites and textured
 meshes (`ec_sprite`; `formats.sprb`, `meshb(textured=True)`, a .tga material): loaded and played the same on both.
 
+EMI's attached actors (`emi_attach.lua`): a rider attached to the `body` joint of `cr_ebox.cos`'s skeleton stays where it
+is and follows the carrier's moves and turns, the same on both once ScummVM attaches to the joint asked for (it looked
+up the previous joint's name and attached to the actor: the rider jumped by the joint's offset; fixed on klusark's
+`cleanroom`); without a joint, detached twice, the carrier's alpha. A set's shadows (`formats.set_binary` writes them now:
+`cr_shadows.set`) cast by an actor with a mesh (`eat_shadow`).
+
 EMI's sounds and voices (`emi_sound.lua`, 2026-11-07; `formats.aiff` for `.aif`, the voices `.wVC` as MCMP with VIMA blocks,
 and a `.lip`). `LoadSound` of a file that is not there is nil, and `PlayLoadedSoundFrom` plays with five arguments (both
 fixed on klusark's `cleanroom`); a voiced line goes until ShutUpActor on both. Left: `PlayLoadedSound(h, nil, volume)`

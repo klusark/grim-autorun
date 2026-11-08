@@ -315,7 +315,9 @@ def set_binary(setups, lights, sectors, shadows=()):
     set_file, without colormaps or z-buffers. A setup is: name[128], background (counted string), position, a rotation
     quaternion (x y z w), fov, nclip, fclip; its "rotation" key (default no rotation) is the quaternion. A light: name[32],
     position, quaternion, type, intensity, 0, colour (3 ints), falloff near and far, umbra and penumbra (radians). A sector:
-    the vertices, name (counted), id, a visible byte, type, the sort planes (none), height. Then the shadows (none)."""
+    the vertices, name (counted), id, a visible byte, type, the sort planes (none), height. Then the shadows: name and
+    light name (counted; a light's name makes its position the shadow's point), the point, the sectors it falls on
+    (counted names), 4 bytes, the colour (3 ints). shadows: [(name, light or "", point, [sector names], colour)]."""
     f = lambda *v: struct.pack("<%df" % len(v), *v)
     out = struct.pack("<I", len(setups))
     for s in setups:
@@ -332,7 +334,10 @@ def set_binary(setups, lights, sectors, shadows=()):
         out += struct.pack("<I", len(pts)) + b"".join(f(*p) for p in pts)
         out += _counted(name) + struct.pack("<IBII", i, 1 if visible else 0, SECTOR_TYPES[typ], 0) + f(height)
     out += struct.pack("<I", len(shadows))
-    assert not shadows
+    for name, light, point, sectors_, colour in shadows:
+        out += _counted(name) + (_counted(light) if light else struct.pack("<i", 0)) + f(*point)
+        out += struct.pack("<i", len(sectors_)) + b"".join(_counted(s) for s in sectors_)
+        out += struct.pack("<i", 0) + struct.pack("<3i", *colour)
     return out
 
 

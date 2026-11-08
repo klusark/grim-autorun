@@ -1,4 +1,4 @@
-START 2288 tests
+START 2292 tests
 BEGIN numbers
 V numbers|arith|3.500000 1024.000000 -2.333333 1.#INF00
 V numbers|tostring|"0.333333" "100" "1e+015" "-0.5"
@@ -25,7 +25,7 @@ V strings|ascii|65.000000
 END strings
 BEGIN next_order
 U next_order|order
-V next_order|order|"49,98,7,eva,chepito,velasco,olivia,salvador,domino,14,lupe,meche,glottis,manny,21,70,119,63,105,28,77,126,56,35,84,133,112,42,91,140,"
+V next_order|order|"49,98,7,56,105,14,63,lupe,eva,chepito,velasco,olivia,salvador,domino,meche,119,glottis,manny,28,77,126,70,35,84,133,112,42,21,91,140,"
 V next_order|globals_counted|1.000000
 END next_order
 BEGIN tasks
@@ -496,13 +496,33 @@ END ea_unloaded_out
 BEGIN ea_unloaded_in
 V ea_unloaded_in|r|nil
 END ea_unloaded_in
+BEGIN eat_joint
+V eat_joint|attached|0.000000 0.000000 0.000000
+V eat_joint|attached_pos|-1.000000 -0.900000 0.000000
+V eat_joint|carrier_moved|1.000000 0.000000 1.000000
+V eat_joint|carrier_turned|2.000000 0.000000 2.000000
+V eat_joint|lifted|2.000000 0.000000 2.000000
+V eat_joint|detached|2.000000 0.000000 2.000000
+V eat_joint|detached_pos|2.000000 0.000000 2.000000
+END eat_joint
+BEGIN eat_nojoint
+V eat_nojoint|attached|0.000000 0.000000 0.000000
+V eat_nojoint|carrier_moved|-2.000000 0.000000 2.000000
+V eat_nojoint|detached_twice|-2.000000 0.000000 2.000000
+END eat_nojoint
+BEGIN eat_alpha
+V eat_alpha|ok|1.000000
+END eat_alpha
+BEGIN eat_shadow
+V eat_shadow|ok|1.000000
+END eat_shadow
 BEGIN emi_bitmap_flat
 V emi_bitmap_flat|lit|missing
 V emi_bitmap_flat|count|missing
 END emi_bitmap_flat
 BEGIN ec_load
 V ec_load|handle|"number" 1.000000 1.000000
-V ec_load|missing|2.000000
+V ec_load|missing|7.000000
 END ec_load
 BEGIN ec_keys
 V ec_keys|trace|"0/1 1/1 1/1 1/1 1/1 1/1 2/1 2/1 2/1 2/1 2/1 2/1 2/1 2/1 2/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 4/nil 4/nil 4/nil 4/nil 4/nil 4/nil 4/nil 4/nil 4/nil 4/nil 4/nil "
@@ -657,7 +677,7 @@ V emi_movie_missing|second|1.000000
 V emi_movie_missing|ended|1.000000
 END emi_movie_missing
 BEGIN em_states
-V em_states|ended_never_played|192.000000 192.000000
+V em_states|ended_never_played|48.000000 48.000000
 V em_states|ok|1.000000
 END em_states
 BEGIN em_loop
@@ -2607,27 +2627,27 @@ V args_GetCurrentSetup_s_tab|r|0.000000
 END args_GetCurrentSetup_s_tab
 BEGIN args_GetDiskFreeSpace_none
 U args_GetDiskFreeSpace_none|r
-V args_GetDiskFreeSpace_none|r|92481.656250
+V args_GetDiskFreeSpace_none|r|92265.968750
 END args_GetDiskFreeSpace_none
 BEGIN args_GetDiskFreeSpace_nil
 U args_GetDiskFreeSpace_nil|r
-V args_GetDiskFreeSpace_nil|r|92481.656250
+V args_GetDiskFreeSpace_nil|r|92265.968750
 END args_GetDiskFreeSpace_nil
 BEGIN args_GetDiskFreeSpace_str
 U args_GetDiskFreeSpace_str|r
-V args_GetDiskFreeSpace_str|r|92481.656250
+V args_GetDiskFreeSpace_str|r|92265.968750
 END args_GetDiskFreeSpace_str
 BEGIN args_GetDiskFreeSpace_num
 U args_GetDiskFreeSpace_num|r
-V args_GetDiskFreeSpace_num|r|92481.656250
+V args_GetDiskFreeSpace_num|r|92265.968750
 END args_GetDiskFreeSpace_num
 BEGIN args_GetDiskFreeSpace_tab
 U args_GetDiskFreeSpace_tab|r
-V args_GetDiskFreeSpace_tab|r|92481.656250
+V args_GetDiskFreeSpace_tab|r|92265.968750
 END args_GetDiskFreeSpace_tab
 BEGIN args_GetDiskFreeSpace_fn
 U args_GetDiskFreeSpace_fn|r
-V args_GetDiskFreeSpace_fn|r|92481.656250
+V args_GetDiskFreeSpace_fn|r|92265.968750
 END args_GetDiskFreeSpace_fn
 BEGIN args_GetFontDimensions_none
 V args_GetFontDimensions_none|r|nil
@@ -6772,7 +6792,7 @@ ERROR args_ceil_fn bad argument #1 to function `ceil' (number expected)
 FAILED args_ceil_fn
 BEGIN args_collectgarbage_none
 U args_collectgarbage_none|r
-V args_collectgarbage_none|r|2966.000000
+V args_collectgarbage_none|r|2355.000000
 END args_collectgarbage_none
 BEGIN args_collectgarbage_nil
 ERROR args_collectgarbage_nil bad argument #1 to function `collectgarbage' (number expected)
@@ -6810,7 +6830,7 @@ ERROR args_cos_fn bad argument #1 to function `cos' (number expected)
 FAILED args_cos_fn
 BEGIN args_date_none
 U args_date_none|r
-V args_date_none|r|"11/08/26 00:40:48"
+V args_date_none|r|"11/08/26 01:06:39"
 END args_date_none
 BEGIN args_date_nil
 ERROR args_date_nil bad argument #1 to function `date' (string expected)
@@ -7559,11 +7579,11 @@ V args_tostring_num|r|"1.5"
 END args_tostring_num
 BEGIN args_tostring_tab
 U args_tostring_tab|r
-V args_tostring_tab|r|"table: 134FFB80"
+V args_tostring_tab|r|"table: 134F9020"
 END args_tostring_tab
 BEGIN args_tostring_fn
 U args_tostring_fn|r
-V args_tostring_fn|r|"function: 027E0D90"
+V args_tostring_fn|r|"function: 027C2FA0"
 END args_tostring_fn
 BEGIN args_type_none
 ERROR args_type_none API error - attempt to push a NOOBJECT
@@ -7592,4 +7612,4 @@ V lex_binary|short|nil
 ERROR lex_binary binary file cr_bin_old.lua too old: version=0x30; expected at least 0x31
 V lex_binary|old|nil
 END lex_binary
-SUMMARY 2288 tests, 247 failed
+SUMMARY 2292 tests, 247 failed
