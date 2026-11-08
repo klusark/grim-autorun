@@ -42,8 +42,6 @@ env:
   SCUMMVM_REF: ${{ inputs.scummvm_ref || 'cleanroom' }}
   APPLY_PATCH: ${{ inputs.apply_patch && '1' || '' }}
   CR_RENDERERS: ${{ inputs.renderers || 'opengl,opengl_shaders,software' }}
-  # (Mesa's software OpenGL, llvmpipe, next to scummvm.exe: the runner has no GPU)
-  MESA_VERSION: "26.2.4"
 
 jobs:
   scummvm:
@@ -76,7 +74,7 @@ jobs:
           install: make git
           pacboy: >-
             toolchain:p ccache:p SDL2:p zlib:p libpng:p libjpeg-turbo:p freetype:p
-            libvorbis:p flac:p libmad:p faad2:p a52dec:p libmpeg2:p libtheora:p fribidi:p
+            libvorbis:p flac:p libmad:p faad2:p a52dec:p libmpeg2:p libtheora:p fribidi:p mesa:p
 
       - name: ccache
         uses: actions/cache@v4
@@ -100,13 +98,11 @@ jobs:
           make -j$(nproc)
           ccache -s
 
+      # (Mesa's software OpenGL, llvmpipe: the runner has no GPU. Its opengl32.dll goes next to scummvm.exe, which Windows
+      # searches before System32; the rest, libgallium_wgl.dll and LLVM, load from ucrt64\bin, which run.py puts on PATH)
       - name: Mesa llvmpipe
         shell: pwsh
-        run: |
-          $url = "https://github.com/pal1000/mesa-dist-win/releases/download/$env:MESA_VERSION/mesa3d-$env:MESA_VERSION-release-mingw.7z"
-          Invoke-WebRequest -Uri $url -OutFile mesa.7z
-          7z x -y -omesa mesa.7z | Out-Null
-          foreach ($f in "opengl32.dll", "libgallium_wgl.dll", "dxil.dll") { Copy-Item "mesa\x64\$f" scummvm\build\ }
+        run: Copy-Item C:\msys64\ucrt64\bin\opengl32.dll scummvm\build\
 
       - uses: actions/setup-python@v5
         with:
@@ -202,7 +198,7 @@ jobs:
           install: make git
           pacboy: >-
             toolchain:p ccache:p SDL2:p zlib:p libpng:p libjpeg-turbo:p freetype:p
-            libvorbis:p flac:p libmad:p faad2:p a52dec:p libmpeg2:p libtheora:p fribidi:p
+            libvorbis:p flac:p libmad:p faad2:p a52dec:p libmpeg2:p libtheora:p fribidi:p mesa:p
 
       - name: ccache
         uses: actions/cache@v4
@@ -230,13 +226,11 @@ jobs:
           find . -name '*.gcda' -delete
           ccache -s
 
+      # (Mesa's software OpenGL, llvmpipe: the runner has no GPU. Its opengl32.dll goes next to scummvm.exe, which Windows
+      # searches before System32; the rest, libgallium_wgl.dll and LLVM, load from ucrt64\bin, which run.py puts on PATH)
       - name: Mesa llvmpipe
         shell: pwsh
-        run: |
-          $url = "https://github.com/pal1000/mesa-dist-win/releases/download/$env:MESA_VERSION/mesa3d-$env:MESA_VERSION-release-mingw.7z"
-          Invoke-WebRequest -Uri $url -OutFile mesa.7z
-          7z x -y -omesa mesa.7z | Out-Null
-          foreach ($f in "opengl32.dll", "libgallium_wgl.dll", "dxil.dll") { Copy-Item "mesa\x64\$f" scummvm\build\ }
+        run: Copy-Item C:\msys64\ucrt64\bin\opengl32.dll scummvm\build\
 
       - uses: actions/setup-python@v5
         with:
