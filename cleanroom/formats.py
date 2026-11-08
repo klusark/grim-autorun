@@ -75,18 +75,122 @@ def _f32(x):
     return struct.unpack("<f", struct.pack("<f", x))[0]
 
 
-def _bm_header(fmt, num_images):
-    # 0x00 'BM  F\0\0\0', codec 0 (raw), no palette, image count, x, y, transparent colour, format (1 colour, 5 z buffer),
-    # 16 bits a pixel, RGB 565 (bits 5 6 5, shifts 11 5 0) and the loss bits 3 2 3 at 0x40; the header is 0x80 bytes
-    h = b"BM  F\0\0\0" + struct.pack("<9I", 0, 0, num_images, 0, 0, 0, fmt, 16, 5)
+def _bm_header(fmt, num_images, codec=0):
+    # 0x00 'BM  F\0\0\0', the codec (0 raw, 3 compressed), no palette, image count, x, y, transparent colour, format (1
+    # colour, 5 z buffer), 16 bits a pixel, RGB 565 (bits 5 6 5, shifts 11 5 0) and the loss bits 3 2 3 at 0x40; the
+    # header is 0x80 bytes
+    h = b"BM  F\0\0\0" + struct.pack("<9I", codec, 0, num_images, 0, 0, 0, fmt, 16, 5)
     h += struct.pack("<6I", 6, 5, 11, 5, 0, 3) + struct.pack("<2I", 2, 3)
     return h + b"\0" * (0x80 - len(h))
 
 
-def bitmap(width, height, pixels_565, fmt=1):
-    """A raw (codec 0) .bm/.zbm of one image; pixels_565 is a list of width*height 16-bit values, row by row."""
+def bitmap(width, height, pixels_565, fmt=1, codec=0):
+    """A .bm/.zbm of one image; pixels_565 is a list of width*height 16-bit values, row by row. Codec 0 stores them, codec
+    3 compresses them (`codec3`): the size of the compressed data, then the data."""
     assert len(pixels_565) == width * height
-    return _bm_header(fmt, 1) + struct.pack("<II", width, height) + struct.pack("<%dH" % len(pixels_565), *pixels_565)
+    raw = struct.pack("<%dH" % len(pixels_565), *pixels_565)
+    if codec == 3:
+        packed = codec3(raw)
+        return _bm_header(fmt, 1, 3) + struct.pack("<III", width, height, len(packed)) + packed
+    return _bm_header(fmt, 1) + struct.pack("<II", width, height) + raw
+
+
+def codec3(data):
+    """The LZ compression of the game's bitmaps (ScummVM bitmap.cpp, decompress_codec3): flag bits, least significant
+    first, from 16-bit little-endian words that sit in the stream where the previous word's last bit was used. A 1 bit is
+    a byte as it is. 0 0 a b and a byte o: copy 2a + b + 3 bytes from o - 256 back. 0 1 and two bytes: a 12-bit offset
+    from 4096 back, and the length less 3 in the low 4 bits; a length field of 0 takes the length less 1 from a third byte,
+    and a third byte of 0 ends the data. Matches are found greedily (longest first), in a 4096-byte window."""
+    out = bytearray(2)
+    flag = [0, 0, 0]  # the word's position, its value, its bits used
+
+    def bit(b):
+        flag[1] |= b << flag[2]
+        flag[2] += 1
+        if flag[2] == 16:
+            out[flag[0]:flag[0] + 2] = struct.pack("<H", flag[1])
+            flag[0], flag[1], flag[2] = len(out), 0, 0
+            out.extend(b"\0\0")
+
+    where = {}
+    i, n = 0, len(data)
+    while i < n:
+        best_len, best_off = 0, 0
+        for j in reversed(where.get(data[i:i + 3], [])):
+            if i - j > 4096:
+                break
+            k = 0
+            while i + k < n and k < 256 and data[j + k] == data[i + k]:
+                k += 1
+            if k > best_len:
+                best_len, best_off = k, i - j
+                if k == 256:
+                    break
+        if best_len >= 3:
+            if best_off <= 256 and best_len <= 6:
+                bit(0); bit(0)
+                bit((best_len - 3) >> 1); bit((best_len - 3) & 1)
+                out.append(256 - best_off)
+            else:
+                o = 4096 - best_off
+                bit(0); bit(1)
+                # (a length field of 0 means a third byte: a long copy of 3 takes one)
+                if 4 <= best_len <= 18:
+                    out.extend(bytes([o & 0xFF, ((o >> 4) & 0xF0) | (best_len - 3)]))
+                else:
+                    out.extend(bytes([o & 0xFF, (o >> 4) & 0xF0, best_len - 1]))
+            step = best_len
+        else:
+            bit(1)
+            out.append(data[i])
+            step = 1
+        for m in range(i, min(i + step, n - 2)):
+            where.setdefault(data[m:m + 3], []).append(m)
+        i += step
+    # (the end: a long copy whose third byte is 0)
+    bit(0); bit(1)
+    out.extend(b"\0\0\0")
+    out[flag[0]:flag[0] + 2] = struct.pack("<H", flag[1])
+    return bytes(out)
+
+
+def codec3_decode(comp, size):
+    """decompress_codec3 (to check `codec3`)."""
+    pos, res = 2, bytearray()
+    val, left = struct.unpack("<H", comp[0:2])[0], 16
+
+    def get():
+        nonlocal val, left, pos
+        b = val & 1
+        val >>= 1
+        left -= 1
+        if left == 0:
+            val = struct.unpack("<H", comp[pos:pos + 2])[0]
+            left = 16
+            pos += 2
+        return b
+
+    while True:
+        if get():
+            res.append(comp[pos])
+            pos += 1
+            continue
+        if not get():
+            ln = 2 * get()
+            ln += get() + 3
+            off = comp[pos] - 0x100
+            pos += 1
+        else:
+            off = (comp[pos] | (comp[pos + 1] & 0xF0) << 4) - 0x1000
+            ln = (comp[pos + 1] & 0xF) + 3
+            pos += 2
+            if ln == 3:
+                ln = comp[pos] + 1
+                pos += 1
+                if ln == 1:
+                    return bytes(res[:size])
+        for _ in range(ln):
+            res.append(res[off])
 
 
 def rgb565(r, g, b):

@@ -252,7 +252,8 @@ def files():
         out[m + ".cos"] = F.costume([("MMDL", -1, m + ".3do"), ("LUAV", -1, "CR_LV")], BOX_COSTUME[1])
     # a small bitmap of its own for object states and images: the original frees a bitmap with the object state that used
     # it, and a set whose background it was crashes when loaded afterwards
-    out["cr_obj.bm"] = F.bitmap(64, 48, F.checker(64, 48, 8, (200, 50, 50), (50, 50, 200)))
+    # (compressed, codec 3, as the game's bitmaps: formats.codec3)
+    out["cr_obj.bm"] = F.bitmap(64, 48, F.checker(64, 48, 8, (200, 50, 50), (50, 50, 200)), codec=3)
     # sounds (formats.wav: 16-bit PCM): a short tone and a long one
     out["cr_tone.wav"] = F.wav(0.5)
     out["cr_long.wav"] = F.wav(3.0, freq=220.0)
@@ -293,7 +294,8 @@ def files():
         setup = dict(CAMERA, name=name + "_0", background=name + ".bm", zbuffer=name + ".zbm")
         out[name + ".set"] = F.set_file(["cr_pal.cmp"], [setup], [LIGHT], sectors)
     # a set of three setups (cameras): above, from the south at an angle and rolled, and from the east with a narrow fov
-    out["cr_cams.bm"] = F.bitmap(W, H, F.checker(W, H, 80, (90, 90, 40), (120, 120, 60)))
+    # (compressed, codec 3)
+    out["cr_cams.bm"] = F.bitmap(W, H, F.checker(W, H, 80, (90, 90, 40), (120, 120, 60)), codec=3)
     setups = [dict(CAMERA, name="cams_top", background="cr_cams.bm", zbuffer="cr_flat.zbm"),
               dict(name="cams_south", background="cr_cams.bm", zbuffer="cr_flat.zbm", position=(0.0, -5.0, 2.5),
                    interest=(0.0, 0.0, 0.5), roll=5.0, fov=45.0, nclip=0.05, fclip=50.0),

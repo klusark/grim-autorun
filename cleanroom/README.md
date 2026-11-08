@@ -552,4 +552,5 @@ Binary models are written without faces (`formats.model3do`); text models can ha
 Sounds are .wav, iMUSE's .IMC and MCMP (stored or VIMA blocks: "1008 - Domino's Office.IMC", "2001 - Climb Rope.IMC" and
 the voices); VIMA is written mono, without escapes. Movies are raw Blocky16 frames only (no delta modes);
 EMI's movies are Bink with fill blocks only (no DCT, motion or sound) and its music (`FullMonkeyMap.imt` and AIFF or VIMA tracks) has no writer yet.
-Compressed bitmaps (codec 3) and binary keyframes have no writer yet.
+Binary keyframes have no writer yet. Bitmaps are raw or codec 3 (`formats.codec3`: `cr_obj.bm` and `cr_cams.bm`; both
+engines decode them to the same pixels, so every test that draws them is unchanged).
