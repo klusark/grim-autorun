@@ -57,6 +57,22 @@ def text_table(entries):
     return b"RCNE" + bytes(c ^ 0xDD for c in plain)
 
 
+def text_table_remastered(entries):
+    """The Remastered's text table (grim.en.tab, ScummVM localize.cpp parseRemasteredData): a line a text, the id, a tab and
+    the text."""
+    return "".join("%s\t%s\n" % (k, v) for k, v in entries).encode("latin-1")
+
+
+def commentary_def(comments):
+    """The Remastered's list of its developer commentary (commentary_def.txt, ScummVM remastered/commentary.cpp): for each,
+    its name (a set), its sound file, a line skipped, then a tab and the number of its lines, then each line: an id, a
+    name, its start and end (tabs between). comments: [(name, file, [(id, name, start, end)])]."""
+    out = ["# commentary of the clean-room data"]
+    for name, f, lines in comments:
+        out += [name, f, "-", "\t%d" % len(lines)] + ["%d\t%s\t%d\t%d" % l for l in lines]
+    return ("\r\n".join(out) + "\r\n").encode("latin-1")
+
+
 def text_table_emi(entries):
     """EMI's script.tab: 'RCNE' and the lines 'id<TAB>text<CR><LF>', each byte xor a key from the C runtime's rand() sequence started
     at 0x16 (next = next * 0x343fd + 0x269ec3, key = ((next >> 16) & 0x7fff) / 32767 * 254 + 1, as a float; ScummVM localize.cpp).

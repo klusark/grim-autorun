@@ -1,4 +1,4 @@
-START 5041 tests
+START 5087 tests
 BEGIN boot_state
 V boot_state|movie_playing|nil
 V boot_state|fullscreen_movie_playing|nil
@@ -511,7 +511,7 @@ V strings|ascii|65.000000
 END strings
 BEGIN next_order
 U next_order|order
-V next_order|order|"84,49,glottis,98,salvador,7,56,olivia,velasco,14,eva,63,112,meche,21,126,70,119,manny,28,77,lupe,35,domino,133,42,105,91,chepito,140,"
+V next_order|order|"49,lupe,98,140,7,domino,56,105,14,chepito,112,glottis,70,salvador,63,28,olivia,77,126,eva,119,35,84,meche,133,42,21,91,manny,velasco,"
 V next_order|globals_counted|1.000000
 END next_order
 BEGIN tasks
@@ -3186,18 +3186,18 @@ V registry_keys|RenderingMode|"nil"
 V registry_keys|Fullscreen|"nil"
 END registry_keys
 BEGIN registry_write
-V registry_write|VoiceVolume|"70" 1.000000
-V registry_write|JoystickEnabled|"FALSE" 1.000000
-V registry_write|LastSavedGame|"3" 1.000000
-V registry_write|GrimLastSet|"cr_flat.set" 1.000000
-V registry_write|Transcript|"FALSE" 1.000000
-V registry_write|TextSpeed|"5" 1.000000
+V registry_write|Gamma|"1" 1.000000
 V registry_write|SpeechMode|"2" 1.000000
 V registry_write|MovementMode|"FALSE" 1.000000
 V registry_write|MusicVolume|"90" 1.000000
 V registry_write|VoiceEffects|"FALSE" 1.000000
+V registry_write|VoiceVolume|"70" 1.000000
+V registry_write|JoystickEnabled|"FALSE" 1.000000
 V registry_write|SfxVolume|"80" 1.000000
-V registry_write|Gamma|"1" 1.000000
+V registry_write|GrimLastSet|"cr_flat.set" 1.000000
+V registry_write|Transcript|"FALSE" 1.000000
+V registry_write|LastSavedGame|"3" 1.000000
+V registry_write|TextSpeed|"5" 1.000000
 END registry_write
 BEGIN registry_kinds
 V registry_kinds|string_digits|"string" "12"
@@ -3237,14 +3237,14 @@ END save_mode
 BEGIN save_actor_attrs
 V save_actor_attrs|changed|7.000000
 V save_actor_attrs|pass|"loading"
+V save_actor_attrs|kept_sector|1.000000
+V save_actor_attrs|kept_walk_rate|1.000000
+V save_actor_attrs|kept_look_rate|1.000000
+V save_actor_attrs|kept_talk_color|1.000000
 V save_actor_attrs|kept_timescale|1.000000
 V save_actor_attrs|kept_rot|"5 -180 -3 nil nil" "5 -182.793 -3 nil nil"
-V save_actor_attrs|kept_sector|1.000000
-V save_actor_attrs|kept_costume|1.000000
-V save_actor_attrs|kept_talk_color|1.000000
-V save_actor_attrs|kept_look_rate|1.000000
-V save_actor_attrs|kept_walk_rate|1.000000
 V save_actor_attrs|kept_pos|1.000000
+V save_actor_attrs|kept_costume|1.000000
 END save_actor_attrs
 BEGIN save_walking
 V save_walking|saved_pos|0.024042 0.024041 0.000000
@@ -3266,26 +3266,26 @@ END save_chore
 BEGIN save_set
 V save_set|changed|4.000000
 V save_set|pass|"loading"
-V save_set|kept_off|1.000000
-V save_set|kept_left|1.000000
 V save_set|kept_setup|1.000000
 V save_set|kept_active|1.000000
+V save_set|kept_off|1.000000
+V save_set|kept_left|1.000000
 V save_set|kept_right|1.000000
 END save_set
 BEGIN save_setup
 V save_setup|changed|3.000000
 V save_setup|pass|"loading"
-V save_setup|kept_setup|1.000000
 V save_setup|kept_screen|1.000000
 V save_setup|kept_fov|1.000000
+V save_setup|kept_setup|1.000000
 END save_setup
 BEGIN save_text
 V save_text|changed|2.000000
 V save_text|pass|"loading"
 V save_text|kept_d1|1.000000
+V save_text|kept_speed|"4" "7"
 V save_text|kept_d3|1.000000
 V save_text|kept_d2|1.000000
-V save_text|kept_speed|"4" "7"
 V save_text|loaded_snap|100.000000 47.000000 534.000000 306.000000 1158.000000
 END save_text
 BEGIN save_primitives
@@ -3303,11 +3303,11 @@ BEGIN save_lua
 V save_lua|changed|3.000000
 V save_lua|pass|"loading"
 V save_lua|kept_deep|1.000000
-V save_lua|kept_f|1.000000
-V save_lua|kept_self|1.000000
-V save_lua|kept_n|1.000000
 V save_lua|kept_task|1.000000
+V save_lua|kept_n|1.000000
+V save_lua|kept_f|1.000000
 V save_lua|kept_s|1.000000
+V save_lua|kept_self|1.000000
 V save_lua|task_counts|1.000000
 END save_lua
 BEGIN sector_active
@@ -7120,27 +7120,27 @@ V args_GetCurrentSetup_p1_tab|r|nil
 END args_GetCurrentSetup_p1_tab
 BEGIN args_GetDiskFreeSpace_none
 U args_GetDiskFreeSpace_none|r
-V args_GetDiskFreeSpace_none|r|92481.734375
+V args_GetDiskFreeSpace_none|r|92215.968750
 END args_GetDiskFreeSpace_none
 BEGIN args_GetDiskFreeSpace_nil
 U args_GetDiskFreeSpace_nil|r
-V args_GetDiskFreeSpace_nil|r|92481.734375
+V args_GetDiskFreeSpace_nil|r|92215.968750
 END args_GetDiskFreeSpace_nil
 BEGIN args_GetDiskFreeSpace_str
 U args_GetDiskFreeSpace_str|r
-V args_GetDiskFreeSpace_str|r|92481.734375
+V args_GetDiskFreeSpace_str|r|92215.968750
 END args_GetDiskFreeSpace_str
 BEGIN args_GetDiskFreeSpace_num
 U args_GetDiskFreeSpace_num|r
-V args_GetDiskFreeSpace_num|r|92481.734375
+V args_GetDiskFreeSpace_num|r|92215.968750
 END args_GetDiskFreeSpace_num
 BEGIN args_GetDiskFreeSpace_tab
 U args_GetDiskFreeSpace_tab|r
-V args_GetDiskFreeSpace_tab|r|92481.734375
+V args_GetDiskFreeSpace_tab|r|92215.968750
 END args_GetDiskFreeSpace_tab
 BEGIN args_GetDiskFreeSpace_fn
 U args_GetDiskFreeSpace_fn|r
-V args_GetDiskFreeSpace_fn|r|92481.734375
+V args_GetDiskFreeSpace_fn|r|92215.968750
 END args_GetDiskFreeSpace_fn
 SKIP args_GetFontDimensions_none
 SKIP args_GetFontDimensions_nil
@@ -7353,27 +7353,27 @@ V args_GetLightType_l_tab|r|"omni"
 END args_GetLightType_l_tab
 BEGIN args_GetMemoryUsage_none
 U args_GetMemoryUsage_none|r
-V args_GetMemoryUsage_none|r|11299838.000000
+V args_GetMemoryUsage_none|r|10996423.000000
 END args_GetMemoryUsage_none
 BEGIN args_GetMemoryUsage_nil
 U args_GetMemoryUsage_nil|r
-V args_GetMemoryUsage_nil|r|11300973.000000
+V args_GetMemoryUsage_nil|r|10997558.000000
 END args_GetMemoryUsage_nil
 BEGIN args_GetMemoryUsage_str
 U args_GetMemoryUsage_str|r
-V args_GetMemoryUsage_str|r|11302093.000000
+V args_GetMemoryUsage_str|r|10998678.000000
 END args_GetMemoryUsage_str
 BEGIN args_GetMemoryUsage_num
 U args_GetMemoryUsage_num|r
-V args_GetMemoryUsage_num|r|11303413.000000
+V args_GetMemoryUsage_num|r|10999798.000000
 END args_GetMemoryUsage_num
 BEGIN args_GetMemoryUsage_tab
 U args_GetMemoryUsage_tab|r
-V args_GetMemoryUsage_tab|r|11304637.000000
+V args_GetMemoryUsage_tab|r|11001022.000000
 END args_GetMemoryUsage_tab
 BEGIN args_GetMemoryUsage_fn
 U args_GetMemoryUsage_fn|r
-V args_GetMemoryUsage_fn|r|11305754.000000
+V args_GetMemoryUsage_fn|r|11002139.000000
 END args_GetMemoryUsage_fn
 BEGIN args_GetPhysicalBytes_none
 V args_GetPhysicalBytes_none|r|2147483648.000000
@@ -7899,27 +7899,27 @@ V args_GetTextSpeed_fn|r|7.000000
 END args_GetTextSpeed_fn
 BEGIN args_GetTickCount_none
 U args_GetTickCount_none|r
-V args_GetTickCount_none|r|692555776.000000
+V args_GetTickCount_none|r|697491776.000000
 END args_GetTickCount_none
 BEGIN args_GetTickCount_nil
 U args_GetTickCount_nil|r
-V args_GetTickCount_nil|r|692555776.000000
+V args_GetTickCount_nil|r|697491776.000000
 END args_GetTickCount_nil
 BEGIN args_GetTickCount_str
 U args_GetTickCount_str|r
-V args_GetTickCount_str|r|692555776.000000
+V args_GetTickCount_str|r|697491776.000000
 END args_GetTickCount_str
 BEGIN args_GetTickCount_num
 U args_GetTickCount_num|r
-V args_GetTickCount_num|r|692555776.000000
+V args_GetTickCount_num|r|697491776.000000
 END args_GetTickCount_num
 BEGIN args_GetTickCount_tab
 U args_GetTickCount_tab|r
-V args_GetTickCount_tab|r|692555776.000000
+V args_GetTickCount_tab|r|697491776.000000
 END args_GetTickCount_tab
 BEGIN args_GetTickCount_fn
 U args_GetTickCount_fn|r
-V args_GetTickCount_fn|r|692555776.000000
+V args_GetTickCount_fn|r|697491776.000000
 END args_GetTickCount_fn
 BEGIN args_GetTranslationMode_none
 V args_GetTranslationMode_none|r|0.000000
@@ -11423,27 +11423,27 @@ V args_ReadRegistryValue_p1_tab|r|nil
 END args_ReadRegistryValue_p1_tab
 BEGIN args_ResReport_none
 U args_ResReport_none|r
-V args_ResReport_none|r|11849779.000000
+V args_ResReport_none|r|11639011.000000
 END args_ResReport_none
 BEGIN args_ResReport_nil
 U args_ResReport_nil|r
-V args_ResReport_nil|r|11902906.000000
+V args_ResReport_nil|r|11640282.000000
 END args_ResReport_nil
 BEGIN args_ResReport_str
 U args_ResReport_str|r
-V args_ResReport_str|r|11904162.000000
+V args_ResReport_str|r|11641538.000000
 END args_ResReport_str
 BEGIN args_ResReport_num
 U args_ResReport_num|r
-V args_ResReport_num|r|11905418.000000
+V args_ResReport_num|r|11642794.000000
 END args_ResReport_num
 BEGIN args_ResReport_tab
 U args_ResReport_tab|r
-V args_ResReport_tab|r|11906778.000000
+V args_ResReport_tab|r|11644154.000000
 END args_ResReport_tab
 BEGIN args_ResReport_fn
 U args_ResReport_fn|r
-V args_ResReport_fn|r|11908027.000000
+V args_ResReport_fn|r|11645403.000000
 END args_ResReport_fn
 BEGIN args_ResetTextures_none
 V args_ResetTextures_none|r|nil
@@ -16485,7 +16485,7 @@ ERROR args_ceil_fn bad argument #1 to function `ceil' (number expected)
 FAILED args_ceil_fn
 BEGIN args_collectgarbage_none
 U args_collectgarbage_none|r
-V args_collectgarbage_none|r|6351.000000
+V args_collectgarbage_none|r|1739.000000
 END args_collectgarbage_none
 BEGIN args_collectgarbage_nil
 ERROR args_collectgarbage_nil bad argument #1 to function `collectgarbage' (number expected)
@@ -16523,7 +16523,7 @@ ERROR args_cos_fn bad argument #1 to function `cos' (number expected)
 FAILED args_cos_fn
 BEGIN args_date_none
 U args_date_none|r
-V args_date_none|r|"11/08/26 01:35:20"
+V args_date_none|r|"11/08/26 01:57:37"
 END args_date_none
 BEGIN args_date_nil
 ERROR args_date_nil bad argument #1 to function `date' (string expected)
@@ -17290,11 +17290,11 @@ V args_tostring_num|r|"1.5"
 END args_tostring_num
 BEGIN args_tostring_tab
 U args_tostring_tab|r
-V args_tostring_tab|r|"table: 087F581C"
+V args_tostring_tab|r|"table: 0426D20C"
 END args_tostring_tab
 BEGIN args_tostring_fn
 U args_tostring_fn|r
-V args_tostring_fn|r|"function: 04072EDC"
+V args_tostring_fn|r|"function: 040241BC"
 END args_tostring_fn
 BEGIN args_type_none
 ERROR args_type_none API error - attempt to push a NOOBJECT
@@ -17323,4 +17323,142 @@ V lex_binary|short|nil
 ERROR lex_binary binary file cr_bin_old.lua too old: version=0x30; expected at least 0x31
 V lex_binary|old|nil
 END lex_binary
-SUMMARY 5041 tests, 255 failed
+BEGIN rem_GetPlatform
+V rem_GetPlatform|missing|1.000000
+END rem_GetPlatform
+BEGIN rem_GetLanguage
+V rem_GetLanguage|missing|1.000000
+END rem_GetLanguage
+BEGIN rem_AreAchievementsInstalled
+V rem_AreAchievementsInstalled|missing|1.000000
+END rem_AreAchievementsInstalled
+BEGIN rem_UnlockAchievement
+V rem_UnlockAchievement|missing|1.000000
+END rem_UnlockAchievement
+BEGIN rem_ImGetCommentaryVol
+V rem_ImGetCommentaryVol|missing|1.000000
+END rem_ImGetCommentaryVol
+BEGIN rem_ImSetCommentaryVol
+V rem_ImSetCommentaryVol|missing|1.000000
+END rem_ImSetCommentaryVol
+BEGIN rem_SetMouseSpeedScale
+V rem_SetMouseSpeedScale|missing|1.000000
+END rem_SetMouseSpeedScale
+BEGIN rem_SetResolutionScaling
+V rem_SetResolutionScaling|missing|1.000000
+END rem_SetResolutionScaling
+BEGIN rem_SetAdvancedLighting
+V rem_SetAdvancedLighting|missing|1.000000
+END rem_SetAdvancedLighting
+BEGIN rem_SetLanguage
+V rem_SetLanguage|missing|1.000000
+END rem_SetLanguage
+BEGIN rem_EnableCommentary
+V rem_EnableCommentary|missing|1.000000
+END rem_EnableCommentary
+BEGIN rem_SetCommentary
+V rem_SetCommentary|missing|1.000000
+END rem_SetCommentary
+BEGIN rem_HasHeardCommentary
+V rem_HasHeardCommentary|missing|1.000000
+END rem_HasHeardCommentary
+BEGIN rem_IsPlayingCommentary
+V rem_IsPlayingCommentary|missing|1.000000
+END rem_IsPlayingCommentary
+BEGIN rem_PlayCurrentCommentary
+V rem_PlayCurrentCommentary|missing|1.000000
+END rem_PlayCurrentCommentary
+BEGIN rem_ClearCommentary
+V rem_ClearCommentary|missing|1.000000
+END rem_ClearCommentary
+BEGIN rem_StopCommentaryImmediately
+V rem_StopCommentaryImmediately|missing|1.000000
+END rem_StopCommentaryImmediately
+BEGIN rem_GlobalSaveResolved
+V rem_GlobalSaveResolved|missing|1.000000
+END rem_GlobalSaveResolved
+BEGIN rem_ReadRegistryIntValue
+V rem_ReadRegistryIntValue|missing|1.000000
+END rem_ReadRegistryIntValue
+BEGIN rem_ReadRegistryIntValue_missing
+V rem_ReadRegistryIntValue_missing|missing|1.000000
+END rem_ReadRegistryIntValue_missing
+BEGIN rem_DestroyAllUIButtonsImmediately
+V rem_DestroyAllUIButtonsImmediately|missing|1.000000
+END rem_DestroyAllUIButtonsImmediately
+BEGIN rem_UpdateUIButtons
+V rem_UpdateUIButtons|missing|1.000000
+END rem_UpdateUIButtons
+BEGIN rem_GetGameRenderMode
+V rem_GetGameRenderMode|missing|1.000000
+END rem_GetGameRenderMode
+BEGIN rem_SetGameRenderMode
+V rem_SetGameRenderMode|missing|1.000000
+END rem_SetGameRenderMode
+BEGIN rem_WidescreenCorrectionFactor
+V rem_WidescreenCorrectionFactor|missing|1.000000
+END rem_WidescreenCorrectionFactor
+BEGIN rem_OverlayGetScreenSize
+V rem_OverlayGetScreenSize|missing|1.000000
+END rem_OverlayGetScreenSize
+BEGIN rem_OverlayClearCache
+V rem_OverlayClearCache|missing|1.000000
+END rem_OverlayClearCache
+BEGIN rem_OverlayCreate_missing
+V rem_OverlayCreate_missing|missing|1.000000
+END rem_OverlayCreate_missing
+BEGIN rem_AddHotspot
+V rem_AddHotspot|missing|1.000000
+END rem_AddHotspot
+BEGIN rem_HideMouseCursor
+V rem_HideMouseCursor|missing|1.000000
+END rem_HideMouseCursor
+BEGIN rem_ShowCursor
+V rem_ShowCursor|missing|1.000000
+END rem_ShowCursor
+BEGIN rem_UpdateMouseCursor
+V rem_UpdateMouseCursor|missing|1.000000
+END rem_UpdateMouseCursor
+BEGIN rem_GetCursorPosition
+V rem_GetCursorPosition|missing|1.000000
+END rem_GetCursorPosition
+BEGIN rem_CursorMovieEnabled
+V rem_CursorMovieEnabled|missing|1.000000
+END rem_CursorMovieEnabled
+BEGIN rem_UnlockCutscene
+V rem_UnlockCutscene|missing|1.000000
+END rem_UnlockCutscene
+BEGIN rem_UnlockConcept
+V rem_UnlockConcept|missing|1.000000
+END rem_UnlockConcept
+BEGIN rem_CacheCurrentWalkVector
+V rem_CacheCurrentWalkVector|missing|1.000000
+END rem_CacheCurrentWalkVector
+BEGIN rem_GetFloorWalkPos
+V rem_GetFloorWalkPos|missing|1.000000
+END rem_GetFloorWalkPos
+BEGIN rem_GetRemappedKeyName
+V rem_GetRemappedKeyName|missing|1.000000
+END rem_GetRemappedKeyName
+BEGIN rem_GetRemappedKeyHint
+V rem_GetRemappedKeyHint|missing|1.000000
+END rem_GetRemappedKeyHint
+BEGIN rem_SetKeyMappingMode
+V rem_SetKeyMappingMode|missing|1.000000
+END rem_SetKeyMappingMode
+BEGIN rem_LoadRemappedKeys
+V rem_LoadRemappedKeys|missing|1.000000
+END rem_LoadRemappedKeys
+BEGIN rem_RemoveBorders
+V rem_RemoveBorders|missing|1.000000
+END rem_RemoveBorders
+BEGIN rem_GetSaveStatus
+V rem_GetSaveStatus|missing|1.000000
+END rem_GetSaveStatus
+BEGIN rem_InitiateFindSaveGames
+V rem_InitiateFindSaveGames|missing|1.000000
+END rem_InitiateFindSaveGames
+BEGIN rem_GetCrossSaveStatus
+V rem_GetCrossSaveStatus|missing|1.000000
+END rem_GetCrossSaveStatus
+SUMMARY 5087 tests, 255 failed

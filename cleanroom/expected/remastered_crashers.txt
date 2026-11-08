@@ -36,6 +36,7 @@ args_ImFadeParam_p1_neg
 args_ImGetParam_p1_neg
 args_ImSetParam_p1_neg
 args_ImStopSound_p1_neg
+args_LockFont_str
 args_MakeTextObject_num
 args_MakeTextObject_p0
 args_MakeTextObject_p1_nil
@@ -48,8 +49,6 @@ args_MakeTextObject_t_nil
 args_MakeTextObject_t_num
 args_MakeTextObject_t_str
 args_MakeTextObject_t_tab
-args_NewObjectState_num
-args_NewObjectState_p1_num
 args_PrintLine_num
 args_PrintLine_p0
 args_PrintLine_p1_nil
@@ -66,11 +65,18 @@ args_SayLine_p2_tab
 args_SayLine_p3_nil
 args_SayLine_p3_str
 blast_print
+iris_text
+movie_loop
 path_back
 path_corner
 path_off_floor
 path_same_row
+save_load
+save_mode
+save_text
+save_walking
 text_change
+text_dims_killed
 text_no_font
 text_objects
 walk_behind

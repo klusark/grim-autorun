@@ -296,6 +296,28 @@ Original-only traps found so far:
   `MakeCurrentSetup` of a setup that does not exist crash.
 - The rest of the crashes with wrong arguments are listed in `expected/crashers.txt` (found by the argument probe).
 
+## The Remastered
+
+`python run.py remastered` runs the same Grim tests on Grim Fandango Remastered (`GrimFandango.exe` and its dlls copied
+from `REMASTERED_INSTALL`, the Steam folder by default; only the debuglog patch) and compares it with `expected/original.log`.
+It is a report: the Remastered is not the reference, and its crashes go to `expected/remastered_crashers.txt`.
+2026-11-08: 505 of 5087 tests differ from the original.
+
+`python run.py scummvm --remastered` runs ScummVM in its Remastered mode: the test patch has a second detection entry,
+for the marker `grimremasteredtestdata.txt` (with `ADGF_REMASTERED`), and the data gets the Remastered's text table
+(`grim.en.tab`, `formats.text_table_remastered`) and commentary list (`commentary_def.txt`, `formats.commentary_def`,
+`assets.COMMENTARY`). It builds into `build_remastered/` and runs in `run/remastered_scummvm/`; the reference is
+`logs/remastered.log` (the last `run.py remastered`) when there is one, else the original's. This is a report too and never
+fails (the marks are for the original); its crashers are `expected/remastered_scummvm_crashers_<renderer>.txt`.
+`tests/grim/zz_remastered.lua` calls the Remastered's own builtins (`rem_*`; "missing" on the original and Grim mode).
+
+Found this way (fixed on `cleanroom`): EnableCommentary, ShowCursor, AddHotspot / QueryActiveHotspots and Save (the
+original's `Save(file)`; the Remastered saves only to a numbered slot and does nothing with a name) asserted. Still different
+from the Remastered exe: most of ScummVM's Remastered builtins are stubs (ImGetCommentaryVol is 0 and does not follow
+ImSetCommentaryVol, AddHotspot gives userdata where the exe gives a number, OverlayCreate, GetFloorWalkPos, the key names and
+the save status functions give nil or placeholders); ScummVM has HideMouseCursor, UpdateMouseCursor, UpdateUIButtons,
+DestroyAllUIButtonsImmediately, CacheCurrentWalkVector and RemoveBorders as builtins, the exe has none of them.
+
 ## On GitHub
 
 `.github/workflows/scummvm-cleanroom.yml` runs `run.py scummvm` for Grim and EMI on a Windows runner every night, on a

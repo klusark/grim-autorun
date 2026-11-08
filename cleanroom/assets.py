@@ -25,6 +25,10 @@ def rect(x0, y0, x1, y1, z=0.0):
     return [(x0, y0, z), (x1, y0, z), (x1, y1, z), (x0, y1, z)]
 
 
+# The Remastered's developer commentary (commentary_def.txt, only in ScummVM's Remastered mode): one for cr_flat, its file
+# not there, two lines
+COMMENTARY = [("cr_flat", "cr_commentary.imu", [(1, "crc_one", 0, 1000), (2, "crc_two", 1000, 2000)])]
+
 # A camera 6 m above the floor looking down at the origin (y up on screen), the same for every set
 CAMERA = dict(position=(0.0, -0.5, 6.0), interest=(0.0, 0.0, 0.0), roll=0.0, fov=60.0, nclip=0.01, fclip=100.0)
 LIGHT = dict(name="cr_light", type="omni", position=(0.0, 0.0, 3.0), intensity=1.0, color=(255, 255, 255))

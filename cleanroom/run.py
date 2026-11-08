@@ -69,6 +69,19 @@ EMI_PROGRAM_FILES = ["Monkey4.exe", "Mss32.dll", "binkw32.dll", "Mp3dec.asi", "C
 EMI_ARCHIVE = "local.m4b"
 EMI_MARKER = "emitestdata.txt"
 GAME = "grim"
+# ScummVM in the Remastered's mode (scummvm --remastered): the same data with another marker (the test patch's entry with
+# ADGF_REMASTERED), the Remastered's text table and commentary file, folders of its own
+REMASTERED_MARKER = "grimremasteredtestdata.txt"
+SVM_REMASTERED = False
+
+
+def set_remastered():
+    """Points the build, run and log folders at ScummVM's Remastered mode (its crashers: expected/remastered_scummvm_...)."""
+    global SVM_REMASTERED, BUILD, RUN, LOGS
+    SVM_REMASTERED = True
+    BUILD = os.path.join(HERE, "build_remastered")
+    RUN = os.path.join(HERE, "run", "remastered_scummvm")
+    LOGS = os.path.join(HERE, "logs", "remastered_scummvm")
 
 
 def set_game(game):
@@ -161,8 +174,12 @@ def build(only=None, skip=(), start=None, fails=0):
         files.update(assets_emi.loose_files())
         files[EMI_MARKER] = b"Escape from Monkey Island engine test data, see grim_tools/cleanroom/README.md\r\n"
     else:
-        # (ScummVM detects the test data by this file)
-        files[MARKER] = b"Grim engine test data, see grim_tools/cleanroom/README.md\r\n"
+        # (ScummVM detects the test data by this file; in the Remastered's mode by another, with the Remastered's text table
+        # (grim.en.tab) and commentary list)
+        files[REMASTERED_MARKER if SVM_REMASTERED else MARKER] = b"Grim engine test data, see grim_tools/cleanroom/README.md\r\n"
+        if SVM_REMASTERED:
+            files["grim.en.tab"] = formats.text_table_remastered(assets.TEXT)
+            files["commentary_def.txt"] = formats.commentary_def(assets.COMMENTARY)
     files[MANIFEST] = ("\n".join(sorted(files) + [MANIFEST]) + "\n").encode("ascii")
     for name, data in files.items():
         os.makedirs(os.path.dirname(os.path.join(BUILD, name)), exist_ok=True)
@@ -219,7 +236,7 @@ RENDERER = RENDERERS[0]
 
 def svm_known():
     """The tests that crashed or hung ScummVM with the current renderer."""
-    prefix = "emi_" if GAME == "emi" else ""
+    prefix = "emi_" if GAME == "emi" else "remastered_" if SVM_REMASTERED else ""
     return os.path.join(HERE, "expected", "%sscummvm_crashers_%s.txt" % (prefix, RENDERER))
 
 
@@ -687,6 +704,8 @@ def main():
     ap.add_argument("what", choices=["build", "scummvm", "original", "remastered", "both", "compare"])
     ap.add_argument("logs", nargs="*")
     ap.add_argument("--only", help="run one test")
+    ap.add_argument("--remastered", action="store_true",
+                    help="scummvm: in its Remastered mode, against logs/remastered.log (run.py remastered) if there is one; a report only")
     ap.add_argument("--save", action="store_true", help="original: the whole run becomes expected/original.log (not with --only)")
     ap.add_argument("--repeat", type=int, default=3, help="original --save: runs, to find the unstable values")
     ap.add_argument("--renderer", help="scummvm: only these renderers (comma separated; default: %s)" % ",".join(RENDERERS))
@@ -707,6 +726,14 @@ def main():
         build(a.only, read_names(CRASHERS))
         return 0 if lint() else 2
     renderers = a.renderer.split(",") if a.renderer else RENDERERS
+    if a.what == "scummvm" and a.remastered:
+        if a.game == "emi":
+            sys.exit("the Remastered is Grim's")
+        rem_log = os.path.join(LOGS, "remastered.log")
+        set_remastered()
+        # (the reference is the Remastered's own run when there is one; the marks are for the original, so this is a report)
+        run_scummvm_all(rem_log if os.path.exists(rem_log) else EXPECTED, a.only, a.fresh, renderers)
+        return 0
     if a.what == "scummvm":
         return run_scummvm_all(EXPECTED, a.only, a.fresh, renderers)
     if a.what == "original" and a.save:

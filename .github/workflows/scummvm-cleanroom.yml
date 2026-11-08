@@ -255,6 +255,8 @@ jobs:
           $env:SCUMMVM = "$env:GITHUB_WORKSPACE\scummvm\build\scummvm.exe"
           python grim_tools\cleanroom\run.py scummvm 2>&1 | Tee-Object grim.txt | Select-String '^==== '
           python grim_tools\cleanroom\run.py scummvm --game emi 2>&1 | Tee-Object emi.txt | Select-String '^==== '
+          # (ScummVM's Remastered mode, for its own code: a report only, it never fails)
+          python grim_tools\cleanroom\run.py scummvm --remastered 2>&1 | Tee-Object remastered.txt | Select-String '^==== '
           exit 0
 
       - name: Report
@@ -278,4 +280,5 @@ jobs:
             coverage/
             grim.txt
             emi.txt
+            remastered.txt
           if-no-files-found: ignore
