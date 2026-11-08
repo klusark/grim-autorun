@@ -270,11 +270,11 @@ SCUMMVM='C:\msys64\home\Joel\scummvm-cleanroom\build-cov\scummvm.exe' CR_STALL=6
 python ~/grimL_ar/tools/covreport.py <outdir> 'C:\msys64\home\Joel\scummvm-cleanroom\build-cov' 'C:\msys64\home\Joel\scummvm-cleanroom'
 ```
 
-`SCUMMVM` must be a Windows path. After the whole suite ScummVM crashes on the way out (0xC0000005 after `exit()`), which
-loses the counters: with `-DCR_GCOV` the test patch calls `__gcov_dump()` in `Exit()` first. A crash that ends the process
-at once (a fast fail 0xC0000409, a corrupt heap 0xC0000374) skips every handler, so the runner also asks for the counters
-every 200 tests (`PrintDebug("CRGCOV")`: `__gcov_dump()` and `__gcov_reset()` in a `CR_GCOV` build, nothing otherwise):
-a crash loses only what ran since. 2026-11-05: 42.3% of the lines (11596 of 27397, without lua, emi, remastered, tinygl).
+`SCUMMVM` must be a Windows path. gcov writes the counters when the process ends, so the engine's shutdown (its
+destructors) is counted too; ScummVM ends the whole suite cleanly (exit code 0, 2026-11-07; it used to crash after `exit()`,
+and `Exit()` dumped the counters itself, which left the shutdown out). A run killed as hung writes nothing, so the runner
+also asks for the counters every 200 tests (`PrintDebug("CRGCOV")`: `__gcov_dump()` and then `__gcov_reset()`, so that the
+write at the end still happens, in a `CR_GCOV` build; nothing otherwise): such a run loses only what ran since. 2026-11-05: 42.3% of the lines (11596 of 27397, without lua, emi, remastered, tinygl).
 2026-11-07: 41.7% (10357 of 24864) before and 49.0% (12192 of 24868) after the tests of saving and loading (`save.lua`),
 sounds of our own (`sound.lua`), the registry, the primitives and the start-up state. What is left is mostly iMUSE's music (its state tables) and streaming, the shader renderer (the tests use `gfx_mode=opengl`),
 and the debugger.
