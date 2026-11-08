@@ -336,6 +336,46 @@ def set_binary(setups, lights, sectors, shadows=()):
     return out
 
 
+# Lua 3.1 bytecode (ScummVM engines/grim/lua/lundump.cpp, lopcodes.h): what luac writes and the game's own scripts are.
+# The opcodes the chunk of assets.BIN_CHUNK uses (their numbers in lopcodes.h's order).
+LUA_OP = {"ENDCODE": 0, "PUSHNUMBER": 3, "PUSHCONSTANT": 8, "SETGLOBAL": 74, "RETCODE": 123}
+
+
+def _lua_tstring(s):
+    """A string of a chunk: its size with the zero (16-bit big endian), then its bytes and the zero, each xor 0xff."""
+    if s is None:
+        return b"\0\0"
+    b = s.encode("latin-1") + b"\0"
+    return struct.pack(">H", len(b)) + bytes(c ^ 0xFF for c in b)
+
+
+def lua_function(code, consts=(), locals_=(), line=0, name="cr_bin.lua"):
+    """One function of a chunk: the line it is defined on, the file name, the code (the stack size and the parameter count,
+    then the opcodes and their byte operands: a list of ints or LUA_OP names), the constants (a number 'N', a string 'S', or
+    a nested function as the bytes of lua_function 'F'), the locals [(line, name)], then the nested functions (each '#',
+    its constant index, the function) and '$'."""
+    body = bytes(LUA_OP[c] if isinstance(c, str) else c for c in code)
+    out = struct.pack(">H", line) + _lua_tstring(name) + struct.pack(">I", len(body)) + body
+    out += struct.pack(">H", len(consts))
+    nested = b""
+    for i, c in enumerate(consts):
+        if isinstance(c, (int, float)):
+            out += b"N" + struct.pack("<f", c)
+        elif isinstance(c, str):
+            out += b"S" + _lua_tstring(c)
+        else:
+            out += b"F"
+            nested += b"#" + struct.pack(">H", i) + c
+    out += struct.pack(">H", len(locals_)) + b"".join(struct.pack(">H", ln) + _lua_tstring(n) for ln, n in locals_)
+    return out + nested + b"$"
+
+
+def lua_chunk(main):
+    """A precompiled chunk: ESC "Lua", the version 0x31, the size of a number (4: a float), the 4 bytes of the test number
+    (as in the game's scripts), then the main function (lua_function)."""
+    return b"\x1bLua" + bytes([0x31, 4]) + bytes.fromhex("460abf17") + main
+
+
 def lua_text(src):
     """Lua source as the engines read it: CR LF line ends (the original's dofile wants them in loose files)."""
     return src.replace("\r\n", "\n").replace("\n", "\r\n").encode("latin-1")

@@ -43,6 +43,7 @@ def files():
            dict(CAMERA, name="two_b", background="cr_edge.til", position=(1.0, 6.0, -0.5), fov=40.0)]
     out["cr_two.setb"] = F.set_binary(two, [LIGHT], emi_sectors(A.SETS["cr_flat"][1]))
     out.update(costumes())
+    out.update(A.BIN_FILES)
     # sounds (formats.aiff, EMI's .aif): a short tone and a long one
     out["cr_tone.aif"] = F.aiff(0.5)
     out["cr_long.aif"] = F.aiff(3.0, freq=220.0)

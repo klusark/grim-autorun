@@ -220,6 +220,19 @@ HEAD_NODES = [("root", -1, -1, (0, 0, 0), (0, 0, 0), (0, 0, 0)),
               ("head", 1, 2, (0, 0, 0.5), (0, 0, 0), (0, 0, 0))]
 
 
+# A precompiled Lua chunk (formats.lua_chunk): CR_BIN = "yes", CR_BIN_N = 42, CR_BIN_X = 3.5 and CR_BIN_F, a function that
+# returns 7 (a nested function of the chunk); one local in the debug information. BIN_FILES: the chunk, one cut short and
+# one of an older version (lua5.lua's lex_binary)
+BIN_CHUNK = F.lua_chunk(F.lua_function(
+    [3, 0, "PUSHCONSTANT", 0, "SETGLOBAL", 1, "PUSHNUMBER", 42, "SETGLOBAL", 2, "PUSHCONSTANT", 3, "SETGLOBAL", 4,
+     "PUSHCONSTANT", 5, "SETGLOBAL", 6, "ENDCODE"],
+    ["yes", "CR_BIN", "CR_BIN_N", 3.5, "CR_BIN_X",
+     F.lua_function([1, 0, "PUSHNUMBER", 7, "RETCODE", 0], line=3), "CR_BIN_F"],
+    locals_=[(1, "cr_unused")]))
+BIN_FILES = {"cr_bin.lua": BIN_CHUNK, "cr_bin_short.lua": BIN_CHUNK[:40],
+             "cr_bin_old.lua": BIN_CHUNK[:4] + bytes([0x30]) + BIN_CHUNK[5:]}
+
+
 def files():
     out = {}
     out["cr_box.3do"] = F.model3do(*BOX_MODEL)
@@ -285,6 +298,7 @@ def files():
     out["cr_font.laf"] = F.font(lambda c: 4 if c == 32 else 6 if 48 <= c <= 57 else 8 if 65 <= c <= 90 else 5)
     out["cr_box.cos"] = F.costume(*BOX_COSTUME)
     out["cr_luav.cos"] = F.costume(*LUAV_COSTUME)
+    out.update(BIN_FILES)
     out["cr_talk.cos"] = F.costume(*TALK_COSTUME)
     # voices (SayLine plays "<message id>.wav" and lip syncs it with "<message id>.lip"), stored as the game's are: MCMP
     # with the RIFF header and the samples in VIMA blocks. crtv01 has a lip sync file (d, o, f: shapes 2, 7, 4), crtv02 has

@@ -1,4 +1,4 @@
-START 2268 tests
+START 2281 tests
 BEGIN numbers
 V numbers|arith|3.500000 1024.000000 -2.333333 1.#INF00
 V numbers|tostring|"0.333333" "100" "1e+015" "-0.5"
@@ -25,7 +25,7 @@ V strings|ascii|65.000000
 END strings
 BEGIN next_order
 U next_order|order
-V next_order|order|"manny,49,98,7,meche,glottis,105,lupe,eva,chepito,velasco,olivia,salvador,21,70,119,63,28,14,77,126,56,domino,35,84,133,112,42,91,140,"
+V next_order|order|"49,98,7,56,28,105,14,63,112,21,126,70,35,119,lupe,eva,chepito,velasco,olivia,salvador,domino,meche,glottis,manny,84,133,77,42,91,140,"
 V next_order|globals_counted|1.000000
 END next_order
 BEGIN tasks
@@ -528,6 +528,15 @@ V ec_box|wear|"number" 1.000000
 V ec_box|trace|"0/1 7/1 7/1 7/1 7/1 7/1 7/1 7/1 7/1 7/1 7/1 7/1 7/1 7/1 7/1 7/1 7/1 7/1 7/1 7/1 7/1 7/1 7/1 7/1 7/1 7/1 7/1 7/1 7/1 7/1 7/1 7/1 7/1 7/1 7/1 7/1 7/1 7/1 7/1 7/1 7/1 7/1 7/1 7/1 7/1 7/1 7/1 7/1 7/1 7/1 7/1 7/1 7/1 7/1 7/1 7/1 7/1 7/1 7/1 7/nil 7/nil 7/nil 7/nil 7/nil 7/nil 7/nil 7/nil 7/nil 7/nil 7/nil "
 V ec_box|after|7.000000 nil 1.000000
 END ec_box
+BEGIN ec_head
+V ec_head|at_once|1.000000
+V ec_head|looking|1.000000
+V ec_head|looking_left|1.000000
+V ec_head|stopped|nil
+END ec_head
+BEGIN ec_preferences
+V ec_preferences|missing|1.000000
+END ec_preferences
 BEGIN ee_sort_order
 V ee_sort_order|default|0.000000
 V ee_sort_order|set|7.000000
@@ -929,6 +938,134 @@ BEGIN file_find
 V file_find|sets_found|0.000000
 V file_find|none|nil
 END file_find
+BEGIN lex_pragma_if
+V lex_pragma_if|if_1|"ok" 1.000000
+V lex_pragma_if|if_nil|"ok" 2.000000
+V lex_pragma_if|ifnot_nil|"ok" 3.000000
+V lex_pragma_if|if_global|"ok" 4.000000
+V lex_pragma_if|if_undefined|"ok" 6.000000
+V lex_pragma_if|nested|"ok" 8.000000
+V lex_pragma_if|skipped_text|"ok" 9.000000
+V lex_pragma_if|spaces|"ok" 10.000000
+END lex_pragma_if
+BEGIN lex_pragma_other
+V lex_pragma_other|debug|"ok" 1.000000
+V lex_pragma_other|endinput|userdata 2.000000
+V lex_pragma_other|endinput_in_if|userdata 4.000000
+END lex_pragma_other
+BEGIN lex_pragma_errors
+ERROR lex_pragma_errors unknown pragma;
+V lex_pragma_errors|unknown|nil
+ERROR lex_pragma_errors unmatched $end;
+V lex_pragma_errors|unmatched_end|nil
+ERROR lex_pragma_errors unmatched $else;
+V lex_pragma_errors|double_else|nil
+ERROR lex_pragma_errors input ends inside a $if;
+V lex_pragma_errors|no_end|nil
+ERROR lex_pragma_errors input ends inside a $if;
+V lex_pragma_errors|no_end_skipped|nil
+ERROR lex_pragma_errors invalid $if condition;
+V lex_pragma_errors|bad_condition|nil
+ERROR lex_pragma_errors invalid pragma format;
+V lex_pragma_errors|trailing|nil
+ERROR lex_pragma_errors pragma too long;
+V lex_pragma_errors|long_name|nil
+END lex_pragma_errors
+BEGIN lex_strings
+V lex_strings|escape_r|userdata 3.000000
+V lex_strings|escape_newline|userdata 3.000000
+V lex_strings|escapes|userdata 9.000000
+ERROR lex_strings call expression not a function
+V lex_strings|decimal|nil
+ERROR lex_strings parse error;
+V lex_strings|unfinished|nil
+ERROR lex_strings parse error;
+V lex_strings|newline_in_string|nil
+V lex_strings|long|userdata "one
+ERROR lex_strings parse error;
+V lex_strings|long_unfinished|nil
+END lex_strings
+BEGIN lex_numbers
+V lex_numbers|point_first|userdata 0.500000
+V lex_numbers|exponent|userdata 60.200001
+ERROR lex_numbers ambiguous syntax (decimal point x string concatenation);
+V lex_numbers|concat_ambiguous|nil
+V lex_numbers|concat_spaced|userdata "12"
+ERROR lex_numbers parse error;
+V lex_numbers|bad_exponent|nil
+ERROR lex_numbers parse error;
+V lex_numbers|tilde|nil
+V lex_numbers|not_equal|userdata 1.000000
+V lex_numbers|first_line_hash|userdata 3.000000
+ERROR lex_numbers parse error;
+V lex_numbers|control_char|nil
+END lex_numbers
+BEGIN lex_scopes
+ERROR lex_scopes cannot access a variable in outer scope;
+V lex_scopes|outer_local|nil
+ERROR lex_scopes parse error;
+V lex_scopes|upvalue|nil
+ERROR lex_scopes cannot access upvalue in main;
+V lex_scopes|upvalue_in_main|nil
+ERROR lex_scopes parse error;
+V lex_scopes|upvalue_global|nil
+ERROR lex_scopes cannot access a variable in outer scope;
+V lex_scopes|upvalue_two_up|nil
+ERROR lex_scopes too many local variables (limit=32);
+V lex_scopes|many_locals|nil
+ERROR lex_scopes parse error;
+V lex_scopes|parse_error_eof|nil
+V lex_scopes|method|userdata 7.000000
+ERROR lex_scopes parse error;
+V lex_scopes|method_dotted|nil
+END lex_scopes
+BEGIN lex_wide
+V lex_wide|long_loop|userdata 14520.000000
+V lex_wide|long_if|userdata -1.000000
+ERROR lex_wide cannot access a variable in outer scope;
+V lex_wide|long_and|nil
+V lex_wide|long_repeat|userdata 14520.000000
+V lex_wide|list|userdata 301.000000
+V lex_wide|record|userdata 301.000000
+V lex_wide|mixed|userdata 600.000000
+V lex_wide|names|userdata 303.000000
+V lex_wide|names_method|userdata 302.000000
+END lex_wide
+BEGIN lex_patterns
+V lex_patterns|classes|nil
+V lex_patterns|negated|nil
+V lex_patterns|any|1.000000
+V lex_patterns|set|nil
+V lex_patterns|set_class|nil
+V lex_patterns|optional|1.000000 1.000000
+V lex_patterns|star|1.000000 1.000000
+V lex_patterns|anchor|nil 3.000000
+V lex_patterns|capture|"hell[o] w[o]rld"
+V lex_patterns|backref|2.000000
+V lex_patterns|balanced|2.000000
+V lex_patterns|gsub_fn|"NIL.NIL.NIL."
+V lex_patterns|gsub_n|"bba"
+V lex_patterns|plain_find|2.000000
+V lex_patterns|init|5.000000
+V lex_patterns|escape_end|nil
+V lex_patterns|missing_bracket|nil
+V lex_patterns|unfinished_capture|nil
+V lex_patterns|bad_capture_index|nil
+V lex_patterns|unbalanced|nil
+V lex_patterns|bad_b|nil
+END lex_patterns
+BEGIN lex_read
+ERROR lex_read global variable `_INPUT' is not a file handle
+FAILED lex_read
+BEGIN lex_tags
+V lex_tags|tag|1.000000
+V lex_tags|tag_number|nil
+V lex_tags|tag_function|1.000000 1.000000
+V lex_tags|types|"function" "function" "nil" "table"
+V lex_tags|rawget_number|nil
+V lex_tags|rawset|nil 1.000000
+V lex_tags|error_nil|nil
+END lex_tags
 BEGIN frame_time
 V frame_time|steady|"17 17 17 17 17 17 17 17 "
 END frame_time
@@ -2443,27 +2580,27 @@ V args_GetCurrentSetup_s_tab|r|0.000000
 END args_GetCurrentSetup_s_tab
 BEGIN args_GetDiskFreeSpace_none
 U args_GetDiskFreeSpace_none|r
-V args_GetDiskFreeSpace_none|r|92250.359375
+V args_GetDiskFreeSpace_none|r|92224.046875
 END args_GetDiskFreeSpace_none
 BEGIN args_GetDiskFreeSpace_nil
 U args_GetDiskFreeSpace_nil|r
-V args_GetDiskFreeSpace_nil|r|92250.359375
+V args_GetDiskFreeSpace_nil|r|92224.046875
 END args_GetDiskFreeSpace_nil
 BEGIN args_GetDiskFreeSpace_str
 U args_GetDiskFreeSpace_str|r
-V args_GetDiskFreeSpace_str|r|92250.359375
+V args_GetDiskFreeSpace_str|r|92224.046875
 END args_GetDiskFreeSpace_str
 BEGIN args_GetDiskFreeSpace_num
 U args_GetDiskFreeSpace_num|r
-V args_GetDiskFreeSpace_num|r|92250.359375
+V args_GetDiskFreeSpace_num|r|92224.046875
 END args_GetDiskFreeSpace_num
 BEGIN args_GetDiskFreeSpace_tab
 U args_GetDiskFreeSpace_tab|r
-V args_GetDiskFreeSpace_tab|r|92250.359375
+V args_GetDiskFreeSpace_tab|r|92224.046875
 END args_GetDiskFreeSpace_tab
 BEGIN args_GetDiskFreeSpace_fn
 U args_GetDiskFreeSpace_fn|r
-V args_GetDiskFreeSpace_fn|r|92250.359375
+V args_GetDiskFreeSpace_fn|r|92224.046875
 END args_GetDiskFreeSpace_fn
 BEGIN args_GetFontDimensions_none
 V args_GetFontDimensions_none|r|nil
@@ -2983,7 +3120,7 @@ V args_ImStateHasEnded_str|r|nil
 END args_ImStateHasEnded_str
 BEGIN args_ImStateHasEnded_num
 U args_ImStateHasEnded_num|r
-V args_ImStateHasEnded_num|r|32.000000
+V args_ImStateHasEnded_num|r|160.000000
 END args_ImStateHasEnded_num
 BEGIN args_ImStateHasEnded_tab
 V args_ImStateHasEnded_tab|r|nil
@@ -3002,7 +3139,7 @@ V args_ImStateHasLooped_str|r|nil
 END args_ImStateHasLooped_str
 BEGIN args_ImStateHasLooped_num
 U args_ImStateHasLooped_num|r
-V args_ImStateHasLooped_num|r|128.000000
+V args_ImStateHasLooped_num|r|208.000000
 END args_ImStateHasLooped_num
 BEGIN args_ImStateHasLooped_tab
 V args_ImStateHasLooped_tab|r|nil
@@ -6608,7 +6745,7 @@ ERROR args_ceil_fn bad argument #1 to function `ceil' (number expected)
 FAILED args_ceil_fn
 BEGIN args_collectgarbage_none
 U args_collectgarbage_none|r
-V args_collectgarbage_none|r|5609.000000
+V args_collectgarbage_none|r|3631.000000
 END args_collectgarbage_none
 BEGIN args_collectgarbage_nil
 ERROR args_collectgarbage_nil bad argument #1 to function `collectgarbage' (number expected)
@@ -6646,7 +6783,7 @@ ERROR args_cos_fn bad argument #1 to function `cos' (number expected)
 FAILED args_cos_fn
 BEGIN args_date_none
 U args_date_none|r
-V args_date_none|r|"11/07/26 21:23:44"
+V args_date_none|r|"11/07/26 23:03:23"
 END args_date_none
 BEGIN args_date_nil
 ERROR args_date_nil bad argument #1 to function `date' (string expected)
@@ -6986,22 +7123,22 @@ BEGIN args_mod_fn
 ERROR args_mod_fn bad argument #1 to function `mod' (number expected)
 FAILED args_mod_fn
 BEGIN args_newtag_none
-V args_newtag_none|r|-13.000000
+V args_newtag_none|r|-14.000000
 END args_newtag_none
 BEGIN args_newtag_nil
-V args_newtag_nil|r|-14.000000
+V args_newtag_nil|r|-15.000000
 END args_newtag_nil
 BEGIN args_newtag_str
-V args_newtag_str|r|-15.000000
+V args_newtag_str|r|-16.000000
 END args_newtag_str
 BEGIN args_newtag_num
-V args_newtag_num|r|-16.000000
+V args_newtag_num|r|-17.000000
 END args_newtag_num
 BEGIN args_newtag_tab
-V args_newtag_tab|r|-17.000000
+V args_newtag_tab|r|-18.000000
 END args_newtag_tab
 BEGIN args_newtag_fn
-V args_newtag_fn|r|-18.000000
+V args_newtag_fn|r|-19.000000
 END args_newtag_fn
 BEGIN args_next_none
 ERROR args_next_none bad argument #1 to function `next' (table expected)
@@ -7395,11 +7532,11 @@ V args_tostring_num|r|"1.5"
 END args_tostring_num
 BEGIN args_tostring_tab
 U args_tostring_tab|r
-V args_tostring_tab|r|"table: 136ACB90"
+V args_tostring_tab|r|"table: 13724A50"
 END args_tostring_tab
 BEGIN args_tostring_fn
 U args_tostring_fn|r
-V args_tostring_fn|r|"function: 029A9950"
+V args_tostring_fn|r|"function: 027C0810"
 END args_tostring_fn
 BEGIN args_type_none
 ERROR args_type_none API error - attempt to push a NOOBJECT
@@ -7419,4 +7556,13 @@ END args_type_tab
 BEGIN args_type_fn
 V args_type_fn|r|"function" -4.000000
 END args_type_fn
-SUMMARY 2268 tests, 246 failed
+BEGIN lex_binary
+V lex_binary|dofile|userdata
+V lex_binary|values|"yes" 42.000000 3.500000 "function"
+V lex_binary|call|7.000000
+ERROR lex_binary unexpected end of binary file cr_bin_short.lua
+V lex_binary|short|nil
+ERROR lex_binary binary file cr_bin_old.lua too old: version=0x30; expected at least 0x31
+V lex_binary|old|nil
+END lex_binary
+SUMMARY 2281 tests, 247 failed

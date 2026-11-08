@@ -159,6 +159,16 @@ centre (not two boxes) and at least one texture set. Both engines play the keys 
 first frame of a chore (it started a chore one frame late, in Grim too: fixed on klusark's `cleanroom`); a chore handle
 is a number on the original and userdata on ScummVM, and a missing chore gives 2 against nil.
 
+The interpreter's corners (`lua5.lua`, both games, 2026-11-07): the lexer's pragmas (`$if`, `$ifnot`, `$else`, `$end`,
+`$debug`, `$endinput`) and their errors, escapes, number forms, the parser's scope errors, code longer than 255 bytes
+(the wide jumps, long table constructors, more than 255 names), string patterns, read patterns, tags: the same on both
+except that ScummVM read a file's `\r\n` as two characters (`read("{\n}...")`; fixed on klusark's `cleanroom`). A
+precompiled chunk (`zz_binary.lua`; `formats.lua_chunk`, a small Lua 3.1 bytecode writer for the opcodes it uses) loads
+the same on both; it runs last because after it the original's Save and Load of `save.lua` crashed now and then, even
+with its globals cleared and the garbage collected. EMI's head (`ec_head`): Monkey4.exe has `IsActorLooking`, ScummVM
+not (no script of either game calls it). ScummVM's `GetResidualVMPreference` (`ec_preferences`, ScummVM only): an EMI
+volume below 25 wrapped round to the loudest (fixed).
+
 EMI's sounds and voices (`emi_sound.lua`, 2026-11-07; `formats.aiff` for `.aif`, the voices `.wVC` as MCMP with VIMA blocks,
 and a `.lip`). `LoadSound` of a file that is not there is nil, and `PlayLoadedSoundFrom` plays with five arguments (both
 fixed on klusark's `cleanroom`); a voiced line goes until ShutUpActor on both. Left: `PlayLoadedSound(h, nil, volume)`

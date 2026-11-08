@@ -101,3 +101,55 @@ cr_test("ec_box", function()
 	StopActorChores(a)
 	PutActorInSet(a, nil)
 end)
+
+-- the head (SetActorHead names a joint of the skeleton) looking at a point, then at nothing (IsActorLooking: Monkey4.exe has
+-- it, ScummVM not; no script of the game calls it)
+cr_scummvm_differs("ec_head", "ScummVM has no IsActorLooking (unused by the game's scripts)")
+cr_test("ec_head", function()
+	local a = cr_ec_actor()
+	PlayActorChore(a, "wear_default", "cr_ebox.cos")
+	cr_frames(2)
+	SetActorHead(a, "body", 0, 0.5, 0)
+	SetActorHeadLimits(a, 120, 40, 30)
+	SetActorLookRate(a, 200)
+	ActorLookAt(a, 2, 1, 2)
+	cr_log("at_once", IsActorLooking(a))
+	cr_frames(20)
+	cr_log("looking", IsActorLooking(a))
+	ActorLookAt(a, -2, 1, 0)
+	cr_frames(20)
+	cr_log("looking_left", IsActorLooking(a))
+	ActorLookAt(a, nil)
+	cr_frames(20)
+	cr_log("stopped", IsActorLooking(a))
+	StopActorChores(a)
+	PutActorInSet(a, nil)
+end)
+
+-- ScummVM's own preferences (GetResidualVMPreference: the EMI registry of ScummVM; Monkey4.exe has no such builtin and
+-- reads the Windows registry through ReadRegistryValue)
+cr_scummvm_differs("ec_preferences", "ScummVM-only builtins (GetResidualVMPreference)")
+cr_test("ec_preferences", function()
+	if not GetResidualVMPreference then
+		cr_log("missing", 1)
+		return
+	end
+	local keys = { "speech_mode", "vocvolume", "sfxvolume", "musvolume", "textspeed", "gamma", "joystick_enabled",
+		"analog_mode", "subtitles", "camera_mode", "shadowfx", "vocfx", "miscfx", "moviequality", "musicquality", "nokey" }
+	local i = 1
+	while keys[i] do
+		local k = keys[i]
+		cr_log(k, GetResidualVMPreference(k))
+		SetResidualVMPreference(k, 1)
+		cr_log(k .. "_1", GetResidualVMPreference(k))
+		SetResidualVMPreference(k, 2)
+		cr_log(k .. "_2", GetResidualVMPreference(k))
+		SetResidualVMPreference(k, 50)
+		cr_log(k .. "_50", GetResidualVMPreference(k))
+		i = i + 1
+	end
+	SetResidualVMPreference("nokey", 1)
+	SetResidualVMPreference(1, "x")
+	cr_log("nokey_set", GetResidualVMPreference("nokey"))
+	cr_log("number_key", GetResidualVMPreference(5))
+end)
