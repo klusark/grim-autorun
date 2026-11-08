@@ -43,6 +43,14 @@ def files():
            dict(CAMERA, name="two_b", background="cr_edge.til", position=(1.0, 6.0, -0.5), fov=40.0)]
     out["cr_two.setb"] = F.set_binary(two, [LIGHT], emi_sectors(A.SETS["cr_flat"][1]))
     out.update(costumes())
+    # sounds (formats.aiff, EMI's .aif): a short tone and a long one
+    out["cr_tone.aif"] = F.aiff(0.5)
+    out["cr_long.aif"] = F.aiff(3.0, freq=220.0)
+    # voices (SayLine plays "<message id>.wVC"): MCMP with the RIFF header stored and VIMA blocks, as the game's; crtv01
+    # with a lip sync file (A.lipsync's phonemes), crtv02 without one
+    for name in ("crtv01", "crtv02"):
+        out[name + ".wVC"] = F.mcmp(*F.wav_split(F.wav(1.0, freq=200.0)))
+    out["crtv01.lip"] = F.lip([(0, 0x64), (20, 0x6F), (40, 0x66)], 62)
     return out
 
 

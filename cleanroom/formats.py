@@ -989,6 +989,19 @@ def imus_split(data):
     return data[:i], data[i:]
 
 
+def aiff(seconds, rate=22050, freq=440.0, amplitude=8000):
+    """An AIFF of 16-bit mono PCM (EMI's sound effects, .aif): FORM AIFF, COMM (1 channel, the frame count, 16 bits, the
+    rate as an 80-bit float), SSND (offset 0, block size 0, then the samples, big endian): a sine tone of `seconds`."""
+    n = int(seconds * rate)
+    frames = b"".join(struct.pack(">h", int(amplitude * math.sin(2 * math.pi * freq * i / rate))) for i in range(n))
+    e = rate.bit_length() - 1
+    ext = struct.pack(">HQ", 16383 + e, rate << (63 - e))
+    comm = b"COMM" + struct.pack(">IHIH", 18, 1, n, 16) + ext
+    ssnd = b"SSND" + struct.pack(">III", 8 + len(frames), 0, 0) + frames
+    body = b"AIFF" + comm + ssnd
+    return b"FORM" + struct.pack(">I", len(body)) + body
+
+
 def wav_split(data):
     """A RIFF file (`wav`) as its header, up to and with the data chunk's tag and size (44 bytes), and its samples: the
     game's voices and sounds are MCMP files with that header stored and the samples in VIMA blocks."""

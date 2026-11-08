@@ -1,4 +1,4 @@
-START 2260 tests
+START 2268 tests
 BEGIN numbers
 V numbers|arith|3.500000 1024.000000 -2.333333 1.#INF00
 V numbers|tostring|"0.333333" "100" "1e+015" "-0.5"
@@ -25,7 +25,7 @@ V strings|ascii|65.000000
 END strings
 BEGIN next_order
 U next_order|order
-V next_order|order|"49,98,salvador,7,meche,glottis,manny,105,14,63,112,21,56,70,lupe,eva,chepito,velasco,28,77,126,domino,35,84,119,133,42,91,olivia,140,"
+V next_order|order|"manny,49,98,7,meche,glottis,105,lupe,eva,chepito,velasco,olivia,salvador,21,70,119,63,28,14,77,126,56,domino,35,84,133,112,42,91,140,"
 V next_order|globals_counted|1.000000
 END next_order
 BEGIN tasks
@@ -718,6 +718,43 @@ V es_switch|edge|1.000000 "e_right" 4096.000000
 V es_switch|flat_again|0.000000 "floor" 4096.000000
 V es_switch|setup|0.000000
 END es_switch
+BEGIN eso_load
+V eso_load|handle|"userdata"
+V eso_load|loaded|"nil 100"
+V eso_load|missing|"nil"
+END eso_load
+BEGIN eso_play
+V eso_play|at_once|"nil nil"
+V eso_play|playing|"nil nil"
+V eso_play|volume|"nil nil"
+V eso_play|stopped|"nil nil"
+END eso_play
+BEGIN eso_loop
+V eso_loop|playing|"1 80"
+V eso_loop|stopped|"nil nil"
+END eso_loop
+BEGIN eso_from
+V eso_from|playing|"1 100"
+V eso_from|moved|"1 100"
+V eso_from|ok|1.000000
+END eso_from
+BEGIN eso_by_name
+V eso_by_name|ok|1.000000
+END eso_by_name
+BEGIN eso_group_volumes
+V eso_group_volumes|before|nil
+V eso_group_volumes|set|nil
+END eso_group_volumes
+BEGIN eso_voice_lip
+V eso_voice_lip|at_once|1.000000
+V eso_voice_lip|going|1.000000
+V eso_voice_lip|shut_up|nil
+END eso_voice_lip
+BEGIN eso_voice
+V eso_voice|at_once|1.000000
+V eso_voice|going|1.000000
+V eso_voice|shut_up|nil
+END eso_voice
 BEGIN upvalues
 V upvalues|upvalue_frozen|11.000000
 V upvalues|global_counter|2.000000
@@ -2406,27 +2443,27 @@ V args_GetCurrentSetup_s_tab|r|0.000000
 END args_GetCurrentSetup_s_tab
 BEGIN args_GetDiskFreeSpace_none
 U args_GetDiskFreeSpace_none|r
-V args_GetDiskFreeSpace_none|r|92256.375000
+V args_GetDiskFreeSpace_none|r|92250.359375
 END args_GetDiskFreeSpace_none
 BEGIN args_GetDiskFreeSpace_nil
 U args_GetDiskFreeSpace_nil|r
-V args_GetDiskFreeSpace_nil|r|92256.375000
+V args_GetDiskFreeSpace_nil|r|92250.359375
 END args_GetDiskFreeSpace_nil
 BEGIN args_GetDiskFreeSpace_str
 U args_GetDiskFreeSpace_str|r
-V args_GetDiskFreeSpace_str|r|92256.375000
+V args_GetDiskFreeSpace_str|r|92250.359375
 END args_GetDiskFreeSpace_str
 BEGIN args_GetDiskFreeSpace_num
 U args_GetDiskFreeSpace_num|r
-V args_GetDiskFreeSpace_num|r|92256.375000
+V args_GetDiskFreeSpace_num|r|92250.359375
 END args_GetDiskFreeSpace_num
 BEGIN args_GetDiskFreeSpace_tab
 U args_GetDiskFreeSpace_tab|r
-V args_GetDiskFreeSpace_tab|r|92256.375000
+V args_GetDiskFreeSpace_tab|r|92250.359375
 END args_GetDiskFreeSpace_tab
 BEGIN args_GetDiskFreeSpace_fn
 U args_GetDiskFreeSpace_fn|r
-V args_GetDiskFreeSpace_fn|r|92256.375000
+V args_GetDiskFreeSpace_fn|r|92250.359375
 END args_GetDiskFreeSpace_fn
 BEGIN args_GetFontDimensions_none
 V args_GetFontDimensions_none|r|nil
@@ -2946,7 +2983,7 @@ V args_ImStateHasEnded_str|r|nil
 END args_ImStateHasEnded_str
 BEGIN args_ImStateHasEnded_num
 U args_ImStateHasEnded_num|r
-V args_ImStateHasEnded_num|r|208.000000
+V args_ImStateHasEnded_num|r|32.000000
 END args_ImStateHasEnded_num
 BEGIN args_ImStateHasEnded_tab
 V args_ImStateHasEnded_tab|r|nil
@@ -2965,7 +3002,7 @@ V args_ImStateHasLooped_str|r|nil
 END args_ImStateHasLooped_str
 BEGIN args_ImStateHasLooped_num
 U args_ImStateHasLooped_num|r
-V args_ImStateHasLooped_num|r|112.000000
+V args_ImStateHasLooped_num|r|128.000000
 END args_ImStateHasLooped_num
 BEGIN args_ImStateHasLooped_tab
 V args_ImStateHasLooped_tab|r|nil
@@ -6571,7 +6608,7 @@ ERROR args_ceil_fn bad argument #1 to function `ceil' (number expected)
 FAILED args_ceil_fn
 BEGIN args_collectgarbage_none
 U args_collectgarbage_none|r
-V args_collectgarbage_none|r|7056.000000
+V args_collectgarbage_none|r|5609.000000
 END args_collectgarbage_none
 BEGIN args_collectgarbage_nil
 ERROR args_collectgarbage_nil bad argument #1 to function `collectgarbage' (number expected)
@@ -6609,7 +6646,7 @@ ERROR args_cos_fn bad argument #1 to function `cos' (number expected)
 FAILED args_cos_fn
 BEGIN args_date_none
 U args_date_none|r
-V args_date_none|r|"11/07/26 21:08:01"
+V args_date_none|r|"11/07/26 21:23:44"
 END args_date_none
 BEGIN args_date_nil
 ERROR args_date_nil bad argument #1 to function `date' (string expected)
@@ -7358,11 +7395,11 @@ V args_tostring_num|r|"1.5"
 END args_tostring_num
 BEGIN args_tostring_tab
 U args_tostring_tab|r
-V args_tostring_tab|r|"table: 137A2070"
+V args_tostring_tab|r|"table: 136ACB90"
 END args_tostring_tab
 BEGIN args_tostring_fn
 U args_tostring_fn|r
-V args_tostring_fn|r|"function: 02788B20"
+V args_tostring_fn|r|"function: 029A9950"
 END args_tostring_fn
 BEGIN args_type_none
 ERROR args_type_none API error - attempt to push a NOOBJECT
@@ -7382,4 +7419,4 @@ END args_type_tab
 BEGIN args_type_fn
 V args_type_fn|r|"function" -4.000000
 END args_type_fn
-SUMMARY 2260 tests, 246 failed
+SUMMARY 2268 tests, 246 failed

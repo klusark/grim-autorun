@@ -159,6 +159,12 @@ centre (not two boxes) and at least one texture set. Both engines play the keys 
 first frame of a chore (it started a chore one frame late, in Grim too: fixed on klusark's `cleanroom`); a chore handle
 is a number on the original and userdata on ScummVM, and a missing chore gives 2 against nil.
 
+EMI's sounds and voices (`emi_sound.lua`, 2026-11-07; `formats.aiff` for `.aif`, the voices `.wVC` as MCMP with VIMA blocks,
+and a `.lip`). `LoadSound` of a file that is not there is nil, and `PlayLoadedSoundFrom` plays with five arguments (both
+fixed on klusark's `cleanroom`); a voiced line goes until ShutUpActor on both. Left: `PlayLoadedSound(h, nil, volume)`
+plays nothing on the original, and after `StopSound` its handle has no volume. A `SayLine` without a voice file crashes
+Monkey4.exe.
+
 Not done: the rotation of a setup's camera, EMI's textured meshes and what a skeleton or an animation does to the mesh
 (no pictures of the original's EMI), and sharing Grim's set, actor and walk tests (they need Grim's points turned over and
 EMI's sets).

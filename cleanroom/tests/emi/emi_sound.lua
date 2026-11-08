@@ -1,0 +1,106 @@
+-- EMI's sounds and voices (assets_emi.py): cr_tone.aif (0.5 s) and cr_long.aif (3 s), formats.aiff; the voices
+-- crtv01.wVC and crtv02.wVC (MCMP with VIMA blocks, formats.mcmp), crtv01 with a lip sync file. LoadSound gives a handle
+-- (the name without .aif); PlaySound plays by name. The sounds play by real time on both engines while the test's frames
+-- run faster: the values are those at the start and after a stop, not when a sound ends.
+
+-- (a sound's handle: its type, playing, its volume)
+cr_es_state = function(h)
+	return tostring(IsSoundPlaying(h)) .. " " .. tostring(GetSoundVolume(h))
+end
+
+cr_test("eso_load", function()
+	local h = LoadSound("cr_tone")
+	cr_log("handle", type(h))
+	cr_log("loaded", cr_es_state(h))
+	cr_log("missing", type(LoadSound("cr_no_such_sound")))
+	FreeSound(h)
+end)
+
+cr_scummvm_differs("eso_play", "PlayLoadedSound(h, nil, volume) plays nothing on the original; after StopSound its volume is nil")
+cr_test("eso_play", function()
+	local h = LoadSound("cr_long")
+	PlayLoadedSound(h, nil, 100)
+	cr_log("at_once", cr_es_state(h))
+	cr_frames(2)
+	cr_log("playing", cr_es_state(h))
+	SetSoundVolume(h, 50)
+	cr_frames(1)
+	cr_log("volume", cr_es_state(h))
+	StopSound(h)
+	cr_frames(2)
+	cr_log("stopped", cr_es_state(h))
+	FreeSound(h)
+end)
+
+-- looping (the second argument), then stopped
+cr_scummvm_differs("eso_loop", "after StopSound the original's volume is nil")
+cr_test("eso_loop", function()
+	local h = LoadSound("cr_tone")
+	PlayLoadedSound(h, 1, 80)
+	cr_frames(3)
+	cr_log("playing", cr_es_state(h))
+	StopSound(h)
+	cr_frames(2)
+	cr_log("stopped", cr_es_state(h))
+	FreeSound(h)
+end)
+
+-- from a place in the set
+cr_test("eso_from", function()
+	MakeCurrentSet("cr_flat.set")
+	local h = LoadSound("cr_long")
+	PlayLoadedSoundFrom(h, 1, 0, 1, 100)
+	cr_frames(2)
+	cr_log("playing", cr_es_state(h))
+	UpdateSoundPosition(h, -1, 0, 1)
+	cr_frames(1)
+	cr_log("moved", cr_es_state(h))
+	StopSound(h)
+	FreeSound(h)
+	PlaySoundFrom("cr_tone", 0, 0, 0, 100)
+	cr_frames(2)
+	StopAllSounds()
+	cr_frames(2)
+	cr_log("ok", 1)
+end)
+
+-- by name, without a handle
+cr_test("eso_by_name", function()
+	PlaySound("cr_tone", 100)
+	cr_frames(2)
+	PlaySound("cr_no_such_sound", 100)
+	cr_frames(2)
+	StopAllSounds()
+	cr_frames(2)
+	cr_log("ok", 1)
+end)
+
+-- the volumes of the groups
+cr_test("eso_group_volumes", function()
+	local s, m, v = ImGetSfxVol(), ImGetMusicVol(), ImGetVoiceVol()
+	cr_log("before", s, m, v)
+	ImSetSfxVol(40)
+	ImSetMusicVol(50)
+	ImSetVoiceVol(60)
+	cr_log("set", ImGetSfxVol(), ImGetMusicVol(), ImGetVoiceVol())
+	ImSetSfxVol(s or 127)
+	ImSetMusicVol(m or 127)
+	ImSetVoiceVol(v or 127)
+end)
+
+-- a voiced line (crtv01: with a lip sync file; crtv02: without), then ShutUpActor
+cr_es_voice = function(id)
+	local a = cr_ea_actor("cr_flat.set")
+	SayLine(a, "/" .. id .. "/")
+	cr_log("at_once", IsMessageGoing())
+	cr_frames(3)
+	cr_log("going", IsMessageGoing())
+	ShutUpActor(a)
+	cr_frames(2)
+	cr_log("shut_up", IsMessageGoing())
+	PutActorInSet(a, nil)
+end
+
+cr_test("eso_voice_lip", function() cr_es_voice("crtv01") end)
+cr_test("eso_voice", function() cr_es_voice("crtv02") end)
+-- (a line without a voice file crashes Monkey4.exe: not tested)
