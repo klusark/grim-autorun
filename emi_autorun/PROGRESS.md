@@ -282,3 +282,25 @@ Section A is done for all four acts. What changed since the puck:
   (Actor::handleCollisions / collision mode of the rafts) against the original, or whether raft2 needs a puck-less run.
 - Map walking: on "Monkey Island Map" the planner now seeds from the nearest floor cell when Guybrush stands a hair off the floor (ar_grid_path_big),
   retries on the fine grid and then without a margin; the walk to a place's use point comes before the verb (a3_go).
+
+## Engine switch (2026-11-10)
+- run_emi.sh runs `SVM_DIR` (default `~/scummvm-emi-latest/build-opt`): worktree `~/scummvm-emi-latest`, branch `emi-autorun-latest` = `grim-actor-fixes`
+  (the newest branch with the autorun harness: --autorun, --sim-fps, GetFloorHeights, the puck, the EMI sector fixes) with master (Nov 10) merged in,
+  merge not committed (one conflict, the GfxTinyGL constructor, resolved). Build: `../build_scummvm_emi_latest.sh` from a UCRT64 login shell.
+  The old engine is `SVM_DIR=/home/Joel/scummvm-emi/build-opt` (Oct 27; ~/scummvm-emi itself has been moved to master since, only the build is left).
+- Fixed: the Grim library's Actor.walk_forward wrapper (autorun/ar_lib.lua, Nov 5) passed on only the actor, so EMI's walk_forward(actor, TRUE)
+  made one step: the raft boarding of ch24 looped for ever (on both engines). Checkpoints keep that wrapper: saves made before the fix must be regenerated.
+- Raft planner (emi_myst.lua): the clearance from the banks was measured inside ONE walk sector (GetFloorHeights(x, z, 0.8)); the water of
+  Mysts o' Tyme is cut into big triangles, so a dead strip ran along every shared edge and the planner found no way on most screens ("RAFT no
+  path ... straight", 12 of 13 drives on Oct 27). The old engine let the raft slide along a bank, the new one stops it there, and the raft
+  backed into another exit (a random move). Now: floor at the place and at 8 points round it; the trigger margins are tried with
+  clearance 0.8, 0.5, 0.3; then half-unit cells (AR_RAFT_STEP 0.5) with clearance 0.3 and 0 (screen 2's arrival is a channel about a unit
+  wide between the left and right exit triggers, its neck narrower than 0.6); a way gets as many tries as it has points (+40).
+  `python raft_floor_check.py` checks screens 4 and 2 offline on setx/mot.setb.
+- ch23: the duck waddles on while Guybrush walks to where it was (he ended 3.3-4.2 away, range 3): he follows it until it is within 2.4.
+- act2_08: the door leaves Guybrush 2.03 from the cup (range 2, 3D) and next to the old walk point, so that walk never started: the walk now
+  goes towards a point past it (3 s, the counter stops him in reach).
+- Result: `run_whole.sh` from a new game to the end of the credits on the new engine: attempt 1 to act2_22, attempt 2 from checkpoint 221 to the
+  end (289 + 173 s of real time, no teleport). Logs logs/whole_1.log, whole_2.log.
+- Seen once each, not looked into: ch23 exit status 127 after the duck (the checkpoint save?); act2_22 waited 120 s for control while Marco's
+  dialog, which the skipped arrival cutscene starts, was up (the retry passed).

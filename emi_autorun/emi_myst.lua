@@ -76,8 +76,11 @@ end
 -- handler is gone because a conversation began, or when AR_RAFT_STOP is set), the keys let go at its end.
 -- The way round what is in the water: a path over the cells where the raft can float (the walk sectors), as a player steers round the banks.
 -- Floor under a place at about the height of the raft (the walk sectors of the set include far higher and lower ones)
-ar_raft_floor = function(x, z, y)
-	local fh = GetFloorHeights(x, z, AR_RAFT_EDGE or 0.8)
+-- The clearance (AR_RAFT_EDGE) is from the edge of the water as a whole, not of one sector: the water is cut into big triangles, and a margin
+-- inside one of them left a dead strip along every edge they share, which cut the water into islands (the planner found no way on most
+-- screens and the raft was driven straight at the banks). So the place and eight points round it at that distance must all have floor.
+ar_raft_floor_at = function(x, z, y)
+	local fh = GetFloorHeights(x, z, 0)
 	local i = 1
 	while fh[i] do
 		if abs(fh[i] - y) < 0.4 then
@@ -87,10 +90,25 @@ ar_raft_floor = function(x, z, y)
 	end
 	return nil
 end
+AR_RAFT_RING = { { 1, 0 }, { 0.7071, 0.7071 }, { 0, 1 }, { -0.7071, 0.7071 }, { -1, 0 }, { -0.7071, -0.7071 }, { 0, -1 }, { 0.7071, -0.7071 } }
+ar_raft_floor = function(x, z, y)
+	if not ar_raft_floor_at(x, z, y) then
+		return nil
+	end
+	local r = AR_RAFT_EDGE or 0.8
+	local i = 1
+	while AR_RAFT_RING[i] do
+		if not ar_raft_floor_at(x + r * AR_RAFT_RING[i][1], z + r * AR_RAFT_RING[i][2], y) then
+			return nil
+		end
+		i = i + 1
+	end
+	return TRUE
+end
 ar_raft_path = function(x, z, margin)
 	local p = swampraft:getpos()
 	local y = p.y
-	local step = 1
+	local step = AR_RAFT_STEP or 1
 	local sx = floor(p.x / step + 0.5)
 	local sz = floor(p.z / step + 0.5)
 	local tx = floor(x / step + 0.5)
@@ -106,7 +124,7 @@ ar_raft_path = function(x, z, margin)
 	local tid, tname = GetPointSector(x, y, z, HOT)
 	local dx = { 1, -1, 0, 0, 1, 1, -1, -1 }
 	local dz = { 0, 0, 1, -1, 1, -1, 1, -1 }
-	while head <= tail and not found and head < 30000 do
+	while head <= tail and not found and head < 30000 / (step * step) do
 		local cx = queue[head][1]
 		local cz = queue[head][2]
 		head = head + 1
@@ -281,25 +299,58 @@ end
 
 ar_raft_walk = function(x, z)
 	local setup = mot.cur_setup_id
-	-- (the widest margin from the other exit triggers that leaves a way)
-	AR_RAFT_MARGIN = 3
-	local path = ar_raft_path(x, z, 3)
-	if not path then
-		AR_RAFT_MARGIN = 2
-		path = ar_raft_path(x, z, 2)
+	-- (the widest margin from the other exit triggers that leaves a way; then the same with less clearance from the banks, for a narrow
+	-- inlet such as the arrival of screen 2: the margin from the triggers matters more than the clearance, a touch of a trigger is a random move)
+	local edge = AR_RAFT_EDGE
+	local edges = { edge or 0.8, 0.5, 0.3 }
+	local margins = { 3, 2, 1, 0.5 }
+	local path = nil
+	local ei = 1
+	while not path and edges[ei] do
+		AR_RAFT_EDGE = edges[ei]
+		local mi = 1
+		while not path and margins[mi] do
+			AR_RAFT_MARGIN = margins[mi]
+			path = ar_raft_path(x, z, margins[mi])
+			mi = mi + 1
+		end
+		ei = ei + 1
 	end
+	-- (a channel about a unit wide between two exit triggers, screen 2 from its arrival: half-unit cells, small margins)
+	local fine = nil
 	if not path then
-		AR_RAFT_MARGIN = 1
-		path = ar_raft_path(x, z, 1)
+		AR_RAFT_STEP = 0.5
+		-- (the neck of that channel is narrower than 0.6: the last try has no clearance, only floor)
+		local fe = { 0.3, 0 }
+		local fm = { 0.5, 0.25 }
+		local fi = 1
+		while not path and fe[fi] do
+			AR_RAFT_EDGE = fe[fi]
+			local mi = 1
+			while not path and fm[mi] do
+				AR_RAFT_MARGIN = fm[mi]
+				path = ar_raft_path(x, z, fm[mi])
+				mi = mi + 1
+			end
+			fi = fi + 1
+		end
+		AR_RAFT_STEP = nil
+		fine = path
+		if path then
+			ar_log("RAFT half-unit cells")
+		end
 	end
-	if not path then
-		AR_RAFT_MARGIN = 0.5
-		path = ar_raft_path(x, z, 0.5)
-	end
-	if not path then
+	ei = 1
+	while not path and edges[ei] do
+		AR_RAFT_EDGE = edges[ei]
 		AR_RAFT_MARGIN = nil
 		path = ar_raft_path(x, z)
+		ei = ei + 1
 	end
+	if path and AR_RAFT_EDGE ~= (edge or 0.8) then
+		ar_log("RAFT clearance from the banks " .. AR_RAFT_EDGE)
+	end
+	AR_RAFT_EDGE = edge
 	if not path then
 		ar_log("RAFT no path to " .. x .. " " .. z .. ", straight")
 		path = { { x, z } }
@@ -313,9 +364,13 @@ ar_raft_walk = function(x, z)
 	ar_log("RAFT way " .. ps .. "(margin " .. tostring(AR_RAFT_MARGIN) .. ")")
 	local i = 1
 	local tries = 0
-	while path[i] and not AR_RAFT_STOP and mot.cur_setup_id == setup and tries < 40 do
+	-- (a try for each point of the way and 40 more for new ways: a way of half-unit cells has more than 40 points)
+	while path[i] and not AR_RAFT_STOP and mot.cur_setup_id == setup and tries < pk + 40 do
 		local last = (path[i + 1] == nil)
 		local tol = 1.2
+		if fine then
+			tol = 0.4
+		end
 		if last then
 			tol = 0.25
 		end

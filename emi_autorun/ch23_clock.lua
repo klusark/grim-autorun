@@ -87,6 +87,19 @@ ar_check(props.clock.state == PROP_INV, "the chess clock in hand")
 local dtries = 0
 while props.duck.state ~= PROP_INV and dtries < 5 do
 	dtries = dtries + 1
+	-- (the duck waddles on while Guybrush walks to where it was: he follows it, as a player does, until it is within reach (range 3))
+	local dlegs = 0
+	local dnear = function()
+		local d = ar_obj_pos(props.duck)
+		local g = manny:getpos()
+		return d.x and sqrt((d.x - g.x) * (d.x - g.x) + (d.z - g.z) * (d.z - g.z)) < 2.4
+	end
+	while not dnear() and dlegs < 6 do
+		dlegs = dlegs + 1
+		local d = ar_obj_pos(props.duck)
+		ar_log(format("duck at %.2f %.2f, following it (leg %d)", d.x, d.z, dlegs))
+		ar_walk_to(d.x, d.y, d.z, dnear, 6000)
+	end
 	ar_do("pickUp", props.duck)
 	sleep_for(1500)
 	ar_wait_for_control()

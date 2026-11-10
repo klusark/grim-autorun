@@ -2007,11 +2007,13 @@ end
 -- again). A save keeps the wrapper, it must not be wrapped twice.
 if not AR_OLD_WALK_FORWARD then
 	AR_OLD_WALK_FORWARD = Actor.walk_forward
-	Actor.walk_forward = function(a)
+	-- (EMI's walk_forward(actor, keep_on, max_ms) takes two more arguments: keep_on walks on until the script is stopped, as the
+	-- raft boarding of Mysts o' Tyme does; they are passed on)
+	Actor.walk_forward = function(a, keep_on, max_ms)
 		if a == manny and type(system.buttonHandler) == "table" and cutSceneLevel == 0 and not AR_ALLOW_STEP_UNDER_DIALOG then
 			ar_fail("Manny was stepped while a dialog has the keys (" .. tostring(AR_WHERE) .. ")")
 		end
-		return AR_OLD_WALK_FORWARD(a)
+		return AR_OLD_WALK_FORWARD(a, keep_on, max_ms)
 	end
 end
 

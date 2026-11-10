@@ -1,5 +1,6 @@
 #!/bin/sh
-# Runs an EMI autorun script in the emi-autorun worktree build (~/scummvm-emi/build-opt), apart from the grim runs:
+# Runs an EMI autorun script in the EMI worktree build (SVM_DIR, default ~/scummvm-emi-latest/build-opt: grim-actor-fixes with master merged in;
+# the old Oct 27 build is SVM_DIR=/home/Joel/scummvm-emi/build-opt), apart from the grim runs:
 # own config copy, own save path, own logs. The grim_tools/autorun libraries are only read, never changed.
 #
 #   run_emi.sh <script.lua> [timeout seconds] [extra scummvm options]
@@ -33,7 +34,7 @@ sed -i '/^\[scummvm\]/a enable_unsupported_game_warning=false' "$EM/generated/_s
 
 log="$EM/logs/${LOG:-$name}.log"
 : > "$log"; : > "$log.times"
-cd /home/Joel/scummvm-emi/build-opt
+cd "${SVM_DIR:-/home/Joel/scummvm-emi-latest/build-opt}" || exit 1
 start=$(date +%s)
 ./scummvm.exe --config="$(cygpath -w "$EM/generated/_scummvm_$id.ini")" --savepath="$(cygpath -w "${SAVES:-$EM/saves}")" \
 	--autorun="$(cygpath -w "$EM/generated/${name}_$id.lua")" --debugflags=scripts \
