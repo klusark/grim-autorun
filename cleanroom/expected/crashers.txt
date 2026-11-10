@@ -119,6 +119,7 @@ args_SnapToPlane_fn
 args_SnapToPlane_nil
 args_SnapToPlane_none
 args_SnapToPlane_tab
+asv_talk_no_voice
 font_dims_handle
 font_dims_name
 rest_chore_zero

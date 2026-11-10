@@ -379,7 +379,9 @@ also asks for the counters every 200 tests (`PrintDebug("CRGCOV")`: `__gcov_dump
 write at the end still happens, in a `CR_GCOV` build; nothing otherwise): such a run loses only what ran since. 2026-11-05: 42.3% of the lines (11596 of 27397, without lua, emi, remastered, tinygl).
 2026-11-07: 41.7% (10357 of 24864) before and 49.0% (12192 of 24868) after the tests of saving and loading (`save.lua`),
 sounds of our own (`sound.lua`), the registry, the primitives and the start-up state. 2026-11-10 (`--all`, every game
-and renderer): 69.4%, 29838 of 43016 lines (grim 69.5%, emi 68.3%, tinygl 57.9%, lua 87.6%, remastered 63.5%). What is left is mostly iMUSE's music (its state tables) and streaming, the shader renderer (the tests use `gfx_mode=opengl`),
+and renderer): 69.4%, 29838 of 43016 lines (grim 69.5%, emi 68.3%, tinygl 57.9%, lua 87.6%, remastered 63.5%); after
+the actor tests (`zz_actor_*.lua`, `emi_actor_*.lua`) 71.2%, 30643 of 43018 (grim 71.3%, emi 73.7%), and `actor.cpp` from
+294 lines never run to 54 (82.4% to 96.8%). What is left is mostly iMUSE's music (its state tables) and streaming, the shader renderer (the tests use `gfx_mode=opengl`),
 and the debugger.
 
 ## Wrong arguments and coverage
@@ -671,6 +673,47 @@ Hand-written tests, besides the per-frame walk and turn values:
   all zero), and after `DimScreen` (`save_image_dim`) it is the dimmed screen, almost black (16 to 20 of 255 where the
   original's grey thumbnail has 88 and 120). With the shader and software renderers it is the scene, darker than the
   original's: a mean of 64.9 against 104. (The test patch's `cr_snap` stores the software renderer's display.)
+- Actors, the rest of `actor.cpp` (`zz_actor_save2.lua`, `zz_actor_walk2.lua`, `zz_actor_talk2.lua`, `zz_actor_misc2.lua`;
+  EMI: `emi_actor_save.lua`, `emi_actor_walk.lua`, `emi_actor_talk.lua`, `emi_actor_misc.lua`; 2026-11-10, written by
+  four agents side by side with `run.py --work`). The files are `zz_` so that their costumes load after `save.lua`.
+  - Talking: ScummVM refuses an empty line and a line without a message id ("/id/"), which the original says (the
+    mumble plays, the text shows). For text that does not start with `/`, `parseMsgText` (lua.cpp:421) never writes the
+    id, and `sayLine` reads its `char id[50]` uninitialised (actor.cpp:1156); an id of 50 characters or more would
+    overflow it (the `strncpy` has no bound of its own). In Grim ScummVM ignores SayLine's `x` and `y` (only EMI's are
+    read, actor.cpp:1279; the original puts the text there), `ExpireText` ends a line without a voice (the original goes
+    on), a background line next to a foreground one ends at once with no text (actor.cpp:1256-1268; the original shows the
+    later line's text and both go on), a line said during a fullscreen movie is not the actor's text and ends at once,
+    `SetActorMumblechore` while the mumble plays stops it, and `IsActorChoring(a, nil)` skips a talk chore that
+    `PlayActorChore` played (lua_v1_actor.cpp:1086). The head of `SetActorHead` turns elsewhere (as `head_look_*`).
+  - Walking: `WalkActorForward` moves in the frame of the call on ScummVM, a frame later on the original (both games).
+    Into a box's edge the original stops (and turns a few degrees only with a reflection angle of 80 or 89), backwards it
+    turns away; ScummVM slides along the edge (actor.cpp:924-939). `GetActorPuckVector` is nil on the original for an
+    actor that does not follow the boxes; ScummVM gives one. `SetActorRot` with the turn flag eases in on the original and
+    plays the right turn chore both ways; ScummVM turns at a steady rate and picks the chore by direction.
+    `SetActorWalkChore` during a walk plays the new chore at once on the original; ScummVM starts the rest chore. A Lua
+    Variable component's global is nil when its chore stops on the original (ScummVM's has no `reset()`). EMI: without an
+    active sector the original does not move an actor that follows the boxes (ScummVM walks on), with no path it walks
+    towards the point anyway (ScummVM does not walk), and `TurnActorTo` does not turn it (ScummVM: `IsActorTurning` 1).
+  - Costumes: `GetActorCostume(a, n)` is nil on ScummVM; the original gives the costume n places from the top. A chore
+    on a costume under the top one plays no Lua Variable key on the original; ScummVM updates every costume of the stack.
+    `SetActorCostume` with a costume already in the stack: ScummVM's `pushCostume` refuses it (actor.cpp:1364).
+  - Collisions: the walker goes round the other actor's sphere on the original and through it on ScummVM (as
+    `cm_to_m2_w2`); in EMI `getTangentPos` works in x-y where EMI's floor is x-z (actor.cpp:2075), and `PutActorAt` next to
+    a colliding actor is pushed out of its sphere on the original but not on ScummVM (EMI's `setPos` drops the move,
+    actor.cpp:521). `handleCollisionWith`'s box branch (2285-2295) cannot be entered with this worktree's old
+    `Line2d::getPerpendicular` (the fix is ab9c9cca). `ActorToClean`: what it drew stays on the original after the actor
+    leaves; ScummVM has no clean buffer.
+  - Saving: the same on both for talking actors (lip-synced, mumbled, a lip file without a voice) and shadow planes
+    (also of another set; ScummVM warns that it cannot restore that one). EMI's actors (attaching, alpha, sort
+    orders, look-at) are saved and loaded the same on both (`asv_emi_actor`); Monkey4.exe's `Save` reads
+    `system.version`, and nil crashes it, so the test sets one. In the full run of the original `asv_talk_no_voice`
+    crashes it in the load (a null read at 0x48ca13, as the loads after other tests' costumes; with --only it does
+    not): it is in expected/crashers.txt. On EMI,
+    ScummVM's `WriteRegistryValue` / `ReadRegistryValue` dereference `g_registry`, which only Grim creates
+    (grim.cpp:108, lua_v1.cpp:221/256): they crash it.
+  - Not reachable with new saves or our data: the old save versions' branches of `restoreState`, `getRestChore` (no
+    caller), the PS2 `.scx` voice, `popCostume` on an empty stack, `setShadowColor` without a slot, `activateShadow`
+    with every slot in use (needs an EMI set of 9 shadows).
 
 ## Not done yet
 

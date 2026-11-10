@@ -1,4 +1,4 @@
-START 5118 tests
+START 5167 tests
 BEGIN boot_state
 V boot_state|movie_playing|nil
 V boot_state|fullscreen_movie_playing|nil
@@ -511,7 +511,7 @@ V strings|ascii|65.000000
 END strings
 BEGIN next_order
 U next_order|order
-V next_order|order|"meche,49,98,7,velasco,56,105,lupe,119,14,63,domino,manny,21,70,chepito,28,42,126,salvador,35,133,84,olivia,112,77,glottis,eva,91,140,"
+V next_order|order|"lupe,49,98,manny,domino,7,56,105,chepito,63,140,112,21,salvador,119,olivia,28,14,glottis,eva,126,70,35,meche,84,133,77,42,velasco,91,"
 V next_order|globals_counted|1.000000
 END next_order
 BEGIN tasks
@@ -840,12 +840,37 @@ V builtins|fn_WorldToScreen|"function"
 V builtins|fn_WriteRegistryValue|"function"
 V builtins|fn_abs|"function"
 V builtins|fn_acos|"function"
+V builtins|fn_amc_moving|"function"
+V builtins|fn_amc_path_case|"function"
+V builtins|fn_amc_put|"function"
+V builtins|fn_amc_shadow|"function"
 V builtins|fn_appendto|"function"
 V builtins|fn_ascii|"function"
 V builtins|fn_asin|"function"
 V builtins|fn_assert|"function"
+V builtins|fn_asv_save_test|"function"
+V builtins|fn_asv_shadow_actor|"function"
+V builtins|fn_asv_shadow_end|"function"
+V builtins|fn_asv_shadow_look|"function"
+V builtins|fn_asv_talk_after|"function"
+V builtins|fn_asv_talk_change|"function"
+V builtins|fn_asv_talk_look|"function"
 V builtins|fn_atan|"function"
 V builtins|fn_atan2|"function"
+V builtins|fn_atk_done|"function"
+V builtins|fn_atk_look|"function"
+V builtins|fn_atk_no_line|"function"
+V builtins|fn_atk_pair|"function"
+V builtins|fn_atk_pair_done|"function"
+V builtins|fn_atk_talker|"function"
+V builtins|fn_awk_actor|"function"
+V builtins|fn_awk_chores|"function"
+V builtins|fn_awk_edge|"function"
+V builtins|fn_awk_forward|"function"
+V builtins|fn_awk_grid_walk|"function"
+V builtins|fn_awk_rot|"function"
+V builtins|fn_awk_turn_actor|"function"
+V builtins|fn_awk_turn_trace|"function"
 V builtins|fn_break_here|"function"
 V builtins|fn_bx_case|"function"
 V builtins|fn_bx_main|"function"
@@ -3191,17 +3216,17 @@ V registry_keys|RenderingMode|"nil"
 V registry_keys|Fullscreen|"nil"
 END registry_keys
 BEGIN registry_write
+V registry_write|VoiceVolume|"70" 1.000000
+V registry_write|Transcript|"FALSE" 1.000000
+V registry_write|TextSpeed|"5" 1.000000
+V registry_write|GrimLastSet|"cr_flat.set" 1.000000
+V registry_write|LastSavedGame|"3" 1.000000
 V registry_write|SpeechMode|"2" 1.000000
 V registry_write|MovementMode|"FALSE" 1.000000
 V registry_write|MusicVolume|"90" 1.000000
 V registry_write|Gamma|"1" 1.000000
 V registry_write|VoiceEffects|"FALSE" 1.000000
 V registry_write|JoystickEnabled|"FALSE" 1.000000
-V registry_write|VoiceVolume|"70" 1.000000
-V registry_write|GrimLastSet|"cr_flat.set" 1.000000
-V registry_write|Transcript|"FALSE" 1.000000
-V registry_write|TextSpeed|"5" 1.000000
-V registry_write|LastSavedGame|"3" 1.000000
 V registry_write|SfxVolume|"80" 1.000000
 END registry_write
 BEGIN registry_kinds
@@ -3242,13 +3267,13 @@ END save_mode
 BEGIN save_actor_attrs
 V save_actor_attrs|changed|7.000000
 V save_actor_attrs|pass|"loading"
-V save_actor_attrs|kept_talk_color|1.000000
 V save_actor_attrs|kept_sector|1.000000
 V save_actor_attrs|kept_timescale|1.000000
-V save_actor_attrs|kept_look_rate|1.000000
-V save_actor_attrs|kept_costume|1.000000
-V save_actor_attrs|kept_rot|"5 -180 -3 nil nil" "5 -182.793 -3 nil nil"
 V save_actor_attrs|kept_walk_rate|1.000000
+V save_actor_attrs|kept_rot|"5 -180 -3 nil nil" "5 -182.793 -3 nil nil"
+V save_actor_attrs|kept_costume|1.000000
+V save_actor_attrs|kept_look_rate|1.000000
+V save_actor_attrs|kept_talk_color|1.000000
 V save_actor_attrs|kept_pos|1.000000
 END save_actor_attrs
 BEGIN save_walking
@@ -3262,8 +3287,8 @@ END save_walking
 BEGIN save_chore
 V save_chore|changed|2.000000
 V save_chore|pass|"loading"
-V save_chore|kept_choring|1.000000
 V save_chore|kept_lv|"1" "2"
+V save_chore|kept_choring|1.000000
 V save_chore|after_trace|"2/17 2/17 2/17 2/17 2/17 2/17 2/17 2/17 2/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 "
 V save_chore|after_frames|53.000000
 V save_chore|after_last|4.000000
@@ -3271,25 +3296,25 @@ END save_chore
 BEGIN save_set
 V save_set|changed|4.000000
 V save_set|pass|"loading"
+V save_set|kept_setup|1.000000
 V save_set|kept_active|1.000000
+V save_set|kept_right|1.000000
 V save_set|kept_left|1.000000
 V save_set|kept_off|1.000000
-V save_set|kept_setup|1.000000
-V save_set|kept_right|1.000000
 END save_set
 BEGIN save_setup
 V save_setup|changed|3.000000
 V save_setup|pass|"loading"
+V save_setup|kept_fov|1.000000
 V save_setup|kept_setup|1.000000
 V save_setup|kept_screen|1.000000
-V save_setup|kept_fov|1.000000
 END save_setup
 BEGIN save_text
 V save_text|changed|2.000000
 V save_text|pass|"loading"
-V save_text|kept_speed|"4" "7"
-V save_text|kept_d3|1.000000
 V save_text|kept_d2|1.000000
+V save_text|kept_d3|1.000000
+V save_text|kept_speed|"4" "7"
 V save_text|kept_d1|1.000000
 V save_text|loaded_snap|100.000000 47.000000 534.000000 306.000000 1158.000000
 END save_text
@@ -3308,11 +3333,11 @@ BEGIN save_lua
 V save_lua|changed|3.000000
 V save_lua|pass|"loading"
 V save_lua|kept_n|1.000000
-V save_lua|kept_deep|1.000000
+V save_lua|kept_f|1.000000
 V save_lua|kept_s|1.000000
 V save_lua|kept_task|1.000000
+V save_lua|kept_deep|1.000000
 V save_lua|kept_self|1.000000
-V save_lua|kept_f|1.000000
 V save_lua|task_counts|1.000000
 END save_lua
 BEGIN save_find_dir
@@ -3520,7 +3545,7 @@ V sound_params|group|"1 0 3 100 90 0"
 V sound_params|stopped|"0 0 -4 -4 -4 -4"
 END sound_params
 BEGIN sound_fade
-V sound_fade|trace|"120/67 120/67 120/67 120/67 120/67 120/67 120/67 120/67 120/67 120/67 120/67 120/67 120/67 120/67 120/67 120/67 120/67 120/67 120/67 120/67 120/67 120/67 120/67 120/67 120/67 "
+V sound_fade|trace|"127/64 127/64 127/64 127/64 127/64 127/64 127/64 127/64 127/64 127/64 127/64 120/67 120/67 120/67 120/67 120/67 120/67 120/67 120/67 120/67 120/67 120/67 120/67 120/67 120/67 "
 V sound_fade|after|"1 0 1 64 120 67"
 END sound_fade
 BEGIN sound_twice
@@ -3837,6 +3862,521 @@ V resources|attached|1.000000
 V resources|set_after|0.000000
 END resources
 SKIP save_emergency_font
+BEGIN amc_path_sphere
+V amc_path_sphere|sphere_f20|-0.808691 -0.847171 0.000000
+V amc_path_sphere|sphere_f40|-0.702976 -0.889165 0.000000
+V amc_path_sphere|sphere_f60|-0.549830 -0.910446 0.000000
+V amc_path_sphere|sphere_f80|-0.347953 -0.872759 0.000000
+V amc_path_sphere|sphere_f100|-0.132396 -0.723773 0.000000
+V amc_path_sphere|sphere_frames|128.000000
+V amc_path_sphere|sphere_end|1.000000 1.000000 0.000000
+V amc_path_sphere|sphere_other|-0.550000 -0.350000 0.000000
+END amc_path_sphere
+BEGIN amc_path_box
+V amc_path_box|box_f20|-0.759581 -0.759587 0.000000
+V amc_path_box|box_f40|-0.519162 -0.519174 0.000000
+V amc_path_box|box_f60|-0.278743 -0.278761 0.000000
+V amc_path_box|box_f80|-0.038324 -0.038347 0.000000
+V amc_path_box|box_f100|0.216303 0.216447 0.000000
+V amc_path_box|box_frames|65.000000
+V amc_path_box|box_end|1.000000 1.000000 0.000000
+V amc_path_box|box_other|-0.550000 -0.350000 0.000000
+END amc_path_box
+BEGIN amc_path_other_off
+V amc_path_other_off|off_f20|-0.759581 -0.759587 0.000000
+V amc_path_other_off|off_f40|-0.519162 -0.519174 0.000000
+V amc_path_other_off|off_f60|-0.278743 -0.278761 0.000000
+V amc_path_other_off|off_f80|-0.038324 -0.038347 0.000000
+V amc_path_other_off|off_f100|0.216303 0.216447 0.000000
+V amc_path_other_off|off_frames|65.000000
+V amc_path_other_off|off_end|1.000000 1.000000 0.000000
+V amc_path_other_off|off_other|-0.550000 -0.350000 0.000000
+END amc_path_other_off
+BEGIN amc_path_other_nocos
+V amc_path_other_nocos|nocos_f20|-0.759581 -0.759587 0.000000
+V amc_path_other_nocos|nocos_f40|-0.519162 -0.519174 0.000000
+V amc_path_other_nocos|nocos_f60|-0.278743 -0.278761 0.000000
+V amc_path_other_nocos|nocos_f80|-0.038324 -0.038347 0.000000
+V amc_path_other_nocos|nocos_f100|0.216303 0.216447 0.000000
+V amc_path_other_nocos|nocos_frames|65.000000
+V amc_path_other_nocos|nocos_end|1.000000 1.000000 0.000000
+V amc_path_other_nocos|nocos_other|-0.550000 -0.350000 0.000000
+END amc_path_other_nocos
+BEGIN amc_path_far
+V amc_path_far|far_f20|-1.177453 -0.392468 0.000000
+V amc_path_far|far_f40|-0.854906 -0.284936 0.000000
+V amc_path_far|far_f60|-0.532359 -0.177404 0.000000
+V amc_path_far|far_f80|-0.209812 -0.069872 0.000000
+V amc_path_far|far_f100|0.075400 0.113185 0.000000
+V amc_path_far|far_frames|98.000000
+V amc_path_far|far_end|1.000000 1.500000 0.000000
+V amc_path_far|far_other|1.700000 -1.700000 0.000000
+END amc_path_far
+BEGIN amc_path_back
+V amc_path_back|back_f20|1.259581 1.259586 0.000000
+V amc_path_back|back_f40|1.019162 1.019172 0.000000
+V amc_path_back|back_f60|0.778743 0.778759 0.000000
+V amc_path_back|back_f80|0.538324 0.538346 0.000000
+V amc_path_back|back_f100|0.297905 0.297932 0.000000
+V amc_path_back|back_frames|200.000000
+V amc_path_back|back_end|-0.820433 -1.453112 0.000000
+V amc_path_back|back_other|0.500000 -0.500000 0.000000
+END amc_path_back
+BEGIN amc_path_on_edge
+V amc_path_on_edge|to_b_f20|0.340000 -1.000000 0.000000
+V amc_path_on_edge|to_b_f40|0.680000 -1.000000 0.000000
+V amc_path_on_edge|to_b_f60|1.000000 -1.000000 0.000000
+V amc_path_on_edge|to_b_f80|1.000000 -1.000000 0.000000
+V amc_path_on_edge|to_b_f100|1.000000 -1.000000 0.000000
+V amc_path_on_edge|to_b_frames|0.000000
+V amc_path_on_edge|to_b_end|1.000000 -1.000000 0.000000
+V amc_path_on_edge|to_b_other|1.000000 1.000000 0.000000
+V amc_path_on_edge|to_a_f20|0.000000 -0.660000 0.000000
+V amc_path_on_edge|to_a_f40|0.000000 -0.320000 0.000000
+V amc_path_on_edge|to_a_f60|-0.024042 -0.024041 0.000000
+V amc_path_on_edge|to_a_f80|-0.264461 -0.264455 0.000000
+V amc_path_on_edge|to_a_f100|-0.504880 -0.504868 0.000000
+V amc_path_on_edge|to_a_frames|41.000000
+V amc_path_on_edge|to_a_end|-1.000000 -1.000000 0.000000
+V amc_path_on_edge|to_a_other|1.000000 1.000000 0.000000
+END amc_path_on_edge
+BEGIN amc_colormap_nocos
+V amc_colormap_nocos|ret|nil
+V amc_colormap_nocos|costume|nil
+V amc_colormap_nocos|depth|0.000000
+END amc_colormap_nocos
+BEGIN amc_costume_replace
+V amc_costume_replace|first|"cr_box.cos" 1.000000
+V amc_costume_replace|ret|1.000000
+V amc_costume_replace|second|"cr_luav.cos" 1.000000
+V amc_costume_replace|pushed|"cr_box.cos" 2.000000
+V amc_costume_replace|replaced_top|"cr_luav.cos" 2.000000
+V amc_costume_replace|pop|"cr_luav.cos"
+V amc_costume_replace|after_pop|"cr_luav.cos" 1.000000
+V amc_costume_replace|cleared|nil 0.000000
+END amc_costume_replace
+BEGIN amc_clean_put
+V amc_clean_put|drawn|270.000000 207.000000 370.000000 267.000000
+V amc_clean_put|clean|270.000000 207.000000 370.000000 267.000000
+V amc_clean_put|out|270.000000 207.000000 370.000000 267.000000
+V amc_clean_put|back|270.000000 109.000000 468.000000 267.000000
+V amc_clean_put|pos|1.000000 1.000000 0.000000
+V amc_clean_put|out_again|270.000000 207.000000 370.000000 267.000000
+END amc_clean_put
+BEGIN amc_shadow_valid
+V amc_shadow_valid|valid1_dark|none
+END amc_shadow_valid
+BEGIN amc_shadow_valid0
+V amc_shadow_valid0|valid0_dark|none
+END amc_shadow_valid0
+BEGIN amc_shadow_below
+V amc_shadow_below|below_dark|none
+END amc_shadow_below
+BEGIN asv_talk_lip
+V asv_talk_lip|changed|4.000000
+V asv_talk_lip|now_actor_going|"nil"
+V asv_talk_lip|now_going|"nil"
+V asv_talk_lip|now_lv|"100"
+V asv_talk_lip|now_pos|"0.5 nil nil nil nil"
+V asv_talk_lip|pass|"loading"
+V asv_talk_lip|kept_going|"1" "nil"
+V asv_talk_lip|kept_actor_going|"1" "nil"
+V asv_talk_lip|kept_lv|"2" "100"
+V asv_talk_lip|kept_pos|1.000000
+V asv_talk_lip|after_3|100.000000
+V asv_talk_lip|shut_up|100.000000
+END asv_talk_lip
+BEGIN asv_talk_mumble
+V asv_talk_mumble|changed|4.000000
+V asv_talk_mumble|now_going|"nil"
+V asv_talk_mumble|now_actor_going|"nil"
+V asv_talk_mumble|now_lv|"100"
+V asv_talk_mumble|now_pos|"0.5 nil nil nil nil"
+V asv_talk_mumble|pass|"loading"
+V asv_talk_mumble|kept_going|"1" "nil"
+V asv_talk_mumble|kept_actor_going|"1" "nil"
+V asv_talk_mumble|kept_pos|1.000000
+V asv_talk_mumble|kept_lv|"50" "100"
+V asv_talk_mumble|after_3|100.000000
+V asv_talk_mumble|shut_up|100.000000
+END asv_talk_mumble
+SKIP asv_talk_no_voice
+BEGIN asv_shadow
+V asv_shadow|saved_dark|none
+V asv_shadow|killed_dark|none
+V asv_shadow|changed|0.000000
+V asv_shadow|pass|"loading"
+V asv_shadow|kept_costume|1.000000
+V asv_shadow|kept_pos|1.000000
+V asv_shadow|loaded_dark|none
+END asv_shadow
+BEGIN asv_shadow_slot
+V asv_shadow_slot|saved_dark|none
+V asv_shadow_slot|changed|0.000000
+V asv_shadow_slot|pass|"loading"
+V asv_shadow_slot|kept_pos|1.000000
+V asv_shadow_slot|kept_costume|1.000000
+V asv_shadow_slot|loaded_dark|none
+END asv_shadow_slot
+BEGIN asv_shadow_other_set
+V asv_shadow_other_set|changed|0.000000
+V asv_shadow_other_set|pass|"loading"
+V asv_shadow_other_set|kept_pos|1.000000
+V asv_shadow_other_set|kept_set|1.000000
+V asv_shadow_other_set|kept_costume|1.000000
+V asv_shadow_other_set|loaded_dark|none
+END asv_shadow_other_set
+BEGIN asv_costume_stack
+V asv_costume_stack|lv_3|0.000000
+V asv_costume_stack|lv_8|0.000000
+V asv_costume_stack|changed|7.000000
+V asv_costume_stack|now_choring|"nil"
+V asv_costume_stack|now_c2|"nil"
+V asv_costume_stack|now_depth|"1"
+V asv_costume_stack|now_c1|"nil"
+V asv_costume_stack|now_c0|"cr_luav.cos"
+V asv_costume_stack|now_top|"cr_luav.cos"
+V asv_costume_stack|now_lv|"-1"
+V asv_costume_stack|pass|"loading"
+V asv_costume_stack|kept_choring|1.000000
+V asv_costume_stack|kept_pos|1.000000
+V asv_costume_stack|kept_c2|1.000000
+V asv_costume_stack|kept_c1|1.000000
+V asv_costume_stack|kept_c3|1.000000
+V asv_costume_stack|kept_top|1.000000
+V asv_costume_stack|kept_depth|1.000000
+V asv_costume_stack|kept_c0|1.000000
+V asv_costume_stack|kept_lv|1.000000
+V asv_costume_stack|after_trace|"0/17 0/17 0/17 0/17 0/17 0/17 0/17 0/17 0/17 0/17 0/17 0/17 0/17 0/17 0/17 0/17 0/17 0/17 0/17 0/17 0/17 0/17 0/17 0/17 0/17 0/17 0/17 0/17 0/17 0/17 0/17 0/17 0/17 0/17 0/17 0/17 0/17 0/17 0/17 0/17 0/17 0/17 0/17 0/17 0/17 0/17 0/17 0/17 0/17 0/17 0/17 0/17 0/17 0/17 0/17 0/17 0/17 0/17 0/17 0/17 "
+V asv_costume_stack|after_frames|60.000000
+V asv_costume_stack|after_last|0.000000
+V asv_costume_stack|pop1|"cr_talk.cos" 2.000000
+V asv_costume_stack|pop2|"cr_box.cos" 1.000000
+V asv_costume_stack|pop3|"cr_luav.cos" 0.000000
+END asv_costume_stack
+BEGIN asv_costume_stack_top
+V asv_costume_stack_top|lv_3|1.000000
+V asv_costume_stack_top|lv_8|2.000000
+V asv_costume_stack_top|changed|4.000000
+V asv_costume_stack_top|now_choring|"nil"
+V asv_costume_stack_top|now_top|"cr_talk.cos"
+V asv_costume_stack_top|now_lv|"-1"
+V asv_costume_stack_top|now_depth|"2"
+V asv_costume_stack_top|pass|"loading"
+V asv_costume_stack_top|kept_depth|1.000000
+V asv_costume_stack_top|kept_choring|1.000000
+V asv_costume_stack_top|kept_lv|1.000000
+V asv_costume_stack_top|kept_top|1.000000
+V asv_costume_stack_top|after_trace|"2/17 2/17 2/17 2/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 "
+V asv_costume_stack_top|after_frames|48.000000
+V asv_costume_stack_top|after_last|4.000000
+V asv_costume_stack_top|pop1|"cr_luav.cos" 2.000000
+V asv_costume_stack_top|pop2|"cr_talk.cos" 1.000000
+V asv_costume_stack_top|pop3|"cr_box.cos" 0.000000
+END asv_costume_stack_top
+BEGIN atk_empty
+V atk_empty|at_once|0.000000 1.000000 1.000000
+V atk_empty|frame2|50.000000 1.000000 1.000000
+V atk_empty|text|none
+END atk_empty
+BEGIN atk_no_id
+V atk_no_id|at_once|0.000000 1.000000 1.000000
+V atk_no_id|frame2|50.000000 1.000000 1.000000
+V atk_no_id|text|292.000000 458.000000 346.000000 467.000000
+END atk_no_id
+BEGIN atk_plain
+V atk_plain|at_once|0.000000 1.000000 1.000000
+V atk_plain|frame2|50.000000 1.000000 1.000000
+V atk_plain|text|288.000000 458.000000 351.000000 467.000000
+END atk_plain
+BEGIN atk_same_line
+V atk_same_line|first|50.000000 1.000000 10.000000
+V atk_same_line|again_at_once|0.000000 1.000000
+V atk_same_line|again_frame1|0.000000 1.000000 10.000000
+V atk_same_line|other|2.000000 1.000000
+END atk_same_line
+BEGIN atk_expire
+V atk_expire|before|1.000000
+V atk_expire|shown|43.000000 100.000000 155.000000 109.000000
+V atk_expire|at_once|1.000000
+V atk_expire|after|1.000000
+V atk_expire|expired|none
+END atk_expire
+BEGIN atk_fg_then_bg
+V atk_fg_then_bg|fg|263.000000 458.000000 375.000000 467.000000
+V atk_fg_then_bg|going|1.000000 1.000000
+V atk_fg_then_bg|both|317.000000 458.000000 321.000000 467.000000
+END atk_fg_then_bg
+BEGIN atk_bg_then_fg
+V atk_bg_then_fg|bg|317.000000 458.000000 321.000000 467.000000
+V atk_bg_then_fg|going|1.000000 1.000000
+V atk_bg_then_fg|both|263.000000 458.000000 375.000000 467.000000
+END atk_bg_then_fg
+BEGIN atk_bg_bg
+V atk_bg_bg|going|1.000000 1.000000
+V atk_bg_bg|both|263.000000 458.000000 375.000000 467.000000
+END atk_bg_bg
+BEGIN atk_movie
+V atk_movie|during|1.000000 1.000000 1.000000
+V atk_movie|during|0.000000 0.000000 375.000000 447.000000
+V atk_movie|after_movie|1.000000
+V atk_movie|after_movie|263.000000 438.000000 375.000000 447.000000
+END atk_movie
+BEGIN atk_talk_range
+V atk_talk_range|set0|nil
+V atk_talk_range|set11|nil
+V atk_talk_range|line|2.000000 1.000000
+END atk_talk_range
+BEGIN atk_mumble_reset
+V atk_mumble_reset|mumbling|50.000000 10.000000
+V atk_mumble_reset|reset_at_once|10.000000
+V atk_mumble_reset|reset|50.000000 10.000000 1.000000
+V atk_mumble_reset|other|0.000000 10.000000
+END atk_mumble_reset
+BEGIN atk_choring_nil
+V atk_choring_nil|rest|nil
+V atk_choring_nil|mumble|10.000000
+V atk_choring_nil|mumble_noloop|nil
+V atk_choring_nil|talk_chore|3.000000
+V atk_choring_nil|talk_chore_1|3.000000
+END atk_choring_nil
+BEGIN atk_free_costume
+V atk_free_costume|costume|"nil"
+V atk_free_costume|line|0.000000 1.000000
+V atk_free_costume|shut_up|0.000000
+END atk_free_costume
+BEGIN atk_look_head
+V atk_look_head|snap|145.000000 16.000000 350.000000 243.000000
+V atk_look_head|node|-0.084575 0.230169 0.965767
+V atk_look_head|b_node|-1.500000 1.500000 1.000000
+END atk_look_head
+BEGIN atk_look_head_up
+V atk_look_head_up|snap|279.000000 0.000000 539.000000 271.000000
+V atk_look_head_up|node|0.000000 0.000000 1.000000
+V atk_look_head_up|b_node|1.500000 1.500000 2.000000
+END atk_look_head_up
+BEGIN awk_fwd_nofollow
+V awk_fwd_nofollow|fwd0|0.000000 0.000000 0.000000
+V awk_fwd_nofollow|fwd5|-0.042521 0.073600 0.000000
+V awk_fwd_nofollow|fwd10|-0.085043 0.147200 0.000000
+V awk_fwd_nofollow|fwd15|-0.127564 0.220799 0.000000
+V awk_fwd_nofollow|fwdend|-0.170086 0.294399 0.000000
+V awk_fwd_nofollow|fwdyaw|30.000000
+V awk_fwd_nofollow|fwdmoving|nil
+V awk_fwd_nofollow|back0|-0.170086 0.294399 0.000000
+V awk_fwd_nofollow|back5|-0.127564 0.220799 0.000000
+V awk_fwd_nofollow|back10|-0.085043 0.147200 0.000000
+V awk_fwd_nofollow|back15|-0.042521 0.073600 0.000000
+V awk_fwd_nofollow|backend|0.000000 0.000000 0.000000
+V awk_fwd_nofollow|backyaw|30.000000
+V awk_fwd_nofollow|backmoving|nil
+V awk_fwd_nofollow|off0|1.500000 0.000000 0.000000
+V awk_fwd_nofollow|off10|1.832439 -0.059924 0.000000
+V awk_fwd_nofollow|off20|2.115904 -0.243648 0.000000
+V awk_fwd_nofollow|offend|2.306360 -0.522634 0.000000
+V awk_fwd_nofollow|offyaw|-155.912811
+V awk_fwd_nofollow|offmoving|nil
+V awk_fwd_nofollow|off_sector|nil
+END awk_fwd_nofollow
+BEGIN awk_fwd_rate0
+V awk_fwd_rate0|trace|"1/nil 2/nil 2/nil 2/nil 2/nil 2/nil 2/nil 3/nil 3/nil 3/nil 3/nil 3/nil "
+V awk_fwd_rate0|end|0.000000 0.000000 0.000000
+V awk_fwd_rate0|walk_chore|1.000000
+V awk_fwd_rate0|walk_chore_after|nil
+END awk_fwd_rate0
+BEGIN awk_fwd_back
+V awk_fwd_back|back0|0.000000 0.000000 0.000000
+V awk_fwd_back|back10|0.000000 -0.170000 0.000000
+V awk_fwd_back|back20|0.000000 -0.340000 0.000000
+V awk_fwd_back|backend|0.000000 -0.510000 0.000000
+V awk_fwd_back|backyaw|0.000000
+V awk_fwd_back|backmoving|nil
+V awk_fwd_back|wall0|0.500000 -1.500000 0.000000
+V awk_fwd_back|wall10|0.557362 -1.832891 0.000000
+V awk_fwd_back|wall20|0.536142 -2.000000 0.000000
+V awk_fwd_back|wall30|0.300662 -1.971065 0.000000
+V awk_fwd_back|wall40|-0.002100 -1.821259 0.000000
+V awk_fwd_back|wall50|-0.223460 -1.566100 0.000000
+V awk_fwd_back|wallend|-0.329035 -1.245225 0.000000
+V awk_fwd_back|wallyaw|-171.042252
+V awk_fwd_back|wallmoving|nil
+END awk_fwd_back
+BEGIN awk_fwd_nosector
+V awk_fwd_nosector|sector|nil
+V awk_fwd_nosector|puck|-0.707521 0.706693 0.000000
+V awk_fwd_nosector|fwd0|0.000000 0.000000 0.000000
+V awk_fwd_nosector|fwd5|-0.060139 0.060069 0.000000
+V awk_fwd_nosector|fwd10|-0.108251 0.108124 0.000000
+V awk_fwd_nosector|fwd15|-0.168390 0.168193 0.000000
+V awk_fwd_nosector|fwdend|-0.216501 0.216248 0.000000
+V awk_fwd_nosector|fwdyaw|45.000000
+V awk_fwd_nosector|fwdmoving|nil
+V awk_fwd_nosector|back0|-0.216501 0.216248 0.000000
+V awk_fwd_nosector|back5|-0.156362 0.156179 0.000000
+V awk_fwd_nosector|backend|-0.108251 0.108124 0.000000
+V awk_fwd_nosector|backyaw|45.000000
+V awk_fwd_nosector|backmoving|nil
+V awk_fwd_nosector|floor_on|-0.108251 0.108124 0.000000
+END awk_fwd_nosector
+BEGIN awk_fwd_edges
+V awk_fwd_edges|e240_0|1.500000 0.000000 0.000000
+V awk_fwd_edges|e240_10|1.794529 -0.169860 0.000000
+V awk_fwd_edges|e240_20|2.000000 -0.288358 0.000000
+V awk_fwd_edges|e240_30|2.000000 -0.288358 0.000000
+V awk_fwd_edges|e240_end|2.000000 -0.288358 0.000000
+V awk_fwd_edges|e240_yaw|240.000000
+V awk_fwd_edges|e240_moving|nil
+V awk_fwd_edges|e300_0|1.500000 0.000000 0.000000
+V awk_fwd_edges|e300_10|1.794399 0.170086 0.000000
+V awk_fwd_edges|e300_20|2.000000 0.288869 0.000000
+V awk_fwd_edges|e300_30|2.000000 0.288869 0.000000
+V awk_fwd_edges|e300_end|2.000000 0.288869 0.000000
+V awk_fwd_edges|e300_yaw|300.000000
+V awk_fwd_edges|e300_moving|nil
+V awk_fwd_edges|e260_0|1.500000 0.000000 0.000000
+V awk_fwd_edges|e260_10|1.834878 -0.058791 0.000000
+V awk_fwd_edges|e260_20|2.000000 -0.087780 0.000000
+V awk_fwd_edges|e260_30|2.000000 -0.087780 0.000000
+V awk_fwd_edges|e260_end|2.000000 -0.087780 0.000000
+V awk_fwd_edges|e260_yaw|260.000000
+V awk_fwd_edges|e260_moving|nil
+V awk_fwd_edges|r20_0|1.500000 0.000000 0.000000
+V awk_fwd_edges|r20_10|1.794399 0.170086 0.000000
+V awk_fwd_edges|r20_20|2.000000 0.288869 0.000000
+V awk_fwd_edges|r20_30|2.000000 0.288869 0.000000
+V awk_fwd_edges|r20_end|2.000000 0.288869 0.000000
+V awk_fwd_edges|r20_yaw|300.000000
+V awk_fwd_edges|r20_moving|nil
+V awk_fwd_edges|r20b_0|1.500000 0.000000 0.000000
+V awk_fwd_edges|r20b_10|1.794529 -0.169860 0.000000
+V awk_fwd_edges|r20b_20|2.000000 -0.288358 0.000000
+V awk_fwd_edges|r20b_30|2.000000 -0.288358 0.000000
+V awk_fwd_edges|r20b_end|2.000000 -0.288358 0.000000
+V awk_fwd_edges|r20b_yaw|240.000000
+V awk_fwd_edges|r20b_moving|nil
+V awk_fwd_edges|r80_0|1.500000 0.000000 0.000000
+V awk_fwd_edges|r80_10|1.794399 0.170086 0.000000
+V awk_fwd_edges|r80_20|2.000000 0.289479 0.000000
+V awk_fwd_edges|r80_30|2.000000 0.289479 0.000000
+V awk_fwd_edges|r80_end|2.000000 0.289479 0.000000
+V awk_fwd_edges|r80_yaw|307.920898
+V awk_fwd_edges|r80_moving|nil
+V awk_fwd_edges|r89_0|1.500000 0.000000 0.000000
+V awk_fwd_edges|r89_10|1.794399 0.170086 0.000000
+V awk_fwd_edges|r89_20|2.000000 0.289479 0.000000
+V awk_fwd_edges|r89_30|2.000000 0.289479 0.000000
+V awk_fwd_edges|r89_end|2.000000 0.289479 0.000000
+V awk_fwd_edges|r89_yaw|307.920898
+V awk_fwd_edges|r89_moving|nil
+END awk_fwd_edges
+BEGIN awk_fwd_corner
+V awk_fwd_corner|c315_0|1.700000 1.700000 0.000000
+V awk_fwd_corner|c315_10|1.940276 1.940557 0.000000
+V awk_fwd_corner|c315_20|2.000000 1.999999 0.000000
+V awk_fwd_corner|c315_end|1.991479 1.864400 0.000000
+V awk_fwd_corner|c315_yaw|217.420059
+V awk_fwd_corner|c315_moving|nil
+V awk_fwd_corner|c300_0|1.700000 1.700000 0.000000
+V awk_fwd_corner|c300_10|1.994399 1.870085 0.000000
+V awk_fwd_corner|c300_20|2.000000 1.873321 0.000000
+V awk_fwd_corner|c300_end|2.000000 1.873321 0.000000
+V awk_fwd_corner|c300_yaw|300.000000
+V awk_fwd_corner|c300_moving|nil
+V awk_fwd_corner|c330_0|1.700000 1.700000 0.000000
+V awk_fwd_corner|c330_10|1.869860 1.994529 0.000000
+V awk_fwd_corner|c330_20|1.873015 2.000000 0.000000
+V awk_fwd_corner|c330_end|1.873015 2.000000 0.000000
+V awk_fwd_corner|c330_yaw|330.000000
+V awk_fwd_corner|c330_moving|nil
+V awk_fwd_corner|c315r_0|1.700000 1.700000 0.000000
+V awk_fwd_corner|c315r_10|1.940276 1.940557 0.000000
+V awk_fwd_corner|c315r_20|2.000000 1.999999 0.000000
+V awk_fwd_corner|c315r_end|2.000000 1.999999 0.000000
+V awk_fwd_corner|c315r_yaw|237.418961
+V awk_fwd_corner|c315r_moving|nil
+END awk_fwd_corner
+BEGIN awk_puck_off
+V awk_puck_off|pos|5.000000 5.000000 0.000000
+V awk_puck_off|off|nil
+V awk_puck_off|off_add|nil
+V awk_puck_off|on|nil
+END awk_puck_off
+BEGIN awk_path_grid
+V awk_path_grid|bl_tr_f5|-1.391174 -1.369398 0.000000
+V awk_path_grid|bl_tr_f10|-1.282349 -1.238796 0.000000
+V awk_path_grid|bl_tr_f15|-1.173523 -1.108194 0.000000
+V awk_path_grid|bl_tr_f20|-1.064698 -0.977591 0.000000
+V awk_path_grid|bl_tr_f25|-0.955872 -0.846989 0.000000
+V awk_path_grid|bl_tr_f30|-0.847046 -0.716387 0.000000
+V awk_path_grid|bl_tr_f35|-0.738220 -0.585784 0.000000
+V awk_path_grid|bl_tr_f40|-0.623134 -0.447761 0.000000
+V awk_path_grid|bl_tr_frames|73.000000
+V awk_path_grid|bl_tr_end|1.022785 1.525236 0.000000
+V awk_path_grid|bl_tr_sector|8.000000
+V awk_path_grid|tl_br_f5|-1.391124 1.369440 0.000000
+V awk_path_grid|tl_br_f10|-1.282254 1.238875 0.000000
+V awk_path_grid|tl_br_f15|-1.173392 1.108303 0.000000
+V awk_path_grid|tl_br_f20|-1.064544 0.977719 0.000000
+V awk_path_grid|tl_br_f25|-0.955707 0.847127 0.000000
+V awk_path_grid|tl_br_f30|-0.846886 0.716521 0.000000
+V awk_path_grid|tl_br_f35|-0.738097 0.585887 0.000000
+V awk_path_grid|tl_br_f40|-0.632097 0.458516 0.000000
+V awk_path_grid|tl_br_frames|73.000000
+V awk_path_grid|tl_br_end|1.020713 -1.526962 0.000000
+V awk_path_grid|tl_br_sector|2.000000
+V awk_path_grid|ml_tl_f5|-0.395788 0.337440 0.000000
+V awk_path_grid|ml_tl_f10|-0.546307 0.427779 0.000000
+V awk_path_grid|ml_tl_f15|-0.724979 0.534981 0.000000
+V awk_path_grid|ml_tl_f20|-0.870760 0.622433 0.000000
+V awk_path_grid|ml_tl_f25|-1.016541 0.709885 0.000000
+V awk_path_grid|ml_tl_f30|-1.162322 0.797338 0.000000
+V awk_path_grid|ml_tl_f35|-1.308103 0.884790 0.000000
+V awk_path_grid|ml_tl_f40|-1.453871 0.972264 0.000000
+V awk_path_grid|ml_tl_frames|2.000000
+V awk_path_grid|ml_tl_end|-1.528428 1.018651 0.000000
+V awk_path_grid|ml_tl_sector|6.000000
+END awk_path_grid
+BEGIN awk_turn_rot
+V awk_turn_rot|before|"2/0/0/0/nil/nil/nil"
+V awk_turn_rot|at_once|"2/0/0/0/nil/nil/1"
+V awk_turn_rot|left|"nil/0/1/nil/nil/3/1/6.5 nil/0/2/nil/nil/3/1/12.3 nil/0/2/nil/nil/3/1/17.5 nil/0/2/nil/nil/3/1/22.2 nil/0/2/nil/nil/3/1/26.5 nil/0/2/nil/nil/3/1/30.3 nil/0/2/nil/nil/3/1/33.7 nil/0/3/nil/nil/3/1/36.8 nil/0/3/nil/nil/3/1/39.6 nil/0/3/nil/nil/3/1/42.1 nil/0/3/nil/nil/3/1/44.3 nil/0/3/nil/nil/3/1/46.4 nil/0/3/nil/nil/3/1/48.2 nil/0/1/nil/nil/3/1/49.8 nil/0/1/nil/nil/3/1/51.3 nil/0/1/nil/nil/3/1/52.6 nil/0/1/nil/nil/3/1/53.8 nil/0/1/nil/nil/3/1/54.9 nil/0/1/nil/nil/3/1/55.9 nil/0/2/nil/nil/3/1/56.8 nil/0/2/nil/nil/3/1/57.5 nil/0/2/nil/nil/3/1/58.2 nil/0/2/nil/nil/3/1/58.9 nil/0/2/nil/nil/3/1/59.5 "
+V awk_turn_rot|right|"nil/0/2/nil/nil/3/1/53.0 nil/0/3/nil/nil/3/1/47.3 nil/0/3/nil/nil/3/1/42.1 nil/0/3/nil/nil/3/1/37.4 nil/0/3/nil/nil/3/1/33.2 nil/0/3/nil/nil/3/1/29.4 nil/0/3/nil/nil/3/1/26.0 nil/0/1/nil/nil/3/1/23.0 nil/0/1/nil/nil/3/1/20.2 nil/0/1/nil/nil/3/1/17.7 nil/0/1/nil/nil/3/1/15.5 nil/0/1/nil/nil/3/1/13.5 nil/0/1/nil/nil/3/1/11.7 nil/0/2/nil/nil/3/1/10.1 nil/0/2/nil/nil/3/1/8.6 nil/0/2/nil/nil/3/1/7.3 nil/0/2/nil/nil/3/1/6.1 nil/0/2/nil/nil/3/1/5.0 nil/0/3/nil/nil/3/1/4.1 nil/0/3/nil/nil/3/1/3.2 nil/0/3/nil/nil/3/1/2.4 nil/0/3/nil/nil/3/1/1.7 nil/0/3/nil/nil/3/1/1.1 nil/0/3/nil/nil/3/1/0.5 "
+V awk_turn_rot|end|0.000000 0.527014 0.000000
+END awk_turn_rot
+BEGIN awk_turn_key
+V awk_turn_key|left|"nil/1/0/nil/2/nil/1 nil/2/0/nil/2/nil/1 nil/2/0/nil/2/nil/1 nil/2/0/nil/2/nil/1 nil/2/0/nil/2/nil/1 nil/2/0/nil/2/nil/1 "
+V awk_turn_key|left_after|"1/nil/0/0/nil/nil/nil/3.1 2/nil/0/0/nil/nil/nil/3.1 2/nil/0/0/nil/nil/nil/3.1 2/nil/0/0/nil/nil/nil/3.1 "
+V awk_turn_key|right|"nil/nil/1/nil/nil/3/nil nil/nil/2/nil/nil/3/1 nil/nil/2/nil/nil/3/1 nil/nil/2/nil/nil/3/1 nil/nil/2/nil/nil/3/1 nil/nil/2/nil/nil/3/1 "
+V awk_turn_key|right_after|"1/nil/nil/0/nil/nil/nil/0.3 2/nil/nil/0/nil/nil/nil/0.3 2/nil/nil/0/nil/nil/nil/0.3 2/nil/nil/0/nil/nil/nil/0.3 "
+V awk_turn_key|end|0.000000 0.338882 0.000000
+END awk_turn_key
+BEGIN awk_turn_walk
+V awk_turn_walk|trace|"nil/0/0/nil/nil/nil/1/1 nil/0/0/nil/nil/nil/1/2 nil/0/0/nil/nil/nil/1/2 nil/0/0/nil/nil/nil/1/3 nil/0/0/nil/nil/nil/1/3 nil/0/0/nil/nil/nil/1/1 nil/0/0/nil/nil/nil/1/1 nil/0/0/nil/nil/nil/1/2 nil/0/0/nil/nil/nil/1/2 nil/0/0/nil/nil/nil/1/3 "
+V awk_turn_walk|end|1.000000 -1.000000 0.000000
+V awk_turn_walk|after|"1/0/0/0/nil/nil/nil"
+END awk_turn_walk
+BEGIN awk_walk_chore_change
+V awk_walk_chore_change|walking|1.000000
+V awk_walk_chore_change|changed|nil 4.000000
+V awk_walk_chore_change|trace|"nil/4/nil nil/4/nil nil/4/nil nil/4/nil nil/4/nil nil/4/nil nil/4/nil nil/4/nil "
+V awk_walk_chore_change|pos|-0.864000 0.000000 0.000000
+END awk_walk_chore_change
+BEGIN awk_puck_orient
+V awk_puck_orient|up|2.317230 0.000000 0.000000
+V awk_puck_orient|across|2.317230 0.000000 0.000000
+V awk_puck_orient|across_later|1.922134 -92.346436 4.619232
+V awk_puck_orient|walk0|-0.000000 -0.830000 0.000000
+V awk_puck_orient|walk_rot0|0.000000 -0.021942 0.000000
+V awk_puck_orient|walk1|-0.000000 -0.660000 0.000000
+V awk_puck_orient|walk_rot1|0.000000 -0.021942 0.000000
+V awk_puck_orient|walk2|-0.000000 -0.489999 0.000000
+V awk_puck_orient|walk_rot2|0.000000 -0.021942 0.000000
+V awk_puck_orient|walk3|-0.000000 -0.320000 0.000000
+V awk_puck_orient|walk_rot3|0.000000 -0.021942 0.000000
+V awk_puck_orient|walk4|-0.000000 -0.150000 0.000000
+V awk_puck_orient|walk_rot4|0.000000 -0.021942 0.000000
+V awk_puck_orient|off|0.000000 -0.021942 0.000000
+END awk_puck_orient
 BEGIN args_setup
 V args_setup|actor|"actor"
 END args_setup
@@ -7175,27 +7715,27 @@ V args_GetCurrentSetup_p1_tab|r|nil
 END args_GetCurrentSetup_p1_tab
 BEGIN args_GetDiskFreeSpace_none
 U args_GetDiskFreeSpace_none|r
-V args_GetDiskFreeSpace_none|r|61472.589844
+V args_GetDiskFreeSpace_none|r|54608.652344
 END args_GetDiskFreeSpace_none
 BEGIN args_GetDiskFreeSpace_nil
 U args_GetDiskFreeSpace_nil|r
-V args_GetDiskFreeSpace_nil|r|61472.589844
+V args_GetDiskFreeSpace_nil|r|54608.652344
 END args_GetDiskFreeSpace_nil
 BEGIN args_GetDiskFreeSpace_str
 U args_GetDiskFreeSpace_str|r
-V args_GetDiskFreeSpace_str|r|61472.589844
+V args_GetDiskFreeSpace_str|r|54608.652344
 END args_GetDiskFreeSpace_str
 BEGIN args_GetDiskFreeSpace_num
 U args_GetDiskFreeSpace_num|r
-V args_GetDiskFreeSpace_num|r|61472.589844
+V args_GetDiskFreeSpace_num|r|54608.652344
 END args_GetDiskFreeSpace_num
 BEGIN args_GetDiskFreeSpace_tab
 U args_GetDiskFreeSpace_tab|r
-V args_GetDiskFreeSpace_tab|r|61472.589844
+V args_GetDiskFreeSpace_tab|r|54608.652344
 END args_GetDiskFreeSpace_tab
 BEGIN args_GetDiskFreeSpace_fn
 U args_GetDiskFreeSpace_fn|r
-V args_GetDiskFreeSpace_fn|r|61472.589844
+V args_GetDiskFreeSpace_fn|r|54608.652344
 END args_GetDiskFreeSpace_fn
 SKIP args_GetFontDimensions_none
 SKIP args_GetFontDimensions_nil
@@ -7408,27 +7948,27 @@ V args_GetLightType_l_tab|r|"omni"
 END args_GetLightType_l_tab
 BEGIN args_GetMemoryUsage_none
 U args_GetMemoryUsage_none|r
-V args_GetMemoryUsage_none|r|11148184.000000
+V args_GetMemoryUsage_none|r|13827144.000000
 END args_GetMemoryUsage_none
 BEGIN args_GetMemoryUsage_nil
 U args_GetMemoryUsage_nil|r
-V args_GetMemoryUsage_nil|r|11149319.000000
+V args_GetMemoryUsage_nil|r|13828479.000000
 END args_GetMemoryUsage_nil
 BEGIN args_GetMemoryUsage_str
 U args_GetMemoryUsage_str|r
-V args_GetMemoryUsage_str|r|11150439.000000
+V args_GetMemoryUsage_str|r|13829599.000000
 END args_GetMemoryUsage_str
 BEGIN args_GetMemoryUsage_num
 U args_GetMemoryUsage_num|r
-V args_GetMemoryUsage_num|r|11151559.000000
+V args_GetMemoryUsage_num|r|13830719.000000
 END args_GetMemoryUsage_num
 BEGIN args_GetMemoryUsage_tab
 U args_GetMemoryUsage_tab|r
-V args_GetMemoryUsage_tab|r|11152783.000000
+V args_GetMemoryUsage_tab|r|13831943.000000
 END args_GetMemoryUsage_tab
 BEGIN args_GetMemoryUsage_fn
 U args_GetMemoryUsage_fn|r
-V args_GetMemoryUsage_fn|r|11153900.000000
+V args_GetMemoryUsage_fn|r|13833060.000000
 END args_GetMemoryUsage_fn
 BEGIN args_GetPhysicalBytes_none
 V args_GetPhysicalBytes_none|r|2147483648.000000
@@ -7954,27 +8494,27 @@ V args_GetTextSpeed_fn|r|7.000000
 END args_GetTextSpeed_fn
 BEGIN args_GetTickCount_none
 U args_GetTickCount_none|r
-V args_GetTickCount_none|r|108725808.000000
+V args_GetTickCount_none|r|131282888.000000
 END args_GetTickCount_none
 BEGIN args_GetTickCount_nil
 U args_GetTickCount_nil|r
-V args_GetTickCount_nil|r|108725808.000000
+V args_GetTickCount_nil|r|131282888.000000
 END args_GetTickCount_nil
 BEGIN args_GetTickCount_str
 U args_GetTickCount_str|r
-V args_GetTickCount_str|r|108725808.000000
+V args_GetTickCount_str|r|131282888.000000
 END args_GetTickCount_str
 BEGIN args_GetTickCount_num
 U args_GetTickCount_num|r
-V args_GetTickCount_num|r|108725808.000000
+V args_GetTickCount_num|r|131282904.000000
 END args_GetTickCount_num
 BEGIN args_GetTickCount_tab
 U args_GetTickCount_tab|r
-V args_GetTickCount_tab|r|108725808.000000
+V args_GetTickCount_tab|r|131282904.000000
 END args_GetTickCount_tab
 BEGIN args_GetTickCount_fn
 U args_GetTickCount_fn|r
-V args_GetTickCount_fn|r|108725808.000000
+V args_GetTickCount_fn|r|131282904.000000
 END args_GetTickCount_fn
 BEGIN args_GetTranslationMode_none
 V args_GetTranslationMode_none|r|0.000000
@@ -11478,27 +12018,27 @@ V args_ReadRegistryValue_p1_tab|r|nil
 END args_ReadRegistryValue_p1_tab
 BEGIN args_ResReport_none
 U args_ResReport_none|r
-V args_ResReport_none|r|11785507.000000
+V args_ResReport_none|r|14467119.000000
 END args_ResReport_none
 BEGIN args_ResReport_nil
 U args_ResReport_nil|r
-V args_ResReport_nil|r|11786778.000000
+V args_ResReport_nil|r|14468390.000000
 END args_ResReport_nil
 BEGIN args_ResReport_str
 U args_ResReport_str|r
-V args_ResReport_str|r|11788034.000000
+V args_ResReport_str|r|14469646.000000
 END args_ResReport_str
 BEGIN args_ResReport_num
 U args_ResReport_num|r
-V args_ResReport_num|r|11789290.000000
+V args_ResReport_num|r|14470902.000000
 END args_ResReport_num
 BEGIN args_ResReport_tab
 U args_ResReport_tab|r
-V args_ResReport_tab|r|11790650.000000
+V args_ResReport_tab|r|14472262.000000
 END args_ResReport_tab
 BEGIN args_ResReport_fn
 U args_ResReport_fn|r
-V args_ResReport_fn|r|11791899.000000
+V args_ResReport_fn|r|14473511.000000
 END args_ResReport_fn
 BEGIN args_ResetTextures_none
 V args_ResetTextures_none|r|nil
@@ -16540,7 +17080,7 @@ ERROR args_ceil_fn bad argument #1 to function `ceil' (number expected)
 FAILED args_ceil_fn
 BEGIN args_collectgarbage_none
 U args_collectgarbage_none|r
-V args_collectgarbage_none|r|2395.000000
+V args_collectgarbage_none|r|2055.000000
 END args_collectgarbage_none
 BEGIN args_collectgarbage_nil
 ERROR args_collectgarbage_nil bad argument #1 to function `collectgarbage' (number expected)
@@ -16578,7 +17118,7 @@ ERROR args_cos_fn bad argument #1 to function `cos' (number expected)
 FAILED args_cos_fn
 BEGIN args_date_none
 U args_date_none|r
-V args_date_none|r|"11/10/26 00:40:10"
+V args_date_none|r|"11/10/26 06:56:07"
 END args_date_none
 BEGIN args_date_nil
 ERROR args_date_nil bad argument #1 to function `date' (string expected)
@@ -17345,11 +17885,11 @@ V args_tostring_num|r|"1.5"
 END args_tostring_num
 BEGIN args_tostring_tab
 U args_tostring_tab|r
-V args_tostring_tab|r|"table: 042F8DFC"
+V args_tostring_tab|r|"table: 0857647C"
 END args_tostring_tab
 BEGIN args_tostring_fn
 U args_tostring_fn|r
-V args_tostring_fn|r|"function: 041845AC"
+V args_tostring_fn|r|"function: 03F5D59C"
 END args_tostring_fn
 BEGIN args_type_none
 ERROR args_type_none API error - attempt to push a NOOBJECT
@@ -17573,4 +18113,4 @@ END rem_InitiateFindSaveGames
 BEGIN rem_GetCrossSaveStatus
 V rem_GetCrossSaveStatus|missing|1.000000
 END rem_GetCrossSaveStatus
-SUMMARY 5118 tests, 255 failed
+SUMMARY 5167 tests, 255 failed

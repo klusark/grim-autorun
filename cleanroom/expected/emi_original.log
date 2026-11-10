@@ -1,4 +1,4 @@
-START 2292 tests
+START 2313 tests
 BEGIN numbers
 V numbers|arith|3.500000 1024.000000 -2.333333 1.#INF00
 V numbers|tostring|"0.333333" "100" "1e+015" "-0.5"
@@ -25,7 +25,7 @@ V strings|ascii|65.000000
 END strings
 BEGIN next_order
 U next_order|order
-V next_order|order|"49,98,7,56,105,14,63,lupe,eva,chepito,velasco,olivia,salvador,domino,meche,119,glottis,manny,28,77,126,70,35,84,133,112,42,21,91,140,"
+V next_order|order|"84,49,98,7,56,105,14,63,112,21,126,70,35,119,133,28,manny,lupe,eva,chepito,velasco,olivia,salvador,domino,meche,glottis,77,42,91,140,"
 V next_order|globals_counted|1.000000
 END next_order
 BEGIN tasks
@@ -321,12 +321,25 @@ V builtins|fn_WriteSetToFile|"function"
 V builtins|fn_YawCamera|"function"
 V builtins|fn_abs|"function"
 V builtins|fn_acos|"function"
+V builtins|fn_amc_e_actor|"function"
+V builtins|fn_amc_e_moving|"function"
+V builtins|fn_amc_e_pair|"function"
+V builtins|fn_amc_e_pos|"function"
+V builtins|fn_amc_e_unpair|"function"
+V builtins|fn_amc_e_walk|"function"
+V builtins|fn_amc_e_wpos|"function"
 V builtins|fn_appendto|"function"
 V builtins|fn_ascii|"function"
 V builtins|fn_asin|"function"
 V builtins|fn_assert|"function"
+V builtins|fn_asv_ediff|"function"
+V builtins|fn_asv_elook|"function"
+V builtins|fn_asv_es|"function"
 V builtins|fn_atan|"function"
 V builtins|fn_atan2|"function"
+V builtins|fn_awk_e_actor|"function"
+V builtins|fn_awk_e_forward|"function"
+V builtins|fn_awk_e_pos|"function"
 V builtins|fn_break_here|"function"
 V builtins|fn_call|"function"
 V builtins|fn_ceil|"function"
@@ -337,6 +350,9 @@ V builtins|fn_date|"function"
 V builtins|fn_deg|"function"
 V builtins|fn_dofile|"function"
 V builtins|fn_dostring|"function"
+V builtins|fn_eatk_done|"function"
+V builtins|fn_eatk_line|"function"
+V builtins|fn_eatk_talker|"function"
 V builtins|fn_error|"function"
 V builtins|fn_execute|"function"
 V builtins|fn_exit|"function"
@@ -403,6 +419,175 @@ V builtins|fn_unpause_scripts|"function"
 V builtins|fn_write|"function"
 V builtins|fn_writeto|"function"
 END builtins
+BEGIN amc_mesh_alpha
+V amc_mesh_alpha|pos|0.000000 5.200000 3.000000
+V amc_mesh_alpha|sort|0.000000
+END amc_mesh_alpha
+BEGIN amc_sort_attached
+V amc_sort_attached|before|1.000000 0.000000
+V amc_sort_attached|attached|0.000000 0.000000
+V amc_sort_attached|carrier_set|0.000000 0.000000
+V amc_sort_attached|rider_set|6.000000 0.000000
+V amc_sort_attached|carrier_again|6.000000 0.000000
+V amc_sort_attached|detached|0.000000 0.000000
+END amc_sort_attached
+BEGIN amc_attach_again
+V amc_attach_again|first|0.000000 0.000000 0.000000
+V amc_attach_again|same_again|0.000000 0.000000 0.000000
+V amc_attach_again|same_again_pos|-1.000000 -0.900000 0.000000
+V amc_attach_again|other|0.000000 0.000000 0.000000
+V amc_attach_again|other_pos|1.000000 -0.900000 -1.000000
+V amc_attach_again|other_moved|0.000000 0.000000 1.000000
+V amc_attach_again|no_joint|0.000000 0.000000 1.000000
+V amc_attach_again|no_joint_pos|-1.000000 0.000000 1.000000
+V amc_attach_again|no_joint_moved|0.000000 0.000000 2.000000
+V amc_attach_again|bare|0.000000 0.000000 2.000000
+V amc_attach_again|bare_pos|0.000000 0.000000 3.000000
+V amc_attach_again|bare_moved|0.000000 0.000000 1.500000
+V amc_attach_again|detached|0.000000 0.000000 1.500000
+END amc_attach_again
+BEGIN amc_ewalk_sphere
+V amc_ewalk_sphere|sphere_f20|-0.196976 0.000000 -0.335901
+V amc_ewalk_sphere|sphere_f40|0.547219 0.000000 0.494668
+V amc_ewalk_sphere|sphere_f60|1.000000 0.000000 1.000000
+V amc_ewalk_sphere|sphere_f80|1.000000 0.000000 1.000000
+V amc_ewalk_sphere|sphere_f100|1.000000 0.000000 1.000000
+V amc_ewalk_sphere|sphere_frames|0.000000
+V amc_ewalk_sphere|sphere_end|1.000000 0.000000 1.000000
+V amc_ewalk_sphere|sphere_other|-0.550000 0.000000 -0.350000
+END amc_ewalk_sphere
+BEGIN amc_ewalk_box
+V amc_ewalk_box|box_f20|-0.196976 0.000000 -0.335901
+V amc_ewalk_box|box_f40|0.547219 0.000000 0.494668
+V amc_ewalk_box|box_f60|1.000000 0.000000 1.000000
+V amc_ewalk_box|box_f80|1.000000 0.000000 1.000000
+V amc_ewalk_box|box_f100|1.000000 0.000000 1.000000
+V amc_ewalk_box|box_frames|0.000000
+V amc_ewalk_box|box_end|1.000000 0.000000 1.000000
+V amc_ewalk_box|box_other|-0.550000 0.000000 -0.350000
+V amc_ewalk_box|box_other_f20|-0.211434 0.000000 -0.211434
+V amc_ewalk_box|box_other_f40|0.577131 0.000000 0.577131
+V amc_ewalk_box|box_other_f60|1.000000 0.000000 1.000000
+V amc_ewalk_box|box_other_f80|1.000000 0.000000 1.000000
+V amc_ewalk_box|box_other_f100|1.000000 0.000000 1.000000
+V amc_ewalk_box|box_other_frames|0.000000
+V amc_ewalk_box|box_other_end|1.000000 0.000000 1.000000
+V amc_ewalk_box|box_other_other|-0.550000 0.000000 -0.350000
+END amc_ewalk_box
+BEGIN amc_ewalk_nocos
+V amc_ewalk_nocos|nocos_f20|-0.211434 0.000000 -0.211434
+V amc_ewalk_nocos|nocos_f40|0.577131 0.000000 0.577131
+V amc_ewalk_nocos|nocos_f60|1.000000 0.000000 1.000000
+V amc_ewalk_nocos|nocos_f80|1.000000 0.000000 1.000000
+V amc_ewalk_nocos|nocos_f100|1.000000 0.000000 1.000000
+V amc_ewalk_nocos|nocos_frames|0.000000
+V amc_ewalk_nocos|nocos_end|1.000000 0.000000 1.000000
+V amc_ewalk_nocos|nocos_other|-0.550000 0.000000 -0.350000
+END amc_ewalk_nocos
+BEGIN amc_ewalk_along_z
+V amc_ewalk_along_z|along_z_f20|1.000000 0.000000 0.115200
+V amc_ewalk_along_z|along_z_f40|1.000000 0.000000 1.000000
+V amc_ewalk_along_z|along_z_f60|1.000000 0.000000 1.000000
+V amc_ewalk_along_z|along_z_f80|1.000000 0.000000 1.000000
+V amc_ewalk_along_z|along_z_f100|1.000000 0.000000 1.000000
+V amc_ewalk_along_z|along_z_frames|0.000000
+V amc_ewalk_along_z|along_z_end|1.000000 0.000000 1.000000
+V amc_ewalk_along_z|along_z_other|-1.500000 0.000000 -1.500000
+END amc_ewalk_along_z
+BEGIN amc_eput_collide
+V amc_eput_collide|bare|0.200000 0.000000 0.000000
+V amc_eput_collide|worn|0.804985 0.000000 0.268328
+V amc_eput_collide|box|-0.200000 0.000000 0.100000
+END amc_eput_collide
+BEGIN amc_say_bare
+V amc_say_bare|at_once|1.000000
+V amc_say_bare|going|1.000000
+V amc_say_bare|shut_up|nil
+END amc_say_bare
+BEGIN amc_material_again
+V amc_material_again|worn|9.000000 1.000000
+V amc_material_again|worn_again|9.000000 1.000000
+END amc_material_again
+BEGIN asv_emi_actor
+V asv_emi_actor|just_loaded_before|nil
+V asv_emi_actor|changed|5.000000
+V asv_emi_actor|pass|"loaded"
+V asv_emi_actor|kept_r_world|1.000000
+V asv_emi_actor|kept_c_sort|1.000000
+V asv_emi_actor|kept_c_pos|1.000000
+V asv_emi_actor|kept_r_sort|1.000000
+V asv_emi_actor|kept_chore|1.000000
+V asv_emi_actor|kept_r_pos|1.000000
+V asv_emi_actor|carrier_moved|1.000000
+END asv_emi_actor
+BEGIN eatk_lip
+V eatk_lip|at_once|0.000000 1.000000
+V eatk_lip|trace|"10 10 11 11 11 11 "
+V eatk_lip|going|1.000000
+END eatk_lip
+BEGIN eatk_mumble
+V eatk_mumble|at_once|0.000000 1.000000
+V eatk_mumble|trace|"20 20 20 20 20 20 "
+V eatk_mumble|going|1.000000
+END eatk_mumble
+BEGIN eatk_xy
+V eatk_xy|at_once|0.000000 1.000000
+V eatk_xy|trace|"20 20 20 20 20 20 "
+V eatk_xy|going|1.000000
+END eatk_xy
+BEGIN eatk_x_only
+V eatk_x_only|at_once|0.000000 1.000000
+V eatk_x_only|trace|"20 20 20 20 20 20 "
+V eatk_x_only|going|1.000000
+END eatk_x_only
+BEGIN eatk_talk_range
+V eatk_talk_range|set15|nil
+V eatk_talk_range|set16|nil
+V eatk_talk_range|set_neg|nil
+V eatk_talk_range|line|20.000000 1.000000
+END eatk_talk_range
+BEGIN awk_e_fwd_nofollow
+V awk_e_fwd_nofollow|f0|1.000000 0.000000 0.000000
+V awk_e_fwd_nofollow|f10|2.115201 0.000000 -0.000000
+V awk_e_fwd_nofollow|f20|3.230401 0.000000 -0.000000
+V awk_e_fwd_nofollow|f30|4.345601 0.000000 -0.000000
+V awk_e_fwd_nofollow|fend|5.460799 0.000000 -0.000001
+V awk_e_fwd_nofollow|fyaw|90.000000
+END awk_e_fwd_nofollow
+BEGIN awk_e_fwd_nosector
+V awk_e_fwd_nosector|f0|0.000000 0.000000 0.000000
+V awk_e_fwd_nosector|f10|0.000000 0.000000 0.000000
+V awk_e_fwd_nosector|fend|0.000000 0.000000 0.000000
+V awk_e_fwd_nosector|fyaw|45.000000
+V awk_e_fwd_nosector|floor_on|0.000000 0.000000 0.000000
+END awk_e_fwd_nosector
+BEGIN awk_e_fwd_cross
+V awk_e_fwd_cross|cross0|-1.000000 0.000000 -1.000000
+V awk_e_fwd_cross|cross10|-0.442400 0.000000 -1.000000
+V awk_e_fwd_cross|cross20|0.115200 0.000000 -1.000000
+V awk_e_fwd_cross|cross30|0.672800 0.000000 -1.000000
+V awk_e_fwd_cross|crossend|1.230401 0.000000 -1.000000
+V awk_e_fwd_cross|crossyaw|90.000000
+V awk_e_fwd_cross|cross_sector|1.000000
+V awk_e_fwd_cross|edge0|1.500000 0.000000 0.000000
+V awk_e_fwd_cross|edge10|1.998122 0.000000 0.826522
+V awk_e_fwd_cross|edge20|1.994229 0.000000 1.941715
+V awk_e_fwd_cross|edge30|0.937117 0.000000 1.996311
+V awk_e_fwd_cross|edgeend|-0.178076 0.000000 1.992419
+V awk_e_fwd_cross|edgeyaw|-90.199982
+END awk_e_fwd_cross
+BEGIN awk_e_no_path
+V awk_e_no_path|moving|1.000000
+V awk_e_no_path|moving_next|1.000000
+V awk_e_no_path|after_20|-1.000000 0.000000 2.341921
+END awk_e_no_path
+BEGIN awk_e_turning
+V awk_e_turning|turn_to|1.000000
+V awk_e_turning|turning|nil
+V awk_e_turning|yaw|0.000000
+V awk_e_turning|turning_next|1.000000
+V awk_e_turning|turning_stopped|1.000000
+END awk_e_turning
 BEGIN ea_place
 V ea_place|type|"actor"
 V ea_place|start|0.000000 0.000000 0.000000
@@ -522,7 +707,7 @@ V emi_bitmap_flat|count|missing
 END emi_bitmap_flat
 BEGIN ec_load
 V ec_load|handle|"number" 1.000000 1.000000
-V ec_load|missing|7.000000
+V ec_load|missing|36.000000
 END ec_load
 BEGIN ec_keys
 V ec_keys|trace|"0/1 1/1 1/1 1/1 1/1 1/1 2/1 2/1 2/1 2/1 2/1 2/1 2/1 2/1 2/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 4/nil 4/nil 4/nil 4/nil 4/nil 4/nil 4/nil 4/nil 4/nil 4/nil 4/nil "
@@ -677,7 +862,7 @@ V emi_movie_missing|second|1.000000
 V emi_movie_missing|ended|1.000000
 END emi_movie_missing
 BEGIN em_states
-V em_states|ended_never_played|48.000000 48.000000
+V em_states|ended_never_played|128.000000 128.000000
 V em_states|ok|1.000000
 END em_states
 BEGIN em_loop
@@ -1844,27 +2029,27 @@ V args_FunctionName_fn|r|"function 'cr_args_fn' (cr_zz_args_emi.lua:3)"
 END args_FunctionName_fn
 BEGIN args_GammaEnabled_none
 U args_GammaEnabled_none|r
-V args_GammaEnabled_none|r|nil
+V args_GammaEnabled_none|r|1.000000
 END args_GammaEnabled_none
 BEGIN args_GammaEnabled_nil
 U args_GammaEnabled_nil|r
-V args_GammaEnabled_nil|r|nil
+V args_GammaEnabled_nil|r|1.000000
 END args_GammaEnabled_nil
 BEGIN args_GammaEnabled_str
 U args_GammaEnabled_str|r
-V args_GammaEnabled_str|r|nil
+V args_GammaEnabled_str|r|1.000000
 END args_GammaEnabled_str
 BEGIN args_GammaEnabled_num
 U args_GammaEnabled_num|r
-V args_GammaEnabled_num|r|nil
+V args_GammaEnabled_num|r|1.000000
 END args_GammaEnabled_num
 BEGIN args_GammaEnabled_tab
 U args_GammaEnabled_tab|r
-V args_GammaEnabled_tab|r|nil
+V args_GammaEnabled_tab|r|1.000000
 END args_GammaEnabled_tab
 BEGIN args_GammaEnabled_fn
 U args_GammaEnabled_fn|r
-V args_GammaEnabled_fn|r|nil
+V args_GammaEnabled_fn|r|1.000000
 END args_GammaEnabled_fn
 BEGIN args_GetActiveCD_none
 V args_GetActiveCD_none|r|1.000000
@@ -2627,27 +2812,27 @@ V args_GetCurrentSetup_s_tab|r|0.000000
 END args_GetCurrentSetup_s_tab
 BEGIN args_GetDiskFreeSpace_none
 U args_GetDiskFreeSpace_none|r
-V args_GetDiskFreeSpace_none|r|92265.968750
+V args_GetDiskFreeSpace_none|r|54187.527344
 END args_GetDiskFreeSpace_none
 BEGIN args_GetDiskFreeSpace_nil
 U args_GetDiskFreeSpace_nil|r
-V args_GetDiskFreeSpace_nil|r|92265.968750
+V args_GetDiskFreeSpace_nil|r|54187.523438
 END args_GetDiskFreeSpace_nil
 BEGIN args_GetDiskFreeSpace_str
 U args_GetDiskFreeSpace_str|r
-V args_GetDiskFreeSpace_str|r|92265.968750
+V args_GetDiskFreeSpace_str|r|54187.523438
 END args_GetDiskFreeSpace_str
 BEGIN args_GetDiskFreeSpace_num
 U args_GetDiskFreeSpace_num|r
-V args_GetDiskFreeSpace_num|r|92265.968750
+V args_GetDiskFreeSpace_num|r|54187.523438
 END args_GetDiskFreeSpace_num
 BEGIN args_GetDiskFreeSpace_tab
 U args_GetDiskFreeSpace_tab|r
-V args_GetDiskFreeSpace_tab|r|92265.968750
+V args_GetDiskFreeSpace_tab|r|54187.523438
 END args_GetDiskFreeSpace_tab
 BEGIN args_GetDiskFreeSpace_fn
 U args_GetDiskFreeSpace_fn|r
-V args_GetDiskFreeSpace_fn|r|92265.968750
+V args_GetDiskFreeSpace_fn|r|54187.523438
 END args_GetDiskFreeSpace_fn
 BEGIN args_GetFontDimensions_none
 V args_GetFontDimensions_none|r|nil
@@ -6792,7 +6977,7 @@ ERROR args_ceil_fn bad argument #1 to function `ceil' (number expected)
 FAILED args_ceil_fn
 BEGIN args_collectgarbage_none
 U args_collectgarbage_none|r
-V args_collectgarbage_none|r|2355.000000
+V args_collectgarbage_none|r|1964.000000
 END args_collectgarbage_none
 BEGIN args_collectgarbage_nil
 ERROR args_collectgarbage_nil bad argument #1 to function `collectgarbage' (number expected)
@@ -6830,7 +7015,7 @@ ERROR args_cos_fn bad argument #1 to function `cos' (number expected)
 FAILED args_cos_fn
 BEGIN args_date_none
 U args_date_none|r
-V args_date_none|r|"11/08/26 01:06:39"
+V args_date_none|r|"11/10/26 07:01:08"
 END args_date_none
 BEGIN args_date_nil
 ERROR args_date_nil bad argument #1 to function `date' (string expected)
@@ -7579,11 +7764,11 @@ V args_tostring_num|r|"1.5"
 END args_tostring_num
 BEGIN args_tostring_tab
 U args_tostring_tab|r
-V args_tostring_tab|r|"table: 134F9020"
+V args_tostring_tab|r|"table: 0283E420"
 END args_tostring_tab
 BEGIN args_tostring_fn
 U args_tostring_fn|r
-V args_tostring_fn|r|"function: 027C2FA0"
+V args_tostring_fn|r|"function: 134D5750"
 END args_tostring_fn
 BEGIN args_type_none
 ERROR args_type_none API error - attempt to push a NOOBJECT
@@ -7612,4 +7797,4 @@ V lex_binary|short|nil
 ERROR lex_binary binary file cr_bin_old.lua too old: version=0x30; expected at least 0x31
 V lex_binary|old|nil
 END lex_binary
-SUMMARY 2292 tests, 247 failed
+SUMMARY 2313 tests, 247 failed
