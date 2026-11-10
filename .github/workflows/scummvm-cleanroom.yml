@@ -1,10 +1,10 @@
 # The clean-room engine tests (cleanroom/, see its README) against ScummVM: builds the branch cleanroom of klusark/scummvm
-# (the test patch and the fixes in progress, as in ~/scummvm-cleanroom) and runs `run.py scummvm` for Grim and for EMI,
-# compared with the expected logs of the originals (cleanroom/expected/). Another repository or branch can be given by hand;
+# (the test patch and the fixes in progress, as in ~/scummvm-cleanroom) and runs `run.py scummvm` for Grim and for EMI
+# (cleanroom/tools/parallel.sh: the renderers of a game at once), compared with the expected logs of the originals (cleanroom/expected/). Another repository or branch can be given by hand;
 # one without the test patch (upstream master) gets cleanroom/scummvm/grim-test-data.patch with "apply_patch". The
 # originals themselves are not run here (no game files on the runner).
 # The job fails when a test differs without a cr_scummvm_differs mark, or crashes ScummVM without one.
-# The job "coverage" runs the same tests (both games, every renderer) on a gcov build of the same ScummVM and writes the
+# The job "coverage" runs the same tests (both games and the Remastered mode, every renderer, all at once) on a gcov build of the same ScummVM and writes the
 # coverage of engines/grim and graphics/tinygl (autorun/tools/covreport.py --all) to the run's summary, with the pages of
 # every file as the artifact "coverage". It does not fail the run.
 name: ScummVM clean-room tests
@@ -108,34 +108,43 @@ jobs:
         with:
           python-version: "3.12"
 
+      # (each game's renderers at once: tools/parallel.sh, a run.py --work of its own for each, under
+      # cleanroom/run/parallel_grim/ and parallel_emi/; grim.txt and emi.txt are their outputs one after the other)
       - name: Grim
         id: grim
         continue-on-error: true
-        shell: pwsh
+        shell: bash
         env:
           GALLIUM_DRIVER: llvmpipe
+          # (llvmpipe's threads: one per engine, the runs share the runner's few cores)
+          LP_NUM_THREADS: "1"
           # (the windows on the runner's desktop; the runner is slower than a desk machine)
           CR_VISIBLE: "1"
-          CR_STALL: "30"
-          CR_STARTUP: "120"
+          CR_STALL: "60"
+          CR_STARTUP: "180"
         run: |
-          $env:SCUMMVM = "$env:GITHUB_WORKSPACE\scummvm\build\scummvm.exe"
-          python grim_tools\cleanroom\run.py scummvm 2>&1 | Tee-Object grim.txt
-          exit $LASTEXITCODE
+          export SCUMMVM="$GITHUB_WORKSPACE\\scummvm\\build\\scummvm.exe"
+          rc=0
+          CR_PARALLEL_DIR=run/parallel_grim bash grim_tools/cleanroom/tools/parallel.sh --games grim --renderers "$CR_RENDERERS" || rc=$?
+          cat grim_tools/cleanroom/run/parallel_grim/grim_*.txt > grim.txt
+          exit $rc
 
       - name: EMI
         id: emi
         continue-on-error: true
-        shell: pwsh
+        shell: bash
         env:
           GALLIUM_DRIVER: llvmpipe
+          LP_NUM_THREADS: "1"
           CR_VISIBLE: "1"
-          CR_STALL: "30"
-          CR_STARTUP: "120"
+          CR_STALL: "60"
+          CR_STARTUP: "180"
         run: |
-          $env:SCUMMVM = "$env:GITHUB_WORKSPACE\scummvm\build\scummvm.exe"
-          python grim_tools\cleanroom\run.py scummvm --game emi 2>&1 | Tee-Object emi.txt
-          exit $LASTEXITCODE
+          export SCUMMVM="$GITHUB_WORKSPACE\\scummvm\\build\\scummvm.exe"
+          rc=0
+          CR_PARALLEL_DIR=run/parallel_emi bash grim_tools/cleanroom/tools/parallel.sh --games emi --renderers "$CR_RENDERERS" || rc=$?
+          cat grim_tools/cleanroom/run/parallel_emi/emi_*.txt > emi.txt
+          exit $rc
 
       - name: Summary
         if: always()
@@ -158,7 +167,7 @@ jobs:
           path: |
             grim.txt
             emi.txt
-            grim_tools/cleanroom/logs/
+            grim_tools/cleanroom/run/parallel_*/*/logs/
           if-no-files-found: ignore
 
       - name: Result
@@ -237,20 +246,23 @@ jobs:
           python-version: "3.12"
 
       # (the results do not matter here, only what ran: a failing game does not stop the other or the report)
+      # (every game and renderer at once, tools/parallel.sh: the processes add their counters to the same .gcda files when
+      # they end, under libgcov's lock, and -fprofile-update=atomic keeps ScummVM's threads' counts. ScummVM's Remastered
+      # mode is there for its own code: a report only)
       - name: Tests
         continue-on-error: true
-        shell: pwsh
+        shell: bash
         env:
           GALLIUM_DRIVER: llvmpipe
+          LP_NUM_THREADS: "1"
           CR_VISIBLE: "1"
-          CR_STALL: "90"
-          CR_STARTUP: "240"
+          CR_STALL: "120"
+          CR_STARTUP: "300"
         run: |
-          $env:SCUMMVM = "$env:GITHUB_WORKSPACE\scummvm\build\scummvm.exe"
-          python grim_tools\cleanroom\run.py scummvm 2>&1 | Tee-Object grim.txt | Select-String '^==== '
-          python grim_tools\cleanroom\run.py scummvm --game emi 2>&1 | Tee-Object emi.txt | Select-String '^==== '
-          # (ScummVM's Remastered mode, for its own code: a report only, it never fails)
-          python grim_tools\cleanroom\run.py scummvm --remastered 2>&1 | Tee-Object remastered.txt | Select-String '^==== '
+          export SCUMMVM="$GITHUB_WORKSPACE\\scummvm\\build\\scummvm.exe"
+          rc=0
+          CR_PARALLEL_DIR=run/parallel_cov bash grim_tools/cleanroom/tools/parallel.sh --games grim,emi,remastered --renderers "$CR_RENDERERS" || true
+          for g in grim emi remastered; do cat grim_tools/cleanroom/run/parallel_cov/${g}_*.txt > $g.txt; done
           exit 0
 
       - name: Report

@@ -8,9 +8,11 @@
 #       the coverage: the gcov build (default ~/scummvm-cleanroom/build-cov, README.md "Coverage of ScummVM"), its counters
 #       cleared first, every game by default, then autorun/tools/covreport.py --all into reports/coverage/
 #   (other options go to every run.py: --only T1,T2, --fresh, --visible)
+#   CR_PARALLEL_DIR: the folder of the runs (default run/parallel, relative to cleanroom/; emptied first)
+#   CR_COV_OUT, CR_COV_TITLE: the report's folder and title (--coverage); CR_STALL_COV: CR_STALL of a coverage run (60)
 #
 # Each run's output: run/parallel/<game>_<renderer>.txt, its logs in run/parallel/<game>_<renderer>/logs/. Exits 1 when a
-# Grim or EMI run has a regression (the Remastered mode is a report only). CR_STALL defaults to 15 here (2 in run.py): nine
+# Grim or EMI run fails: a regression, or a crash of a test without a mark (the Remastered mode is a report only). CR_STALL defaults to 15 here (2 in run.py): nine
 # engines at once make the machine busy, and a test quiet for 2 s would be killed as hung.
 HERE=$(cd "$(dirname "$0")/.." && pwd)
 GAMES=grim,emi
@@ -30,7 +32,7 @@ while [ $# -gt 0 ]; do
 	shift
 done
 [ -n "$COV" ] && [ -z "$GAMES_SET" ] && GAMES=grim,emi,remastered
-WORK=$HERE/run/parallel
+WORK=${CR_PARALLEL_DIR:-$HERE/run/parallel}
 cd "$HERE" || exit 1
 export CR_STALL=${CR_STALL:-15}
 if [ -n "$COV" ]; then
@@ -41,6 +43,8 @@ fi
 rm -rf "$WORK"
 mkdir -p "$WORK"
 start=$(date +%s)
+PIDS=()
+NAMES=()
 for game in ${GAMES//,/ }; do
 	case $game in
 		grim) opt=() ;;
@@ -51,25 +55,33 @@ for game in ${GAMES//,/ }; do
 	for r in ${RENDERERS//,/ }; do
 		python run.py scummvm "${opt[@]}" --renderer "$r" --work "$(cygpath -w "$WORK/${game}_$r")" "${ARGS[@]}" \
 			> "$WORK/${game}_$r.txt" 2>&1 &
+		PIDS+=($!)
+		NAMES+=("${game}_$r")
 	done
 done
-wait
+# (each run's exit code: run.py fails on a regression and on a new crasher without a mark)
+declare -A RC
+for i in "${!PIDS[@]}"; do
+	wait "${PIDS[$i]}"
+	RC[${NAMES[$i]}]=$?
+done
 echo "ran in $(( $(date +%s) - start )) s"
 rc=0
-for f in "$WORK"/*.txt; do
-	name=$(basename "$f" .txt)
+for name in "${NAMES[@]}"; do
+	f=$WORK/$name.txt
 	line=$(grep -h 'regressions' "$f" | tail -1)
 	echo "$name: ${line:-no result (see $f)}"
 	grep -h 'crashed or hung ScummVM' "$f" | sed 's/^/    /'
 	case $name in
 		remastered_*) ;;
-		*) case $line in "0 of "*) ;; *) rc=1 ;; esac ;;
+		*) [ "${RC[$name]}" = 0 ] || { echo "    failed (exit ${RC[$name]})"; rc=1; } ;;
 	esac
 done
 if [ -n "$COV" ]; then
 	repo=$(cd "$COV/.." && pwd)
-	python "$HERE/../autorun/tools/covreport.py" "$(cygpath -w "$HERE/reports/coverage")" "$(cygpath -w "$COV")" "$(cygpath -w "$repo")" --all \
-		--title "the clean-room tests ($GAMES; $RENDERERS) on $(git -C "$repo" rev-parse --short HEAD)" > "$WORK/covreport.txt" 2>&1
-	head -6 "$HERE/reports/coverage/summary.txt"
+	OUT=${CR_COV_OUT:-$HERE/reports/coverage}
+	python "$HERE/../autorun/tools/covreport.py" "$(cygpath -w "$OUT")" "$(cygpath -w "$COV")" "$(cygpath -w "$repo")" --all \
+		--title "${CR_COV_TITLE:-the clean-room tests ($GAMES; $RENDERERS) on $(git -C "$repo" rev-parse --short HEAD)}" > "$WORK/covreport.txt" 2>&1
+	head -6 "$OUT/summary.txt"
 fi
 exit $rc
