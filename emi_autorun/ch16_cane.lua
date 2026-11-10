@@ -13,6 +13,17 @@ ar_wait_for_control()
 ar_log("music box on " .. tostring(props.music_box.on) .. " state " .. tostring(props.music_box.state))
 ar_do("use", pop.limbbasket)
 ar_wait_for_control()
+-- (the close-up of the basket gives the hand its range; pop.wait_for_move ends it the moment Guybrush's place or rotation changes, and
+-- in some states he is still turning to the basket when the short cutscene ends: once he stands still, the basket again)
+local ar_tries = 0
+while pop:current_setup() ~= pop_basket and ar_tries < 3 do
+	ar_tries = ar_tries + 1
+	ar_settled()
+	sleep_for(500)
+	ar_log("the close-up of the basket ended at once, again (" .. ar_tries .. ")")
+	ar_do("use", pop.limbbasket)
+	ar_wait_for_control()
+end
 ar_log("camera setup " .. tostring(pop:current_setup()) .. " hand range " .. tostring(pop.pros_hand.range))
 ar_do("pickUp", props.prosthetic_hand)
 ar_wait_for_control()

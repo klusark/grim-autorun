@@ -309,3 +309,9 @@ Section A is done for all four acts. What changed since the puck:
   planner now checks the cell itself against the other triggers (it skipped them within 4 cells). ch24 fails after 8 exits past the gate
   instead of looping until the watchdog (three wrong exits send the raft to the start of the map). Whole game on the merge: attempt 1 to
   act3_08 (exit status 127 during Monkey Kombat, the second 127 today), attempt 2 from 307 to the credits (435 + 43 s).
+- emi-autorun-latest is now linear on master (109 commits: grim-actor-fixes, then cleanroom; the commits master took in were dropped; the old
+  merged branch is backup/emi-autorun-latest-merged-2026-11-10). ch16: pop.wait_for_move ends the close-up of the limb basket the moment
+  Guybrush moves or turns, and in some states he is still turning when the short cutscene ends (the hand keeps range 0): the basket is
+  looked at again once he stands still. Whole game on the linear branch: one attempt, 466 s.
+- Exit status 127 (three times on 2026-11-10: ch11, ch23, act3_08) comes while a set loads, after "missing texture" warnings (default.tga):
+  probably a crash in EMI texture loading. The restart covers it; not looked into.
