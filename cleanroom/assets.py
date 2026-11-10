@@ -2,6 +2,8 @@
 
 files() returns {name: bytes} for cleanroom.lab; loose_files() the files that must sit in the game folder itself
 (the original reads grim.tab with fopen before it opens any archive)."""
+import os
+
 import formats as F
 
 W, H = 640, 480
@@ -404,6 +406,15 @@ def files():
         ("cam_south", "camera", True, 0.0, rect(-3, -3, 3, 0)),
         ("special_spot", "special", True, 0.0, rect(-1, -1, 1, 1)),
     ])
+    # (the assets of assets_extra_*.py: each a files() of its own, so that tests written side by side keep their data apart)
+    import glob
+    import importlib
+    for path in sorted(glob.glob(os.path.join(os.path.dirname(os.path.abspath(__file__)), "assets_extra_*.py"))):
+        extra = importlib.import_module(os.path.splitext(os.path.basename(path))[0]).files()
+        clash = sorted(set(extra) & set(out))
+        if clash:
+            raise SystemExit("%s: names already made: %s" % (os.path.basename(path), ", ".join(clash)))
+        out.update(extra)
     return out
 
 

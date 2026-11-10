@@ -696,12 +696,13 @@ def run_scummvm_all(reference, only, fresh, renderers):
     return max(rc for _, rc in rcs) if rcs else 0
 
 
-def lock_folder():
+def lock_folder(path=None, what="another run.py is running in this folder"):
     """Waits until no other run.py works in this folder (they share build/, run/ and logs/: two at once spoil each other's
     runs), then holds the lock until this process ends (Windows releases it when the process dies)."""
     import msvcrt
-    os.makedirs(LOGS, exist_ok=True)
-    f = open(os.path.join(LOGS, "run.lock"), "a+")
+    path = path or os.path.join(LOGS, "run.lock")
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    f = open(path, "a+")
     warned = False
     while True:
         try:
@@ -710,9 +711,14 @@ def lock_folder():
             return f
         except OSError:
             if not warned:
-                print("run.py: another run.py is running in this folder; waiting for it", flush=True)
+                print("run.py: %s; waiting for it" % what, flush=True)
                 warned = True
             time.sleep(2)
+
+
+# (the exes of the original, the Remastered and the decomp run one at a time on the machine, --work or not: they go through
+# grimlaunch.exe and the registry, and their windows find each other)
+EXE_LOCK = os.path.join(HERE, "logs", "exe.lock")
 
 
 def main():
@@ -722,6 +728,8 @@ def main():
     if "--work" in sys.argv[:-1]:
         set_work(sys.argv[sys.argv.index("--work") + 1])
     _lock = lock_folder()  # noqa: F841 (held until the process ends)
+    _exe_lock = (lock_folder(EXE_LOCK, "another run.py runs an original exe") if  # noqa: F841
+                 any(w in sys.argv[1:2] for w in ("original", "remastered", "decomp", "both")) else None)
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("what", choices=["build", "scummvm", "original", "remastered", "both", "compare"])
     ap.add_argument("logs", nargs="*")
