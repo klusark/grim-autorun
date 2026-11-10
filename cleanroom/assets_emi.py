@@ -58,7 +58,25 @@ def files():
     for name in ("crtv01", "crtv02"):
         out[name + ".wVC"] = F.mcmp(*F.wav_split(F.wav(1.0, freq=200.0)))
     out["crtv01.lip"] = F.lip([(0, 0x64), (20, 0x6F), (40, 0x66)], 62)
+    _extras(out, "files")
     return out
+
+
+def _extras(out, what):
+    """Adds the files() (the archive's) or loose_files() (beside it) of every assets_emi_extra_*.py: test data written side
+    by side stays apart; a name made twice stops the build."""
+    import glob
+    import importlib
+    import os
+    for path in sorted(glob.glob(os.path.join(os.path.dirname(os.path.abspath(__file__)), "assets_emi_extra_*.py"))):
+        mod = importlib.import_module(os.path.splitext(os.path.basename(path))[0])
+        if not hasattr(mod, what):
+            continue
+        extra = getattr(mod, what)()
+        clash = sorted(set(extra) & set(out))
+        if clash:
+            raise SystemExit("%s: names already made: %s" % (os.path.basename(path), ", ".join(clash)))
+        out.update(extra)
 
 
 # A box 0.6 x 1.8 x 0.6 m (y up): its lower corners follow the joint "root", its upper ones "body" (0.9 m up)
@@ -115,6 +133,7 @@ def loose_files():
     out = {"Movies/cr_white.m4b": F.bik(160, 120, [(255, 255, 255)] * 90),
            "Movies/cr_steps.m4b": F.bik(160, 120, [(v, v, v) for v in range(130, 255, 25)])}
     out.update(music())
+    _extras(out, "loose_files")
     return out
 
 

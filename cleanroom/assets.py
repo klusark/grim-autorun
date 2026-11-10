@@ -406,16 +406,24 @@ def files():
         ("cam_south", "camera", True, 0.0, rect(-3, -3, 3, 0)),
         ("special_spot", "special", True, 0.0, rect(-1, -1, 1, 1)),
     ])
-    # (the assets of assets_extra_*.py: each a files() of its own, so that tests written side by side keep their data apart)
+    _extras(out, "files")
+    return out
+
+
+def _extras(out, what):
+    """Adds the files() or loose_files() of every assets_extra_*.py: test data written side by side stays apart (each
+    file its own); a name made twice stops the build."""
     import glob
     import importlib
     for path in sorted(glob.glob(os.path.join(os.path.dirname(os.path.abspath(__file__)), "assets_extra_*.py"))):
-        extra = importlib.import_module(os.path.splitext(os.path.basename(path))[0]).files()
+        mod = importlib.import_module(os.path.splitext(os.path.basename(path))[0])
+        if not hasattr(mod, what):
+            continue
+        extra = getattr(mod, what)()
         clash = sorted(set(extra) & set(out))
         if clash:
             raise SystemExit("%s: names already made: %s" % (os.path.basename(path), ", ".join(clash)))
         out.update(extra)
-    return out
 
 
 PATCH_OLD = F.lua_text('CR_PATCHED = "no"\nCR_PATCH_LINE = 1\n')
@@ -423,6 +431,12 @@ PATCH_NEW = F.lua_text('CR_PATCHED = "yes"\nCR_PATCH_LINE = 2\nCR_PATCH_MORE = "
 
 
 def loose_files():
+    out = _loose_files()
+    _extras(out, "loose_files")
+    return out
+
+
+def _loose_files():
     return {"grim.tab": F.text_table(TEXT),
             # (ScummVM's patch files, patchr.lua: the file, a patch for another file, then one for it: "no" becomes "yes",
             # and a line more)
