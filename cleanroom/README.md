@@ -639,6 +639,20 @@ Hand-written tests, besides the per-frame walk and turn values:
   rectangle row by row, `DrawPolygon` as an open polyline of up to 250 points. Every ScummVM renderer leaves out the end of
   a line and draws diagonals 8-connected; the outlines of OpenGL and TinyGL are a pixel wider and taller (`LINE_LOOP`
   through `x2 + 1`; the shader renderer's four quads match); `DrawPolygon` draws only two of the three segments of 4 points.
+- Save files as files (`save_files.lua`, 2026-11-10: `grim03.gsv` and `grim07.gsv`, no Load). The original's
+  `FileFindFirst(ext, dir)` searches `dir\ext` when ext has a dot and `dir\*.ext` otherwise (`stdFileUtil_NewFind`
+  0x4c1170, mode 3), with `""` as dir when there is none, so `FileFindFirst("*.gsv")` looks in the root of the drive and
+  finds nothing (and `"*.set"` of `file_find` none either). ScummVM ignores dir, takes ext as the whole pattern of its save
+  files (`"gsv"` finds nothing) and turns `"*.gsv"` into `grim##.gsv`, so the other `.gsv` files of the folder are not
+  listed. The same on both: the names in order, one name, the end of the list, `FileFindNext` after a dispose, a second
+  `FileFindFirst`. `GetSaveGameImage` gives a picture with ScreenShot's tag on both. On the original it is the set's
+  background drawn again, dimmed and scaled to 250 x 188 (`Render_CaptureThumbnail` 0x486f90), without the text on the
+  screen. `BlastImage` blits it into the back buffer (0x4a3130), and it stays there after `FreeImage` until that area is
+  redrawn. ScummVM's `savegameSave` takes the thumbnail from the stored display (`getScreenshot(250, 188, true)`), which
+  only `DimScreen` stores (the menu calls it). With OpenGL a save made without one has a black thumbnail (the `SIMG` section
+  all zero), and after `DimScreen` (`save_image_dim`) it is the dimmed screen, almost black (16 to 20 of 255 where the
+  original's grey thumbnail has 88 and 120). With the shader and software renderers it is the scene, darker than the
+  original's: a mean of 64.9 against 104. (The test patch's `cr_snap` stores the software renderer's display.)
 
 ## Not done yet
 
