@@ -2461,12 +2461,14 @@ ar_follow_frame = function(nav, w, path, n, cum, i)
 	return r
 end
 
--- is (x, y) itself in a sector of the door that is the goal
-ar_w_in_goal_hot = function(nav, x, y)
+-- is (x, y) itself in a sector of the door that is the goal; with a height z (where Manny really is) only a sector at that
+-- height counts: a door can own sectors on two floors (sh.te_ladder is ladderup_box at the foot and ladderdn_box at the
+-- top, z 2.95), and the floor projection of the upper one is not the lower one (ch54 stopped there, short of the ladder)
+ar_w_in_goal_hot = function(nav, x, y, z)
 	local hot = ar_nav_hotnav(nav)
 	local h, v = next(AR_GOAL_HOT, nil)
 	while h do
-		if ar_nav_inside(hot, h, x, y) then
+		if ar_nav_inside(hot, h, x, y) and (not z or ar_w_hot_zok(nav, h, z)) then
 			return TRUE
 		end
 		h, v = next(AR_GOAL_HOT, h)
@@ -2486,7 +2488,7 @@ ar_follow_in_trigger = function(nav)
 		return nil
 	end
 	local p = manny:getpos()
-	if AR_GOAL_REGION and ar_w_in_goal_hot(nav, p.x, p.y) then
+	if AR_GOAL_REGION and ar_w_in_goal_hot(nav, p.x, p.y, p.z) then
 		return nil
 	end
 	return TRUE
@@ -2533,7 +2535,7 @@ ar_follow_progress = function(nav, w, path, n, cum, i, q)
 	local gy = path[n][2]
 	local dg = sqrt((q.x - gx) * (q.x - gx) + (q.y - gy) * (q.y - gy))
 	if AR_GOAL_REGION then
-		if ar_w_in_goal_hot(nav, q.x, q.y) then
+		if ar_w_in_goal_hot(nav, q.x, q.y, q.z) then
 			AR_FOLLOW_RESULT = "done"
 			return
 		end
@@ -3016,7 +3018,7 @@ ar_nav_enter_door = function(door, stop_when)
 	local mp = manny:getpos()
 	local w = ar_w(nav)
 	local out = 0
-	while out < 3 and ar_w_in_goal_hot(nav, mp.x, mp.y) and not (stop_when and stop_when()) do
+	while out < 3 and ar_w_in_goal_hot(nav, mp.x, mp.y, mp.z) and not (stop_when and stop_when()) do
 		-- (to plain floor at least a hand clear of the sector: its edge is not out of it for Doorman)
 		local ok, oz, ox, oy = ar_w_near(nav, w, mp.x, mp.y, mp.z, 0.8, TRUE)
 		if not ok then
@@ -3027,7 +3029,7 @@ ar_nav_enter_door = function(door, stop_when)
 			if dl > 0.001 then
 				local push = 0.12 + 0.12 * out
 				local k2, z2, x2, y2 = ar_w_near(nav, w, ox + (ox - cx) / dl * push, oy + (oy - cy) / dl * push, oz, 0.08, TRUE)
-				if k2 and not ar_w_in_goal_hot(nav, x2, y2) then
+				if k2 and not ar_w_in_goal_hot(nav, x2, y2, z2) then
 					ox = x2
 					oy = y2
 					oz = z2
