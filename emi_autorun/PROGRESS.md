@@ -304,3 +304,8 @@ Section A is done for all four acts. What changed since the puck:
   end (289 + 173 s of real time, no teleport). Logs logs/whole_1.log, whole_2.log.
 - Seen once each, not looked into: ch23 exit status 127 after the duck (the checkpoint save?); act2_22 waited 120 s for control while Marco's
   dialog, which the skipped arrival cutscene starts, was up (the retry passed).
+- 2026-11-10 later: `cleanroom` merged into emi-autorun-latest too. A new game drew a map where the raft arrives on screen 4 on the edge
+  of the left exit's trigger (it covers the left half of the water) and the way to the bottom exit went through it: near the raft the
+  planner now checks the cell itself against the other triggers (it skipped them within 4 cells). ch24 fails after 8 exits past the gate
+  instead of looping until the watchdog (three wrong exits send the raft to the start of the map). Whole game on the merge: attempt 1 to
+  act3_08 (exit status 127 during Monkey Kombat, the second 127 today), attempt 2 from 307 to the credits (435 + 43 s).

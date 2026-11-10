@@ -137,7 +137,12 @@ ar_raft_path = function(x, z, margin)
 				-- (with a margin: not through the other exit triggers or near them, the raft drifts about a unit from the way; only one
 				-- of overlapping triggers is found at a point, so the surroundings are looked at too)
 				local other = nil
-				if margin and (abs(nx - tx) > 2 or abs(nz - tz) > 2) and (abs(nx - sx) > 4 or abs(nz - sz) > 4) then
+				if margin and (abs(nx - tx) > 2 or abs(nz - tz) > 2) and not (abs(nx - sx) > 4 or abs(nz - sz) > 4) then
+					-- (near the raft the margin is left out, as it may start beside a trigger, but not the trigger itself: the raft arrives
+					-- on screen 4 on the edge of the left exit's trigger, which covers the whole left half of the water there)
+					local hid, hname = GetPointSector(nx * step, y, nz * step, HOT)
+					other = hid and hname and strfind(hname, "_trigger", 1, TRUE) and hname ~= tname
+				elseif margin and (abs(nx - tx) > 2 or abs(nz - tz) > 2) then
 					local ox = -margin
 					while ox <= margin + 0.1 and not other do
 						local oz = -margin

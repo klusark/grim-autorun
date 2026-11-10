@@ -52,7 +52,12 @@ ar_wait_for_control()
 ar_log("gate opened " .. tostring(mot.opened_gate) .. " step " .. tostring(mot.map_step) .. " screen " .. tostring(mot.cur_setup_id) .. " got " .. tostring(mot.got[1]) .. tostring(mot.got[2]) .. tostring(mot.got[3]))
 ar_state("after the gate")
 -- on along the map to the other side of the gate (where I am the future Guybrush)
+-- (a wrong exit sends the raft to a random screen, three of them back to the start of the map: the steps of the map are not
+-- taken again, the run fails, and the restart from the checkpoint before has the same map)
+local ar_exits = 0
 while mot.map_step < 6 do
+	ar_exits = ar_exits + 1
+	ar_check(ar_exits <= 8 and mot.map_step >= 3, "on the map after the gate (step " .. tostring(mot.map_step) .. ")")
 	local m = mot.this_map_thing
 	ar_log("MAP STEP " .. (mot.map_step + 1) .. ": screen " .. tostring(mot.cur_setup_id) .. " should be " .. tostring(m.setup) .. " exit " .. tostring(m.direction))
 	ar_raft_exit(m.direction)
