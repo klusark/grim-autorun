@@ -182,7 +182,7 @@ cr_test("images", cr_t_images)
 cr_t_image_missing = function()
 	cr_log("missing", GetImage("no_such.bm"))
 end
-cr_scummvm_differs("image_missing") cr_test("image_missing", cr_t_image_missing)
+cr_test("image_missing", cr_t_image_missing)
 
 cr_t_object_states = function()
 	MakeCurrentSet("cr_flat.set")
@@ -233,7 +233,7 @@ cr_test("controls", cr_t_controls)
 cr_t_control_out_of_range = function()
 	cr_log("big", GetControlState(9999))
 end
-cr_scummvm_differs("control_out_of_range") cr_test("control_out_of_range", cr_t_control_out_of_range)
+cr_test("control_out_of_range", cr_t_control_out_of_range)
 
 cr_t_movies_idle = function()
 	cr_log("playing", IsMoviePlaying())

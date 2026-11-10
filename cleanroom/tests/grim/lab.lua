@@ -30,7 +30,7 @@ cr_t_lab_costume = function()
 	cr_log("chore", IsActorChoring(a, 0, FALSE, "cr_lab_box.cos"), CR_LV)
 	PutActorInSet(a, nil)
 end
-cr_scummvm_differs("lab_costume") cr_test("lab_costume", cr_t_lab_costume)
+cr_test("lab_costume", cr_t_lab_costume)
 
 cr_t_lab_text = function()
 	cr_log("line_count", TextFileGetLineCount("cr_lab_text.txt"))

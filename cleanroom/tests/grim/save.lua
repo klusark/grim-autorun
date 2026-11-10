@@ -150,7 +150,7 @@ cr_t_save_data_none = function()
 	local d = GetSaveGameData("crsave_none.gsv")
 	cr_log("data", type(d), d and tostring(d[0]))
 end
-cr_scummvm_differs("save_data_none") cr_test("save_data_none", cr_t_save_data_none)
+cr_test("save_data_none", cr_t_save_data_none)
 
 cr_t_save_data_empty = function()
 	MakeCurrentSet("cr_flat.set")
@@ -440,7 +440,6 @@ end)
 
 -- (ScummVM differs: tools/mark_known.py)
 cr_scummvm_differs("save_actor_attrs")
-cr_scummvm_differs("save_chore")
 cr_scummvm_differs("save_primitives")
 cr_scummvm_differs("save_set")
 cr_scummvm_differs("save_setup")

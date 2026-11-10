@@ -10,7 +10,7 @@ cr_scummvm_differs("font") cr_test("font", cr_t_font)
 cr_t_font_missing = function()
 	cr_log("missing", LockFont("no_such.laf"))
 end
-cr_scummvm_differs("font_missing") cr_test("font_missing", cr_t_font_missing)
+cr_test("font_missing", cr_t_font_missing)
 
 cr_t_font_dims_handle = function()
 	local f = cr_fn("GetFontDimensions")
@@ -77,7 +77,7 @@ cr_t_text_char_pos_past_end = function()
 	cr_log("past_end", GetTextCharPosition(t, 99))
 	KillTextObject(t)
 end
-cr_scummvm_differs("text_char_pos_past_end") cr_test("text_char_pos_past_end", cr_t_text_char_pos_past_end)
+cr_test("text_char_pos_past_end", cr_t_text_char_pos_past_end)
 
 cr_t_text_char_pos_killed = function()
 	local t = MakeTextObject("abc", { font = CR_FONT, x = 10, y = 20 })

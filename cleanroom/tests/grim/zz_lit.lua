@@ -12,7 +12,10 @@
 CR_LIT_LIGHTS = { "cr_omni", "cr_dir", "cr_spot" }
 
 cr_lit_test = function(name, on, fn, cos)
-	cr_scummvm_differs("lit_" .. name, "ScummVM lights the box with the set's lights, not at its vertices' level")
+	-- (dark_none: no light and a black box, the same on both)
+	if name ~= "dark_none" then
+		cr_scummvm_differs("lit_" .. name, "ScummVM lights the box with the set's lights, not at its vertices' level")
+	end
 	cr_test("lit_" .. name, function()
 		MakeCurrentSet("cr_lit.set")
 		local on = %on
