@@ -218,7 +218,7 @@ jobs:
           echo "ScummVM $SCUMMVM_REPO $SCUMMVM_REF: $(git rev-parse HEAD) $(git log -1 --format=%s)" | tee -a "$GITHUB_STEP_SUMMARY"
           if [ -n "$APPLY_PATCH" ]; then git apply ../grim_tools/cleanroom/scummvm/grim-test-data.patch; fi
           mkdir build && cd build
-          CXX="ccache g++" CC="ccache gcc" CXXFLAGS="--coverage -O0" LDFLAGS="--coverage" ../configure \
+          CXX="ccache g++" CC="ccache gcc" CXXFLAGS="--coverage -fprofile-update=atomic -O0" LDFLAGS="--coverage -fprofile-update=atomic" ../configure \
             --disable-all-engines --enable-engines=grim,monkey4 \
             --disable-libcurl --disable-sdlnet --disable-cloud --disable-updates --disable-tts
           sed -i 's/^CXXFLAGS := \(.*\)$/CXXFLAGS := \1 -DCR_GCOV/' config.mk

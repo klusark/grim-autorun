@@ -35,6 +35,14 @@ marked test is known as well. `python tools/mark_known.py [--game emi]` sets the
 (every renderer's log): it marks every test that differs and unmarks the fixed ones, except marks that give a reason. The
 argument tests get theirs through `tools/args_differs.txt` (`args_differs_emi.txt`), which `tools/gen_args.py` reads.
 
+**In parallel.** `run.py` locks its folder: its runs share build/, run/ and logs/, and write the crasher lists of
+expected/. `run.py ... --work DIR` gives a run its own build/, run/ and logs/ in DIR and writes nothing to expected/ (the
+crashers it finds are reported only), so runs with different DIRs go at once. `tools/parallel.sh` runs Grim and EMI with
+every renderer that way, six at once, in about 3 minutes (`--games grim,emi,remastered`, `--renderers`, and run.py's
+options such as `--only`; the results in run/parallel/; exit 1 on a regression). It sets `CR_STALL=15`, since six engines at
+once keep the machine busy. `--coverage` is the coverage run (below). `tools/mark_known.py` takes its logs as arguments
+(`run/parallel/grim_<renderer>/logs/scummvm_<renderer>.log`, one per renderer). A new crasher is not kept: run `run.py scummvm` itself for that.
+
 ## What is needed
 
 - **The original:** the program files of the install (`GRIMFANDANGO.exe`, `LUA.DLL`, `IMUSE.DLL`, `CHORE.DLL`, the HMI
@@ -346,14 +354,21 @@ A gcov build of the cleanroom worktree measures which lines of engines/grim the 
 
 ```sh
 mkdir ~/scummvm-cleanroom/build-cov && cd ~/scummvm-cleanroom/build-cov
-CXX="ccache g++" CC="ccache gcc" CXXFLAGS="--coverage -O0 -g" LDFLAGS="--coverage" \
-    ../configure --disable-all-engines --enable-engines=grim,monkey4
+CXX="ccache g++" CC="ccache gcc" CXXFLAGS="--coverage -fprofile-update=atomic -O0 -g" \
+    LDFLAGS="--coverage -fprofile-update=atomic" ../configure --disable-all-engines --enable-engines=grim,monkey4
 sed -i 's/^CXXFLAGS := \(.*\)$/CXXFLAGS := \1 -DCR_GCOV/' config.mk   # Exit() writes the counters (see below)
 make -j16
-find . -name '*.gcda' -delete
-SCUMMVM='C:\msys64\home\Joel\scummvm-cleanroom\build-cov\scummvm.exe' CR_STALL=60 CR_STARTUP=120 python run.py scummvm
-python ~/grimL_ar/tools/covreport.py <outdir> 'C:\msys64\home\Joel\scummvm-cleanroom\build-cov' 'C:\msys64\home\Joel\scummvm-cleanroom'
+cd ~/grim_tools/cleanroom && tools/parallel.sh --coverage   # every game and renderer at once; the report: reports/coverage/
 ```
+
+`tools/parallel.sh --coverage` runs Grim, EMI and Grim in the Remastered mode, each with every renderer: nine `run.py
+scummvm` at once, each with `--work` (its own build/, run/ and logs/ under run/parallel/, nothing written to expected/),
+then `autorun/tools/covreport.py --all` into reports/coverage/. That takes about 4 minutes, against 15 one after the other. The
+nine add their counters to the same .gcda files when they end, and libgcov locks each file while it adds to it (on Windows
+too, with `_locking`). `-fprofile-update=atomic` makes the counters safe between ScummVM's own threads (audio, timers):
+without it two threads can lose each other's counts, the counts no longer add up, and the ones gcov works out from the
+others can go negative. 2026-11-10: the same coverage both ways (29838 lines one after the other without atomic, 29835 in
+parallel with it; the few lines apart are the timing of sounds and of Lua's garbage collector).
 
 `SCUMMVM` must be a Windows path. gcov writes the counters when the process ends, so the engine's shutdown (its
 destructors) is counted too; ScummVM ends the whole suite cleanly (exit code 0, 2026-11-07; it used to crash after `exit()`,
@@ -361,7 +376,8 @@ and `Exit()` dumped the counters itself, which left the shutdown out). A run kil
 also asks for the counters every 200 tests (`PrintDebug("CRGCOV")`: `__gcov_dump()` and then `__gcov_reset()`, so that the
 write at the end still happens, in a `CR_GCOV` build; nothing otherwise): such a run loses only what ran since. 2026-11-05: 42.3% of the lines (11596 of 27397, without lua, emi, remastered, tinygl).
 2026-11-07: 41.7% (10357 of 24864) before and 49.0% (12192 of 24868) after the tests of saving and loading (`save.lua`),
-sounds of our own (`sound.lua`), the registry, the primitives and the start-up state. What is left is mostly iMUSE's music (its state tables) and streaming, the shader renderer (the tests use `gfx_mode=opengl`),
+sounds of our own (`sound.lua`), the registry, the primitives and the start-up state. 2026-11-10 (`--all`, every game
+and renderer): 69.4%, 29838 of 43016 lines (grim 69.5%, emi 68.3%, tinygl 57.9%, lua 87.6%, remastered 63.5%). What is left is mostly iMUSE's music (its state tables) and streaming, the shader renderer (the tests use `gfx_mode=opengl`),
 and the debugger.
 
 ## Wrong arguments and coverage

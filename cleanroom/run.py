@@ -9,6 +9,9 @@ file of the game's data. See README.md.
   python run.py remastered [--only T]      runs the Grim Fandango Remastered exe (debuglog patch only), compares with the expected log
   python run.py both                       both engines, compared with each other
   python run.py compare A.log B.log        compares two result logs
+  python run.py <command> --work DIR       its own build/, run/ and logs/ in DIR, locked on its own, and nothing written to
+                                           expected/ (the crashers it finds are reported only): runs in parallel with
+                                           others, each with its own DIR (--save is refused)
   python run.py <command> --game emi       the same for Escape from Monkey Island: the original Monkey4.exe v1.1 (through
                                            grimlaunch.exe) and ScummVM's EMI; the test files of tests/common/ and tests/emi/
 
@@ -48,9 +51,11 @@ import snaps  # noqa: E402
 import testfiles  # noqa: E402
 
 ROOT = os.path.dirname(HERE)
-BUILD = os.path.join(HERE, "build")
-RUN = os.path.join(HERE, "run")
-LOGS = os.path.join(HERE, "logs")
+WORK = HERE   # (where build/, run/ and logs/ are: --work DIR moves them)
+READ_ONLY = False   # (--work: expected/ is not written)
+BUILD = os.path.join(WORK, "build")
+RUN = os.path.join(WORK, "run")
+LOGS = os.path.join(WORK, "logs")
 EXPECTED = os.path.join(HERE, "expected", "original.log")
 UNSTABLE = os.path.join(HERE, "expected", "unstable.txt")
 # (a build with scummvm/grim-test-data.patch: scummvm/build.sh makes it in ~/scummvm-cleanroom)
@@ -79,9 +84,19 @@ def set_remastered():
     """Points the build, run and log folders at ScummVM's Remastered mode (its crashers: expected/remastered_scummvm_...)."""
     global SVM_REMASTERED, BUILD, RUN, LOGS
     SVM_REMASTERED = True
-    BUILD = os.path.join(HERE, "build_remastered")
-    RUN = os.path.join(HERE, "run", "remastered_scummvm")
-    LOGS = os.path.join(HERE, "logs", "remastered_scummvm")
+    BUILD = os.path.join(WORK, "build_remastered")
+    RUN = os.path.join(WORK, "run", "remastered_scummvm")
+    LOGS = os.path.join(WORK, "logs", "remastered_scummvm")
+
+
+def set_work(d):
+    """--work: build/, run/ and logs/ in d, and expected/ is only read (the crashers found are not kept)."""
+    global WORK, READ_ONLY, BUILD, RUN, LOGS
+    WORK = os.path.abspath(d)
+    READ_ONLY = True
+    BUILD = os.path.join(WORK, "build")
+    RUN = os.path.join(WORK, "run")
+    LOGS = os.path.join(WORK, "logs")
 
 
 def set_game(game):
@@ -89,9 +104,9 @@ def set_game(game):
     global GAME, BUILD, RUN, LOGS, EXPECTED, UNSTABLE, CRASHERS
     GAME = game
     if game == "emi":
-        BUILD = os.path.join(HERE, "build_emi")
-        RUN = os.path.join(HERE, "run", "emi")
-        LOGS = os.path.join(HERE, "logs", "emi")
+        BUILD = os.path.join(WORK, "build_emi")
+        RUN = os.path.join(WORK, "run", "emi")
+        LOGS = os.path.join(WORK, "logs", "emi")
         EXPECTED = os.path.join(HERE, "expected", "emi_original.log")
         UNSTABLE = os.path.join(HERE, "expected", "emi_unstable.txt")
         CRASHERS = os.path.join(HERE, "expected", "emi_crashers.txt")
@@ -245,6 +260,8 @@ REM_CRASHERS = os.path.join(HERE, "expected", "remastered_crashers.txt")
 
 def write_rem_known(names):
     """Keeps the Remastered's crashers in expected/ (committed), like ScummVM's: skipped on the next runs, --fresh tries them again."""
+    if READ_ONLY:
+        return
     os.makedirs(os.path.dirname(REM_CRASHERS), exist_ok=True)
     with open(REM_CRASHERS, "w", newline="\n") as f:
         f.write("# tests that crash or hang the Remastered (found by run.py); skipped, run.py remastered --fresh tries them again\n")
@@ -253,6 +270,8 @@ def write_rem_known(names):
 
 def write_known(names):
     """Keeps ScummVM's crashers in expected/ (committed: they are not found again on each machine)."""
+    if READ_ONLY:
+        return
     os.makedirs(os.path.dirname(svm_known()), exist_ok=True)
     with open(svm_known(), "w", newline="\n") as f:
         f.write("# tests that crash or hang ScummVM (%s renderer; found by run.py); skipped, run.py --fresh tries them again\n" % RENDERER)
@@ -373,7 +392,7 @@ def run_engine(engine, only=None, fresh=False):
             write_rem_known(known | set(new))
     if engine == "remastered" and fresh and not new:
         write_rem_known(set())
-    if engine == "original" and (new or fresh):
+    if engine == "original" and (new or fresh) and not READ_ONLY:
         with open(CRASHERS, "w", newline="\n") as f:
             f.write("# tests that crash the original (found by run.py); skipped on both engines\n")
             f.write("".join(n + "\n" for n in sorted(skip)))
@@ -699,6 +718,9 @@ def lock_folder():
 def main():
     if len(sys.argv) > 1 and sys.argv[1] == "compare":
         return compare.main(sys.argv[2:])
+    # (--work before the lock: a run in its own folder locks only that one)
+    if "--work" in sys.argv[:-1]:
+        set_work(sys.argv[sys.argv.index("--work") + 1])
     _lock = lock_folder()  # noqa: F841 (held until the process ends)
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("what", choices=["build", "scummvm", "original", "remastered", "both", "compare"])
@@ -713,7 +735,10 @@ def main():
     ap.add_argument("--fresh", action="store_true",
                     help="scummvm: run the tests that crashed or hung ScummVM before again (expected/scummvm_crashers_<renderer>.txt)")
     ap.add_argument("--visible", action="store_true", help="show the engines' windows on the screen (same as CR_VISIBLE=1)")
+    ap.add_argument("--work", metavar="DIR", help="build/, run/ and logs/ in DIR, and expected/ only read: for runs in parallel")
     a = ap.parse_args()
+    if a.work and a.save:
+        sys.exit("--save writes expected/: not with --work")
     if a.visible:
         global VISIBLE
         VISIBLE = True
@@ -729,7 +754,8 @@ def main():
     if a.what == "scummvm" and a.remastered:
         if a.game == "emi":
             sys.exit("the Remastered is Grim's")
-        rem_log = os.path.join(LOGS, "remastered.log")
+        # (the Remastered's own run is in the shared logs/, with --work too)
+        rem_log = os.path.join(HERE, "logs", "remastered.log")
         set_remastered()
         # (the reference is the Remastered's own run when there is one; the marks are for the original, so this is a report)
         run_scummvm_all(rem_log if os.path.exists(rem_log) else EXPECTED, a.only, a.fresh, renderers)
