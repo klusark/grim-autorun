@@ -1,11 +1,11 @@
 -- Probe (PROBE lines): actor lighting in hq, setup hq_elews (near Eva), where the original is much darker than ScummVM was.
--- Manny is put at fixed places and headings with his chores stopped, held for LIGHT_HOLD frames, then hidden for LIGHT_GAP frames
--- (the gap separates the poses in the tracer log of the original, which has no Lua lines). One frame of every pose is dumped
--- (ar_frame light_<tag>).
---   ScummVM: DEBUGFLAGS=models EXTRA="nav_cases.lua ar_fixture.lua ar_nt_lib.lua nav_known.lua nav_coll_expect.lua nav_slide_expect.lua
---            rules_expect.lua rules_known.lua" sh run_chapter.sh tests/probe_light.lua 300   (MESHLIGHT lines)
---   original: GRIMRUN=./grimtrace.exe GRIMTRACE_BP=40d831 GRIMTRACE_PEEK="eax+0,eax+10,eax+50" ... sh orig_test.sh tests/probe_light.lua
---            (40d831: rdModel_DrawMesh right after the mean light level of the mesh is stored at mesh+0x5c, eax = the mesh)
+-- Manny is put at fixed places and headings, held for LIGHT_HOLD frames, then hidden for LIGHT_GAP frames (the gap separates the poses in
+-- the tracer log of the original, which has no Lua lines). One frame of every pose is dumped (ar_frame light_<tag>). (His chores are not
+-- stopped: a Grim costume with no chore playing hides its meshes.)
+--   ScummVM: DEBUGFLAGS=models ... sh run_chapter.sh tests/probe_light.lua 300   (MESHLIGHT lines: the mean light level of each mesh)
+--   original: GRIMRUN=./grimtrace.exe GRIMTRACE_BP=40d831 GRIMTRACE_PEEK="eax+0,eax+10,eax+50" GRIMTRACE_QUIET=1 GRIMTRACE_ARMAT=LIGHTARM
+--            GRIMTRACE_DISARMAT=LIGHTDISARM GRIMTRACE_MAX=200000 sh orig_test.sh tests/probe_light.lua
+--            (40d831: rdModel_DrawMesh right after the mean light level of the mesh is stored at mesh+0x5c; eax = the mesh, its name at +0)
 ar_log("start in " .. ar_set_name())
 ar_wait_for_control()
 AR_KEEP_GOING = TRUE
@@ -30,6 +30,9 @@ light_poses = {
 	{ "far_0", 0.0, -0.2, 0 },
 	{ "far_180", 0.0, -0.2, 180 },
 }
+PrintDebug("LIGHTARM\n")
+-- (the tracer polls the log once a second)
+sleep_for(2500)
 local i = 1
 while light_poses[i] do
 	local p = light_poses[i]
@@ -41,11 +44,9 @@ while light_poses[i] do
 	end
 	manny:setpos(p[2], p[3], 0)
 	manny:setrot(0, p[4], 0)
-	StopActorChore(manny.hActor)
 	manny:set_visibility(TRUE)
 	k = 0
 	while k < LIGHT_HOLD do
-		StopActorChore(manny.hActor)
 		break_here()
 		k = k + 1
 		local q = manny:getpos()
@@ -57,5 +58,7 @@ while light_poses[i] do
 	end
 	i = i + 1
 end
+PrintDebug("LIGHTDISARM\n")
+sleep_for(2500)
 AR_KEEP_GOING = nil
 ar_finish()
