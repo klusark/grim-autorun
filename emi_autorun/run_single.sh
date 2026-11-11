@@ -8,16 +8,17 @@
 #   RESUME="<slot> <first file>" run_single.sh   continues from a checkpoint of the last run's saves, with the files from <first file> on
 # Checkpoints go to ./saves_single, the log is logs/single.log.
 EM=/c/Users/Joel/grim_tools/emi_autorun
+python "$EM/emi_nav_gen.py" "$EM/generated/emi_nav_planner.lua" || exit 1
 # the list: "file" lines are chapters, "lib" lines are libraries put into the run
 LIST=""
 for f in $(ls $EM/ch[0-9]*.lua | sort); do LIST="$LIST file:$f"; done
-LIST="$LIST lib:emi_lib.lua lib:emi_poke.lua lib:emi_myst.lua lib:act2_lib.lua lib:emi_ribbon.lua"
+LIST="$LIST lib:generated/emi_nav_planner.lua lib:emi_nav_data.lua lib:emi_nav.lua lib:emi_lib.lua lib:emi_poke.lua lib:emi_myst.lua lib:act2_lib.lua lib:emi_ribbon.lua"
 for f in $(ls $EM/act2_[0-9][0-9]_*.lua | sort); do case $(basename $f) in act2_01_*) ;; *) LIST="$LIST file:$f";; esac; done
-LIST="$LIST lib:emi_lib.lua lib:emi_poke.lua lib:emi_myst.lua lib:act3_lib.lua lib:emi_ribbon.lua"
+LIST="$LIST lib:generated/emi_nav_planner.lua lib:emi_nav_data.lua lib:emi_nav.lua lib:emi_lib.lua lib:emi_poke.lua lib:emi_myst.lua lib:act3_lib.lua lib:emi_ribbon.lua"
 # (the order a player has to play them in: the town (06) is reached through the gold mine (10), the canyon's other door; the pachinko rocks (11)
 # and the weeds (12) come after the town)
 for n in 02 03 04 05 10 11 12 06 07 08 09 13 14; do LIST="$LIST file:$(ls $EM/act3_${n}_*.lua)"; done
-LIST="$LIST lib:emi_lib.lua lib:emi_poke.lua lib:emi_myst.lua lib:act4_lib.lua file:$EM/act4_26_tower.lua file:$EM/act4_27_fight.lua"
+LIST="$LIST lib:generated/emi_nav_planner.lua lib:emi_nav_data.lua lib:emi_nav.lua lib:emi_lib.lua lib:emi_poke.lua lib:emi_myst.lua lib:act4_lib.lua file:$EM/act4_26_tower.lua file:$EM/act4_27_fight.lua"
 first=""
 if [ -n "$RESUME" ]; then
 	slot=$(echo $RESUME | awk '{print $1}'); first=$(echo $RESUME | awk '{print $2}')
@@ -38,7 +39,7 @@ fi
 			on=1
 			# (the libraries before the first chapter of the resume: those since the last file; in Act 1, which has no library lines,
 			# the base ones: a checkpoint carries the functions as they were when it was saved, and a fix to them would not be seen)
-			[ -z "$pending" ] && pending="emi_lib.lua emi_poke.lua emi_myst.lua"
+			[ -z "$pending" ] && pending="generated/emi_nav_planner.lua emi_nav_data.lua emi_nav.lua emi_lib.lua emi_poke.lua emi_myst.lua"
 			for l in $pending; do echo "ar_log(\"=== lib $l ===\")"; cat "$EM/$l"; echo; done
 		fi
 		if [ "$kind" = lib ]; then

@@ -387,3 +387,20 @@ Section A is done for all four acts. What changed since the puck:
   NPCs walking into Guybrush pushed him, thousands of "has run into" lines a run). act3_10 backs out when Timmy stands in the tunnel
   to the vent and tries again; a door that is not offered is walked into (its trigger box). Whole game in one attempt on ScummVM with
   key walking, movies, cheat boxes and the collision fixes: 481 s, 11702 s of game time.
+- 2026-11-11: the Grim planner walks EMI. autorun/ar_nav.lua is used as it is, made EMI's by emi_nav_gen.py at the start of every run
+  (generated/emi_nav_planner*.lua): its calls into the game are renamed to emi_nav.lua's (ar_np, ar_nyaw, ar_nsteer, ar_nstep ...), which
+  turn EMI's x/z floor with y up into the planner's x/y with z up, scaled by AR_NAV_S = 2.5 (Grim's metres), and walk Guybrush with the
+  keys. The sectors come from the set files (gen_nav.py -> emi_nav_data.lua, each set a function: Lua 3.1's constant table of the main
+  chunk overflowed with them all). Whether a sector is on: IsSectorActive (Monkey4's own). Each replacement must still fit ar_nav.lua or
+  the generator stops. EMI-only rules: no stairs are constrained (EMI's stairman only changes the walk chore; and a hot sector named
+  west_stair_cheatbox is a cheat box), a cheat box is entered only from a floor at its height (the west stair box from above gave a link
+  Guybrush turned on the spot at), door boxes that are not the goal cost 100 (Doorman walks him out of any), goals off the floor go to
+  the nearest floor (use points), 4000 cells a frame (Monkey4 kills a script after 10M instructions without break_here, 0x4533b0),
+  turns standing at the start and walking on only within 30 degrees (he swings wide: Mêlée's porch_trigger), a follow that never moved
+  ends the walk (the wedding ship's cannon). Where the planner gives up, emi_lib.lua's grid planner walks (NAVFALLBACK): 0 times in 342
+  walks over the whole game. act3_03 walks into the camera sector toc_log (the cut starts the meeting with Herman).
+- ScummVM bugs fixed (autorun): GetActorPos of a freed actor crashed (the original returns nothing, 0x4161a0); the EMI clamp after a
+  collision push used the sector before the step (Guybrush pinned on the edge between two sectors by the Hall o' Justice's crawdaddy
+  trap; the original pushes from where the step ends, in that sector).
+- Whole game on ScummVM with the Grim planner: Act 1 to act3_02 in one run, act3_03 to the end resumed from slot 302 after the act3_03
+  fix; both PASSED.

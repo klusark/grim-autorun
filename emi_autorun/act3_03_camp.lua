@@ -2,9 +2,11 @@
 ar_log("=== ACT3 ch03 camp ===")
 ar_wait_for_control()
 a3_goto("toothrot camp")
--- walking to the big wheel makes the camera cut that starts the meeting with Herman (a conversation)
+-- walking to the big wheel makes the camera cut that starts the meeting with Herman (a conversation): the cut to the setup toc_log
+-- (toc.setup_change starts toc.force_herman_meet), when Guybrush walks into its camera sector, round (-6.5, -17). (The walk went to
+-- (-12, -12) before, and the grid planner's way to it happened to cross the sector; the Grim planner's shorter way did not)
 a3_dialog("ht1")
-ar_walk_to(-12.0, 0, -12.0)
+ar_walk_to(-6.5, 0, -17.0, function() return glob.herman_talk_status > 0 end)
 ar_wait_for(function() return glob.herman_talk_status > 0 end, 20000, "the meeting with Herman")
 a3_dlg_done("ht1")
 ar_wait_for_control()

@@ -12,11 +12,12 @@ script="$1"; limit="${2:-600}"
 name=$(basename "$script" .lua)
 EXTRA=${EXTRA-emi_poke.lua emi_myst.lua}
 gen="$EM/generated/orig_${name}.lua"
+python "$EM/emi_nav_gen.py" "$EM/generated/emi_nav_planner_orig.lua" || exit 1
 {
 	[ -n "$WALKTRACE" ] && echo "AR_WALK_TRACE = TRUE"
 	echo "AR_CHAPTER = \"$name\""
 	# (STAGE lines: the original prints no traceback for a Lua error, only the message; they also cut the run into parts)
-	for f in "$EM/emi_prelude.lua" "${ARLIB:-$AR/ar_lib.lua}" "$EM/emi_floors.lua" "$EM/emi_floors_fn.lua" "$EM/emi_lib.lua"; do
+	for f in "$EM/emi_prelude.lua" "${ARLIB:-$AR/ar_lib.lua}" "$EM/emi_floors.lua" "$EM/emi_floors_fn.lua" "$EM/generated/emi_nav_planner_orig.lua" "$EM/emi_nav_data.lua" "$EM/emi_nav.lua" "$EM/emi_lib.lua"; do
 		echo "PrintDebug(\"STAGE $(basename $f)\")"; cat "$f"; echo
 	done
 	for e in $EXTRA; do echo "PrintDebug(\"STAGE $e\")"; cat "$EM/$e"; echo; done

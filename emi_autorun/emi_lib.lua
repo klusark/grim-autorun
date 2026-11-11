@@ -101,7 +101,9 @@ ar_approach = function(obj)
 	ar_try_wait(ar_obj_offered, 800)
 	local pts, np = ar_stand_points(obj)
 	local k = 1
-	while k <= np and k <= 6 and not ar_obj_offered() do
+	-- (not when the walk found that Guybrush cannot move here at all (AR_GNAV_NOMOVE, emi_nav.lua): six more walks of 4 s each that go
+	-- nowhere, while the coal of the wedding ship cooled in his hand; he turns to the object instead)
+	while k <= np and k <= 6 and not ar_obj_offered() and not AR_GNAV_NOMOVE do
 		ar_walk_to(pts[k][1], pts[k][2], pts[k][3], ar_obj_offered)
 		ar_try_wait(ar_obj_offered, 800)
 		k = k + 1
@@ -413,7 +415,7 @@ end
 ar_step = function(mn)
 	mn = mn or AR_WALKER or manny
 	if ar_drive_on(mn) then
-		ar_drive_key("RUN", not AR_WALK and not AR_NEAR_SLOW and not guybrush.no_running)
+		ar_drive_key("RUN", not AR_WALK and not AR_NEAR_SLOW and not AR_NAV_SLOW and not guybrush.no_running)
 		ar_drive_key("MOVE_FORWARD", TRUE)
 	elseif type(system.buttonHandler) ~= "table" or AR_ALLOW_STEP_UNDER_DIALOG then
 		if not AR_DIRECT_WALK and mn == manny then
@@ -482,9 +484,12 @@ ar_steer = function(x, y, z, thr)
 				ar_drive_turn("TURN_LEFT")
 			end
 			-- (near the point, any turn is made standing: walking on while turning circles round it, as on the original, 22 s
-			-- round a way point of Lucre town and out by the Hall o' Justice door)
+			-- round a way point of Lucre town and out by the Hall o' Justice door. Not for the Grim planner's follower (AR_NSTEER), which
+			-- decides itself whether he walks on while he turns)
 			local pp = mn:getpos()
-			if abs(d) > 30 or (pp.x - x) * (pp.x - x) + (pp.z - z) * (pp.z - z) < 2.5 * 2.5 then
+			if AR_NSTEER then
+				pp = nil
+			elseif abs(d) > 30 or (pp.x - x) * (pp.x - x) + (pp.z - z) * (pp.z - z) < 2.5 * 2.5 then
 				ar_drive_key("MOVE_FORWARD", nil)
 			end
 		-- EMI: TurnActor(+1) lowers the yaw (AR_TURN_SIGN = -1); in Grim it raises it (nil / 1)
@@ -1212,6 +1217,14 @@ ar_walk_planned = function(x, y, z, stop_when, max_ms)
 		AR_CELL_RES = nil
 		AR_FLOOR_MARGIN = nil
 		return r
+	end
+	-- (the Grim planner, autorun/ar_nav.lua made EMI's by emi_nav_gen.py and emi_nav.lua: the way it walks, as in Grim. Where it gives
+	-- up, the grid planner below takes over, and the log says NAVFALLBACK)
+	if ar_gnav_walk and not AR_NO_GNAV and not AR_WALKER and mn == manny then
+		local gr = ar_gnav_walk(x, y, z, stop_when)
+		if gr then
+			return gr
+		end
 	end
 	local ok = TRUE
 	AR_WALK_SET = system.currentSet
