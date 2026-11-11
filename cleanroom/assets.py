@@ -393,6 +393,14 @@ def files():
     out["cr_lit.bm"] = F.bitmap(W, H, F.checker(W, H, 40, (0, 0, 0), (0, 0, 0)))
     out["cr_lit.set"] = F.set_file(["cr_pal.cmp"], [dict(CAMERA, name="cr_lit_0", background="cr_lit.bm", zbuffer="cr_open.zbm")],
                                    LIT_LIGHTS, SETS["cr_open"][1])
+    # zz_zbuffer.lua: cr_open with a z-buffer that is far (0) but for thin parts in front of the box of draw.lua (at
+    # 270..370 x 207..267 at the centre): a post 2 pixels wide (columns 320, 321), a bar 2 pixels high (rows 237, 238) and
+    # the columns left of 290, all at 30000 (about 1.2 m from the camera, the box is at 6 m). The thin parts are the
+    # fence by the crane in the beach (ScummVM's OpenGL with shaders read its z-buffer filtered and half a pixel off).
+    zpost = [30000 if (x in (320, 321) or y in (237, 238) or x < 290) else 0 for y in range(H) for x in range(W)]
+    out["cr_zpost.zbm"] = F.bitmap(W, H, zpost, fmt=5)
+    out["cr_zpost.set"] = F.set_file(["cr_pal.cmp"], [dict(CAMERA, name="cr_zpost_0", background="cr_open.bm",
+                                                           zbuffer="cr_zpost.zbm")], [LIGHT], SETS["cr_open"][1])
     # a set of three setups (cameras): above, from the south at an angle and rolled, and from the east with a narrow fov
     # (compressed, codec 3)
     out["cr_cams.bm"] = F.bitmap(W, H, F.checker(W, H, 80, (90, 90, 40), (120, 120, 60)), codec=3)
