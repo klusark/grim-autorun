@@ -59,10 +59,14 @@ ar_why_not_offered = function(obj)
 		end
 		local wx, wy, wz = GetActorWorldPos(obj.interest_actor.hActor)
 		local mx, my, mz = GetActorWorldPos(manny.hActor)
-		why = format(" seen=%s dist2=%.2f world=%.2f %.2f %.2f", tostring(seen), sqrt((wx - mx) * (wx - mx) + (wz - mz) * (wz - mz)), wx, wy, wz)
+		if wx and mx then
+			why = format(" seen=%s dist2=%.2f world=%.2f %.2f %.2f", tostring(seen), sqrt((wx - mx) * (wx - mx) + (wz - mz) * (wz - mz)), wx, wy, wz)
+		else
+			why = " seen=" .. tostring(seen) .. " world=?"
+		end
 	end
 	return format("touchable=%s range=%s in the list=%s manny=%.2f %.2f %.2f object=%s", tostring(obj.touchable), tostring(obj.range),
-		tostring(list and list[obj]), p.x, p.y, p.z, o and format("%.2f %.2f %.2f", o.x, o.y, o.z) or "?") .. why
+		tostring(list and list[obj]), p.x, p.y, p.z, o and o.x and format("%.2f %.2f %.2f", o.x, o.y or 0, o.z or 0) or "?") .. why
 end
 
 -- EMI: an object in the hotlist is already close enough; Grim's walk (sectors, use points) is only tried when it is not.
@@ -75,6 +79,8 @@ end
 
 ar_approach = function(obj)
 	AR_OBJ = obj
+	-- (where the run is, for the FAIL line of a Lua error: the original prints no traceback)
+	AR_WHERE = "approach to " .. tostring(obj.name)
 	-- (the list is rebuilt every few frames, and not at all in a cutscene)
 	ar_try_wait(ar_obj_offered, 600)
 	if ar_obj_offered() then
@@ -85,9 +91,18 @@ ar_approach = function(obj)
 	-- trigger on the way (a step up, a door) does its part. Then points of the floor inside its range, the nearest first.
 	local tx, ty, tz
 	local o = ar_obj_pos(obj)
+	if not o.x or not o.z then
+		-- (no place for it now (see ar_walk_to): nothing to walk to or face; the offer is waited for, as it comes as the game moves on)
+		ar_log("approach: " .. tostring(obj.name) .. " has no place now, waiting for the game to offer it")
+		ar_try_wait(ar_obj_offered, 5000)
+		if ar_obj_offered() then
+			return TRUE
+		end
+		return ar_fail(tostring(obj.name) .. " has no place and is not offered: " .. ar_why_not_offered(obj))
+	end
 	local o0x, o0z = o.x, o.z
 	-- (the use point of some objects is an offset from the actor and not a place of the set, far from the object: then the object's own place)
-	if obj.use_pnt_x and abs(obj.use_pnt_x - o.x) < 30 and abs(obj.use_pnt_z - o.z) < 30 then
+	if obj.use_pnt_x and obj.use_pnt_z and abs(obj.use_pnt_x - o.x) < 30 and abs(obj.use_pnt_z - o.z) < 30 then
 		tx, ty, tz = obj.use_pnt_x, obj.use_pnt_y, obj.use_pnt_z
 	else
 		tx, ty, tz = o.x, o.y, o.z
@@ -173,8 +188,9 @@ end
 -- held there, as a player holds it. This works inside the movie's own loop, so also for a movie that a set's enter plays during
 -- switch_to_set, which pauses every other script (the skipper too: Melee dock's movie played its whole length on the original).
 -- AR_NO_SKIP or AR_REAL: the movies play.
-if not AR_GCS_MOVIE then
-	AR_GCS_MOVIE = GetControlState
+-- (made again at every load, the game's own function kept from the first: a save brings back the wrapper of the run that made it)
+if TRUE then
+	AR_GCS_MOVIE = AR_GCS_MOVIE or GetControlState
 	GetControlState = function(k, a, b)
 		if not AR_NO_SKIP and not AR_REAL and control_map and control_map.OVERRIDE and control_map.OVERRIDE[k] and IsMoviePlaying() then
 			return 1
@@ -382,7 +398,20 @@ AR_TURN_SIGN = -1
 -- original, Nov 11: at yaw 110, +x gives -20, +z -110); ScummVM gave the heading until its fix of that day. The heading is the yaw plus
 -- the turn. (Lua 3.1 here has no atan2)
 ar_yaw_turn = function(actor, x, y, z)
-	return GetActorYawToPoint(actor.hActor, x, y, z)
+	local t = nil
+	if x and y and z then
+		t = GetActorYawToPoint(actor.hActor, x, y, z)
+	end
+	-- (no answer: on the original, for the place of the other Guybrush at the gate of the Mysts o' Tyme (mot.guybrush2_obj, Nov 11),
+	-- and the yaw plus nothing was an error that ended the run. No turn then)
+	if not t then
+		if not AR_YAW_NIL_LOGGED then
+			AR_YAW_NIL_LOGGED = TRUE
+			ar_log("steer: no heading to " .. tostring(x) .. " " .. tostring(y) .. " " .. tostring(z) .. ", no turn")
+		end
+		return 0
+	end
+	return t
 end
 ar_want_yaw = function(x, z)
 	local mn = AR_WALKER or manny
@@ -1361,8 +1390,9 @@ end
 -- the movies start and are skipped (Nov 10: it was thought the scripts did not run during a movie in a simulated run, and the movies
 -- were not started at all). AR_NO_MOVIES: the old way, not started; the flag the game reads for "this movie was seen" and the music
 -- state are set as the original function does.
-if not AR_OLD_RFM then
-	AR_OLD_RFM = RunFullscreenMovie
+-- (made again at every load, the game's own function kept from the first: a save brings back the wrapper of the run that made it)
+if TRUE then
+	AR_OLD_RFM = AR_OLD_RFM or RunFullscreenMovie
 	RunFullscreenMovie = function(name, mode)
 		if AR_REAL or not AR_NO_MOVIES then
 			ar_log("movie started: " .. tostring(name))
@@ -1380,11 +1410,40 @@ end
 -- Walking to a place: with the keys only (the held walk keys and the turns), along the way planned on the floor (a player cannot send
 -- Guybrush to a point; the game's own walk to a point belongs to the verbs, which walk up to their objects by themselves)
 ar_walk_to = function(x, y, z, stop_when, max_ms)
+	-- (no place to walk to: an object whose place is its actor's, when the game gives no place for the actor (Monkey4.exe's
+	-- GetActorPos gives nothing for mot.raft2 at the gate of the Mysts o' Tyme, Nov 11; the port gave one). The caller goes on from here)
+	if not x or not z then
+		ar_log("walk: no place to walk to, the walk is not made")
+		return nil
+	end
+	if not y then
+		y = manny:getpos().y
+	end
+	AR_WHERE = "walk to " .. x .. " " .. y .. " " .. z
 	if not AR_NO_HOPS then
 		ar_level_hop(y)
 	end
 	ar_wait_for_control()
+	AR_WHERE = "planned walk to " .. x .. " " .. y .. " " .. z
 	return ar_walk_planned(x, y, z, stop_when, max_ms)
+end
+
+-- The number of a task, to count the scripts a verb started (ar_send_verb subtracts two of them): ar_lib.lua's takes tostring(task) from
+-- its 7th character ("task: 7799" on both engines). From the first digit, so that another form gives a number too, or 0 when there
+-- is none (the count is then wrong, and the verb is taken as run when its state says so); the string is logged once.
+ar_task_number = function(task)
+	local s = tostring(task)
+	-- (Lua 3.1's patterns have no +: from the first digit on)
+	local a = strfind(s, "%d")
+	local n = a and tonumber(strsub(s, a))
+	if not n then
+		if not AR_TASKNUM_LOGGED then
+			AR_TASKNUM_LOGGED = TRUE
+			ar_log("a task is " .. s .. "; its number is not read")
+		end
+		return 0
+	end
+	return n
 end
 
 -- So it is cleared as soon as the verb is done.
@@ -1431,14 +1490,15 @@ end
 ar_obj_pos = function(obj)
 	if obj.interest_actor then
 		local p = obj.interest_actor:getpos()
-		if p and p.x then
+		-- (all three: on the original an actor the game gives no place for has a table with holes in it, mot.raft2 at the gate)
+		if p and p.x and p.y and p.z then
 			return p
 		end
 	end
-	if obj.obj_x then
+	if obj.obj_x and obj.obj_z then
 		return { x = obj.obj_x, y = obj.obj_y, z = obj.obj_z }
 	end
-	if obj.use_pnt_x then
+	if obj.use_pnt_x and obj.use_pnt_z then
 		return { x = obj.use_pnt_x, y = obj.use_pnt_y, z = obj.use_pnt_z }
 	end
 	return { }
@@ -1943,8 +2003,9 @@ ar_level_hop = function(ty)
 end
 
 -- Every line spoken goes to the log (SAY lines): the story tells what the next puzzle wants. Actor.say_line of the game, wrapped.
-if not AR_OLD_SAY then
-	AR_OLD_SAY = Actor.say_line
+-- (made again at every load, the game's own function kept from the first: a save brings back the wrapper of the run that made it)
+if TRUE then
+	AR_OLD_SAY = AR_OLD_SAY or Actor.say_line
 	Actor.say_line = function(a, text, b, c, d)
 		if type(text) == "string" and not AR_NO_SAYLOG then
 			ar_log("SAY " .. tostring(a.name) .. ": " .. text)

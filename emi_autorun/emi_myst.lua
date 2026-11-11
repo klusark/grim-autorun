@@ -606,8 +606,9 @@ ar_comb_driver = function()
 	AR_COMB_DONE = TRUE
 end
 
-if not AR_OLD_DISPLAY then
-	AR_OLD_DISPLAY = Inventory.display
+-- (made again at every load, the game's own function kept from the first: a save brings back the wrapper of the run that made it)
+if TRUE then
+	AR_OLD_DISPLAY = AR_OLD_DISPLAY or Inventory.display
 	Inventory.display = function(arg1, arg2, arg3)
 		AR_OLD_DISPLAY(arg1, arg2, arg3)
 		if AR_COMB_START then
@@ -755,14 +756,50 @@ ar_chase_offered = function(obj, ms)
 		return vlist and vlist[%obj] and cutSceneLevel == 0
 	end
 	local waited = 0
+	local px = nil
+	local pz = nil
 	while not offered() and waited < (ms or 90000) do
 		local o = ar_obj_pos(obj)
 		if o and o.x and cutSceneLevel == 0 then
-			ar_walk_direct(o.x, manny:getpos().y, o.z, offered, 1500)
+			local g = manny:getpos()
+			local d = sqrt((o.x - g.x) * (o.x - g.x) + (o.z - g.z) * (o.z - g.z))
+			if d < 4 then
+				-- (within reach: the game offers only what Guybrush faces, and several tries ended a few units from the school, facing
+				-- elsewhere (ch28, Nov 11). Turned toward it as it swims, standing, for a second and a half)
+				local t = 0
+				ar_drive_stop()
+				while t < 1500 and not offered() and cutSceneLevel == 0 do
+					local q = ar_obj_pos(obj)
+					ar_steer(q.x, q.y, q.z, 3)
+					break_here()
+					t = t + system.frameTime
+				end
+				ar_drive_stop()
+				waited = waited + t
+				px = nil
+			else
+				-- (farther: where the school is going, as far ahead as it swims in the time of the way there, at most 2 s; to where it
+				-- is, the walk always came after it)
+				local ax = o.x
+				local az = o.z
+				if px then
+					local lead = d / 4
+					if lead > 2 then
+						lead = 2
+					end
+					-- (the last look was 1.5 s ago)
+					ax = o.x + (o.x - px) / 1.5 * lead
+					az = o.z + (o.z - pz) / 1.5 * lead
+				end
+				px = o.x
+				pz = o.z
+				ar_walk_direct(ax, g.y, az, offered, 1500)
+				waited = waited + 1500
+			end
 		else
 			sleep_for(500)
+			waited = waited + 500
 		end
-		waited = waited + 1500
 	end
 	return offered()
 end

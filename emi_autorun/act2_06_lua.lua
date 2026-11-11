@@ -37,8 +37,9 @@ ar_wait_for(function() return lua.flamin end, 120000, "the flaming scuttlefish")
 -- mechanism with the brush in hand, and the verb is sent when the flame is that far before the place.
 -- (from the verb to the stop the flame goes on 2.95 or 3.28 units, one or the other from run to run (Nov 10: 3.28 at dx 3.295, 2.95 at
 -- dx 3.278 and 3.262; the pour takes the flame within about 0.32 of the place). A lead of 3.3 only works with the longer one: the middle
--- of the two leaves it 0.17 off either way)
-A2_JAM_LEAD = 3.12
+-- of the two leaves it 0.17 off either way). On the original it went on 3.45 (Nov 11: jam at dx 3.118, the flame stopped 0.33 past the
+-- place, and the pour failed). 3.2 is the middle of 2.95 and 3.45: 0.25 off at the most, on either engine)
+A2_JAM_LEAD = 3.2
 ar_hold(props.paintbrush)
 a2_flame_dx = function()
 	local t = lua.flamin_target
@@ -55,14 +56,37 @@ AR_START_SET = system.currentSet
 AR_CODE = lua.mech["use_" .. trim_header(props.paintbrush.system_name or props.paintbrush.string_name)]
 ar_approach(lua.mech)
 ar_log("at the mechanism, flame dx=" .. a2_flame_dx())
+-- (each frame; the flame's speed in game time over the last half second is logged at the jam, to compare the engines: on the original
+-- the flame went on 3.45 and 3.75 after the verb, on ScummVM 2.95 or 3.28)
 local n = 0
-while not a2_flame_close() and n < 6000 do
-	sleep_for(20)
+a2_ft = { }
+a2_fd = { }
+a2_t = 0
+while not a2_flame_close() and n < 20000 do
+	break_here()
+	a2_t = a2_t + system.frameTime
 	n = n + 1
-	if n == 1 or mod(n, 100) == 0 then ar_log("flame dx=" .. a2_flame_dx()) end
+	a2_ft[n] = a2_t
+	a2_fd[n] = a2_flame_dx()
+	if n == 1 or mod(n, 300) == 0 then ar_log("flame dx=" .. a2_flame_dx()) end
 end
-ar_log("jam at dx=" .. a2_flame_dx() .. " clock " .. tostring(AR_CLOCK))
+-- (the speed: from the sample half a second back)
+local k = n
+while k > 1 and a2_ft[n] - a2_ft[k] < 500 do
+	k = k - 1
+end
+a2_speed = 0
+if n > k and a2_ft[n] > a2_ft[k] then
+	a2_speed = (a2_fd[k] - a2_fd[n]) / (a2_ft[n] - a2_ft[k]) * 1000
+end
+ar_log("jam at dx=" .. a2_flame_dx() .. " clock " .. tostring(AR_CLOCK) .. " flame speed " .. a2_speed .. " units per game second")
 ar_send_verb("use", lua.mech, "use the paint brush on the sushi boat propulsion mechanism")
+a2_jam_t = 0
+while not lua.boats_stopped and a2_jam_t < 20000 do
+	break_here()
+	a2_jam_t = a2_jam_t + system.frameTime
+end
+ar_log("the boats stopped " .. a2_jam_t .. " ms of game time after the verb was sent")
 ar_try_wait(function() return find_script(lua.chef_fixes_boats) end, 60000)
 ar_wait_for_control()
 ar_log("jammed; t=" .. lua.flamin_target.x .. "," .. lua.flamin_target.z .. " flame=" .. lua.sushiflame:getworldpos().x .. "," .. lua.sushiflame:getworldpos().z .. " d to target=" .. point2_proximity(lua.flamin_target.x, 0, lua.flamin_target.z, lua.sushiflame:getworldpos().x, 0, lua.sushiflame:getworldpos().z))

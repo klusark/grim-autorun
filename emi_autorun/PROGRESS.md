@@ -404,3 +404,17 @@ Section A is done for all four acts. What changed since the puck:
   trap; the original pushes from where the step ends, in that sector).
 - Whole game on ScummVM with the Grim planner: Act 1 to act3_02 in one run, act3_03 to the end resumed from slot 302 after the act3_03
   fix; both PASSED.
+- 2026-11-11 (later): stability. Three ScummVM whole-game runs in parallel (run_single.sh TAG=a/b/c, own saves and script) all passed,
+  and identically: the simulated clock makes ScummVM runs deterministic, so differences come only from the original. The fish chase
+  (ar_chase_offered) turns to face the school when it is within 4 units and leads it otherwise (3 tries instead of 4-5). The planner:
+  way points passed within 15 cm, no turn toward a point closer than 10 cm (the original spun 7 times round at long_cheatbox).
+  The original: the planner logged with GetActorCostume (not a builtin of Monkey4.exe; emi_nav_gen.py now checks every builtin the
+  planner calls against the exe); a save brings back the hooks and wrappers of the run that made it, and the "only once" guards kept
+  them after a resume: an old PutActorAt hook divided Guybrush's place, which the original's GetActorPos does not give on the raft of
+  the Mysts o' Tyme, and every verb there died of "unexpected type in arithmetic" (the hooks and the GetControlState, movie, say_line
+  and inventory wrappers are now made again at every load). ar_obj_pos / ar_walk_to / ar_yaw_turn cope with a missing place.
+  The original now passes ch23 to act2_05 in one run.
+- act2_06 on the two engines: the flame moves at the same speed (0.95 units a game second) and the boats are stopped (stop_boats:
+  pause_script of each boat's flyto) 1.83 s of game time after the verb on both, but the flame goes on 1.2 units after that on
+  ScummVM and about 2 on the original (travel from the verb 2.95/3.28 ScummVM, 3.45/3.75/3.78 original): an engine difference, not
+  yet found. A2_JAM_LEAD 3.2 passes ScummVM; the original needs about 3.8.

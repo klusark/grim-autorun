@@ -54,14 +54,15 @@ fi
 	done
 	echo 'ar_log("=== THE WHOLE GAME DONE ===")'
 	echo 'ar_finish()'
-} > "$EM/generated/all_single${ORIG:+_orig}.lua"
-export SAVES="$EM/saves_single"
+} > "$EM/generated/all_single${ORIG:+_orig}${TAG:+_$TAG}.lua"
+# (TAG=x: a run of its own beside others: its own script, saves (saves_single_x) and log name)
+export SAVES="$EM/saves_single${TAG:+_$TAG}"
 mkdir -p "$SAVES"
 export EXTRA="emi_poke.lua emi_myst.lua"
 export NOLOG=${NOLOG:-90}
 # ORIG=1: on the original Monkey4.exe (run_orig.sh) instead of ScummVM
 if [ -n "$ORIG" ]; then
-	LOG=${LOGNAME_OVERRIDE:-single_orig} "$EM/run_orig.sh" "$EM/generated/all_single${ORIG:+_orig}.lua" ${1:-20000}
+	LOG=${LOGNAME_OVERRIDE:-single_orig${TAG:+_$TAG}} "$EM/run_orig.sh" "$EM/generated/all_single${ORIG:+_orig}${TAG:+_$TAG}.lua" ${1:-20000}
 else
-	LOG=${LOGNAME_OVERRIDE:-single} "$EM/run_emi.sh" "$EM/generated/all_single${ORIG:+_orig}.lua" ${1:-20000}
+	LOG=${LOGNAME_OVERRIDE:-single${TAG:+_$TAG}} "$EM/run_emi.sh" "$EM/generated/all_single${ORIG:+_orig}${TAG:+_$TAG}.lua" ${1:-20000}
 fi

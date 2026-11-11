@@ -24,6 +24,8 @@ AR_HOT_COST = 100
 -- in a turn while he walks: from the foot of Mêlée town's porch he swung into porch_trigger, 0.12 m away, and the game walked him up
 -- the steps. Turned standing at the start, and walking on only within 30 degrees, as emi_lib.lua's walker did)
 AR_NO_START_WALK = TRUE
+-- (a point of the way is passed within 15 cm, Grim's 6: see ar_nsteer)
+AR_P_REACH = 0.15
 AR_TURN_LIM = 30
 -- (a goal off the floor, however far: the walk ends at the nearest floor (the place of a door can be 10 units from it))
 AR_GOAL_OFF_MAX = 1000000
@@ -31,7 +33,16 @@ AR_GOAL_OFF_MAX = 1000000
 -- where Guybrush is, in the planner's axes
 ar_np = function()
 	local p = manny:getpos()
+	-- (no place: the original's GetActorPos gives nothing for Guybrush on the raft of the Mysts o' Tyme; 0 then, and the callers that
+	-- can do without it check ar_np_ok)
+	if not p.x or not p.y or not p.z then
+		return { x = 0, y = 0, z = 0 }
+	end
 	return { x = p.x / AR_NAV_S, y = p.z / AR_NAV_S, z = p.y / AR_NAV_S }
+end
+ar_np_ok = function()
+	local p = manny:getpos()
+	return p.x and p.y and p.z
 end
 
 -- where another actor is, in the planner's axes
@@ -48,11 +59,22 @@ end
 -- the heading from Guybrush toward the planner's point (x, y, z), as Grim's GetActorYawToPoint gives it: his yaw and the turn that
 -- Monkey4's builtin gives (see ar_want_yaw)
 ar_nyaw = function(h, x, y, z)
-	return manny:getrot().y + GetActorYawToPoint(h, x * AR_NAV_S, z * AR_NAV_S, y * AR_NAV_S)
+	-- (ar_yaw_turn: no turn where the game gives no heading)
+	return manny:getrot().y + ar_yaw_turn(manny, x * AR_NAV_S, z * AR_NAV_S, y * AR_NAV_S)
 end
 
 -- the turn keys toward the planner's point; the follower holds or lets go the forward key itself
 ar_nsteer = function(x, y, z, thr)
+	-- (a point a hand's breadth away: no turn toward it. As he turns, his place moves about his middle and the way to the point with it;
+	-- on the original he turned on the spot 7 times round toward a point 8 cm off, in long_cheatbox)
+	local p = manny:getpos()
+	local dx = x * AR_NAV_S - p.x
+	local dz = y * AR_NAV_S - p.z
+	if dx * dx + dz * dz < (0.1 * AR_NAV_S) * (0.1 * AR_NAV_S) then
+		ar_drive_turn(nil)
+		AR_STEER_D = 0
+		return nil
+	end
 	AR_NSTEER = TRUE
 	local r = ar_steer(x * AR_NAV_S, z * AR_NAV_S, y * AR_NAV_S, thr)
 	AR_NSTEER = nil
@@ -87,6 +109,15 @@ ar_nrun = function(on)
 end
 
 ar_nconstrain = function(h, on)
+end
+
+-- the place a script puts Guybrush (the PutActorAt hook), in the planner's axes. Only three numbers: the hook runs inside every script
+-- that moves him, and the original printed "unexpected type in arithmetic operation" at nearly every verb of the Mysts o' Tyme, Nov 11
+-- (the run's own task died of it once)
+ar_ntele = function(x, y, z)
+	if type(x) == "number" and type(y) == "number" and type(z) == "number" and ar_np_ok() then
+		ar_tele_note(x / AR_NAV_S, z / AR_NAV_S, y / AR_NAV_S)
+	end
 end
 
 -- a frame of the follower that did not step lets the forward key go (Grim's walk_forward walks for one frame; a held key walks on)
@@ -191,9 +222,11 @@ end
 -- Walks Guybrush to EMI's point (x, y, z) with the Grim planner. Returns TRUE when the walk is over, nil when the planner has no way
 -- (or no sectors for the set), and the caller's own planner walks instead.
 ar_gnav_walk = function(x, y, z, stop_when)
+	AR_WHERE = "the planner's walk, reading the sectors"
 	if not system.currentSet or not ar_nav_of(system.currentSet) then
 		return nil
 	end
+	AR_WHERE = "the planner's walk"
 	ar_wait_for_control()
 	local set = system.currentSet
 	-- (the planner's give-ups, which end a Grim run, end only the planner's walk: the log says why, and the grid planner goes on)
