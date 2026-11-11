@@ -615,6 +615,12 @@ if TRUE then
 			AR_COMB_START = nil
 			start_script(ar_comb_driver)
 		end
+		-- (Act 2's combination, act2_lib.lua's a2_combine, starts its driver here too: with a wrapper of its own, the one made again here
+		-- at a load dropped it, and after a resume the inventory stayed open for good (act2_13 on the original, Nov 11))
+		if A2_COMB_START and a2_inv_driver then
+			A2_COMB_START = nil
+			start_script(a2_inv_driver)
+		end
 	end
 end
 
@@ -808,3 +814,4 @@ end
 ar_hot_is = function(obj)
 	return hot_object == obj
 end
+

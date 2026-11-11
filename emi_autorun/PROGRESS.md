@@ -418,3 +418,8 @@ Section A is done for all four acts. What changed since the puck:
   pause_script of each boat's flyto) 1.83 s of game time after the verb on both, but the flame goes on 1.2 units after that on
   ScummVM and about 2 on the original (travel from the verb 2.95/3.28 ScummVM, 3.45/3.75/3.78 original): an engine difference, not
   yet found. A2_JAM_LEAD 3.2 passes ScummVM; the original needs about 3.8.
+- 2026-11-11 (evening): the original stood still at act2_13's inventory combination after a resume (both renderers): Act 2's a2_combine
+  had a wrapper of its own on Inventory.display (made once), and the reinstall of emi_myst's wrapper at every load (above) replaced the
+  chain, so a2_inv_driver never started and the inventory (which pauses every other script) stayed open. One wrapper now starts both
+  drivers. ScummVM's whole-game runs never resumed, which is why they passed. The original runs with Direct3D (OpenGL draws the scene
+  but its vsync makes it real time; without vsync the scene is black too).

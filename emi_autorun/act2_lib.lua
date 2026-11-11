@@ -137,16 +137,7 @@ a2_inv_driver = function()
 	A2_COMB_DONE = TRUE
 end
 
-if not A2_OLD_DISPLAY then
-	A2_OLD_DISPLAY = Inventory.display
-	Inventory.display = function(arg1, arg2, arg3)
-		A2_OLD_DISPLAY(arg1, arg2, arg3)
-		if A2_COMB_START then
-			A2_COMB_START = nil
-			start_script(a2_inv_driver)
-		end
-	end
-end
+-- (a2_inv_driver is started by emi_myst.lua's wrapper of Inventory.display when A2_COMB_START is set: one wrapper for both combinations)
 
 a2_combine = function(a, b)
 	ar_wait_for_control()
