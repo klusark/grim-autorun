@@ -1156,15 +1156,19 @@ ar_walk_planned = function(x, y, z, stop_when, max_ms)
 	return ok
 end
 
--- Every movie of the game is played by RunFullscreenMovie (_cut_scenes.lua). In a simulated run a movie plays at the game's own
--- length (a minute of game time) while the scripts, the skipper among them, do not run, so Escape cannot reach it: it is not
--- started at all (a real run, AR_REAL, plays it). What the original function leaves behind is kept: the flag the game reads for
--- "this movie was seen", and the music state.
+-- Every movie of the game is played by RunFullscreenMovie (_cut_scenes.lua): it starts the movie and loops with break_here while it
+-- plays, ending it (EscapeMovie) when the OVERRIDE control is held. The skipper holds Escape when a movie plays, as a player does, so
+-- the movies start and are skipped (Nov 10: it was thought the scripts did not run during a movie in a simulated run, and the movies
+-- were not started at all). AR_NO_MOVIES: the old way, not started; the flag the game reads for "this movie was seen" and the music
+-- state are set as the original function does.
 if not AR_OLD_RFM then
 	AR_OLD_RFM = RunFullscreenMovie
 	RunFullscreenMovie = function(name, mode)
-		if AR_REAL then
-			return AR_OLD_RFM(name, mode)
+		if AR_REAL or not AR_NO_MOVIES then
+			ar_log("movie started: " .. tostring(name))
+			local r = AR_OLD_RFM(name, mode)
+			ar_log("movie over: " .. tostring(name))
+			return r
 		end
 		ar_log("movie skipped, not started: " .. tostring(name))
 		music_state:set_state(STATE_NULL, TRUE)

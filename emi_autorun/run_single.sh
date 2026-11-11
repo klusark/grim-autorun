@@ -33,7 +33,9 @@ fi
 		b=$(basename $f)
 		if [ "$on" = 0 ] && [ "$kind" = file ] && [ "$b" = "$first" ]; then
 			on=1
-			# (the libraries before the first chapter of the resume: those since the last file)
+			# (the libraries before the first chapter of the resume: those since the last file; in Act 1, which has no library lines,
+			# the base ones: a checkpoint carries the functions as they were when it was saved, and a fix to them would not be seen)
+			[ -z "$pending" ] && pending="emi_lib.lua emi_poke.lua emi_myst.lua"
 			for l in $pending; do echo "ar_log(\"=== lib $l ===\")"; cat "$EM/$l"; echo; done
 		fi
 		if [ "$kind" = lib ]; then

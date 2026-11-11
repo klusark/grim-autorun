@@ -14,6 +14,7 @@ ar_raft_cells = function(dir)
 	local ox = { }
 	local oz = { }
 	local no = 0
+	local tx0, tx1, tz0, tz1
 	local x = rp.x - 45
 	while x <= rp.x + 45 do
 		local z = rp.z - 50
@@ -21,6 +22,10 @@ ar_raft_cells = function(dir)
 			local id, n = GetPointSector(x, rp.y, z, HOT)
 			if id and n and strfind(n, "_trigger", 1, TRUE) then
 				if n == name then
+					if not tx0 or x < tx0 then tx0 = x end
+					if not tx1 or x > tx1 then tx1 = x end
+					if not tz0 or z < tz0 then tz0 = z end
+					if not tz1 or z > tz1 then tz1 = z end
 					-- (a cell inside the trigger: its neighbours half a unit off are in it as well; the raft stops a hand short of
 					-- a point, and a cell on the very edge is not reached)
 					local i1, n1 = GetPointSector(x + 0.5, rp.y, z, HOT)
@@ -67,6 +72,35 @@ ar_raft_cells = function(dir)
 			bz = cz[i]
 		end
 		i = i + 1
+	end
+	-- (no such cell: the water reaches into the trigger only at the end of a narrow channel, as screen 2's bottom exit (8 wet half-unit
+	-- cells, x 99.5..100.5 z -6.5..-7): the trigger's box looked through in quarter units for water whose neighbours a quarter unit off
+	-- are in the trigger too, the nearest to the raft)
+	if not bx and tx0 then
+		local fx = tx0 - 1
+		while fx <= tx1 + 1 do
+			local fz = tz0 - 1
+			while fz <= tz1 + 1 do
+				local id, n = GetPointSector(fx, rp.y, fz, HOT)
+				if n == name and GetPointSector(fx, rp.y, fz) then
+					local i1, n1 = GetPointSector(fx + 0.25, rp.y, fz, HOT)
+					local i2, n2 = GetPointSector(fx - 0.25, rp.y, fz, HOT)
+					local i3, n3 = GetPointSector(fx, rp.y, fz + 0.25, HOT)
+					local i4, n4 = GetPointSector(fx, rp.y, fz - 0.25, HOT)
+					local d = (fx - rp.x) * (fx - rp.x) + (fz - rp.z) * (fz - rp.z)
+					if n1 == name and n2 == name and n3 == name and n4 == name and d < bd then
+						bd = d
+						bx = fx
+						bz = fz
+					end
+				end
+				fz = fz + 0.25
+			end
+			fx = fx + 0.25
+		end
+		if bx then
+			ar_log(format("RAFT the %s has water only at the end of a channel: %.2f %.2f", name, bx, bz))
+		end
 	end
 	return bx, bz
 end
@@ -394,6 +428,51 @@ ar_raft_walk = function(x, z)
 	ar_log(format("RAFT drive ended at %.1f %.1f (target %.1f %.1f) screen %s", pe.x, pe.z, x, z, tostring(mot.cur_setup_id)))
 end
 
+-- Through the open gate (screen 6, out by the bottom): the water south of the gate is one sector 0.4 wide (x 400.1..400.5 from z -3 to
+-- -6, setx/mot.setb), which the planner, keeping clear of the banks, never finds ("RAFT no path ... straight": the raft drove into a
+-- bank and out by a wrong exit, back to the start of the map). Only maps whose step after the gate is the bottom exit need it (the
+-- first runs with the movies started, Nov 10). Driven point by point along the middle of the strip: turned on the spot until the
+-- heading is within 3 degrees, then forward.
+AR_GATE_SOUTH = { { 400.3, -2.3 }, { 400.25, -3.0 }, { 400.25, -3.6 }, { 400.3, -4.3 }, { 400.35, -5.0 }, { 400.4, -5.7 }, { 400.45, -6.6 }, { 400.5, -7.8 } }
+ar_raft_gate_south = function()
+	local setup = mot.cur_setup_id
+	local i = 1
+	ar_log("RAFT through the gate: the channel south of it, point by point")
+	while AR_GATE_SOUTH[i] and not AR_RAFT_STOP and mot.cur_setup_id == setup do
+		local x = AR_GATE_SOUTH[i][1]
+		local z = AR_GATE_SOUTH[i][2]
+		local y = swampraft:getpos().y
+		local n = 0
+		local key = nil
+		local p = swampraft:getpos()
+		while sqrt((p.x - x) * (p.x - x) + (p.z - z) * (p.z - z)) > 0.15 and n < 900 and not AR_RAFT_STOP and mot.cur_setup_id == setup and cutSceneLevel == 0 do
+			local d = GetActorYawToPoint(swampraft.hActor, x, y, z) - swampraft:getrot().y
+			d = d - 360 * floor(d / 360 + 0.5)
+			local want = "MOVE_FORWARD"
+			if d > 3 then
+				want = "TURN_RIGHT"
+			elseif d < -3 then
+				want = "TURN_LEFT"
+			end
+			if want ~= key then
+				if key then
+					ar_key_up(key)
+				end
+				ar_key_down(want)
+				key = want
+			end
+			break_here()
+			n = n + 1
+			p = swampraft:getpos()
+		end
+		if key then
+			ar_key_up(key)
+		end
+		ar_log(format("RAFT gate channel point %d (%.2f %.2f): at %.2f %.2f after %d frames", i, x, z, p.x, p.z, n))
+		i = i + 1
+	end
+end
+
 -- (the raft's handler: whatever the game put in the button handler while the raft is steered)
 ar_raft_handler = function()
 	return mot.guybrush_on_raft and not ar_handler_normal()
@@ -411,7 +490,11 @@ ar_raft_exit = function(dir)
 	end
 	ar_log("RAFT to " .. tostring(AR_TRIGGER_NAMES[dir] or dir) .. " at " .. bx .. " " .. bz .. " (screen " .. tostring(before) .. ")")
 	AR_RAFT_STOP = nil
-	start_script(ar_raft_walk, bx, bz)
+	if before == 6 and (AR_TRIGGER_NAMES[dir] or dir) == "down_trigger" and mot.opened_gate then
+		start_script(ar_raft_gate_south)
+	else
+		start_script(ar_raft_walk, bx, bz)
+	end
 	local waited = 0
 	while mot.cur_setup_id == before and mot.map_step == step and waited < 90000 do
 		sleep_for(300)

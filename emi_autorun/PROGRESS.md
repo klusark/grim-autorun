@@ -338,3 +338,12 @@ Section A is done for all four acts. What changed since the puck:
   the poker and act 3 went on in the middle of conversations), and act2_22 follows the conversation. Whole game from a new game in ONE
   attempt: 271 s real, 9983 s of game time. (Careful: a `( run_whole.sh ) &` inside a background command keeps running after it
   returns; two runs at once write the same logs and saves.)
+- 2026-11-10 night: movies start (RunFullscreenMovie is the game's own; its loop runs every frame and ends the movie when OVERRIDE is held,
+  the skipper holds Escape; AR_NO_MOVIES: the old way). The movies change the game's random numbers, so a new game draws another map
+  of Mysts o' Tyme: one whose step after the gate is screen 6's bottom exit (a channel 0.4 wide south of the gate, driven point by
+  point: ar_raft_gate_south) and whose last screen is 2 out by the bottom (water only at the end of a narrow channel: ar_raft_cells
+  looks through the trigger in quarter units). run_single.sh's resume in Act 1 loads emi_lib/poke/myst again after ar_load (a
+  checkpoint carries the old functions). run_emi.sh GDB=1 runs scummvm under gdb (a stack for the rare crash: integer division by zero
+  in Audio::Timestamp::msecs, a Timestamp with frame rate 0, EMI sound; seen 4 times on Nov 10, not yet caught). Whole game with the
+  movies, one attempt: 9592 s of game time.
+  Only stop scummvm.exe whose command line has \emi_autorun\generated\ (a Grim autorun runs the same build at the same time).

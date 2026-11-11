@@ -36,7 +36,15 @@ log="$EM/logs/${LOG:-$name}.log"
 : > "$log"; : > "$log.times"
 cd "${SVM_DIR:-/home/Joel/scummvm-autorun/build-opt}" || exit 1
 start=$(date +%s)
-./scummvm.exe --config="$(cygpath -w "$EM/generated/_scummvm_$id.ini")" --savepath="$(cygpath -w "${SAVES:-$EM/saves}")" \
+# (GDB=1: under gdb, which prints the stack of a crash into the log: the rare crash with exit status 127, a division by zero in
+# Audio::Timestamp::msecs, Nov 10)
+svm() {
+	if [ -n "$GDB" ]; then
+		exec gdb -batch -ex "set pagination off" -ex "set print thread-events off" -ex run -ex "thread apply all bt 25" --args ./scummvm.exe "$@"
+	fi
+	exec ./scummvm.exe "$@"
+}
+svm --config="$(cygpath -w "$EM/generated/_scummvm_$id.ini")" --savepath="$(cygpath -w "${SAVES:-$EM/saves}")" \
 	--autorun="$(cygpath -w "$EM/generated/${name}_$id.lua")" --debugflags=scripts \
 	$([ -z "$REALTIME" ] && echo --engine-speed=${ES:-0} --sim-fps=${SIMFPS:-60}) --show-fps "$@" monkey4-win > "$log" 2>&1 &
 pid=$!
