@@ -26,6 +26,8 @@ ar_do("use", dom.drawer_object)
 ar_do("use", dom.drawer_object)
 ar_check(ar_has(dom.coral), "Manny has the coral")
 
+-- (a 100% run looks over the office before it leaves: the window is a use, not a door of ar_go, which sweeps by itself)
+ar_sweep()
 ar_do("use", dom.window)
 ar_expect_set(le, "back on the ledge")
 ar_state("end of chapter 5a")

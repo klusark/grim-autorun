@@ -2,6 +2,15 @@
 -- where a 100% run has more to do. In the other modes ar_extra does nothing, so those runs are not changed by a frame.
 -- Lua 3.1: no for loops, no # operator, no local functions.
 
+-- (this file is read once a script run, after ar_lib.lua has defined ar_go, ar_do ... afresh. A chapter that loads a save of a 100% run gets the
+-- *_OLD of that run back with it, and the guards below took them as wrapped already: a run of one chapter of speed100 had no extras at all)
+AR_LOG_X_OLD, AR_GO_OLD, AR_CP_OLD, AR_PICK_OLD, AR_PICK_EXIT_OLD, AR_SWEEP_OLD = nil, nil, nil, nil, nil, nil
+-- (so is the chapter of the frames, which the people step goes by: the save of chapter 3 had it at chapter 3. run_all.sh sets it for each chapter after
+-- this file; ar_lib.lua sets it itself when frames are taken)
+if not AR_FRAMES then
+	AR_FRAME_CH = nil
+end
+
 AR_EXTRAS = AR_EXTRAS or { }
 AR_EXTRA_MISS = AR_EXTRA_MISS or 0
 
@@ -73,6 +82,11 @@ if AR_FULL and not AR_LOG_X_OLD then
 			ar_people_once()
 			AR_NO_PUT_BACK = nil
 		end
+		-- (the fire extinguisher of the Beaver Dam sprays until the USE key is let go, which a press of ar_do never does: chapter 12 lets go itself, an
+		-- extra had Manny spray for ever)
+		if AR_IN_EXTRA and type(bd) == "table" and bd.extinguisher and (noun2 == bd.extinguisher or noun1 == bd.extinguisher) then
+			start_script(ar_extinguisher_release)
+		end
 		return AR_DO_X_OLD(verb, noun1, noun2)
 	end
 	AR_WALK_X_OLD = ar_walk_to
@@ -81,6 +95,19 @@ if AR_FULL and not AR_LOG_X_OLD then
 			return nil
 		end
 		return AR_WALK_X_OLD(x, y, z, stop_when, max_ms)
+	end
+end
+
+-- Lets go of the USE key once the extinguisher sprays (after its least time, 1.5 s, which bd.extinguisher_count_min_time counts)
+ar_extinguisher_release = function()
+	local t = 0
+	while not (bd.firing_extinguisher and system.buttonHandler == fireExtinguisherHandler) and t < 30000 do
+		break_here()
+		t = t + system.frameTime
+	end
+	sleep_for(1600)
+	if system.buttonHandler == fireExtinguisherHandler then
+		system.buttonHandler(ar_key_for("use"), nil, nil)
 	end
 end
 
@@ -101,9 +128,13 @@ ar_extra_run = function(tag, f)
 	ar_wait_for_control()
 	-- (the extras walk about: Manny is put back where he stood, so that the story goes on from there)
 	local back = manny:getpos()
-	AR_EX_SET = system.currentSet
+	-- (kept here as well: an extra inside this one, the people step of a side trip, set them to its own set)
+	local ex_set = system.currentSet
+	AR_EX_SET = ex_set
 	AR_EX_X, AR_EX_Y, AR_EX_Z = back.x, back.y, back.z
 	f()
+	AR_EX_SET = ex_set
+	AR_EX_X, AR_EX_Y, AR_EX_Z = back.x, back.y, back.z
 	-- (the walk back below is not given up with the extra: the story goes on from where Manny stood)
 	AR_EXTRA_ABORT = nil
 	ar_wait_for_control()
@@ -176,12 +207,37 @@ ar_no_use = function(o)
 end
 
 -- The objects of a set (the ones Object:create made for it), the nearest to Manny first, each once
+-- The global of a set: the name of its set file (bv.set is bv), or else the global that holds it (do.set is dom: do is a word of Lua). Not kept in the set,
+-- whose table goes into the saves.
+AR_SET_GLOBAL = { }
+ar_set_global = function(set)
+	if not set then
+		return nil
+	end
+	local stem = set.setFile and strsub(set.setFile, 1, strlen(set.setFile) - 4)
+	if stem and getglobal(stem) == set then
+		return stem
+	end
+	if AR_SET_GLOBAL[set] then
+		return AR_SET_GLOBAL[set]
+	end
+	local n, v = nextvar(nil)
+	while n do
+		-- (a name as the sets have, two to four small letters: AR_TARGET and cameraman_watching_set hold the set too)
+		if v == set and strfind(n, "^%l%l%l?%l?$") then
+			AR_SET_GLOBAL[set] = n
+			return n
+		end
+		n, v = nextvar(n)
+	end
+	return stem
+end
+
 ar_set_objects = function(set)
 	local list = { }
 	local n = 0
 	local seen = { }
-	-- (the global of a set is the name of its set file: bv.set is bv)
-	local global = set.setFile and strsub(set.setFile, 1, strlen(set.setFile) - 4) or tostring(set.name)
+	local global = ar_set_global(set) or tostring(set.name)
 	local k, v = next(set, nil)
 	while k do
 		if type(v) == "table" and v.obj_set == set and v.name and v.obj_x and not seen[v] then
@@ -297,7 +353,9 @@ ar_items_on = function(obj)
 	i = 1
 	while i <= n and system.currentSet == obj.obj_set do
 		local item = inv[i]
-		if item.owner == manny and obj[ "use_" .. trim_header(item.string_name) ] then
+		-- (not the scythe where the game keeps it put away, no_scythe_sets of _sets.lua: Domino's office has code for it that no player can reach)
+		if item.owner == manny and obj[ "use_" .. trim_header(item.string_name) ]
+			and not (item == mo.scythe and system.currentSet.setFile and in(system.currentSet.setFile, no_scythe_sets)) then
 			ar_do("use", obj, item)
 		end
 		i = i + 1
@@ -737,16 +795,20 @@ ar_talker_left = function(key)
 end
 ar_talk_people = function()
 	local set = system.currentSet
-	-- (the global of a set is the name of its set file: ha.set is ha)
-	local global = set.setFile and strsub(set.setFile, 1, strlen(set.setFile) - 4)
+	local global = ar_set_global(set)
 	if not global or not AR_TALKERS[global] or AR_NO_PEOPLE[set.name] then
+		if AR_TRIP then
+			ar_log("extra: no people step in " .. tostring(set.name) .. " (global " .. tostring(global) .. ")")
+		end
 		return
 	end
 	local list = AR_TALKERS[global]
 	local i = 1
 	while list[i] and system.currentSet == set do
 		local obj = set[list[i]]
-		if type(obj) == "table" and obj.touchable and not obj.owner then
+		if type(obj) ~= "table" or not obj.touchable or obj.owner then
+			ar_log("extra: " .. list[i] .. " in " .. tostring(set.name) .. " is not there to talk to")
+		else
 			if ar_talker_left(global .. "." .. list[i]) then
 				ar_log("extra: no talk to " .. list[i] .. " in " .. tostring(set.name) .. " (its dialog is left to the chapter that talks in it)")
 			elseif ar_no_talker(tostring(set.name) .. " " .. list[i]) then
@@ -779,10 +841,54 @@ ar_people_once = function()
 		ar_talk_people()
 	end
 end
+-- A side trip, called by a chapter (100% modes only, nothing in the others): through a door to a set the story does not go into while someone is there,
+-- everything there looked at, the people picked up, given the items Manny has code for and talked to, and back through the door of that set. Chapter 4:
+-- Domino boxes in his office only between Bruno and Meche.
+--   ar_side_trip(ha.do_door, dom, dom.ha_door)
+ar_side_trip = function(door, target, back)
+	if not AR_FULL then
+		return
+	end
+	AR_TRIP = { door, target, back }
+	ar_extra_run("side trip " .. tostring(system.currentSet.name) .. " -> " .. tostring(target.name), ar_side_trip_run)
+	AR_TRIP = nil
+end
+ar_side_trip_run = function()
+	local door, target, back = AR_TRIP[1], AR_TRIP[2], AR_TRIP[3]
+	local from = system.currentSet
+	AR_GO_OLD(door, target)
+	ar_wait_for_control()
+	if system.currentSet ~= target then
+		ar_log("extra: the side trip did not get to " .. tostring(target.name))
+		return
+	end
+	-- (the looks first: the talk can end with Manny sent out, Domino does. Looks only, which change nothing; they are not the sweep of the set, which
+	-- a later chapter that goes in does as well, when what the looks say has changed)
+	ar_look_all(target)
+	-- (the people, picked up and given the items: only here, where the person is not there on the chapters' own visits)
+	local list = AR_TALKERS[ar_set_global(target)]
+	local i = 1
+	while list and list[i] and system.currentSet == target do
+		local obj = target[list[i]]
+		if type(obj) == "table" and obj.touchable and not obj.owner then
+			if ar_has_verb(obj, "pickUp") then
+				ar_do("pickUp", obj)
+			end
+			ar_items_on(obj)
+		end
+		i = i + 1
+	end
+	ar_talk_people()
+	ar_wait_for_control()
+	if system.currentSet == target and cutSceneLevel == 0 then
+		AR_GO_OLD(back, from)
+		ar_wait_for_control()
+	end
+end
 -- Whether the object is one of the people of the current set (AR_TALKERS)
 ar_is_talker = function(obj)
 	local set = system.currentSet
-	local global = set and set.setFile and strsub(set.setFile, 1, strlen(set.setFile) - 4)
+	local global = ar_set_global(set)
 	local list = global and AR_TALKERS[global]
 	local i = 1
 	while list and list[i] do

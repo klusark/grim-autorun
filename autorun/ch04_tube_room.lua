@@ -30,6 +30,8 @@ ar_state("balloons filled")
 
 ar_go(pk.lo_door, lo)
 ar_go(lo.ha_door, ha)
+-- (100% modes: Domino is in his office only now, between Bruno and Meche; the trip looks around, talks to him and comes back)
+ar_side_trip(ha.do_door, dom, dom.ha_door)
 ar_go(ha.mo_door, mo)
 
 ar_do("use", mo.tube, ar_find_owned(pk.balloons))

@@ -1348,7 +1348,12 @@ ar_do = function(verb, noun1, noun2)
 	end
 	AR_START_SET = system.currentSet
 	ar_log("do: " .. label .. format(" (Manny at %.2f %.2f)", manny:getpos().x, manny:getpos().y))
-	ar_cov("do | " .. verb .. " | " .. tostring(noun1.string_name or noun1.name) .. " | " .. (noun2 and tostring(noun2.string_name or noun2.name) or "") .. " | " .. ar_set_name())
+	-- (with an item, only once it is in hand: the scythe could not be taken out in Domino's office, and its use on him was counted done)
+	local cov = "do | " .. verb .. " | " .. tostring(noun1.string_name or noun1.name) .. " | " .. (noun2 and tostring(noun2.string_name or noun2.name) or "") .. " | " .. ar_set_name()
+	if not noun2 and noun1.owner ~= manny then
+		ar_cov(cov)
+		cov = nil
+	end
 	if noun2 then
 		code = noun1[verb .. "_" .. trim_header(noun2.string_name)]
 		if not code then
@@ -1373,6 +1378,10 @@ ar_do = function(verb, noun1, noun2)
 		if not ar_hold(item) then
 			return ar_fail("could not take " .. tostring(item.name) .. " in hand")
 		end
+	end
+	if cov and (manny.is_holding == item or not item) then
+		ar_cov(cov)
+		cov = nil
 	end
 	if item == noun1 then
 		-- used on its own, with nothing in front of Manny to use it on
@@ -1404,6 +1413,10 @@ ar_do = function(verb, noun1, noun2)
 			if not ar_hold(item) then
 				return ar_fail("could not take " .. tostring(item.name) .. " in hand again")
 			end
+		end
+		if cov then
+			ar_cov(cov)
+			cov = nil
 		end
 		if not ar_send_verb(verb, noun1, label) then
 			return nil
