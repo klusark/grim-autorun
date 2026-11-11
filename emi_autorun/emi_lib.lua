@@ -152,6 +152,21 @@ ar_wait_for_control = function()
 	end
 end
 
+-- A movie is skipped where the game asks for the key: RunFullscreenMovie's loop reads get_generic_control_state("OVERRIDE") on every
+-- turn, which reads GetControlState of the Escape keys (wrapped by ar_lib for the held keys). While a movie plays, Escape reads as
+-- held there, as a player holds it. This works inside the movie's own loop, so also for a movie that a set's enter plays during
+-- switch_to_set, which pauses every other script (the skipper too: Melee dock's movie played its whole length on the original).
+-- AR_NO_SKIP or AR_REAL: the movies play.
+if not AR_GCS_MOVIE then
+	AR_GCS_MOVIE = GetControlState
+	GetControlState = function(k, a, b)
+		if not AR_NO_SKIP and not AR_REAL and control_map and control_map.OVERRIDE and control_map.OVERRIDE[k] and IsMoviePlaying() then
+			return 1
+		end
+		return AR_GCS_MOVIE(k, a, b)
+	end
+end
+
 -- Copy of the Grim ar_skipper, skipping a cutscene after one 100 ms look instead of six (AR_SKIP_AFTER)
 if AR_SKIP_TASK then
 	stop_script(AR_SKIP_TASK)

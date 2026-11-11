@@ -41,7 +41,7 @@ start=$(date +%s)
 # Audio::Timestamp::msecs, Nov 10)
 svm() {
 	if [ -n "$GDB" ]; then
-		exec gdb -batch -ex "set pagination off" -ex "set print thread-events off" -ex run -ex "thread apply all bt 25" --args ./scummvm.exe "$@"
+		exec gdb -batch ${GDBCMDS:+-x "$GDBCMDS"} -ex "set pagination off" -ex "set print thread-events off" -ex run -ex "thread apply all bt 25" --args ./scummvm.exe "$@"
 	fi
 	exec ./scummvm.exe "$@"
 }

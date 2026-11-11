@@ -371,3 +371,9 @@ Section A is done for all four acts. What changed since the puck:
   task) and on the original a checkpoint waits 20 s of game time after saving; the run folder's own Monkey4.exe is stopped before
   patch.m4b is written (it holds the archive open). Original: ch01..ch22 pass; ch23 stops at the chess player, as ScummVM does now
   (the walk to him through west_stair_cheatbox).
+- 2026-11-11: movies. The original runs Lua during movies (the frame function 0x40be30 calls lua_updatetasks in movie mode; the Bink
+  step 0x4226c0 does not block). switch_to_set calls pause_scripts at its start and unpause_scripts at its end, and a set's enter
+  can play a movie inside it (Melee dock's mdo.run_opening, the wedding ship's intro_a): every other script is paused then, the
+  skipper too. The movie is skipped where the game reads the key: GetControlState of an Escape key reads held while a movie plays
+  (emi_lib, AR_NO_SKIP/AR_REAL: they play). ch01 passes on the original in 8 s with no key from outside. (On the original a movie
+  plays in real time, in a simulated ScummVM run on the game's clock.) run_emi.sh: GDBCMDS=<file> gives gdb a commands file.
