@@ -10,9 +10,21 @@ A3_K = 0.59
 a3_pac_gone = function()
 	return next(pac.rocks, nil) == nil
 end
+-- The time from the verb to the rock being made, for each slot, measured at every throw (A3_LAT[slot], ms of A3_CLK): it differs between
+-- the engines (on the original the second rock of the plan came 0.5 s early with ScummVM's numbers, Nov 11, four tries in a row)
+A3_LAT = { }
+a3_use_slot = function(slot)
+	local t = A3_CLK
+	local before = A3_LAST_CREATE
+	ar_do("use", pac["slot" .. slot], pac.rock_obj)
+	if A3_LAST_CREATE and A3_LAST_CREATE ~= before and t then
+		A3_LAT[slot] = A3_LAST_CREATE - t
+		ar_log("slot " .. slot .. ": the rock was made " .. A3_LAT[slot] .. " ms after the verb")
+	end
+end
 a3_throw = function(slot)
 	ar_do("pickUp", pac.rockpile)
-	ar_do("use", pac["slot" .. slot], pac.rock_obj)
+	a3_use_slot(slot)
 end
 -- first the rocks to the canyon (slot 3) and the beach (slot 2), each alone, so that nothing but the lava is left to happen
 if not glob.rock_canyon then
@@ -42,12 +54,12 @@ while not glob.rock_lava and tries < 4 do
 	while plan[i] do
 		ar_do("pickUp", pac.rockpile)
 		if c0 then
-			local at = c0 + plan[i][2] * 1000 - (plan[i][3] or A3_K * 1000)
+			local at = c0 + plan[i][2] * 1000 - (A3_LAT[plan[i][1]] or plan[i][3] or A3_K * 1000)
 			while A3_CLK < at do
 				sleep_for(20)
 			end
 		end
-		ar_do("use", pac["slot" .. plan[i][1]], pac.rock_obj)
+		a3_use_slot(plan[i][1])
 		if not c0 then
 			c0 = A3_LAST_CREATE
 		end

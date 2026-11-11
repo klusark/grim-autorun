@@ -423,3 +423,8 @@ Section A is done for all four acts. What changed since the puck:
   chain, so a2_inv_driver never started and the inventory (which pauses every other script) stayed open. One wrapper now starts both
   drivers. ScummVM's whole-game runs never resumed, which is why they passed. The original runs with Direct3D (OpenGL draws the scene
   but its vsync makes it real time; without vsync the scene is black too).
+- 2026-11-11 (night), the original past Act 2: act3_11 measures, for each chute slot, the time from the verb to the rock being made and
+  times the four rocks with it (the original makes them 0.14-0.5 s sooner than ScummVM: slot 3 2074/2267 ms, slot 2 1768/2266, slot 1
+  1462/1600; an engine difference to look into, like the Lua Bar's 1.6 s/1.1 s from the verb to the press). act3_08: a Kombat word is
+  pressed when no line is up, and the next turn waited for only after the game has taken the phrase. On a resume the original runs the
+  saved run's tasks on until the new script stops them: orig_parts.py now stops the chapters' own tasks too (two Kombat bots played).

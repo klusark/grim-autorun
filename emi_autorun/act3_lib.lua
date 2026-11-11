@@ -784,14 +784,25 @@ a3_kombat_bot = function()
 			ar_log(format("KOMBAT me %d monkey %d -> stance %d, words %d %d %d (health %.1f / %.1f)", g, m, target, words[1], words[2], words[3], mk.guybrush_health, mk.monkey_health))
 			local i = 1
 			while i <= 3 do
-				-- (the game says the word and waits for the line to end before it takes the next key)
+				-- (the game says the word and waits for the line to end before it takes the next key: the press is made when no line is up.
+				-- On the original a word pressed while the line before it ("Ack") was still up was lost, and the exchange waited for its
+				-- third word for good, Nov 11)
+				ar_try_wait(function() return not IsMessageGoing() end, 5000)
+				sleep_for(100)
 				ar_press_key(ar_real_key(A3_KOMBAT_KEYS[words[i]]))
 				sleep_for(80)
 				ar_release_key(ar_real_key(A3_KOMBAT_KEYS[words[i]]))
 				sleep_for(150)
 				i = i + 1
 			end
-			-- wait until the exchange is over (the buttons are locked again or the turn passed)
+			-- wait until the game has taken the phrase (it leaves the ready state: the turn passes, the buttons lock), then until the next
+			-- turn. Waiting only for the ready state, the original was still in it 1.5 s after the third word, and the words were pressed a
+			-- second time: the two phrases mixed and every fight was lost (Nov 11)
+			local taken = 0
+			while mk and a3_kombat_ready() and taken < 8000 do
+				sleep_for(100)
+				taken = taken + 100
+			end
 			local waited = 0
 			while mk and a3_kombat_ready() == nil and waited < 20000 do
 				sleep_for(100)
