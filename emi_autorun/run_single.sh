@@ -23,7 +23,10 @@ if [ -n "$RESUME" ]; then
 	slot=$(echo $RESUME | awk '{print $1}'); first=$(echo $RESUME | awk '{print $2}')
 fi
 {
-	[ -n "$first" ] && echo "ar_load($slot)"
+	# (the original brings back, with a save, the task that made it, the old run's code: the first F11 at the boot set loads the save,
+	# the second runs this script again, which stops that task and goes on from the checkpoint; run_orig.sh presses it with RESUME set)
+	[ -n "$first" ] && [ -n "$ORIG" ] && echo "if system.currentSet and system.currentSet.setFile and strlower(system.currentSet.setFile) == \"cdt.set\" then ar_load($slot) end"
+	[ -n "$first" ] && [ -z "$ORIG" ] && echo "ar_load($slot)"
 	echo "AR_CONTINUE = TRUE"
 	echo "AR_TIMEOUT = 36000000"
 	on=1; [ -n "$first" ] && on=0
@@ -50,14 +53,14 @@ fi
 	done
 	echo 'ar_log("=== THE WHOLE GAME DONE ===")'
 	echo 'ar_finish()'
-} > "$EM/generated/all_single.lua"
+} > "$EM/generated/all_single${ORIG:+_orig}.lua"
 export SAVES="$EM/saves_single"
 mkdir -p "$SAVES"
 export EXTRA="emi_poke.lua emi_myst.lua"
 export NOLOG=${NOLOG:-90}
 # ORIG=1: on the original Monkey4.exe (run_orig.sh) instead of ScummVM
 if [ -n "$ORIG" ]; then
-	LOG=${LOGNAME_OVERRIDE:-single_orig} "$EM/run_orig.sh" "$EM/generated/all_single.lua" ${1:-20000}
+	LOG=${LOGNAME_OVERRIDE:-single_orig} "$EM/run_orig.sh" "$EM/generated/all_single${ORIG:+_orig}.lua" ${1:-20000}
 else
-	LOG=${LOGNAME_OVERRIDE:-single} "$EM/run_emi.sh" "$EM/generated/all_single.lua" ${1:-20000}
+	LOG=${LOGNAME_OVERRIDE:-single} "$EM/run_emi.sh" "$EM/generated/all_single${ORIG:+_orig}.lua" ${1:-20000}
 fi

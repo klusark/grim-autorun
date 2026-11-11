@@ -448,7 +448,10 @@ ar_steer = function(x, y, z, thr)
 			else
 				ar_drive_turn("TURN_LEFT")
 			end
-			if abs(d) > 30 then
+			-- (near the point, any turn is made standing: walking on while turning circles round it, as on the original, 22 s
+			-- round a way point of Lucre town and out by the Hall o' Justice door)
+			local pp = mn:getpos()
+			if abs(d) > 30 or (pp.x - x) * (pp.x - x) + (pp.z - z) * (pp.z - z) < 2.5 * 2.5 then
 				ar_drive_key("MOVE_FORWARD", nil)
 			end
 		-- EMI: TurnActor(+1) lowers the yaw (AR_TURN_SIGN = -1); in Grim it raises it (nil / 1)
@@ -517,6 +520,13 @@ ar_floor_dist = function(x, z)
 	return sqrt((p.x - x) * (p.x - x) + (p.z - z) * (p.z - z))
 end
 
+-- whether a hot box (a door, a cheat box) lies at (x, z) or half way to it from (px, pz)
+ar_hot_near = function(px, py, pz, x, z)
+	local i1, n1 = GetPointSector(x, py, z, HOT)
+	local i2, n2 = GetPointSector((px + x) / 2, py, (pz + z) / 2, HOT)
+	return n1 or n2
+end
+
 ar_walk_direct = function(x, y, z, stop_when, max_ms)
 	local mn = AR_WALKER or manny
 	local budget = max_ms or AR_WALK_MAX or (8000 + 1000 * ar_floor_dist(x, z))
@@ -557,8 +567,18 @@ ar_walk_direct = function(x, y, z, stop_when, max_ms)
 				side = -side
 				avoid_x = px.x - ddz * side * 2.5
 				avoid_z = px.z + ddx * side * 2.5
+				-- (not into a hot box, a door or a cheat box, at the side point or half way: the other side, or no step at all)
+				if ar_hot_near(px.x, px.y, px.z, avoid_x, avoid_z) then
+					side = -side
+					avoid_x = px.x - ddz * side * 2.5
+					avoid_z = px.z + ddx * side * 2.5
+					if ar_hot_near(px.x, px.y, px.z, avoid_x, avoid_z) then
+						avoid_x = nil
+					end
+				end
 				-- (Jambalaya town: the tourist stands about in the square and does not move aside. Not on the island maps: there the walk is no walk, Guybrush is a marker that goes where the verb sends it)
-				if (AR_AVOID or ar_set_name() == "jambalaya town" or ar_set_name() == "lua bar" or ar_set_name() == "kitchen") and not strfind(ar_set_name(), "map", 1, TRUE) then
+				-- (everywhere but the maps: Lucre town's walkers pinned him on the original, Nov 11)
+				if avoid_x and not AR_NO_AVOID and not strfind(strlower(ar_set_name()), "map", 1, TRUE) then
 					avoid_n = 75
 					ar_log(format("walk: blocked at %.2f %.2f, stepping aside to %.2f %.2f", px.x, px.z, avoid_x, avoid_z))
 				end
@@ -737,7 +757,7 @@ end
 
 ar_line_ok = function(x1, z1, x2, z2, y1, y2)
 	local d = sqrt((x2 - x1) * (x2 - x1) + (z2 - z1) * (z2 - z1))
-	local n = floor(d / 0.15) + 1
+	local n = floor(d / 0.05) + 1  -- (every 5 cm: a gap of the floor 8 cm wide in front of Lucre town's west stair, Nov 11)
 	local i = 1
 	local y = y1
 	while i <= n do
@@ -754,6 +774,17 @@ end
 
 ar_cellkey = function(cx, cz)
 	return (cx + 500) * 1000 + (cz + 500)
+end
+
+-- (the original kills a script that runs for long without break_here ("Killing Lua script that ran without a break_here() for a
+-- really long time"); a search of the planners lets a frame pass every 200 steps there. ScummVM has no such limit: nothing changes)
+ar_plan_yield = function()
+	if AR_ORIGINAL then
+		AR_PLAN_N = (AR_PLAN_N or 0) + 1
+		if mod(AR_PLAN_N, 200) == 0 then
+			break_here()
+		end
+	end
 end
 
 ar_grid_path = function(tx, tz)
@@ -782,6 +813,7 @@ ar_grid_path = function(tx, tz)
 	local nodes = 0
 	-- (the goal may lie just outside the sectors, a door's point: a cell within 1.5 cells of it ends the search)
 	while head <= tail and not found and nodes < 40000 do
+		ar_plan_yield()
 		local c = S.queue[head]
 		head = head + 1
 		nodes = nodes + 1
@@ -999,6 +1031,7 @@ ar_grid_path_big = function(tx, tz)
 	local bestkey = nil
 	local nodes = 0
 	while H.n > 0 and not found and nodes < 60000 do
+		ar_plan_yield()
 		local ck = ar_heap_pop(H)
 		if not S.closed[ck] then
 			S.closed[ck] = TRUE
@@ -1076,6 +1109,16 @@ end
 
 -- (AR_WALKER names another actor to walk and steer than manny: the rowboat on a map)
 -- The walk of the EMI layer: the planned way (ar_grid_path) when the straight line leaves the sectors, then the last leg direct.
+-- whether a floor point is inside one of the set's cheat boxes (hot boxes that move the walker across: system.currentSet.cheat_boxes)
+ar_in_cheatbox = function(x, y, z)
+	local cb = system.currentSet and system.currentSet.cheat_boxes
+	if not cb then
+		return nil
+	end
+	local id, name = GetPointSector(x, y, z, HOT)
+	return name and cb[name]
+end
+
 ar_walk_planned = function(x, y, z, stop_when, max_ms)
 	local mn = AR_WALKER or manny
 	-- A map: the roads Guybrush's marker walks on are strips half a unit wide, which the grid of a room would step over
@@ -1198,6 +1241,12 @@ ar_walk_planned = function(x, y, z, stop_when, max_ms)
 				local i = 1
 				ar_log("walk: planned way of " .. tostring(n) .. " legs (round " .. tostring(round) .. ")")
 				while i <= n and ok and system.currentSet == AR_WALK_SET and not (stop_when and stop_when()) and not again do
+					-- (a way point inside a cheat box of the set (the game moves Guybrush across the box as he walks into it,
+					-- GetSectorOppositeEdge) is not walked to: the walk goes on to the next one, through the box, and the box carries
+					-- him; walking back to it, he was carried back and forth for ever (Lucre town's bait_hall_cheatbox))
+					while i < n and ar_in_cheatbox(pts[i][1], pts[i][3], pts[i][2]) do
+						i = i + 1
+					end
 					-- (a leg ends within 15 cm: the way runs along edges of the floor, a corner passed wide is a wall)
 					AR_WALK_TOL = 0.15
 					local before = mn:getpos().y
@@ -1790,6 +1839,11 @@ ar_checkpoint = function(slot)
 	ar_menu_save(slot)
 	sleep_for(1500)
 	ar_log("saved checkpoint grim" .. format("%02d", slot) .. ".gsv")
+	-- (the original brings the task that made a save back with it: a resume (run_orig.sh) loads the save and runs the new script at
+	-- once, which stops this task; it waits here meanwhile, 20 s of game time, a fifth of a second of a run on the original)
+	if AR_ORIGINAL then
+		sleep_for(20000)
+	end
 	if not AR_CONTINUE then
 		-- one chapter run: the save is the result
 		ar_finish()

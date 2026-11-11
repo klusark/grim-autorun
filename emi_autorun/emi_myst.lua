@@ -159,6 +159,7 @@ ar_raft_path = function(x, z, margin)
 	local dx = { 1, -1, 0, 0, 1, 1, -1, -1 }
 	local dz = { 0, 0, 1, -1, 1, -1, 1, -1 }
 	while head <= tail and not found and head < 30000 / (step * step) do
+		ar_plan_yield()
 		local cx = queue[head][1]
 		local cz = queue[head][2]
 		head = head + 1

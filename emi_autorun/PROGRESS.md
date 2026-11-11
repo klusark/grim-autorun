@@ -360,3 +360,14 @@ Section A is done for all four acts. What changed since the puck:
   presses Escape from outside while a movie plays. The original has no GetFloorHeights (emi_floors.lua from gen_floors.py and
   emi_floors_fn.lua: the same results as the engine's on 8237 lookups) and no LockFont (stubbed in emi_prelude.lua); it prints no
   traceback for a Lua error (STAGE lines mark the libraries). The original runs at about half of real time (simtime 17 ms a frame).
+- ScummVM bug fixed (autorun 619de96ff4c): EMI GetSectorOppositeEdge ran Grim's code (nothing without Grim's heading frame), so the
+  cheat boxes (bait_hall_cheatbox, west_stair_cheatbox ...) never moved Guybrush in the port: he walked through them. Now as
+  Monkey4.exe (0x444780) on the x-z floor; the same landing place as the original within 0.1 (scratch/oe_body.lua, both engines).
+  The harness: way points inside a cheat box are skipped (ar_in_cheatbox); stepping aside (now everywhere but the maps) never goes
+  into a hot box (ar_hot_near); ar_line_ok samples every 5 cm.
+- The original: one function per library/chapter (orig_parts.py: the original cannot parse the whole run as one function); the
+  planners let a frame pass every 200 steps there (the original kills a script that runs long without break_here); a resume presses
+  F11 twice (the save brings back the task that made it; the first press loads, the second runs the new script, which stops that
+  task) and on the original a checkpoint waits 20 s of game time after saving; the run folder's own Monkey4.exe is stopped before
+  patch.m4b is written (it holds the archive open). Original: ch01..ch22 pass; ch23 stops at the chess player, as ScummVM does now
+  (the walk to him through west_stair_cheatbox).

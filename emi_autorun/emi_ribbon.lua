@@ -70,6 +70,7 @@ a3r_plan = function(gx, gz)
 		cap = 150000
 	end
 	while head <= tail and not found and head < cap do
+		ar_plan_yield()
 		local cx = qx[head]
 		local cz = qz[head]
 		local ck = (cx + 1000) * 3000 + (cz + 1000)
