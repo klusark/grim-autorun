@@ -777,13 +777,11 @@ ar_cellkey = function(cx, cz)
 end
 
 -- (the original kills a script that runs for long without break_here ("Killing Lua script that ran without a break_here() for a
--- really long time"); a search of the planners lets a frame pass every 200 steps there. ScummVM has no such limit: nothing changes)
+-- really long time"): a search of the planners lets a frame pass every 200 steps, on both engines alike)
 ar_plan_yield = function()
-	if AR_ORIGINAL then
-		AR_PLAN_N = (AR_PLAN_N or 0) + 1
-		if mod(AR_PLAN_N, 200) == 0 then
-			break_here()
-		end
+	AR_PLAN_N = (AR_PLAN_N or 0) + 1
+	if mod(AR_PLAN_N, 200) == 0 then
+		break_here()
 	end
 end
 
@@ -1840,10 +1838,8 @@ ar_checkpoint = function(slot)
 	sleep_for(1500)
 	ar_log("saved checkpoint grim" .. format("%02d", slot) .. ".gsv")
 	-- (the original brings the task that made a save back with it: a resume (run_orig.sh) loads the save and runs the new script at
-	-- once, which stops this task; it waits here meanwhile, 20 s of game time, a fifth of a second of a run on the original)
-	if AR_ORIGINAL then
-		sleep_for(20000)
-	end
+	-- once, which stops this task; it waits here meanwhile, 20 s of game time. The same on both engines)
+	sleep_for(20000)
 	if not AR_CONTINUE then
 		-- one chapter run: the save is the result
 		ar_finish()

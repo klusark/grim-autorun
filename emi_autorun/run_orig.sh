@@ -13,8 +13,6 @@ name=$(basename "$script" .lua)
 EXTRA=${EXTRA-emi_poke.lua emi_myst.lua}
 gen="$EM/generated/orig_${name}.lua"
 {
-	echo "AR_ORIGINAL = TRUE"
-	echo "AR_NOSCREEN = TRUE"
 	[ -n "$WALKTRACE" ] && echo "AR_WALK_TRACE = TRUE"
 	echo "AR_CHAPTER = \"$name\""
 	# (STAGE lines: the original prints no traceback for a Lua error, only the message; they also cut the run into parts)
@@ -27,7 +25,8 @@ gen="$EM/generated/orig_${name}.lua"
 python "$EM/orig_parts.py" "$gen.head" "$script" > "$gen" || exit 1
 mine() {
 	# (the Monkey4.exe started from this run folder, by its path)
-	powershell -NoProfile -Command "Get-CimInstance Win32_Process -Filter \"Name='Monkey4.exe'\" | Where-Object { \$_.ExecutablePath -eq '$(cygpath -w "$OD")\Monkey4.exe' } | ForEach-Object { \$_.ProcessId }" | tr -d ''
+	powershell -NoProfile -Command "Get-CimInstance Win32_Process -Filter \"Name='Monkey4.exe'\" | Where-Object { \$_.ExecutablePath -eq '$(cygpath -w "$OD")\Monkey4.exe' } | ForEach-Object { \$_.ProcessId }" | tr -d '
+'
 }
 for p in $(mine); do taskkill //F //PID $p > /dev/null 2>&1; done
 sleep 1

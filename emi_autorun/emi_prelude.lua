@@ -7,3 +7,5 @@ if not LockFont then
 		return nil
 	end
 end
+-- (no progress text on the screen, on either engine: on the original the text objects crash it when the game frees their font)
+AR_NOSCREEN = TRUE
