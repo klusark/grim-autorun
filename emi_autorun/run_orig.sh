@@ -38,9 +38,9 @@ log="$EM/logs/${LOG:-$name}.log"
 cd "$OD" || exit 1
 : > grimdebug.log
 start=$(date +%s)
-# (Direct3D, not -gl: with OpenGL the original draws about 31 frames a second, a third of real time; with Direct3D it runs flat out,
-# about 100 times real time at simtime's 17 ms a frame. GL=1 for OpenGL)
-./grimlaunch.exe ${SIMTIME:+--simtime-ms $SIMTIME} Monkey4.exe ${GL:+-gl} > launch.out 2>&1 &
+# (OpenGL, -gl, always: with Direct3D the original draws only the 2D (text, the inventory, the compass and clock, movies) and the
+# scene itself stays black (Nov 11, seen in the window). OpenGL is slower, about 31 frames a second. D3D=1 for Direct3D)
+./grimlaunch.exe ${SIMTIME:+--simtime-ms $SIMTIME} Monkey4.exe $([ -z "$D3D" ] && echo -gl) > launch.out 2>&1 &
 # (the game is up when its first set has loaded: the boot set cdt prints a line)
 t=0
 while [ $t -lt 120 ] && ! grep -a -q "Purged props\|default footsteps" grimdebug.log; do sleep 1; t=$((t + 1)); done

@@ -44,7 +44,7 @@ fi
 		fi
 		if [ "$kind" = lib ]; then
 			[ "$lastkind" = file ] && pending=""
-			if [ "$on" = 1 ]; then echo "ar_log(\"=== lib $b ===\")"; cat "$EM/$b"; echo; else pending="$pending $b"; fi
+			if [ "$on" = 1 ]; then echo "ar_log(\"=== lib $b ===\")"; cat "$EM/$f"; echo; else pending="$pending $f"; fi
 			lastkind=lib
 		else
 			[ "$on" = 1 ] || { lastkind=file; continue; }
