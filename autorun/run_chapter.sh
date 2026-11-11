@@ -7,7 +7,7 @@
 # first chapter starts a new game). The voices are muted (subtitles only) and the game runs in
 # simulated time (SIMFPS frames a second, 60 unless set), never in a scaled clock. The log of the run is written to
 # ./logs/<chapter>.log and the AUTORUN lines are shown at the end.
-# Run it from an MSYS2 UCRT64 shell, scummvm is the one built in ~/scummvm/build.
+# Run it from an MSYS2 UCRT64 shell, scummvm is the one built in ~/scummvm-autorun/build-opt (SVM_DIR).
 
 AR=/c/Users/Joel/grim_tools/autorun
 . "$AR/mode.sh" || exit 1
@@ -48,6 +48,8 @@ for r in $GRIMON; do ini_set "$INI" "$r" true; done
 [ -n "$RENDEREVERY" ] && ini_set "$INI" sim_render_every "$RENDEREVERY"
 [ -n "$JITTER" ] && ini_set "$INI" sim_jitter "$JITTER"
 [ -n "$JITTERSEED" ] && ini_set "$INI" sim_jitter_seed "$JITTERSEED"
+# BUSYCALLS=<n>: a script that makes n calls of C functions in one frame without yielding moves the sound on by a frame (engine default 1000000: only a loop of the game, not the planner of the autorun; 0 = never)
+[ -n "$BUSYCALLS" ] && ini_set "$INI" sim_busy_calls "$BUSYCALLS"
 # NOSHORT=1: no zero-length frame after a change of set, a load or a save (the original has none)
 [ -n "$NOSHORT" ] && ini_set "$INI" no_short_frame true
 [ -n "$SHORTSIM" ] && ini_set "$INI" sim_short_frame true
@@ -57,7 +59,10 @@ for r in $GRIMON; do ini_set "$INI" "$r" true; done
 [ -n "$NOPATCHR" ] && ini_set "$INI" no_patchr true
 [ -n "$DUMPPATCHR" ] && ini_set "$INI" dump_patchr true
 
-cd /home/Joel/scummvm/${SVM_BUILD:-build-opt}
+# The engine: SVM_DIR, default the build-opt of the worktree ~/scummvm-autorun (branch autorun, the one engine of the Grim and EMI autoruns;
+# SVM_BUILD=build-cov or another build folder of that worktree)
+export SVM_DIR="${SVM_DIR:-/home/Joel/scummvm-autorun/${SVM_BUILD:-build-opt}}"
+cd "$SVM_DIR" || exit 1
 # STALL=<seconds>: a run that logs nothing of the autorun for that long is killed (default 90; 0 = never)
 export SCUMMVM_LUA_REMOTE="$AR/generated/remote_$$"
 mkdir -p "$SCUMMVM_LUA_REMOTE"

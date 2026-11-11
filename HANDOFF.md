@@ -35,6 +35,7 @@ section 2), so check git before you trust a status line.
 
 | What | Where |
 |---|---|
+| **Autorun engine (Grim and EMI)** | worktree `C:\msys64\home\Joel\scummvm-autorun`, branch `autorun` (grim-actor-fixes then cleanroom, linear on master; was `emi-autorun-latest`), build `build-opt` by `grim_tools/build_scummvm_autorun.sh`; `SVM_DIR` points a run elsewhere |
 | ScummVM source (main worktree) | `C:\msys64\home\Joel\scummvm` (branch `grim-actor-fixes-split`) |
 | Other worktrees | `~/scummvm-split` (detached at the same commit), `~/scummvm-emi` (`grim-lua-validation`, has `build/` and `build-opt/`, used by EMI autorun) |
 | Tools (this repo, own git repo) | `C:\Users\Joel\grim_tools` |
@@ -45,6 +46,9 @@ section 2), so check git before you trust a status line.
 | Ghidra | project program `/v101/GRIMFANDANGO.EXE` (v1.01) and Monkey4.exe; names in `autorun/GHIDRA_NAMES.md` |
 
 ## 2. ScummVM branches (as of 2026-10-29)
+
+- 2026-11-10: `autorun` is the one branch both autoruns run (`autorun/run_all.sh`, `run_chapter.sh`, `emi_autorun/run_emi.sh` default to
+  `~/scummvm-autorun/build-opt`). It holds everything of grim-actor-fixes (the rest of it is in master). The notes below are older.
 
 - `grim-actor-fixes-split`: the current work, split into reviewable commits on top of master (sectors and
   shrinking like the original, planner, Walker_WalkSectors, walker heading frame, constraint, box

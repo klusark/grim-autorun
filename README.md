@@ -38,14 +38,14 @@ open differences and the pitfalls.
 | `tools/` | Script analysis: `digest.py` (state-changing lines per function), `sectors.py` (plot sector dumps), `safe_solver.py`, `items.py` |
 | `gt.sh` | Look up voice text by id or regex in `grim_text.txt` |
 | `lua31dis.py`, `delua.exe` | Lua 3.1 bytecode disassembler and decompiler |
-| `build_scummvm*.sh` | Build ScummVM (`build-opt` for the autorun, `build` for debugging) |
+| `build_scummvm_autorun.sh` | Build the autorun engine (Grim and EMI): `~/scummvm-autorun/build-opt`, branch `autorun` |
 | `grim_registry.reg` | Registry entries for the original install |
 | `backups/`, `oldrun/`, `gfupd/` | Old snapshots and exe variants (not tracked in git) |
 
 ## Requirements
 
 - Windows with MSYS2. Build and run in a **UCRT64** login shell (`MSYSTEM=UCRT64 bash -l`).
-- The ScummVM source at `~/scummvm` (branches `grim-actor-fixes-split` and others; see HANDOFF.md).
+- The ScummVM source at `~/scummvm`; the autoruns use the worktree `~/scummvm-autorun` (branch `autorun`; see HANDOFF.md).
 - Grim Fandango data in `C:\GOG Games\GRIMDATA`, and the decompiled scripts in `C:\Users\Joel\grim_lua_src`.
 - The original exe and the patched copies. `.gitignore` excludes the binaries, game data, extracted text,
   saves, logs and captures, so a fresh clone has none of them. You have to rebuild or re-extract them:

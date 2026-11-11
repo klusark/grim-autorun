@@ -315,3 +315,6 @@ Section A is done for all four acts. What changed since the puck:
   looked at again once he stands still. Whole game on the linear branch: one attempt, 466 s.
 - Exit status 127 (three times on 2026-11-10: ch11, ch23, act3_08) comes while a set loads, after "missing texture" warnings (default.tga):
   probably a crash in EMI texture loading. The restart covers it; not looked into.
+- 2026-11-10 night: the branch is now `autorun` in the worktree `~/scummvm-autorun` (renamed from emi-autorun-latest, rebased on the latest master),
+  the one engine of the Grim and EMI autoruns; `build_scummvm_autorun.sh` builds it, run_emi.sh defaults to it. Whole game on it: one attempt, 446 s
+  (an earlier build of it: attempt 1 failed in act2_06, "the flame stopped at the painting", not seen before; attempt 2 to the credits).

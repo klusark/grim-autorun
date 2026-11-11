@@ -11,7 +11,7 @@ ends the run at once (`AR_KEEP_GOING = TRUE` goes on).
     sh run_chapter.sh chNN.lua         one chapter; it loads its own save with ar_load(N) as its first line
     sh rebuild_saves.sh                rebuilds every checkpoint chapter by chapter
 
-(MSYS2 UCRT64 shell, scummvm from ~/scummvm/build, AR_WALK=TRUE in a
+(MSYS2 UCRT64 shell, scummvm from ~/scummvm-autorun/build-opt (branch autorun, shared with EMI; SVM_DIR overrides), AR_WALK=TRUE in a
 script to stop Manny running.) The generated scripts are in ./generated, the logs in ./logs, the
 AUTORUN lines tell what happened and the last steps are shown in the top left of the screen.
 
@@ -80,3 +80,15 @@ steered in a loop. Years 3 and 4 are not started.
 | ch65_ending | 80 | greenhouse door, the end, credits | - |
 
 The whole game, new game to credits, is scripted (ch01 - ch65).
+
+## One engine for Grim and EMI (2026-11-10)
+- The Grim and EMI autoruns run the same engine: worktree `~/scummvm-autorun`, branch `autorun` (was emi-autorun-latest: grim-actor-fixes, then
+  cleanroom, now rebased on the latest master), build-opt from `build_scummvm_autorun.sh`. `SVM_DIR` points a run at another build. The old
+  `~/scummvm/build-opt` had become a master build without `--autorun`.
+- ch45 hung for ever on the safe ("safe: tumbler 4 at 340 goes -1", then STALL; the same on grim-actor-fixes, so not the branch: the random
+  numbers of the run changed and drew a tumbler at 340). Tumbler.make_noise (vd.lua) starts tumbler sounds in a loop with no break_here until
+  one gets a track (wait_for_sound returns at once when ImStartSound found no spare track, -6). In the original the clock runs on and the
+  sounds holding the tracks end; with --sim-fps iMuse only moved on between frames, so the loop never ended. Engine fix (commit "GRIM: Give a
+  script that loops without yielding the time of the sound in a simulated run"): every sim_busy_calls (default 1000000, BUSYCALLS= in
+  run_all.sh/run_chapter.sh) C calls in one frame the sound clock moves on by a frame (Grim only). At 100000 the planner of the autorun
+  tripped it in 20 chapters; at 1000000 only ch45 does (155 times). Full run from a new game: RESULT PASSED.
