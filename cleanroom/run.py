@@ -7,7 +7,9 @@ file of the game's data. See README.md.
   python run.py original [--only T]        runs the original exe through grimlaunch.exe, compares with the expected log
   python run.py original --save            ... and makes the whole run the new expected log (never a part of it)
   python run.py remastered [--only T]      runs the Grim Fandango Remastered exe (debuglog patch only), compares with the expected log
-  python run.py both                       both engines, compared with each other
+  python run.py decomp [--only T]          runs the rebuilt exe of grim-decomp (its own test knobs, no grimlaunch.exe), compares
+                                           with the expected log
+  python run.py both                      both engines, compared with each other
   python run.py compare A.log B.log        compares two result logs
   python run.py <command> --work DIR       its own build/, run/ and logs/ in DIR, locked on its own, and nothing written to
                                            expected/ (the crashers it finds are reported only): runs in parallel with
@@ -31,7 +33,8 @@ Results go to logs/<engine>.log (only the CR lines, normalised) and logs/<engine
 Environment: SCUMMVM (scummvm.exe), GRIM_INSTALL (the folder the original exe and its DLLs are copied from, default
 C:\\GOG Games\\GRIMDATA), CR_VISIBLE=1 (the engines' windows on the screen; otherwise they run on a desktop of their own,
 tools/offscreen.c), EMI_INSTALL (the same for Monkey4.exe, default C:\\GOG Games\\Escape from Monkey Island), CR_STALL
-(seconds without a new line in the engine's log before a run counts as hung and is killed, default 2; CR_STARTUP, default 30, until the first line)."""
+(seconds without a new line in the engine's log before a run counts as hung and is killed, default 2; CR_STARTUP, default 30, until the first line),
+GRIM_DECOMP (the folder of the rebuilt grimfandango.exe and its three DLLs, default C:\\Users\\Joel\\grim-decomp\\build\\run)."""
 import argparse
 import os
 import re
@@ -66,6 +69,10 @@ REMASTERED_INSTALL = os.environ.get("REMASTERED_INSTALL", "C:/Program Files (x86
 # The program files of the original (not data): the exe, its DLLs and the two small files iMUSE and the HMI driver read
 PROGRAM_FILES = ["GRIMFANDANGO.exe", "LUA.DLL", "IMUSE.DLL", "CHORE.DLL", "NULLMUSE.DLL", "HMIFXFP.DLL", "HMIFXLIB.DLL",
                  "HMILIBS.INI", "IMUSE.PSL", "grimdlg.dll"]
+# The rebuilt exe of grim-decomp (build/run after `make -C build link`): these four come from GRIM_DECOMP, the rest of
+# PROGRAM_FILES from GRIM_INSTALL. Its test patches are build/cleanroom/ of that repository (README.md there).
+GRIM_DECOMP = os.environ.get("GRIM_DECOMP", r"C:\Users\Joel\grim-decomp\build\run")
+DECOMP_FILES = {"GRIMFANDANGO.exe": "grimfandango.exe", "LUA.DLL": "lua.dll", "IMUSE.DLL": "imuse.dll", "CHORE.DLL": "chore.dll"}
 # The Remastered: the exe and the dlls it loads (the game's data are not copied; the Lua is the same 3.1)
 REMASTERED_FILES = ["GrimFandango.exe", "Lua.dll", "SDL2.dll", "chore.dll", "steam_api.dll", "controllerdef.txt", "icon.png", "x86"]   # (x86: the shaders)
 # EMI's: the exe, the Miles sound dlls and filters, Bink (no .m4b, no movie)
@@ -303,6 +310,14 @@ def crash_backtrace(engine):
     import crashstack
     if RUN_KILLED:
         return "hung: %s wrote nothing to its log for %g s and was killed by run.py (no crash, so no dump or backtrace)" % (os.path.basename(exe), RUN_KILLED)
+    if engine == "decomp":
+        # (the rebuilt exe writes no dump: its crash filter (build/startup.c) appends the exception, the registers and the top of
+        # the stack to grim_crash_<GRIM_MULTI>.txt in its working folder; nm on the exe of the build names the addresses)
+        report = os.path.join(RUN, "decomp", "grim_crash_%s.txt" % DECOMP_TAG)
+        if os.path.exists(report) and os.path.getmtime(report) >= RUN_START - 2:
+            return "%s\n%s" % (report, open(report, "rb").read().decode("latin-1"))
+        return "no crash report of the rebuilt exe since the run started (it ended by itself), exit code %s" % (
+            "?" if RUN_EXIT is None else "0x%X" % (RUN_EXIT & 0xFFFFFFFF))
     # (the original and the Remastered write grimcrash.dmp next to their exe: patch.dll's crash filter)
     own = os.path.join(RUN, engine, "grimcrash.dmp")
     if engine != "scummvm" and os.path.exists(own) and os.path.getmtime(own) >= RUN_START - 2:
@@ -359,7 +374,7 @@ def run_engine(engine, only=None, fresh=False):
     known = set() if fresh or engine not in ("scummvm", "remastered") else (read_names(svm_known()) if engine == "scummvm" else read_names(REM_CRASHERS)) - skip
     skip |= known
     new = []
-    once = {"original": original_once, "remastered": remastered_once}.get(engine, scummvm_once)
+    once = {"original": original_once, "remastered": remastered_once, "decomp": decomp_once}.get(engine, scummvm_once)
     lines = []
     prefix = []   # the results of the runs before a crash, up to the file that crashed (the next run starts at that file)
     start = None
@@ -418,7 +433,7 @@ def run_engine(engine, only=None, fresh=False):
     print("%s: %d result lines in %s" % (engine, len(lines), out))
     if engine == "scummvm":
         write_known(known | set(new))
-    return lines, (sorted(known) + new if engine == "scummvm" else [])
+    return lines, (sorted(known) + new if engine == "scummvm" else new if engine == "decomp" else [])
 
 
 def compare_with(reference, engine, crashed, only=None):
@@ -627,6 +642,83 @@ def remastered_once():
     return original_once("remastered")
 
 
+# ---- the rebuilt exe of grim-decomp
+
+DECOMP_TAG = "cleanroom"   # GRIM_MULTI: its own window title (a game being played does not stop it) and crash report name
+# (the movie and live sound tests wait up to 6 s of the clock without a log line, so 2 s would kill them; CR_STALL wins)
+DECOMP_STALL = float(os.environ.get("CR_STALL", "15"))
+
+
+def prepare_decomp(d):
+    """The run folder of the rebuilt exe: its four programs from GRIM_DECOMP (again whenever the build changed them), the
+    original's other program files from the install, grim.ini as the original's, the data. No grimlaunch.exe or patch.dll."""
+    os.makedirs(d, exist_ok=True)
+    for f in PROGRAM_FILES:
+        dst = os.path.join(d, f)
+        if f in DECOMP_FILES:
+            src = os.path.join(GRIM_DECOMP, DECOMP_FILES[f])
+            if not os.path.exists(src):
+                sys.exit("decomp: %s is missing (set GRIM_DECOMP to the folder of the rebuilt grimfandango.exe)" % src)
+            if not os.path.exists(dst) or open(src, "rb").read() != open(dst, "rb").read():
+                shutil.copyfile(src, dst)
+        elif not os.path.exists(dst):
+            src = os.path.join(GRIM_INSTALL, f)
+            if not os.path.exists(src):
+                sys.exit("decomp: %s is missing (set GRIM_INSTALL to the folder of GRIMFANDANGO.exe)" % src)
+            shutil.copyfile(src, dst)
+    with open(os.path.join(d, "grim.ini"), "w", newline="\r\n") as f:
+        f.write("[Grim]\nGrimDataDir=%s\\\ngood_times=TRUE\nTextAllowed=true\nExperimentalDisplay=0\n"
+                "Last3DDevice=hex:00000000000000000000000000000000\n"
+                "LastDisplayDevice=hex:009fa692fa13d11197c000a024293005\n" % d)
+    copy_data(d)
+
+
+def decomp_once():
+    """One run of the rebuilt exe; returns the CR lines. It is started directly, with the knobs of its build that do what
+    grimlaunch's patches do to the original (grim-decomp/build/cleanroom/README.md)."""
+    d = os.path.join(RUN, "decomp")
+    kill_own_original(d)
+    prepare_decomp(d)
+    log = os.path.join(d, "grimdebug.log")
+    for f in (log, os.path.join(d, "grim_crash_%s.txt" % DECOMP_TAG)):
+        if os.path.exists(f):
+            os.remove(f)
+    env = dict(os.environ,
+               GRIM_INI=os.path.join(d, "grim.ini"),   # config: grim.ini, not the registry (whose GrimDataDir is the real game)
+               GRIM_DEBUGLOG=log,                      # debuglog, and the CRSNAP: screenshots
+               GRIM_SIMTIME="17",                      # simtime: every frame is 17 ms
+               GRIM_IMUSE_REALTIME="1",                # ... but iMUSE keeps real time, as on the original with simtime
+               GRIM_ACTIVE="1",                        # draws although its window is never the active one (offscreen.exe)
+               GRIM_MULTI=DECOMP_TAG)
+    for k in ("GRIM_NOMOVIE", "GRIM_LUA_FILE", "GRIM_DISPLAY_DEVICE", "GRIM_MODS", "GRIM_WALK_SCALE"):   # (knobs that change the run)
+        env.pop(k, None)
+    global RUN_START, RUN_KILLED, RUN_EXIT
+    t = RUN_START = time.time()
+    RUN_KILLED = 0
+    # (-w: windowed, like the original's windowed patch; the rebuilt exe makes its window a window from the start)
+    p = subprocess.Popen(offscreen([os.path.join(d, "GRIMFANDANGO.exe"), "-w"]), cwd=d, stdin=subprocess.DEVNULL,
+                         stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, env=env)
+    size, last = -1, time.time()
+    while p.poll() is None:
+        time.sleep(0.2)
+        n = os.path.getsize(log) if os.path.exists(log) else 0
+        if n != size:
+            size, last = n, time.time()
+        limit = DECOMP_STALL if n else STARTUP
+        if time.time() - last > limit:
+            RUN_KILLED = limit
+            print("decomp: killed (no log for %g s)" % limit)
+            kill_own_original(d)
+            p.kill()
+            break
+    RUN_EXIT = None if RUN_KILLED else p.returncode
+    print("decomp: %.1f s, exit code %s" % (time.time() - t, "none (killed)" if RUN_EXIT is None else "0x%X" % (RUN_EXIT & 0xFFFFFFFF)))
+    if os.path.exists(log):
+        os.makedirs(LOGS, exist_ok=True)
+        shutil.copyfile(log, os.path.join(LOGS, "decomp_raw.log"))
+    return read_lines(log)
+
+
 def original_once(which="original"):
     """One run of the original (or the Remastered); returns the CR lines."""
     exe = "GrimFandango.exe" if which == "remastered" else "Monkey4.exe" if GAME == "emi" else "GRIMFANDANGO.exe"
@@ -745,7 +837,7 @@ def main():
     _exe_lock = (lock_folder(EXE_LOCK, "another run.py runs an original exe") if  # noqa: F841
                  any(w in sys.argv[1:2] for w in ("original", "remastered", "decomp", "both")) else None)
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("what", choices=["build", "scummvm", "original", "remastered", "both", "compare"])
+    ap.add_argument("what", choices=["build", "scummvm", "original", "remastered", "decomp", "both", "compare"])
     ap.add_argument("logs", nargs="*")
     ap.add_argument("--only", help="run one test")
     ap.add_argument("--remastered", action="store_true",
@@ -767,6 +859,8 @@ def main():
     set_game(a.game)
     if a.game == "emi" and a.what == "remastered":
         sys.exit("the Remastered is Grim's")
+    if a.game == "emi" and a.what == "decomp":
+        sys.exit("grim-decomp is Grim's")
     if a.what == "compare":
         return compare.main(a.logs)
     if a.what == "build":
@@ -813,6 +907,14 @@ def main():
     if a.what == "remastered":
         run_engine("remastered", a.only, fresh=a.fresh)
         return compare.main([EXPECTED, os.path.join(LOGS, "remastered.log"), "--unstable", UNSTABLE] + (["--only"] if a.only else []))
+    if a.what == "decomp":
+        # (its crashes are bugs of the rebuild: reported, not kept; the original's crashers are skipped, there is no reference)
+        _, crashed = run_engine("decomp", a.only, fresh=a.fresh)
+        rc = compare.main([EXPECTED, os.path.join(LOGS, "decomp.log"), "--unstable", UNSTABLE] + (["--only"] if a.only else []))
+        if crashed:
+            print("crashed or hung the rebuilt exe: %s" % ", ".join(crashed))
+            rc = rc or 1
+        return rc
     if a.what == "original":
         run_engine("original", a.only, fresh=a.fresh)
         return compare.main([EXPECTED, os.path.join(LOGS, "original.log"), "--unstable", UNSTABLE] + (["--only"] if a.only else []))

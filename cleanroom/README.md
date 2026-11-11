@@ -13,7 +13,23 @@ python run.py scummvm            # run on ScummVM and compare with expected/orig
 python run.py both               # run both and compare them with each other
 python run.py scummvm --only chore_keys      # one test
 python run.py compare logs/original.log logs/scummvm.log --all
+python run.py decomp             # run the rebuilt exe of grim-decomp and compare with expected/original.log
 ```
+
+**The decomp.** `run.py decomp` runs the rebuilt exe of `grim-decomp`. It takes `grimfandango.exe`, `lua.dll`,
+`imuse.dll` and `chore.dll` from `GRIM_DECOMP` (default `C:\Users\Joel\grim-decomp\build\run`) and the original's other
+program files from `GRIM_INSTALL`, all into `run/decomp/`. There is no `grimlaunch.exe`, because its patches look for the
+original's bytes at fixed addresses. The rebuilt exe is started directly with its own test knobs instead (grim-decomp
+`build/cleanroom/README.md`):
+
+- `GRIM_INI`: grim.ini instead of the registry.
+- `GRIM_DEBUGLOG`: the PrintDebug log and the `CRSNAP:` screenshots.
+- `GRIM_SIMTIME=17`: every frame is 17 ms.
+- `GRIM_ACTIVE=1`: keeps drawing behind other windows.
+- `GRIM_MULTI=cleanroom`: its own window title.
+
+Its crashes are bugs of the rebuild. They are reported and fail the run, but are not kept in a list. A crash leaves
+`grim_crash_cleanroom.txt` (exception, registers, stack) in `logs/crashes/decomp_exe_<test>.log`.
 
 **Crashes.** When a test kills an engine, `logs/crashes/<engine>_<renderer>_<test>.log` starts with a backtrace read from the
 Windows crash dump (`%LOCALAPPDATA%\CrashDumps`, `tools/crashstack.py`; function names for ScummVM from `nm`, module+offset for the
