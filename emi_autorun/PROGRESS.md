@@ -333,3 +333,8 @@ Section A is done for all four acts. What changed since the puck:
   is 3.12 (3.3 failed every time once the stool wait was gone). act2_22: Marco's conversation started by the skipped arrival is
   followed (it failed the run twice today; the fix is not yet through a run that hit it).
   Game time of the whole game: 16843 s before (19931 s this morning), 9399 s after (one run: attempt 1 to act2_22, attempt 2 from 221).
+- 2026-11-10 night: the plank diving arrival (Marco's conversation started by the skipped cutscene) stopped every run after the idle
+  fixes: during a door's ar_do (AR_DLG_CONTROL) a conversation waiting for a choice counts as the control back (only there: everywhere,
+  the poker and act 3 went on in the middle of conversations), and act2_22 follows the conversation. Whole game from a new game in ONE
+  attempt: 271 s real, 9983 s of game time. (Careful: a `( run_whole.sh ) &` inside a background command keeps running after it
+  returns; two runs at once write the same logs and saves.)

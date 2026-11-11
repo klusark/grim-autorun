@@ -124,6 +124,26 @@ ar_approach = function(obj)
 	return ar_fail(tostring(obj.name) .. " is not offered after walking up to it: " .. ar_why_not_offered(obj))
 end
 
+-- The control is back when the cutscene level is down; after a door (ar_settled, AR_DLG_CONTROL) also when a conversation waits for a
+-- choice: a skipped arrival cutscene can start one itself (the plank diving's starts Marco's), and its cutscene level stays up while it
+-- runs; the wait timed out after 120 s and stopped the whole run (every run of Nov 10 after the idle fixes). The chapter follows the
+-- conversation. (Everywhere: the poker and the act 3 chapters went on in the middle of conversations.)
+ar_dialog_waiting = function()
+	local h = system.buttonHandler
+	return type(h) == "table" and h.running and h.node and h.current_choices
+end
+ar_wait_for_control = function()
+	if not ar_wait_for(function() return cutSceneLevel == 0 or (AR_DLG_CONTROL and ar_dialog_waiting()) end, AR_CONTROL_TIMEOUT or 90000) then
+		ar_log("FAIL the game never gave control back")
+		AR_FAILED = TRUE
+		if not AR_KEEP_GOING then
+			ar_finish()
+		end
+	elseif cutSceneLevel > 0 then
+		ar_log("control: a conversation is waiting for a choice (cutscene level " .. tostring(cutSceneLevel) .. ")")
+	end
+end
+
 -- Copy of the Grim ar_skipper, skipping a cutscene after one 100 ms look instead of six (AR_SKIP_AFTER)
 if AR_SKIP_TASK then
 	stop_script(AR_SKIP_TASK)
@@ -1166,14 +1186,16 @@ end
 -- So it is cleared as soon as the verb is done.
 AR_DO_EMI = ar_do
 ar_not_switching = function()
-	return not set_switching and cutSceneLevel == 0 and system.currentSet and find_script(TrackGuybrush)
+	return not set_switching and (cutSceneLevel == 0 or (AR_DLG_CONTROL and ar_dialog_waiting())) and system.currentSet and find_script(TrackGuybrush)
 end
 
 -- The new set is entered when the sets, the cutscene and TrackGuybrush are all ready (the objects of a set only get their actors then)
 ar_settled = function()
+	AR_DLG_CONTROL = TRUE
 	ar_try_wait(ar_not_switching, 15000)
 	sleep_for(300)
 	ar_wait_for_control()
+	AR_DLG_CONTROL = nil
 end
 
 -- (AR_DOOR_STAYS: a door that leads to another place of the same set, Knuttin's rock field: says when it has been gone through)
@@ -1185,6 +1207,7 @@ ar_do = function(verb, noun1, noun2)
 	AR_DOOR_SET = system.currentSet
 	if verb == "use" and noun1.walkOut then
 		AR_IN_DOOR = TRUE
+		AR_DLG_CONTROL = TRUE
 	end
 	local r = AR_DO_EMI(verb, noun1, noun2)
 	AR_IN_DOOR = nil
@@ -1193,6 +1216,7 @@ ar_do = function(verb, noun1, noun2)
 		ar_try_wait(ar_door_left, 20000)
 		ar_settled()
 	end
+	AR_DLG_CONTROL = nil
 	return r
 end
 
