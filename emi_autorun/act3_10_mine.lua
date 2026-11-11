@@ -19,6 +19,22 @@ while system.currentSet ~= gom and a3_mt < 4 do
 	sleep_for(1000)
 end
 ar_state("mine")
+-- (the tunnel to the vent is half a unit wide: Timmy, who follows Guybrush, can wander into it ahead of him and stand there; then there is
+-- no way past. As a player does: back out of the tunnel's mouth and let him come over, then go in with him behind)
+a3_timmy_in_tunnel = function()
+	if not timmy or timmy.in_set ~= system.currentSet then
+		return nil
+	end
+	local t = timmy:getpos()
+	return t.z > 1.5 and abs(t.x) < 1.5
+end
+local a3_tt = 0
+while a3_timmy_in_tunnel() and a3_tt < 3 do
+	a3_tt = a3_tt + 1
+	ar_log("Timmy is in the tunnel: out of its mouth, waiting for him")
+	ar_walk_to(0.8, 0, -3)
+	ar_try_wait(function() return not a3_timmy_in_tunnel() end, 15000)
+end
 ar_do("use", gom.vent)
 ar_log("vent open " .. tostring(glob.vent_open) .. " timmy in set " .. tostring(timmy.in_set == system.currentSet))
 ar_do("use", gom.vent, props.bananas)
