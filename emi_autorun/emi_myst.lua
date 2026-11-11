@@ -418,8 +418,28 @@ ar_raft_exit = function(dir)
 		waited = waited + 300
 	end
 	AR_RAFT_STOP = TRUE
-	sleep_for(1500)
+	-- (the new screen: on as soon as the raft can be steered there again, not a fixed 1.5 s at every exit)
+	sleep_for(300)
+	ar_try_wait(function() return cutSceneLevel == 0 and ar_raft_handler() end, 1200)
 	return TRUE
+end
+
+-- waits (at most max_ms) until the raft has not moved for a quarter of a second
+ar_raft_at_rest = function(max_ms)
+	local waited = 0
+	local still = 0
+	local last = swampraft:getpos()
+	while waited < max_ms and still < 250 do
+		break_here()
+		waited = waited + system.frameTime
+		local p = swampraft:getpos()
+		if abs(p.x - last.x) + abs(p.z - last.z) < 0.002 then
+			still = still + system.frameTime
+		else
+			still = 0
+		end
+		last = p
+	end
 end
 
 -- a verb that starts a conversation inside it (the dialog has to be answered before the verb ends): started in a script of its own
@@ -642,6 +662,25 @@ ar_wait_offered = function(obj, ms)
 		waited = waited + 950
 	end
 	return vlist and vlist[obj]
+end
+
+-- The same for something that swims about (the glowing fishies of the lagoon): Guybrush swims after it, a short leg at a time toward
+-- where it is now, until the game offers it. Waiting at the entrance for the school to come by took 93 s a try, four tries a dive.
+ar_chase_offered = function(obj, ms)
+	local offered = function()
+		return vlist and vlist[%obj] and cutSceneLevel == 0
+	end
+	local waited = 0
+	while not offered() and waited < (ms or 90000) do
+		local o = ar_obj_pos(obj)
+		if o and o.x and cutSceneLevel == 0 then
+			ar_walk_direct(o.x, manny:getpos().y, o.z, offered, 1500)
+		else
+			sleep_for(500)
+		end
+		waited = waited + 1500
+	end
+	return offered()
 end
 
 -- True when the object is the one the game's gaze is on (the hot object)

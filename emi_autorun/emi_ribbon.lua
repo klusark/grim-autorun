@@ -65,7 +65,11 @@ a3r_plan = function(gx, gz)
 	A3R_TX = { }
 	A3R_TZ = { }
 	A3R_TD = { }
-	while head <= tail and not found and head < 30000 do
+	local cap = 30000
+	if A3R_BIG then
+		cap = 150000
+	end
+	while head <= tail and not found and head < cap do
 		local cx = qx[head]
 		local cz = qz[head]
 		local ck = (cx + 1000) * 3000 + (cz + 1000)
@@ -169,6 +173,16 @@ a3r_plan = function(gx, gz)
 	end
 	A3R_LASTN = tail
 	A3R_FOUND = found
+	-- (the cells ran out before the goal: the floor about Guybrush is wide, the plank diving's lower deck, and the goal 10 units off
+	-- was "not reachable"; he went to the cell nearest to it, a stair took him back up, and round again for 10 minutes. Once more
+	-- with five times the cells: Lua time, not game time)
+	if not found and head >= cap and not A3R_BIG then
+		ar_log(format("ribbon plan: %d cells and not at the goal %.1f %.1f (%.1f off), again with more cells", head, gx, gz, sqrt(bestd)))
+		A3R_BIG = TRUE
+		local bp, bl = a3r_plan(gx, gz)
+		A3R_BIG = nil
+		return bp, bl
+	end
 	-- the dead ends nearest to the goal, a couple of units apart
 	local tips = { }
 	local nt = 0
@@ -314,6 +328,14 @@ a3_ribbon_walk = function(gx, gz, stop_when, max_ms)
 			A3_WALK_DIRECT_PLAIN(path[i][1], before.y, path[i][2], nil, 3000)
 			AR_WALK_TOL = keep
 			waited = waited + 1000
+			-- (carried off: a trigger of the set (the plank diving's stairs) took him elsewhere. The way is the caller's to plan again:
+			-- this walk's goal can be the next leg of a plan made on the other level, and following it carried him back, 75 rounds)
+			local q = manny:getpos()
+			if system.currentSet == startset and abs(q.x - before.x) + abs(q.z - before.z) > 3 then
+				ar_log(format("ribbon walk: carried from %.2f %.2f to %.2f %.2f", before.x, before.z, q.x, q.z))
+				A3R_CARRIED = TRUE
+				return nil
+			end
 			if ar_floor_dist(path[i][1], path[i][2]) > 0.6 then
 				off = TRUE
 				-- (the engine does not take Guybrush there, though the floor is: not planned through again)
@@ -409,6 +431,30 @@ a3r_keys_of = function(obj)
 	end
 	return keys, n
 end
+-- walks the points of a planned way one after another (done: stop early when it says so). nil when a leg got Guybrush nowhere (an actor
+-- in the way, Timmy at the canyon; an edge he is pushed against, by the diving judges): the rest of the way would be tried for 3 s a point
+-- with him standing still (Nov 10: 6 rounds of 40 points at the mine shaft, 12 minutes of game time)
+a3r_follow = function(path, tol, done)
+	local startset = system.currentSet
+	local i = 1
+	while path[i] and system.currentSet == startset and not (done and done()) do
+		local keep = AR_WALK_TOL
+		AR_WALK_TOL = tol
+		local before = manny:getpos()
+		A3_WALK_DIRECT_PLAIN(path[i][1], before.y, path[i][2], nil, 3000)
+		AR_WALK_TOL = keep
+		if system.currentSet ~= startset then
+			return TRUE
+		end
+		local q = manny:getpos()
+		if abs(q.x - before.x) + abs(q.z - before.z) < 0.1 and ar_floor_dist(path[i][1], path[i][2]) > 0.6 then
+			ar_log(format("ribbon: no step from %.2f %.2f toward %.2f %.2f (point %d), the way is given up", q.x, q.z, path[i][1], path[i][2], i))
+			return nil
+		end
+		i = i + 1
+	end
+	return TRUE
+end
 ar_approach = function(obj)
 	-- a door on a ribbon floor: walked to by way of the floor into its box (the trigger sector of the door, named as the object)
 	if a3_is_ribbon() and type(obj) == "table" and obj.walkOut then
@@ -418,6 +464,7 @@ ar_approach = function(obj)
 		local ki = 1
 		while ki <= nk and system.currentSet == startset do
 			local rounds = 0
+			local fails = 0
 			while rounds < 6 and system.currentSet == startset do
 				rounds = rounds + 1
 				A3R_DOOR = keys[ki]
@@ -428,13 +475,12 @@ ar_approach = function(obj)
 					rounds = 6
 				else
 					ar_log(format("ribbon door %s: %d points", keys[ki], a3r_len(path)))
-					local i = 1
-					while path[i] and system.currentSet == startset do
-						local keep = AR_WALK_TOL
-						AR_WALK_TOL = 0.15
-						A3_WALK_DIRECT_PLAIN(path[i][1], manny:getpos().y, path[i][2], nil, 3000)
-						AR_WALK_TOL = keep
-						i = i + 1
+					-- (one more try after a way that got nowhere, then the next name of the door or the plain approach)
+					if not a3r_follow(path, 0.15) then
+						fails = fails + 1
+						if fails >= 2 then
+							rounds = 6
+						end
 					end
 				end
 			end
@@ -449,6 +495,7 @@ ar_approach = function(obj)
 		if o and o.x then
 			local r = (tonumber(obj.range) or 3) - 0.25
 			local rounds = 0
+			local fails = 0
 			while rounds < 8 and not a3r_in_range(o, r + 0.1) do
 				rounds = rounds + 1
 				A3R_OBJ = o
@@ -457,14 +504,10 @@ ar_approach = function(obj)
 				A3R_OBJ = nil
 				if not path then
 					rounds = 8
-				else
-					local i = 1
-					while path[i] and not a3r_in_range(o, r + 0.1) do
-						local keep = AR_WALK_TOL
-						AR_WALK_TOL = 0.2
-						A3_WALK_DIRECT_PLAIN(path[i][1], manny:getpos().y, path[i][2], nil, 3000)
-						AR_WALK_TOL = keep
-						i = i + 1
+				elseif not a3r_follow(path, 0.2, function() return a3r_in_range(%o, %r + 0.1) end) then
+					fails = fails + 1
+					if fails >= 2 then
+						rounds = 8
 					end
 				end
 			end

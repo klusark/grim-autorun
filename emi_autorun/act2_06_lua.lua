@@ -18,9 +18,9 @@ ar_wait_for_control()
 ar_check(lua.sitting_down, "sitting")
 a2_start("use", lua.waitress_obj)
 ar_dlg("lw1")
-sleep_for(3000)
+a2_ready("lw1", 3000)
 ar_say("lw1", 100)
-sleep_for(1500)
+a2_ready("lw1", 1500)
 ar_say("lw1", 500)
 ar_dlg_done("lw1")
 -- (the kitchen takes the order when the dialog is cleared and a sushi boat comes by: ordered goes from 1 to 2)
@@ -35,7 +35,10 @@ ar_wait_for(function() return lua.flamin end, 120000, "the flaming scuttlefish")
 -- painting then (the game wants it within 0.3 of flamin_target). The flame passes it on the lower lane of the belt, moving east, at about
 -- a unit a second; the brush needs A2_JAM_LEAD units of the flame's way from the press to the jam. So Guybrush is standing at the
 -- mechanism with the brush in hand, and the verb is sent when the flame is that far before the place.
-A2_JAM_LEAD = 3.3
+-- (from the verb to the stop the flame goes on 2.95 or 3.28 units, one or the other from run to run (Nov 10: 3.28 at dx 3.295, 2.95 at
+-- dx 3.278 and 3.262; the pour takes the flame within about 0.32 of the place). A lead of 3.3 only works with the longer one: the middle
+-- of the two leaves it 0.17 off either way)
+A2_JAM_LEAD = 3.12
 ar_hold(props.paintbrush)
 a2_flame_dx = function()
 	local t = lua.flamin_target
@@ -46,6 +49,8 @@ a2_flame_close = function()
 	local dx = a2_flame_dx()
 	return lua.flamin and lua.sushiflame:getworldpos().z < -4.0 and dx <= A2_JAM_LEAD and dx > A2_JAM_LEAD - 1.5
 end
+-- (the lines run their course from the jam to the pour: the boats and the flame are timed with the cutscenes; not skipped as elsewhere)
+AR_KEEP_LINES = TRUE
 AR_START_SET = system.currentSet
 AR_CODE = lua.mech["use_" .. trim_header(props.paintbrush.system_name or props.paintbrush.string_name)]
 ar_approach(lua.mech)
@@ -99,6 +104,7 @@ AR_NO_SKIP = nil
 sleep_for(3000)
 ar_wait_for_control()
 ar_state("after boiler")
+AR_KEEP_LINES = nil
 ar_log("clock " .. tostring(AR_CLOCK) .. " after the pour: poured_grog " .. tostring(kit.poured_grog) .. " lua_solved " .. tostring(glob.lua_solved) .. " painting " .. tostring(props.painting.state) .. " flamin " .. tostring(lua.flamin) .. " set " .. ar_set_name())
 -- (the flame boat goes on its way to the painting and stops there)
 ar_try_wait(function() return glob.lua_solved end, 120000)

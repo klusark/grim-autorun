@@ -21,7 +21,7 @@ while props.scupperware.state ~= PROP_LOC2 and a31_tries < 8 do
 	a31_tries = a31_tries + 1
 	-- (the ScupperWare is in the hand before the fishies come by: they are only in reach for a moment)
 	ar_hold(props.scupperware)
-	ar_wait_offered(ulg.fishschool, 90000)
+	ar_chase_offered(ulg.fishschool, 90000)
 	ar_do("use", ulg.fishschool, props.scupperware)
 	sleep_for(1000)
 	ar_try_wait(function() return cutSceneLevel == 0 end, 20000)

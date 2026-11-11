@@ -10,17 +10,17 @@ ar_wait_for_control()
 ar_state("on the beach")
 ar_talk(kab.jumbo_obj)
 ar_dlg("jm1")
-sleep_for(4000)
+a2_ready("jm1", 4000)
 ar_lines("jm1")
 local seq = { 50, 60, 62, 200, 80, 70, 90, 95, 100, 105, 120, 125, 127 }
 local i = 1
 while seq[i] do
-	sleep_for(5000)
+	a2_ready("jm1", 5000)
 	local k = a2_pick_any("jm1", { seq[i] })
 	ar_log("picked " .. tostring(k) .. " for " .. seq[i])
 	i = i + 1
 end
-sleep_for(8000)
+a2_ready("jm1", 8000)
 ar_lines("jm1")
 a2_leave("jm1")
 ar_wait_for_control()

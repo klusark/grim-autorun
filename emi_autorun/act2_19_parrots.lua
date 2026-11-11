@@ -18,7 +18,7 @@ ar_put_away()
 ar_check(huggin.drunk, "one parrot is drunk")
 ar_talk(kab.huggin_obj)
 ar_dlg("pr1")
-sleep_for(3000)
+a2_ready("pr1", 3000)
 a2_pick_any("pr1", { 70 })
 a2_leave("pr1")
 ar_check(kab.parrot_tagged, "the parrots can be told apart")
@@ -40,19 +40,28 @@ a2_kab_ask = function()
 	end
 	ar_talk(a2_truthful())
 	ar_dlg("pr1")
-	sleep_for(3000)
+	a2_ready("pr1", 3000)
 	local k = a2_pick_any("pr1", { 90 })
-	sleep_for(2500)
+	a2_ready("pr1", 2500)
 	a2_leave("pr1")
 	ar_wait_for_control()
 	return glob.kab_found_hat
+end
+-- the cells of the field are places of ONE set: the door's wait for a new set ends when the cell has changed (it waited 20 s a step)
+AR_DOOR_STAYS = function()
+	return cutSceneLevel == 0 and kab.current_loc and (kab.current_loc.x ~= A2_KAB_X or kab.current_loc.y ~= A2_KAB_Y)
+end
+a2_kab_do = function(door)
+	A2_KAB_X = kab.current_loc.x
+	A2_KAB_Y = kab.current_loc.y
+	ar_do("use", door)
 end
 local tries = 0
 local dirx = 0
 -- the field is entered in the middle of its first row: that row is done first in full (west end, back through the middle to the east end),
 -- then the rows above are done in a serpentine from the east end (the hat of a run can be under any of the 36 rocks)
 a2_kab_step = function(door)
-	ar_do("use", door)
+	a2_kab_do(door)
 	ar_wait_for_control()
 	sleep_for(1500)
 end
@@ -105,10 +114,10 @@ while not glob.kab_found_hat and tries < 60 do
 	end
 	local nx = x + dirx
 	if nx < 1 or nx > 3 then
-		ar_do("use", a2_kab_east(x))
+		a2_kab_do(a2_kab_east(x))
 		dirx = -dirx
 	else
-		ar_do("use", a2_kab_ns(x, dirx > 0))
+		a2_kab_do(a2_kab_ns(x, dirx > 0))
 	end
 	ar_wait_for_control()
 	sleep_for(1500)
@@ -131,5 +140,6 @@ while not glob.kab_found_hat and tries < 60 do
 end
 ar_log("found hat: " .. tostring(glob.kab_found_hat) .. " at " .. tostring(glob.kab_hat_loc.x) .. "," .. tostring(glob.kab_hat_loc.y))
 ar_check(glob.kab_found_hat, "the rock with the bronze hat")
+AR_DOOR_STAYS = nil
 ar_state("end")
 ar_checkpoint(219)

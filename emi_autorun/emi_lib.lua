@@ -85,6 +85,7 @@ ar_approach = function(obj)
 	-- trigger on the way (a step up, a door) does its part. Then points of the floor inside its range, the nearest first.
 	local tx, ty, tz
 	local o = ar_obj_pos(obj)
+	local o0x, o0z = o.x, o.z
 	-- (the use point of some objects is an offset from the actor and not a place of the set, far from the object: then the object's own place)
 	if obj.use_pnt_x and abs(obj.use_pnt_x - o.x) < 30 and abs(obj.use_pnt_z - o.z) < 30 then
 		tx, ty, tz = obj.use_pnt_x, obj.use_pnt_y, obj.use_pnt_z
@@ -110,6 +111,16 @@ ar_approach = function(obj)
 	if ar_obj_offered() then
 		return TRUE
 	end
+	-- (someone who walks about (Planet Threepwood's Jolly pirate) has gone elsewhere meanwhile: after him, as a player goes)
+	local o1 = ar_obj_pos(obj)
+	if o0x and o1.x and abs(o1.x - o0x) + abs(o1.z - o0z) > 1 and (AR_APPROACH_AGAIN or 0) < 2 then
+		AR_APPROACH_AGAIN = (AR_APPROACH_AGAIN or 0) + 1
+		ar_log(format("%s has moved from %.2f %.2f to %.2f %.2f: walking up to it again", tostring(obj.name), o0x, o0z, o1.x, o1.z))
+		local r = ar_approach(obj)
+		AR_APPROACH_AGAIN = nil
+		return r
+	end
+	AR_APPROACH_AGAIN = nil
 	return ar_fail(tostring(obj.name) .. " is not offered after walking up to it: " .. ar_why_not_offered(obj))
 end
 
@@ -183,9 +194,16 @@ ar_skipper = function()
 		end
 		-- a line that never ends (a voice that does not finish) is skipped like a player does, with the
 		-- key that expires the text
+		-- Every other line is skipped too once it has been up for AR_LINE_MS (1.5 s), as a player who has read it presses the key: with the
+		-- speech muted each line stays up for its whole text time, and Guybrush stood through minutes of conversation (the SCUMM Bar's
+		-- arm wrestling 230 s, Carla and Otis 316 s). AR_REAL or AR_KEEP_LINES: the lines run their course.
 		if IsMessageGoing() then
 			AR_MSG_TIME = (AR_MSG_TIME or 0) + 100
-			if AR_MSG_TIME > (AR_REAL and 180000 or 15000) then
+			if not AR_REAL and not AR_KEEP_LINES and AR_MSG_TIME > (AR_LINE_MS or 1500) then
+				-- (pressed again every AR_LINE_MS while lines are up, the next line of the conversation included)
+				ar_press_key(ar_real_key("EXPIRE_TEXT"))
+				AR_MSG_TIME = 0
+			elseif AR_MSG_TIME > (AR_REAL and 180000 or 15000) then
 				ar_log("skipping a line that does not end")
 				ar_press_key(ar_real_key("EXPIRE_TEXT"))
 				AR_MSG_TIME = 0
@@ -1070,9 +1088,17 @@ ar_walk_planned = function(x, y, z, stop_when, max_ms)
 					-- (a leg ends within 15 cm: the way runs along edges of the floor, a corner passed wide is a wall)
 					AR_WALK_TOL = 0.15
 					local before = mn:getpos().y
+					local d_before = ar_floor_dist(pts[i][1], pts[i][2])
+					A3R_CARRIED = nil
 					ok = ar_walk_direct(pts[i][1], pts[i][3], pts[i][2], stop_when, max_ms)
 					AR_WALK_TOL = nil
-					if abs(mn:getpos().y - before) > 0.8 then
+					-- (or carried off on the same level: 3 units further from the leg's end than before it, a trigger took him elsewhere)
+					if A3R_CARRIED or (system.currentSet == AR_WALK_SET and ar_floor_dist(pts[i][1], pts[i][2]) > d_before + 3) then
+						A3R_CARRIED = nil
+						ar_log("walk: carried off the way, planned again from here")
+						again = TRUE
+						ok = TRUE
+					elseif abs(mn:getpos().y - before) > 0.8 then
 						-- hopped to another level: plan again from here
 						again = TRUE
 						ok = TRUE
@@ -1150,8 +1176,9 @@ ar_settled = function()
 	ar_wait_for_control()
 end
 
+-- (AR_DOOR_STAYS: a door that leads to another place of the same set, Knuttin's rock field: says when it has been gone through)
 ar_door_left = function()
-	return system.currentSet ~= AR_DOOR_SET
+	return system.currentSet ~= AR_DOOR_SET or (AR_DOOR_STAYS and AR_DOOR_STAYS())
 end
 
 ar_do = function(verb, noun1, noun2)
@@ -1369,10 +1396,41 @@ ar_dlg = function(name)
 	return getglobal(name)
 end
 
+-- Waits for the dialog to want a choice; nil (and a log line) when the conversation has ended by itself: 3 s with the dialog not running.
+-- (ar_pick's own wait gives up only after 4 s of the normal controls, which a Guybrush on a stool never has: he sat 341 s at the Lua
+-- Bar's counter after the waitress had gone, 5 minutes twice at Planet Threepwood's, 352 s on Casaba's ship)
+ar_dlg_choice = function(name, what)
+	local d = getglobal(name)
+	local waited = 0
+	local gone = 0
+	while waited < 300000 do
+		d = getglobal(name)
+		if d and d.running and system.buttonHandler == d then
+			return d
+		end
+		if d and d.running then
+			gone = 0
+		else
+			gone = gone + 100
+		end
+		if gone >= 3000 then
+			ar_log("the dialog " .. name .. " is over, " .. tostring(what) .. " is not said")
+			return nil
+		end
+		sleep_for(100)
+		waited = waited + 100
+	end
+	return d
+end
+
 ar_say = function(name, line)
 	local d = ar_dlg(name)
 	if not d then
 		return ar_fail("the dialog " .. name .. " never started")
+	end
+	d = ar_dlg_choice(name, "line " .. tostring(line))
+	if not d then
+		return nil
 	end
 	return ar_pick(d, line)
 end
@@ -1381,6 +1439,10 @@ ar_say_exit = function(name)
 	local d = ar_dlg(name)
 	if not d then
 		return ar_fail("the dialog " .. name .. " never started")
+	end
+	d = ar_dlg_choice(name, "the exit line")
+	if not d then
+		return nil
 	end
 	return ar_pick_exit(d)
 end
@@ -1664,6 +1726,29 @@ end
 -- node (Dialog.max_line, 4 with the exit line) and a line further down comes when the ones before it have been used up: then the
 -- first line shown that has not been said yet is said (a line that stays, like "No, really, I AM a grog-swilling ...", is said once
 -- only), until the one wanted is among them.
+-- The answer to a chosen line is over when the dialog offers its lines again, when the game has its normal controls back, or (EMI) when
+-- the conversation is no longer running: on the raft, a stool or a ship the controls are never the normal ones, and the library's wait
+-- ran its full 300 s after every conversation that ended by itself (ten times a game: the gate of Mysts o' Tyme three times, the Lua Bar's
+-- stool, Planet Threepwood's, Casaba's ship, the academy). What comes after (a cutscene) is the next step's to wait for.
+ar_wait_line_done = function(dlg)
+	local waited = 0
+	local gone = 0
+	while waited < 300000 and gone < 500 do
+		if system.buttonHandler == dlg or ar_handler_normal() then
+			gone = 99999
+		else
+			if dlg.running then
+				gone = 0
+			else
+				gone = gone + 100
+			end
+			sleep_for(100)
+			waited = waited + 100
+		end
+	end
+	sleep_for(100)
+end
+
 ar_dialog_select = function(dlg, line)
 	-- the selection moved to the line (looked up again after every key: the list can slide) and the choose key
 	local n = 0
@@ -1767,9 +1852,25 @@ end
 -- The game's time in ms as the scripts see it (the frame times added up), for the chapters that have to be quick
 if not AR_CLOCK_TASK then
 	AR_CLOCK = 0
+	-- (a CLOCK line in the log every second of game time, and Guybrush's place: game_time.py finds where the time goes and where he stands
+	-- still. Not an AUTORUN line, so run_emi.sh's watch for a stuck run does not take it for progress)
+	AR_CLOCK_NEXT = 0
 	ar_clock_task = function()
 		while TRUE do
 			AR_CLOCK = AR_CLOCK + system.frameTime
+			if AR_CLOCK >= AR_CLOCK_NEXT then
+				AR_CLOCK_NEXT = AR_CLOCK_NEXT + 1000
+				local p = manny and manny.hActor and manny:getpos()
+				-- (on the raft of Mysts o' Tyme his place is the raft's: his own is one on the raft)
+				if mot and mot.guybrush_on_raft and swampraft and swampraft.hActor then
+					p = swampraft:getpos()
+				end
+				if p and p.x then
+					PrintDebug(format("CLOCK %d %.2f %.2f %d ", AR_CLOCK, p.x, p.z, cutSceneLevel or 0) .. tostring(ar_set_name and ar_set_name() or "?") .. "\n")
+				else
+					PrintDebug(format("CLOCK %d\n", AR_CLOCK))
+				end
+			end
 			break_here()
 		end
 	end

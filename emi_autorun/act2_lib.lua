@@ -63,6 +63,25 @@ a2_use_held = function(item)
 	ar_wait_for_control()
 end
 
+-- In place of a fixed sleep in a conversation (the chapters were written with sleep_for(N) before each look at the lines): on as soon as
+-- the dialog waits for a choice; the N ms only when the conversation is not running (it ended, or has not begun yet). Guybrush stood
+-- through the rest of each sleep (66 s in act2_24 alone).
+a2_ready = function(name, ms)
+	local waited = 0
+	while waited < ms + 30000 do
+		local d = getglobal(name)
+		if d and d.running and system.buttonHandler == d then
+			return TRUE
+		end
+		if waited >= ms and not (d and d.running) then
+			return nil
+		end
+		sleep_for(100)
+		waited = waited + 100
+	end
+	return nil
+end
+
 -- Leaves a conversation: picks the exit line of the node until it has ended
 a2_leave = function(name)
 	local n = 0
@@ -193,7 +212,9 @@ a2_pick_any = function(name, list)
 	if not d then
 		return nil
 	end
-	ar_dialog_ready(d, 30000)
+	if not ar_dlg_choice(name, "a line of the list") then
+		return nil
+	end
 	local i = 1
 	while list[i] do
 		if ar_offered_line(name, list[i]) then

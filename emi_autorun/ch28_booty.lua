@@ -21,7 +21,7 @@ while props.scupperware.state ~= PROP_LOC2 and tries < 8 do
 	ar_hold(props.scupperware)
 	-- (the school swims about: the verb is given the moment the game offers it, with the ScupperWare in hand; walking up to it by the
 	-- verb sends Guybrush after a school that has moved on)
-	ar_wait_offered(ulg.fishschool, 90000)
+	ar_chase_offered(ulg.fishschool, 90000)
 	AR_CODE = props.scupperware.use
 	AR_KEEP_GOING = TRUE
 	ar_send_verb("use", ulg.fishschool, "the fishies")

@@ -318,3 +318,18 @@ Section A is done for all four acts. What changed since the puck:
 - 2026-11-10 night: the branch is now `autorun` in the worktree `~/scummvm-autorun` (renamed from emi-autorun-latest, rebased on the latest master),
   the one engine of the Grim and EMI autoruns; `build_scummvm_autorun.sh` builds it, run_emi.sh defaults to it. Whole game on it: one attempt, 446 s
   (an earlier build of it: attempt 1 failed in act2_06, "the flame stopped at the painting", not seen before; attempt 2 to the credits).
+- 2026-11-10 late: Guybrush standing still. emi_lib's clock task prints `CLOCK <ms> <x> <z> <cutSceneLevel> <set>` every game second (not an
+  AUTORUN line); `python game_time.py logs/whole_1.log [s]` gives the game time per chapter and the stretches he stood still. Fixed:
+  the ribbon approach walked every point of a way 3 s each with Guybrush not moving (a3r_follow gives up a way after a leg that gets
+  nowhere: Timmy at the canyon's mine shaft 12 min, the diving judges 14 min); the ribbon planner tries 5x the cells when it runs out;
+  a walk carried off by a trigger (the plank diving's stairs) is planned again instead of following the old legs (75 rounds up and
+  down); ar_wait_line_done (EMI) also ends when the dialog stops running (on the raft, a stool, a ship it waited the full 300 s: ten
+  times a game, the gate of Mysts o' Tyme 3x, the Lua Bar's stool, Planet Threepwood, Casaba); ar_say / ar_say_exit / a2_pick_any
+  give up a line after 3 s of the dialog not running; every line is skipped after AR_LINE_MS (1.5 s) with EXPIRE_TEXT (AR_KEEP_LINES /
+  AR_REAL keep them); act2 chapters' fixed sleeps in conversations are a2_ready(name, ms); the rock field's in-set doors end their
+  wait when the cell changes (AR_DOOR_STAYS); the school's quiz loop ends with the dunce cap; the lagoon's fishies are swum after
+  (ar_chase_offered); ar_approach walks up again to someone who has moved off; ch24 puts the pole down when the raft is at rest;
+  ar_raft_exit goes on when the new screen can be steered. act2_06: the flame goes on 2.95 or 3.28 units after the jam, so the lead
+  is 3.12 (3.3 failed every time once the stool wait was gone). act2_22: Marco's conversation started by the skipped arrival is
+  followed (it failed the run twice today; the fix is not yet through a run that hit it).
+  Game time of the whole game: 16843 s before (19931 s this morning), 9399 s after (one run: attempt 1 to act2_22, attempt 2 from 221).

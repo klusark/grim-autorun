@@ -73,9 +73,9 @@ ar_dname = "mot" .. mot.question
 AR_RAFT_STOP = nil
 start_script(ar_raft_walk, 400.3, 0.5)
 ar_wait_for(function() return AR_RAFT_STOP or ar_hot_is(mot.guybrush2_obj) end, 40000, "the raft next to the other Guybrush")
-sleep_for(3000)
+-- (stopped there, and the pole put down as soon as the raft is at rest: it sat 4 s by the other Guybrush)
 AR_RAFT_STOP = TRUE
-sleep_for(1000)
+ar_raft_at_rest(3000)
 ar_press("use")
 ar_wait_for(function() return mot.pole_down end, 30000, "the pole down")
 ar_wait_for_control()

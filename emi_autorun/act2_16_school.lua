@@ -10,10 +10,10 @@ ar_talk(cpt.teacher_obj)
 AR_NO_CHEAT = nil
 AR_CELL_SET = nil
 ar_dlg("tc1")
-sleep_for(3000)
+a2_ready("tc1", 3000)
 ar_lines("tc1")
 ar_say("tc1", 70)
-sleep_for(15000)
+a2_ready("tc1", 15000)
 ar_lines("tc1")
 ar_say("tc1", 72)
 ar_wait_for(function() return ar_set_name() == "pirate transmogrification academy" end, 60000, "the school")
@@ -21,7 +21,8 @@ ar_wait_for(function() return ar_set_name() == "pirate transmogrification academ
 local worst = { 130, 210, 300, 430, 500, 610, 730, 820, 930 }
 local q = 1
 local guard = 0
-while q <= 9 and guard < 400 do
+-- (the class can be over before the 9th answer: the dunce cap is his, he is back in town; the loop looked for questions 400 s more)
+while q <= 9 and guard < 400 and props.dunce_cap.state ~= PROP_INV and not (guard > 5 and ar_set_name() ~= "pirate transmogrification academy" and cutSceneLevel == 0) do
 	sleep_for(1000)
 	guard = guard + 1
 	local d = getglobal("pt1")
