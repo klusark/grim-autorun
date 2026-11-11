@@ -129,6 +129,20 @@ ar_approach = function(obj)
 		return r
 	end
 	AR_APPROACH_AGAIN = nil
+	-- (a door that is not offered from the end of the floor: walked into, into its trigger box (the sector named as the door in the set),
+	-- as a player walks out of a room: the Monkey Head's path, whose box is beyond the reach of the offer)
+	if obj.walkOut and a3r_keys_of and ar_walk_into_door then
+		local keys, nk = a3r_keys_of(obj)
+		local ki = 1
+		while ki <= nk and system.currentSet == aset do
+			ar_log("door not offered: walking into its box " .. tostring(keys[ki]))
+			ar_walk_into_door(keys[ki])
+			ki = ki + 1
+		end
+		if system.currentSet ~= aset then
+			return TRUE
+		end
+	end
 	return ar_fail(tostring(obj.name) .. " is not offered after walking up to it: " .. ar_why_not_offered(obj))
 end
 
