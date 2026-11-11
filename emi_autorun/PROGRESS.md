@@ -382,3 +382,8 @@ Section A is done for all four acts. What changed since the puck:
   is slow, "blocked" is no longer "no nearer" alone (travel over 0.6, or under 0.1 when held in place). ScummVM bug fixed (autorun
   9c3e9597072): a collision push put Guybrush off the floor at the edge of a sector beside Monty (act2_10); the original keeps a set
   position in the walker's sector (0x429270 -> 0x444b90 -> 0x443ef0).
+- 2026-11-11: ScummVM bug fixed (autorun b6058ac6eab): EMI collisions as Monkey4.exe (0x42ce50): a mover with collision mode off does
+  not collide, one that is on is pushed only by sphere-mode actors (the port made walkers with collisions off spheres, a Grim rule:
+  NPCs walking into Guybrush pushed him, thousands of "has run into" lines a run). act3_10 backs out when Timmy stands in the tunnel
+  to the vent and tries again; a door that is not offered is walked into (its trigger box). Whole game in one attempt on ScummVM with
+  key walking, movies, cheat boxes and the collision fixes: 481 s, 11702 s of game time.
