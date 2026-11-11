@@ -28,14 +28,24 @@ a3_timmy_in_tunnel = function()
 	local t = timmy:getpos()
 	return t.z > 1.5 and abs(t.x) < 1.5
 end
+-- (he can also wander in while Guybrush walks: the walk to the vent is tried again after backing out, up to three times)
 local a3_tt = 0
-while a3_timmy_in_tunnel() and a3_tt < 3 do
+local a3_vent_done = nil
+while not a3_vent_done and a3_tt < 4 do
 	a3_tt = a3_tt + 1
-	ar_log("Timmy is in the tunnel: out of its mouth, waiting for him")
-	ar_walk_to(0.8, 0, -3)
-	ar_try_wait(function() return not a3_timmy_in_tunnel() end, 15000)
+	if a3_timmy_in_tunnel() then
+		ar_log("Timmy is in the tunnel: out of its mouth, waiting for him")
+		ar_walk_to(0.8, 0, -3)
+		ar_try_wait(function() return not a3_timmy_in_tunnel() end, 15000)
+	end
+	AR_KEEP_GOING = a3_tt < 4
+	a3_vent_done = ar_do("use", gom.vent)
+	AR_KEEP_GOING = FALSE
+	if not a3_vent_done then
+		AR_FAILED = FALSE
+		ar_log("the vent was not reached (try " .. a3_tt .. ")")
+	end
 end
-ar_do("use", gom.vent)
 ar_log("vent open " .. tostring(glob.vent_open) .. " timmy in set " .. tostring(timmy.in_set == system.currentSet))
 ar_do("use", gom.vent, props.bananas)
 ar_log("monkey in vent " .. tostring(glob.monkey_in_vent))
