@@ -428,3 +428,9 @@ Section A is done for all four acts. What changed since the puck:
   1462/1600; an engine difference to look into, like the Lua Bar's 1.6 s/1.1 s from the verb to the press). act3_08: a Kombat word is
   pressed when no line is up, and the next turn waited for only after the game has taken the phrase. On a resume the original runs the
   saved run's tasks on until the new script stops them: orig_parts.py now stops the chapters' own tasks too (two Kombat bots played).
+- The original kills a Lua function after 10 million of its own instructions, counted over the whole activation (the frame's counter
+  at +0x28 is reset only when the frame first runs, FUN_004532a0/FUN_004532b0, not when it is resumed after a break_here or a call):
+  the stand points of Ozzie's short tower (range 200, 1300 points) were sorted quadratically in one activation and the run died.
+  ar_stand_points keeps the nearest 8 as they come. ScummVM has no such limit (a port of it would catch these on ScummVM).
+- The original now passes every part of the game: ch01..ch22 (Nov 10), ch23..act2_05, act2_06..act2_11, act2_12..act3_11 (after the
+  inventory fix), act3_08..act3_14 and Act 4 to the credits (Nov 11), each run resumed from the checkpoint before it.

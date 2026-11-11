@@ -1606,8 +1606,21 @@ ar_stand_points = function(obj)
 				while i <= n do
 					local dy = o.y - ys[i]
 					if dx * dx + dz * dz + dy * dy <= r * r and abs(ys[i] - p.y) < 2.5 then
-						nb = nb + 1
-						best[nb] = { x, ys[i], z, sqrt((x - p.x) * (x - p.x) + (z - p.z) * (z - p.z)) + 3 * abs(ys[i] - p.y) }
+						-- (kept in order as they come, the nearest 8 only: the caller walks to 6 at the most. All of them sorted at the end
+						-- was quadratic, and Ozzie's short tower (range 200) gave 1300 points: the original killed the run, "ran without a
+						-- break_here() for a really long time", Nov 11)
+						local v = { x, ys[i], z, sqrt((x - p.x) * (x - p.x) + (z - p.z) * (z - p.z)) + 3 * abs(ys[i] - p.y) }
+						if nb < 8 or v[4] < best[nb][4] then
+							if nb < 8 then
+								nb = nb + 1
+							end
+							local j = nb - 1
+							while j >= 1 and best[j][4] > v[4] do
+								best[j + 1] = best[j]
+								j = j - 1
+							end
+							best[j + 1] = v
+						end
 					end
 					i = i + 1
 				end
@@ -1615,18 +1628,6 @@ ar_stand_points = function(obj)
 			dz = dz + step
 		end
 		dx = dx + step
-	end
-	-- insertion sort by d (a few hundred entries at most)
-	local i = 2
-	while i <= nb do
-		local v = best[i]
-		local j = i - 1
-		while j >= 1 and best[j][4] > v[4] do
-			best[j + 1] = best[j]
-			j = j - 1
-		end
-		best[j + 1] = v
-		i = i + 1
 	end
 	return best, nb
 end
