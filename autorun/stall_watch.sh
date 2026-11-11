@@ -30,7 +30,12 @@ while sleep 5; do
 			sleep 1
 		fi
 		echo "Debug: AUTORUN STALL: no AUTORUN output for $limit s, scummvm killed" >> "$log"
-		taskkill //F //IM scummvm.exe > /dev/null 2>&1
+		# (only the engine of this run, found by its ini _scummvm_<parent>.ini: an EMI run or a clean-room run going on at the same time is left alone)
+		if [ -n "$parent" ]; then
+			powershell.exe -NoProfile -Command "Get-CimInstance Win32_Process -Filter \"Name='scummvm.exe'\" | Where-Object { \$_.CommandLine -like '*_scummvm_${parent}.ini*' } | ForEach-Object { Stop-Process -Id \$_.ProcessId -Force }" > /dev/null 2>&1
+		else
+			taskkill //F //IM scummvm.exe > /dev/null 2>&1
+		fi
 		exit 0
 	fi
 done

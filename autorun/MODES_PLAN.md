@@ -128,7 +128,11 @@ Done and checked:
   The whole game passes, twice, with the same log (54,456 lines), in 113 s (text mode: 128 s). Chapter 38 needed the skipper off for the lines Chepito says while
   held: they are the player's time to give him to Glottis (`AR_SAYING = TRUE`). More such places can show in other runs of the speed mode; they are findings.
 * Mode `text` is the old default; act 1 matches the baseline line for line.
-* Mode `full` (= `REAL=1`): the whole game passes with the saves (274 s).
+* Mode `full` (= `REAL=1`): the whole game passes with the saves (274 s). 2026-11-10 on the `autorun` engine: passes (ch01-53 in 228 s, then ch54-65 from
+  the ch53 checkpoint in 44 s, after another session's EMI restart killed the engine). One line was cut: the "line that does not end" check of `ar_skipper`
+  counted the whole of byeruba.snm (217 s), because the subtitles of a fullscreen movie are lines of actors that the engine does not update in a movie's frames,
+  so `IsMessageGoing()` stays true until the movie ends; it pressed the expire key on the last subtitle (brbsv28c). That check now waits while a fullscreen
+  movie plays (a stuck movie has its own check). A full-mode run must have no `skipping a line that does not end` and no `a movie that does not end` line.
 * Coverage: `COV` lines in every mode (`ar_cov`), `tools/catalog.py` (writes `catalog.json`), `tools/cov100.py catalog.json <log>...` (also reads the `camera:` notes
   for sets and setups). The catalogue counts differ from the first estimate above (466 dialog lines, 798 objects with a static name, 1487 verbs, 252 item combos,
   363 setups): this one is read from the script source; the estimate counted every `:create(` and the inline lines.

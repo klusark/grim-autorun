@@ -512,7 +512,10 @@ ar_skipper = function()
 		end
 		-- a line that never ends (a voice that does not finish) is skipped like a player does, with the
 		-- key that expires the text
-		if IsMessageGoing() then
+		-- (not while a fullscreen movie plays: its subtitles are lines of actors that the engine does not update in a movie's frames, as the original, so
+		-- IsMessageGoing() stays true from the first subtitle to the end of the movie; byeruba.snm is 217 s, and its last subtitle was cut 2 s in.
+		-- A movie that never ends is the movie check's above)
+		if IsMessageGoing() and not (IsFullscreenMoviePlaying and IsFullscreenMoviePlaying()) then
 			AR_MSG_TIME = (AR_MSG_TIME or 0) + 100
 			if not AR_NOTIMEOUT and AR_MSG_TIME > (AR_REAL and 180000 or 15000) then
 				ar_log("skipping a line that does not end")
