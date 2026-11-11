@@ -557,6 +557,8 @@ ar_walk_direct = function(x, y, z, stop_when, max_ms)
 	local avoid_z = 0
 	local side = 1
 	local chk_d = ar_floor_dist(x, z)
+	-- (the way walked since the last look: slow walking (swimming in the lagoon) is not being blocked)
+	local chk_travel = 0
 	local last = mn:getpos()
 	local startset = system.currentSet
 	if not (stop_when and stop_when()) then
@@ -580,7 +582,7 @@ ar_walk_direct = function(x, y, z, stop_when, max_ms)
 			local dnow = ar_floor_dist(x, z)
 			local px = mn:getpos()
 			-- (no nearer to the point in the last second and a half, though he walks)
-			if chk_d - dnow < 0.25 and dnow > 1.5 then
+			if chk_d - dnow < 0.25 and dnow > 1.5 and (chk_travel > 0.6 or chk_travel < 0.1) then
 				local ddx = (x - px.x) / (dnow + 0.001)
 				local ddz = (z - px.z) / (dnow + 0.001)
 				side = -side
@@ -603,6 +605,7 @@ ar_walk_direct = function(x, y, z, stop_when, max_ms)
 				end
 			end
 			chk_d = dnow
+			chk_travel = 0
 		end
 		local aim_x = x
 		local aim_z = z
@@ -633,6 +636,16 @@ ar_walk_direct = function(x, y, z, stop_when, max_ms)
 		-- (the set can change in the frame: the actor of the old one is gone then)
 		if system.currentSet == startset then
 			local p = mn:getpos()
+			-- (moved more than 2 units in one frame: a cheat box carried him across; the leg's point is on the side he left, and
+			-- the planner plans again from here. Walked on toward it, he pushed against an edge for ever: ch23's west stair)
+			if abs(p.x - last.x) + abs(p.z - last.z) > 2 then
+				ar_log(format("walk: carried from %.2f %.2f to %.2f %.2f", last.x, last.z, p.x, p.z))
+				A3R_CARRIED = TRUE
+				AR_STEER_TURNED = nil
+				ar_drive_stop()
+				return nil
+			end
+			chk_travel = chk_travel + sqrt((p.x - last.x) * (p.x - last.x) + (p.z - last.z) * (p.z - last.z))
 			if abs(p.x - last.x) + abs(p.z - last.z) < 0.0005 and not turning then
 				stuck = stuck + 1
 			else

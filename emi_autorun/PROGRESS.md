@@ -377,3 +377,8 @@ Section A is done for all four acts. What changed since the puck:
   skipper too. The movie is skipped where the game reads the key: GetControlState of an Escape key reads held while a movie plays
   (emi_lib, AR_NO_SKIP/AR_REAL: they play). ch01 passes on the original in 8 s with no key from outside. (On the original a movie
   plays in real time, in a simulated ScummVM run on the game's clock.) run_emi.sh: GDBCMDS=<file> gives gdb a commands file.
+- 2026-11-11: ch23: a cheat box carries Guybrush across in the middle of a leg; the walker sees a jump of more than 2 units in a frame,
+  ends the leg and the planner plans again from there (it pushed against an edge toward the old leg's point for ever). ch31: swimming
+  is slow, "blocked" is no longer "no nearer" alone (travel over 0.6, or under 0.1 when held in place). ScummVM bug fixed (autorun
+  9c3e9597072): a collision push put Guybrush off the floor at the edge of a sector beside Monty (act2_10); the original keeps a set
+  position in the walker's sector (0x429270 -> 0x444b90 -> 0x443ef0).
