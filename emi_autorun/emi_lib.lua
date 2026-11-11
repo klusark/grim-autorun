@@ -197,8 +197,12 @@ ar_skipper = function()
 				-- the player's way: the Escape key (control OVERRIDE) through the button handler, with its key up; an override that is
 				-- still active is pressed again at the next look
 				AR_ESC_TRIES = AR_ESC_TRIES + 1
-				ar_press_key(ar_real_key("OVERRIDE"))
-				ar_release_key(ar_real_key("OVERRIDE"))
+				-- (held down for a few frames, as a player's key press lasts: the game can start a movie inside the key's own
+				-- handler (ch01's intro_a after the opening cutscene), where its loop cannot yield and only ends when it reads
+				-- Escape as held; with a press and release in one instant it spun there: the original froze, ScummVM went on)
+				ar_key_down("OVERRIDE")
+				sleep_for(100)
+				ar_key_up("OVERRIDE")
 				seen = 0
 			end
 		else

@@ -2,7 +2,7 @@
 # Runs an EMI autorun script on the ORIGINAL Monkey4.exe v1.1 (orig/: hard links to the GOG install's files), started through
 # grimlaunch.exe (debuglog, datadir, nocd, simtime, nopause, f11, windowed). The script is built as run_emi.sh builds it, wrapped as
 # ScummVM's --autorun wraps it (a task of its own), and put into orig/patch.m4b as grimpatch.bin (the original reads its Lua only from
-# its archives); F11 (postkey.exe) runs it once the game is up. The game's PrintDebug lines go to orig/grimdebug.log, copied to
+# its archives); F11 (postkey.exe) runs it once the game is up (the only keys sent from outside: the run plays with the game's own). The game's PrintDebug lines go to orig/grimdebug.log, copied to
 # logs/<name>.log. NOLOG real seconds without a new AUTORUN line: stuck, stopped. Only this folder's Monkey4.exe is ever stopped.
 #   run_orig.sh <script.lua> [timeout seconds]
 EM=/c/Users/Joel/grim_tools/emi_autorun
@@ -61,12 +61,6 @@ while [ -n "$(mine)" ]; do
 	if [ $quiet -ge $nolog ]; then echo "NOLOG: no progress line for $nolog s, stopping" >> grimdebug.log; break; fi
 	if [ $((now - start)) -ge $limit ]; then echo "TIMEOUT: $limit s, stopping" >> grimdebug.log; break; fi
 	grep -a -q "AUTORUN RESULT" grimdebug.log && sleep 3 && break
-	# (a movie of the original plays with every script stopped, the autorun's skipper too: Escape is pressed from here, as a player
-	# presses it, every 2 s while the last movie line is a start)
-	if [ "$(grep -a -E "AUTORUN movie (started|over)" grimdebug.log | tail -1 | grep -c started)" = 1 ] && [ $((now % 2)) = 0 ]; then
-		"$EM/../crashdbg/postkey.exe" pid:$(mine | head -1) 1b > /dev/null
-		quiet=0
-	fi
 done
 for p in $(mine); do taskkill //F //PID $p > /dev/null 2>&1; done
 echo "original exit after $(( $(date +%s) - start )) s" >> grimdebug.log
