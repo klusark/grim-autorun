@@ -10,7 +10,9 @@
 #include <stdlib.h>
 #include <math.h>
 
-#define LOGFILE "C:/GOG Games/GRIMDATA/grimdebug.log"
+#define LOGFILE_DEFAULT "C:/GOG Games/GRIMDATA/grimdebug.log"
+/* GRIMTRACE_GAMELOG: the game's log when it runs from another folder */
+static const char *LOGFILE = LOGFILE_DEFAULT;
 #define MARKER "running autorun_all.lua"
 #define STATUS_WX86_SINGLE_STEP_ 0x4000001E
 #define STATUS_WX86_BREAKPOINT_ 0x4000001F
@@ -24,6 +26,19 @@ static int g_nbp;
 static int g_rearm = -1;
 static FILE *g_log;
 static long g_hits, g_max;
+static int g_quiet;
+
+/* (GRIMTRACE_ARMAT / GRIMTRACE_DISARMAT: is the text in the game's log yet) */
+static int log_has(const char *text) {
+	static char buf[1 << 23];
+	size_t n;
+	FILE *f = fopen(LOGFILE, "rb");
+	if (!f) return 0;
+	n = fread(buf, 1, sizeof buf - 1, f);
+	buf[n] = 0;
+	fclose(f);
+	return strstr(buf, text) != NULL;
+}
 
 static BOOL CALLBACK collect(HWND h, LPARAM l) {
 	DWORD pid = 0;
@@ -90,7 +105,9 @@ static void dump(HANDLE proc, int i, WOW64_CONTEXT *c) {
 	if (g_hits++ >= g_max) return;
 	fprintf(g_log, "BP %08lx hit %ld eax %08lx ebx %08lx ecx %08lx edx %08lx esi %08lx edi %08lx ebp %08lx esp %08lx\n", g_bp[i], g_hits,
 	        c->Eax, c->Ebx, c->Ecx, c->Edx, c->Esi, c->Edi, c->Ebp, c->Esp);
-	ReadProcessMemory(proc, (void *)(ULONG_PTR)base, st, sizeof st, &n);
+	/* GRIMTRACE_QUIET=1: no stack words, only the registers, the peeks and st0 */
+	if (!g_quiet)
+		ReadProcessMemory(proc, (void *)(ULONG_PTR)base, st, sizeof st, &n);
 	for (k = 0; k < (int)(n / 4); k++) {
 		float f;
 		memcpy(&f, &st[k], 4);
@@ -153,6 +170,15 @@ int main(int argc, char **argv) {
 	const char *bps = getenv("GRIMTRACE_BP");
 	const char *logname = getenv("GRIMTRACE_LOG");
 	const char *mx = getenv("GRIMTRACE_MAX");
+	/* GRIMTRACE_ARMAT=<text>: the breakpoints are set only once the game's log has the text (GRIMTRACE_DISARMAT=<text>: and taken out
+	   again once it has that one), so a probe can mark the frames it wants traced */
+	const char *armat = getenv("GRIMTRACE_ARMAT");
+	const char *disarmat = getenv("GRIMTRACE_DISARMAT");
+	int disarmed = 0;
+	DWORD lastpoll = 0;
+	g_quiet = getenv("GRIMTRACE_QUIET") != NULL;
+	if (getenv("GRIMTRACE_GAMELOG"))
+		LOGFILE = getenv("GRIMTRACE_GAMELOG");
 	g_max = mx ? atol(mx) : 20000;
 	g_log = fopen(logname ? logname : "C:/GOG Games/GRIMDATA/grimtrace.log", "w");
 	if (bps) {
@@ -185,8 +211,31 @@ int main(int argc, char **argv) {
 			}
 			fflush(stdout);
 		}
+		if ((armat || disarmat) && now - lastpoll > 1000) {
+			lastpoll = now;
+			if (armat && !armed && log_has(armat)) {
+				int i;
+				SIZE_T n;
+				for (i = 0; i < g_nbp; i++) {
+					ReadProcessMemory(pi.hProcess, (void *)(ULONG_PTR)g_bp[i], &g_orig[i], 1, &n);
+					arm(pi.hProcess, i, 1);
+				}
+				armed = 1;
+				fprintf(g_log, "armed %d breakpoints at '%s'\n", g_nbp, armat);
+				fflush(g_log);
+			}
+			if (disarmat && armed && !disarmed && log_has(disarmat)) {
+				int i;
+				for (i = 0; i < g_nbp; i++)
+					arm(pi.hProcess, i, 0);
+				disarmed = 1;
+				g_rearm = -1;
+				fprintf(g_log, "disarmed at '%s'\n", disarmat);
+				fflush(g_log);
+			}
+		}
 		if (!WaitForDebugEvent(&ev, 200)) continue;
-		if (ev.dwDebugEventCode == CREATE_PROCESS_DEBUG_EVENT && !armed) {
+		if (ev.dwDebugEventCode == CREATE_PROCESS_DEBUG_EVENT && !armed && !armat) {
 			int i;
 			SIZE_T n;
 			for (i = 0; i < g_nbp; i++) {
@@ -220,7 +269,7 @@ int main(int argc, char **argv) {
 				}
 				/* (the loader's own breakpoints: go on) */
 			} else if (code == EXCEPTION_SINGLE_STEP || code == STATUS_WX86_SINGLE_STEP_) {
-				if (g_rearm >= 0) {
+				if (g_rearm >= 0 && !disarmed) {
 					arm(pi.hProcess, g_rearm, 1);
 					g_rearm = -1;
 				}
