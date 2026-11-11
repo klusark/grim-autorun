@@ -1,5 +1,5 @@
 /* Posts a key (default F11) to the windows of a running game exe without taking the focus.
-   postkey <exe name> [virtual key in hex, default 7a = F11] */
+   postkey <exe name | pid:N> [virtual key in hex, default 7a = F11]  (pid:N: that process only; with a name, the last one found) */
 #include <windows.h>
 #include <tlhelp32.h>
 #include <stdio.h>
@@ -25,7 +25,8 @@ int main(int argc, char **argv) {
 	HANDLE snap = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
 	int i;
 	pe.dwSize = sizeof pe;
-	if (Process32First(snap, &pe)) {
+	if (strncmp(exe, "pid:", 4) == 0) g_pid = (DWORD)strtoul(exe + 4, NULL, 10);
+	else if (Process32First(snap, &pe)) {
 		do {
 			if (_stricmp(pe.szExeFile, exe) == 0) g_pid = pe.th32ProcessID;
 		} while (Process32Next(snap, &pe));

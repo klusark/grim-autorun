@@ -347,3 +347,16 @@ Section A is done for all four acts. What changed since the puck:
   in Audio::Timestamp::msecs, a Timestamp with frame rate 0, EMI sound; seen 4 times on Nov 10, not yet caught). Whole game with the
   movies, one attempt: 9592 s of game time.
   Only stop scummvm.exe whose command line has \emi_autorun\generated\ (a Grim autorun runs the same build at the same time).
+- 2026-11-11: walking with the keys: ar_step/ar_steer hold MOVE_FORWARD, TURN_LEFT/RIGHT and RUN through the game's button handler
+  (SampleButtonHandler starts the game's move_actor, which walks while the key reads as held; GetControlState is wrapped for the held
+  keys). CommonButtonHandler sets stop_idle on any key, so the direct idle stop and set_run are gone (AR_DIRECT_WALK: the old way).
+  The wedding ship has its own handler (wed.buttonHandler) in which the walk keys do nothing (the original too). A walk ends when the
+  game puts in another handler. act2_19: the walk into the rock field stops at kab.current_loc (walking on, the keys took him out).
+- ScummVM bug fixed (autorun 2b5676cf919): EMI GetActorYawToPoint is the turn from the actor's heading (-180..180), as Monkey4.exe
+  gives it; ScummVM gave the heading. ar_want_yaw = yaw + the turn (ar_yaw_turn), the raft the same.
+- The original exe: run_orig.sh <script> builds the script as run_emi.sh does, wrapped as ScummVM's --autorun wraps it, into
+  orig/patch.m4b (hard links to the GOG files in orig/, patch.m4b rebuilt with grimpatch.bin; the original reads Lua only from its
+  archives) and runs it with F11 (grimlaunch's f11 patch, postkey.exe). The original runs no script during a movie, so the runner
+  presses Escape from outside while a movie plays. The original has no GetFloorHeights (emi_floors.lua from gen_floors.py and
+  emi_floors_fn.lua: the same results as the engine's on 8237 lookups) and no LockFont (stubbed in emi_prelude.lua); it prints no
+  traceback for a Lua error (STAGE lines mark the libraries). The original runs at about half of real time (simtime 17 ms a frame).

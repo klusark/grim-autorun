@@ -6,7 +6,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..'
 import formats
 
 SRC = os.environ.get('EMI_INSTALL', r'C:\GOG Games\Escape from Monkey Island')
-DST = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'orig', 'patch.m4b')
+DST = os.environ.get('ORIG_M4B') or os.path.join(os.path.dirname(os.path.abspath(__file__)), 'orig', 'patch.m4b')
 
 def read_m4b(path):
     d = open(path, 'rb').read()

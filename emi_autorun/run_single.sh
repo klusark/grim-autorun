@@ -55,4 +55,9 @@ export SAVES="$EM/saves_single"
 mkdir -p "$SAVES"
 export EXTRA="emi_poke.lua emi_myst.lua"
 export NOLOG=${NOLOG:-90}
-LOG=${LOGNAME_OVERRIDE:-single} "$EM/run_emi.sh" "$EM/generated/all_single.lua" ${1:-20000}
+# ORIG=1: on the original Monkey4.exe (run_orig.sh) instead of ScummVM
+if [ -n "$ORIG" ]; then
+	LOG=${LOGNAME_OVERRIDE:-single_orig} "$EM/run_orig.sh" "$EM/generated/all_single.lua" ${1:-20000}
+else
+	LOG=${LOGNAME_OVERRIDE:-single} "$EM/run_emi.sh" "$EM/generated/all_single.lua" ${1:-20000}
+fi
