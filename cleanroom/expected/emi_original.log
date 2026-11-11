@@ -1,4 +1,4 @@
-START 2313 tests
+START 2451 tests
 BEGIN numbers
 V numbers|arith|3.500000 1024.000000 -2.333333 1.#INF00
 V numbers|tostring|"0.333333" "100" "1e+015" "-0.5"
@@ -25,7 +25,7 @@ V strings|ascii|65.000000
 END strings
 BEGIN next_order
 U next_order|order
-V next_order|order|"84,49,98,7,56,105,14,63,112,21,126,70,35,119,133,28,manny,lupe,eva,chepito,velasco,olivia,salvador,domino,meche,glottis,77,42,91,140,"
+V next_order|order|"manny,lupe,eva,chepito,velasco,olivia,salvador,7,meche,glottis,105,49,98,14,63,112,21,70,119,28,77,126,56,35,133,84,domino,42,91,140,"
 V next_order|globals_counted|1.000000
 END next_order
 BEGIN tasks
@@ -353,7 +353,32 @@ V builtins|fn_dostring|"function"
 V builtins|fn_eatk_done|"function"
 V builtins|fn_eatk_line|"function"
 V builtins|fn_eatk_talker|"function"
+V builtins|fn_elu_actor|"function"
+V builtins|fn_elu_call|"function"
+V builtins|fn_elu_chore_actor|"function"
+V builtins|fn_elu_gone|"function"
+V builtins|fn_elu_movie_wait|"function"
+V builtins|fn_elu_pos|"function"
+V builtins|fn_elu_rot|"function"
+V builtins|fn_elu_s|"function"
+V builtins|fn_elu_trace|"function"
+V builtins|fn_elu_w2s|"function"
+V builtins|fn_emd_done|"function"
+V builtins|fn_emd_pair|"function"
+V builtins|fn_emd_trace|"function"
+V builtins|fn_emd_wp|"function"
+V builtins|fn_emi_smv_test|"function"
+V builtins|fn_emi_smv_wait_end|"function"
+V builtins|fn_emi_smv_wait_s|"function"
 V builtins|fn_error|"function"
+V builtins|fn_esn_format|"function"
+V builtins|fn_esn_freed|"function"
+V builtins|fn_esn_from|"function"
+V builtins|fn_esn_mtest|"function"
+V builtins|fn_esn_state|"function"
+V builtins|fn_esn_sv_state|"function"
+V builtins|fn_esn_voice|"function"
+V builtins|fn_esn_wait|"function"
 V builtins|fn_execute|"function"
 V builtins|fn_exit|"function"
 V builtins|fn_exp|"function"
@@ -512,11 +537,11 @@ BEGIN asv_emi_actor
 V asv_emi_actor|just_loaded_before|nil
 V asv_emi_actor|changed|5.000000
 V asv_emi_actor|pass|"loaded"
-V asv_emi_actor|kept_r_world|1.000000
-V asv_emi_actor|kept_c_sort|1.000000
-V asv_emi_actor|kept_c_pos|1.000000
-V asv_emi_actor|kept_r_sort|1.000000
 V asv_emi_actor|kept_chore|1.000000
+V asv_emi_actor|kept_r_sort|1.000000
+V asv_emi_actor|kept_r_world|1.000000
+V asv_emi_actor|kept_c_pos|1.000000
+V asv_emi_actor|kept_c_sort|1.000000
 V asv_emi_actor|kept_r_pos|1.000000
 V asv_emi_actor|carrier_moved|1.000000
 END asv_emi_actor
@@ -746,6 +771,413 @@ BEGIN ec_sprite
 V ec_sprite|wear|9.000000 1.000000
 V ec_sprite|hidden|8.000000 1.000000 1.000000
 END ec_sprite
+BEGIN elu_gone_local_alpha
+V elu_gone_local_alpha|r|nil
+END elu_gone_local_alpha
+BEGIN elu_gone_global_alpha
+V elu_gone_global_alpha|r|nil
+END elu_gone_global_alpha
+BEGIN elu_gone_overworld
+V elu_gone_overworld|r|nil
+END elu_gone_overworld
+BEGIN elu_gone_unload
+V elu_gone_unload|r|nil
+END elu_gone_unload
+BEGIN elu_gone_shadow
+V elu_gone_shadow|r|nil
+END elu_gone_shadow
+BEGIN elu_gone_world_pos
+V elu_gone_world_pos|r|nil
+END elu_gone_world_pos
+BEGIN elu_gone_stop_chores
+V elu_gone_stop_chores|r|nil
+END elu_gone_stop_chores
+BEGIN elu_gone_lighting
+V elu_gone_lighting|r|nil
+END elu_gone_lighting
+BEGIN elu_gone_head_limits
+V elu_gone_head_limits|r|nil
+END elu_gone_head_limits
+BEGIN elu_gone_head
+V elu_gone_head|r|nil
+END elu_gone_head
+BEGIN elu_gone_attach_to
+V elu_gone_attach_to|r|nil
+V elu_gone_attach_to|rider|0.000000 0.000000 0.000000
+END elu_gone_attach_to
+BEGIN elu_gone_attached
+V elu_gone_attached|r|nil
+V elu_gone_attached|carrier|0.000000 0.000000 0.000000
+END elu_gone_attached
+BEGIN elu_attach_string
+V elu_attach_string|r|nil
+V elu_attach_string|carrier|0.000000 0.000000 0.000000
+END elu_attach_string
+BEGIN elu_gone_detach
+V elu_gone_detach|r|nil
+END elu_gone_detach
+BEGIN elu_gone_puck
+V elu_gone_puck|r|nil
+END elu_gone_puck
+BEGIN elu_chore_pause
+V elu_chore_pause|pause|nil
+V elu_chore_pause|paused|"2/nil 2/nil 2/nil 2/nil 2/nil 2/nil 2/nil 2/nil 2/nil 2/nil 2/nil 2/nil 2/nil 2/nil 2/nil 2/nil 2/nil 2/nil 2/nil 2/nil "
+V elu_chore_pause|play|nil
+V elu_chore_pause|played|"2/1 2/1 2/1 2/1 2/1 2/1 2/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 4/nil 4/nil 4/nil 4/nil 4/nil 4/nil 4/nil 4/nil 4/nil 4/nil 4/nil 4/nil 4/nil 4/nil 4/nil 4/nil 4/nil 4/nil 4/nil "
+END elu_chore_pause
+BEGIN elu_chore_play_twice
+V elu_chore_play_twice|trace|"0/1 1/1 1/1 1/1 1/1 1/1 2/1 2/1 2/1 2/1 "
+V elu_chore_play_twice|paused|"2/nil 2/nil 2/nil "
+V elu_chore_play_twice|on|"2/1 2/1 2/1 "
+END elu_chore_play_twice
+BEGIN elu_chore_advance
+V elu_chore_advance|r|nil
+V elu_chore_advance|advanced|3.000000 1.000000
+V elu_chore_advance|trace|"3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 4/nil 4/nil 4/nil 4/nil 4/nil 4/nil 4/nil 4/nil 4/nil 4/nil 4/nil "
+V elu_chore_advance|ended|4.000000
+V elu_chore_advance|stopped_advanced|0.000000
+V elu_chore_advance|trace2|"0/nil 0/nil 0/nil 0/nil 0/nil "
+END elu_chore_advance
+BEGIN elu_chore_advance_loop
+V elu_chore_advance_loop|stopped|20.000000
+V elu_chore_advance_loop|advanced|20.000000
+V elu_chore_advance_loop|trace|"20/nil 20/nil 20/nil 20/nil 20/nil 20/nil 20/nil 20/nil 20/nil 20/nil 20/nil 20/nil 20/nil 20/nil 20/nil 20/nil 20/nil 20/nil 20/nil 20/nil 20/nil 20/nil 20/nil 20/nil 20/nil "
+END elu_chore_advance_loop
+BEGIN elu_chore_set_looping
+V elu_chore_set_looping|looping|1.000000
+V elu_chore_set_looping|r_off|nil
+V elu_chore_set_looping|off|nil
+V elu_chore_set_looping|trace|"0/1 20/1 20/1 20/1 20/1 20/1 20/1 20/1 20/1 21/1 21/1 21/1 21/1 21/1 21/1 21/1 21/1 21/1 21/nil 21/nil 21/nil 21/nil 21/nil 21/nil 21/nil 21/nil 21/nil 21/nil 21/nil 21/nil "
+V elu_chore_set_looping|short_looping|nil
+V elu_chore_set_looping|r_on|nil
+V elu_chore_set_looping|on|1.000000
+V elu_chore_set_looping|trace_on|"21/1 10/1 10/1 10/1 10/1 10/1 10/1 10/1 10/1 10/1 "
+END elu_chore_set_looping
+BEGIN elu_chore_stop_fade
+V elu_chore_stop_fade|r|nil
+V elu_chore_stop_fade|fading|"30/1 30/1 30/1 30/1 30/1 30/1 30/1 30/1 30/1 30/1 30/1 30/1 30/1 30/1 30/1 30/1 30/1 30/1 30/nil 30/nil 30/nil 30/nil 30/nil 30/nil 30/nil "
+V elu_chore_stop_fade|long|"30/1 30/1 30/1 30/1 30/1 30/1 30/1 30/1 30/1 30/1 30/1 30/1 30/1 30/1 30/1 30/1 30/1 30/1 30/1 30/1 30/1 30/1 30/1 30/1 30/1 30/1 30/1 30/1 30/1 30/1 30/1 30/1 30/1 30/1 30/1 30/1 30/1 30/1 30/1 30/1 30/1 30/1 30/1 30/1 30/1 30/1 30/1 30/1 30/1 30/1 30/1 30/1 30/1 30/1 30/1 30/1 30/1 30/1 30/1 30/nil 30/nil 30/nil 30/nil 30/nil 30/nil 30/nil 30/nil 30/nil 30/nil 30/nil 30/nil 30/nil 30/nil 30/nil 30/nil "
+V elu_chore_stop_fade|nil|"30/nil 30/nil 30/nil "
+END elu_chore_stop_fade
+BEGIN elu_chore_complete
+V elu_chore_complete|r|nil
+V elu_chore_complete|trace|"4/nil 4/nil 4/nil 4/nil 4/nil 4/nil 4/nil 4/nil 4/nil 4/nil "
+END elu_chore_complete
+BEGIN elu_chore_fade_in
+V elu_chore_fade_in|handle|1.000000
+V elu_chore_fade_in|trace|"0/1 1/1 1/1 1/1 1/1 1/1 2/1 2/1 2/1 2/1 2/1 2/1 2/1 2/1 2/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 4/nil 4/nil 4/nil 4/nil 4/nil 4/nil 4/nil 4/nil 4/nil 4/nil 4/nil "
+V elu_chore_fade_in|loop|1.000000 "4/1 20/1 20/1 20/1 20/1 "
+END elu_chore_fade_in
+BEGIN elu_chore_gone
+V elu_chore_gone|valid|0.000000
+V elu_chore_gone|looping|nil
+V elu_chore_gone|playing|nil
+END elu_chore_gone
+BEGIN elu_chore_lock
+V elu_chore_lock|lock|nil
+V elu_chore_lock|trace|"0/1 1/1 1/1 1/1 1/1 1/1 2/1 2/1 "
+V elu_chore_lock|unlock|nil
+V elu_chore_lock|lock_set|nil
+V elu_chore_lock|unlock_set|nil
+END elu_chore_lock
+BEGIN elu_stop_chores_loop
+V elu_stop_chores_loop|after|1.000000
+V elu_stop_chores_loop|all|nil
+END elu_stop_chores_loop
+BEGIN elu_turn_chores
+V elu_turn_chores|r|nil
+V elu_turn_chores|left|1.000000 "0 -1.53 0 nil"
+V elu_turn_chores|right|10.000000 "0 0 0 nil"
+END elu_turn_chores
+BEGIN elu_turn_chores_none
+V elu_turn_chores_none|r|nil
+V elu_turn_chores_none|table|nil
+V elu_turn_chores_none|rot|"0 0 0 nil"
+END elu_turn_chores_none
+BEGIN elu_choring
+V elu_choring|missing|1.000000
+END elu_choring
+BEGIN elu_look_at
+V elu_look_at|nil_first|nil
+V elu_look_at|rate0|200.000000
+V elu_look_at|rate_point|50.000000
+V elu_look_at|rate_x|50.000000
+V elu_look_at|rate_nil|80.000008
+V elu_look_at|rate_actor|30.000002
+V elu_look_at|rate_string|30.000002
+END elu_look_at
+BEGIN elu_walk_avoiding
+V elu_walk_avoiding|r|nil
+V elu_walk_avoiding|after_10|-0.197141 0.000000 -0.197141
+V elu_walk_avoiding|after_70|1.000000 0.000000 1.510000
+V elu_walk_avoiding|moving|nil
+END elu_walk_avoiding
+BEGIN elu_walk_avoiding_actor
+V elu_walk_avoiding_actor|r|nil
+V elu_walk_avoiding_actor|after_70|-1.000000 0.000000 1.000000
+V elu_walk_avoiding_actor|moving|nil
+V elu_walk_avoiding_actor|string|nil
+END elu_walk_avoiding_actor
+BEGIN elu_walk_vector
+V elu_walk_vector|r|nil
+V elu_walk_vector|pos|0.000000 0.000000 0.000000
+V elu_walk_vector|rot|"0 24.48 0 nil"
+V elu_walk_vector|moving|nil
+V elu_walk_vector|pos2|0.000000 0.000000 0.055760
+V elu_walk_vector|rot2|"0 8.58307e-006 0 nil"
+END elu_walk_vector
+BEGIN elu_collision_mode
+V elu_collision_mode|r|nil
+V elu_collision_mode|pos|1.000000 0.000000 0.000000
+END elu_collision_mode
+BEGIN elu_setup_name
+V elu_setup_name|first|0.000000
+V elu_setup_name|camera_first|0.000000 6.000000 -0.500000
+V elu_setup_name|r|nil
+V elu_setup_name|named|0.000000
+V elu_setup_name|camera|0.000000 6.000000 -0.500000
+V elu_setup_name|back|0.000000
+V elu_setup_name|number|1.000000
+V elu_setup_name|camera_number|1.000000 6.000000 -0.500000
+END elu_setup_name
+BEGIN elu_setup_missing
+V elu_setup_missing|r|nil
+V elu_setup_missing|setup|0.000000
+END elu_setup_missing
+BEGIN elu_world_to_screen
+V elu_world_to_screen|origin|nil
+V elu_world_to_screen|right|nil
+V elu_world_to_screen|up|nil
+V elu_world_to_screen|far|nil
+V elu_world_to_screen|behind|nil
+V elu_world_to_screen|deep|-0.088823 0.592154
+V elu_world_to_screen|high|nil
+V elu_world_to_screen|deep_middle|0.000000 0.710585
+V elu_world_to_screen|deep_side|nil
+V elu_world_to_screen|deep_far|-0.117427 0.313139
+V elu_world_to_screen|two_b|nil
+V elu_world_to_screen|two_b_right|nil
+END elu_world_to_screen
+BEGIN elu_layers
+V elu_layers|type|"userdata" "userdata"
+V elu_layers|set_frame|nil
+V elu_layers|advance|nil
+V elu_layers|sort|nil
+V elu_layers|free|nil
+V elu_layers|ok|1.000000
+END elu_layers
+BEGIN elu_layer_freed
+V elu_layer_freed|advance|nil
+V elu_layer_freed|ok|1.000000
+END elu_layer_freed
+BEGIN elu_layers_read
+V elu_layers_read|frame|0.000000 5.000000
+V elu_layers_read|set|2.000000
+V elu_layers_read|advance_wrap|3.000000
+V elu_layers_read|advance_5|8.000000
+V elu_layers_read|set_7|7.000000
+V elu_layers_read|set_neg|-1.000000
+V elu_layers_read|sort|12.000000
+END elu_layers_read
+BEGIN elu_layer_background
+V elu_layer_background|sort|0.000000
+V elu_layer_background|sort2|0.000000
+END elu_layer_background
+BEGIN elu_text_stack
+V elu_text_stack|push|nil
+V elu_text_stack|dims|0.103125 0.050000
+V elu_text_stack|dims_u|0.084375 0.050000
+V elu_text_stack|pop|nil
+V elu_text_stack|dims_after|0.103125 0.050000
+END elu_text_stack
+BEGIN elu_text_purge
+V elu_text_purge|purge|nil
+V elu_text_purge|dims_kept|0.084375 0.050000
+END elu_text_purge
+BEGIN elu_text_layers
+V elu_text_layers|dims|0.065625 0.050000
+V elu_text_layers|dims_u|0.121875 0.050000
+END elu_text_layers
+BEGIN elu_primitive
+V elu_primitive|made|1.000000
+V elu_primitive|ok|1.000000
+END elu_primitive
+BEGIN elu_font_dims
+V elu_font_dims|skipped|1.000000
+END elu_font_dims
+BEGIN elu_active_cd
+V elu_active_cd|cd|1.000000
+END elu_active_cd
+BEGIN elu_bundle_missing
+V elu_bundle_missing|missing|1.000000
+END elu_bundle_missing
+BEGIN elu_nuke_locks
+V elu_nuke_locks|r|nil
+V elu_nuke_locks|ok|1.000000
+END elu_nuke_locks
+BEGIN elu_display
+V elu_display|display|nil
+V elu_display|engine_display|nil
+V elu_display|ok|1.000000
+END elu_display
+BEGIN elu_render_mode
+V elu_render_mode|on|nil
+V elu_render_mode|during|0.000000
+V elu_render_mode|again|nil
+V elu_render_mode|off|nil
+V elu_render_mode|after|0.557600
+V elu_render_mode|off_again|nil
+END elu_render_mode
+BEGIN elu_screenshot
+V elu_screenshot|r|1.000000
+V elu_screenshot|textures|1.000000
+V elu_screenshot|clear|nil
+END elu_screenshot
+BEGIN elu_thumbnail
+V elu_thumbnail|missing|nil
+V elu_thumbnail|wrong|nil
+END elu_thumbnail
+BEGIN elu_file_find
+V elu_file_find|saves|nil
+V elu_file_find|gsv|"string"
+END elu_file_find
+BEGIN elu_movie_args
+V elu_movie_args|nil|nil
+V elu_movie_args|subtitles|1.000000
+V elu_movie_args|ended|1.000000
+END elu_movie_args
+BEGIN elu_escape_idle
+V elu_escape_idle|r|nil
+V elu_escape_idle|playing|nil
+END elu_escape_idle
+BEGIN elu_escape_playing
+V elu_escape_playing|r|nil
+V elu_escape_playing|playing|nil
+V elu_escape_playing|ended|1.000000
+END elu_escape_playing
+BEGIN elu_svm_only
+V elu_svm_only|missing|1.000000
+END elu_svm_only
+BEGIN elu_preferences
+V elu_preferences|missing|1.000000
+END elu_preferences
+BEGIN emd_up
+V emd_up|rest|"0.500 0.000 0.000"
+V emd_up|trace|"0.500 0.000 0.000/1/1; 0.500 0.000 0.000/2/1; 0.500 0.000 0.000/2/1; 0.500 0.000 0.000/2/1; 0.500 0.000 0.000/2/1; 0.500 0.000 0.000/2/1; 0.500 0.000 0.000/2/1; 0.500 0.000 0.000/2/1; 0.500 0.000 0.000/2/1; 0.500 0.000 0.000/2/nil; 0.500 0.000 0.000/2/nil; "
+V emd_up|after|"0.500 0.000 0.000" nil 1.000000
+V emd_up|again|"0.500 0.000 0.000" 1.000000
+END emd_up
+BEGIN emd_blend
+V emd_blend|trans|"0.500 0.000 0.000/1/1; 0.500 0.000 0.000/2/1; 0.500 0.000 0.000/2/1; 0.500 0.000 0.000/2/1; 0.500 0.000 0.000/2/1; 0.500 0.000 0.000/2/1; "
+V emd_blend|rot|"0.500 0.000 0.000/2/1; 0.500 0.000 0.000/2/1; 0.500 0.000 0.000/2/1; 0.500 0.000 0.000/2/1; 0.500 0.000 0.000/2/1; 0.500 0.000 0.000/2/1; "
+V emd_blend|turn_alone|"0.500 0.000 0.000/2/1; 0.500 0.000 0.000/2/1; 0.500 0.000 0.000/2/1; 0.500 0.000 0.000/2/1; "
+END emd_blend
+BEGIN emd_priority
+V emd_priority|trace|"0.500 0.000 0.000/1/1; 0.500 0.000 0.000/2/1; 0.500 0.000 0.000/2/1; 0.500 0.000 0.000/2/1; 0.500 0.000 0.000/2/1; 0.500 0.000 0.000/2/1; "
+END emd_priority
+BEGIN emd_hold
+V emd_hold|trace|"0.500 0.000 0.000/1/1; 0.500 0.000 0.000/1/1; 0.500 0.000 0.000/1/1; 0.500 0.000 0.000/1/1; 0.500 0.000 0.000/1/1; 0.500 0.000 0.000/1/1; 0.500 0.000 0.000/1/1; 0.500 0.000 0.000/1/1; "
+V emd_hold|ghost|"0.500 0.000 0.000/1/1; 0.500 0.000 0.000/1/1; 0.500 0.000 0.000/1/1; 0.500 0.000 0.000/1/1; 0.500 0.000 0.000/1/1; 0.500 0.000 0.000/1/1; "
+END emd_hold
+BEGIN emd_loopkey
+V emd_loopkey|trace|"-/1/1; -/1/1; -/1/1; -/1/1; -/1/1; -/1/1; -/1/1; -/1/1; -/1/1; -/1/1; -/1/1; -/1/1; "
+END emd_loopkey
+BEGIN emd_chore_loop
+V emd_chore_loop|trace|"-/1/1; -/2/1; -/2/1; -/2/1; -/2/1; -/2/1; -/2/1; -/2/1; -/2/1; -/2/1; -/2/1; -/2/1; "
+V emd_chore_loop|looping|1.000000
+END emd_chore_loop
+BEGIN emd_pausekey
+V emd_pausekey|trace|"-/1/1; -/1/1; -/1/1; -/1/1; -/1/1; -/1/1; -/1/1; -/1/1; -/1/1; -/1/1; -/1/1; -/1/1; -/1/1; -/1/1; "
+V emd_pausekey|frozen|"-/1/1; -/1/1; -/1/1; -/1/1; "
+END emd_pausekey
+BEGIN emd_fadein
+V emd_fadein|in1|"-/1/1; -/1/1; -/1/1; -/1/1; -/1/1; -/1/1; -/1/1; -/1/1; -/1/1; -/1/nil; "
+V emd_fadein|ins|"-/1/1; -/1/1; -/1/1; -/1/1; -/1/1; -/1/1; -/1/1; -/1/1; -/1/1; -/1/1; -/1/1; -/1/1; -/1/nil; "
+END emd_fadein
+BEGIN emd_fadeout
+V emd_fadeout|out1|"-/1/1; -/1/1; -/1/1; -/1/1; -/1/1; -/1/1; -/1/1; -/1/1; -/1/1; -/1/1; -/1/1; -/1/1; "
+V emd_fadeout|outs|"-/1/1; -/1/1; -/1/1; -/1/1; -/1/1; -/1/1; -/1/1; -/1/1; -/1/1; -/1/1; -/1/1; -/1/1; -/1/1; -/1/1; -/1/1; -/1/1; -/1/1; -/1/1; "
+V emd_fadeout|replay|"-/1/1; -/1/1; -/1/1; -/1/1; -/1/1; -/1/1; -/1/1; -/1/1; -/1/1; -/1/1; -/1/1; -/1/1; "
+END emd_fadeout
+BEGIN emd_badkey
+V emd_badkey|trace|"-/1/1; -/1/1; -/1/1; -/1/1; -/1/1; -/1/1; -/1/nil; "
+END emd_badkey
+BEGIN emd_chore_fade
+V emd_chore_fade|fade_in|"-/1/1; -/2/1; -/2/1; -/2/1; -/2/1; "
+V emd_chore_fade|fade_out|"-/2/1; -/2/1; -/2/1; -/2/nil; -/2/nil; "
+V emd_chore_fade|paused|"-/2/nil; -/2/nil; -/2/nil; "
+V emd_chore_fade|unpaused|"-/2/1; -/2/1; "
+V emd_chore_fade|advanced|"-" 1.000000
+V emd_chore_fade|advanced_stopped|"-"
+END emd_chore_fade
+BEGIN emd_noanim
+V emd_noanim|trace|"-/1/1; -/3/1; -/3/1; -/3/1; "
+END emd_noanim
+BEGIN emd_texi
+V emd_texi|trace|"-/1/1; -/4/1; -/4/1; -/4/1; -/4/1; -/4/1; -/5/1; -/5/1; "
+V emd_texi|after|5.000000 1.000000
+V emd_texi|seen|5.000000 1.000000
+END emd_texi
+BEGIN emd_luac
+V emd_luac|trace|"0 1 1 1 1 1 2 2 2 2 2 2 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 "
+V emd_luac|after|3.000000 "3"
+END emd_luac
+BEGIN emd_skip_shad
+V emd_skip_shad|trace|"-/1/1; -/6/1; -/6/1; -/7/1; -/7/1; -/7/1; "
+END emd_skip_shad
+BEGIN emd_skip_awgt
+V emd_skip_awgt|trace|"-/1/1; -/6/1; -/6/1; -/7/1; -/7/1; -/7/1; "
+END emd_skip_awgt
+BEGIN emd_wear2
+V emd_wear2|first|"-"
+V emd_wear2|tall|"-" 1.000000 1.000000
+V emd_wear2|back|"-" 1.000000 1.000000
+V emd_wear2|stopped|"-" nil 1.000000 8.000000
+END emd_wear2
+BEGIN emd_over
+V emd_over|trace|"-/1/1; -/11/1; -/11/1; -/11/1; -/11/1; "
+V emd_over|chores|"table" 3.000000 12.000000 1.000000
+END emd_over
+BEGIN emd_meshes
+V emd_meshes|twin|31.000000 1.000000
+V emd_meshes|nomesh|41.000000 1.000000
+END emd_meshes
+BEGIN emd_head
+V emd_head|up|"-"
+V emd_head|down|"-"
+V emd_head|behind|"-"
+V emd_head|side|"-"
+V emd_head|other_side|"-"
+V emd_head|behind_low|"-"
+V emd_head|behind_high|"-"
+V emd_head|front|"-"
+V emd_head|none|"-"
+V emd_head|nojoint|"-"
+END emd_head
+BEGIN emd_lights
+V emd_lights|lit|1.000000 1.000000
+END emd_lights
+BEGIN emd_layer
+V emd_layer|type|"userdata"
+V emd_layer|ok|1.000000
+END emd_layer
+BEGIN emd_layer_get
+V emd_layer_get|set_2|2.000000
+V emd_layer_get|set_3|3.000000
+V emd_layer_get|set_minus|-1.000000
+V emd_layer_get|advanced_2|1.000000
+V emd_layer_get|advanced_1|2.000000
+V emd_layer_get|sort|20.000000
+END emd_layer_get
+BEGIN emd_save
+V emd_save|just_loaded_before|nil
+V emd_save|pass|"loaded"
+V emd_save|chores|1.000000 1.000000 1.000000 1.000000
+V emd_save|trace|"-/8/1; -/8/1; -/8/1; -/8/1; -/8/1; "
+END emd_save
+BEGIN emd_save_layer
+V emd_save_layer|pass|"loaded"
+END emd_save_layer
 BEGIN ee_sort_order
 V ee_sort_order|default|0.000000
 V ee_sort_order|set|7.000000
@@ -836,6 +1268,239 @@ V ee_misc|active_cd|1.000000
 V ee_misc|message|nil
 V ee_misc|movie|nil
 END ee_misc
+BEGIN esn_freed_play
+V esn_freed_play|after|"nil nil"
+END esn_freed_play
+BEGIN esn_freed_from
+V esn_freed_from|after|"nil nil"
+END esn_freed_from
+BEGIN esn_freed_stop
+V esn_freed_stop|after|"nil nil"
+END esn_freed_stop
+BEGIN esn_freed_volume
+V esn_freed_volume|after|"nil nil"
+END esn_freed_volume
+BEGIN esn_freed_position
+V esn_freed_position|after|"nil nil"
+END esn_freed_position
+BEGIN esn_freed_free
+V esn_freed_free|after|"nil nil"
+END esn_freed_free
+BEGIN esn_twice
+V esn_twice|first|"1 90"
+V esn_twice|again|"1 50"
+V esn_twice|after_stop|"nil nil"
+END esn_twice
+BEGIN esn_novolume
+V esn_novolume|none|"1 100"
+V esn_novolume|string|"nil nil"
+END esn_novolume
+BEGIN esn_from_flag
+V esn_from_flag|one_60|"1 60"
+V esn_from_flag|one_60_stopped|"nil 60"
+END esn_from_flag
+BEGIN esn_from_zero
+V esn_from_zero|zero_60|"1 60"
+V esn_from_zero|zero_60_stopped|"nil 60"
+END esn_from_zero
+BEGIN esn_from_nil
+V esn_from_nil|nil_70|"1 70"
+V esn_from_nil|nil_70_stopped|"nil 70"
+END esn_from_nil
+BEGIN esn_from_string
+V esn_from_string|str_70|"1 70"
+V esn_from_string|str_70_stopped|"nil 70"
+END esn_from_string
+BEGIN esn_from_volume0
+V esn_from_volume0|nil_0|"1 0"
+V esn_from_volume0|nil_0_stopped|"nil 0"
+END esn_from_volume0
+BEGIN esn_from_only
+V esn_from_only|v_40|"1 100"
+V esn_from_only|v_40_stopped|"nil 100"
+END esn_from_only
+BEGIN esn_from_badpos
+V esn_from_badpos|string_x|"nil 100"
+V esn_from_badpos|nil_z|"nil 100"
+END esn_from_badpos
+BEGIN esn_position
+V esn_position|at|"1 80"
+V esn_position|far|"1 80"
+V esn_position|wrong|"1 80"
+V esn_position|volume0|"1 0"
+END esn_position
+BEGIN esn_setvolume
+V esn_setvolume|nil|"1 100"
+V esn_setvolume|string|"1 100"
+V esn_setvolume|v150|"1 100"
+V esn_setvolume|minus5|"1 0"
+V esn_setvolume|v33_7|"1 33"
+V esn_setvolume|no_handle|"1 33"
+END esn_setvolume
+BEGIN esn_soundfrom
+V esn_soundfrom|ok|1.000000
+END esn_soundfrom
+BEGIN esn_groups
+V esn_groups|volumes|"1 80"
+V esn_groups|disabled|"1 80"
+V esn_groups|back|"1 80"
+END esn_groups
+BEGIN esn_group_get
+V esn_group_get|before|100.000000 100.000000 100.000000
+V esn_group_get|set|40.000000 50.000000 60.000000
+V esn_group_get|no_volume|100.000000
+V esn_group_get|back|100.000000 100.000000 100.000000
+END esn_group_get
+BEGIN esn_reverb
+V esn_reverb|ok|1.000000
+END esn_reverb
+BEGIN esn_pause
+V esn_pause|before|"1 80" "nil 100"
+V esn_pause|paused|"nil 80" "nil 100"
+V esn_pause|resumed|"1 80" "nil 100"
+V esn_pause|after|"1 80"
+END esn_pause
+BEGIN esn_setup
+V esn_setup|first|"1 80" "1 70"
+V esn_setup|second|"1 80" "1 70"
+V esn_setup|back|"1 80" "1 70"
+END esn_setup
+BEGIN esn_bad_aiff
+V esn_bad_aiff|handle|"nil"
+END esn_bad_aiff
+BEGIN esn_stereo_aiff
+V esn_stereo_aiff|handle|"userdata"
+V esn_stereo_aiff|playing|"1 100"
+V esn_stereo_aiff|stopped|"nil nil"
+END esn_stereo_aiff
+BEGIN esn_8bit_aiff
+V esn_8bit_aiff|handle|"userdata"
+V esn_8bit_aiff|playing|"1 100"
+V esn_8bit_aiff|stopped|"nil nil"
+END esn_8bit_aiff
+BEGIN esn_voice_stereo
+V esn_voice_stereo|at_once|1.000000
+V esn_voice_stereo|going|1.000000
+V esn_voice_stereo|later|nil
+V esn_voice_stereo|much_later|nil
+V esn_voice_stereo|shut_up|nil
+END esn_voice_stereo
+BEGIN esn_voice_long
+V esn_voice_long|at_once|1.000000
+V esn_voice_long|going|1.000000
+V esn_voice_long|later|nil
+V esn_voice_long|much_later|nil
+V esn_voice_long|shut_up|nil
+END esn_voice_long
+BEGIN esn_voice_12s
+V esn_voice_12s|at_once|1.000000
+V esn_voice_12s|going|1.000000
+V esn_voice_12s|later|1.000000
+V esn_voice_12s|much_later|nil
+V esn_voice_12s|shut_up|nil
+END esn_voice_12s
+BEGIN esn_m_high
+V esn_m_high|ok|1.000000
+END esn_m_high
+BEGIN esn_m_msecs
+V esn_m_msecs|type|"number"
+U esn_m_msecs|ms
+V esn_m_msecs|ms|-1.000000
+V esn_m_msecs|ok|1.000000
+END esn_m_msecs
+BEGIN esn_m_looped
+V esn_m_looped|looped|nil
+V esn_m_looped|ended|nil
+V esn_m_looped|ok|1.000000
+END esn_m_looped
+BEGIN esn_m_set_fading
+V esn_m_set_fading|ok|1.000000
+END esn_m_set_fading
+BEGIN esn_m_set_stack
+V esn_m_set_stack|ok|1.000000
+END esn_m_set_stack
+BEGIN esn_m_sync
+V esn_m_sync|ok|1.000000
+END esn_m_sync
+BEGIN esn_m_past_end
+V esn_m_past_end|ok|1.000000
+END esn_m_past_end
+BEGIN esn_m_over_end
+V esn_m_over_end|ok|1.000000
+END esn_m_over_end
+BEGIN esn_m_no_file
+V esn_m_no_file|ok|1.000000
+END esn_m_no_file
+BEGIN esn_save_none
+V esn_save_none|before|"-" "-" "-"
+V esn_save_none|just_loaded_before|nil
+V esn_save_none|changed|"-" "-"
+V esn_save_none|pass|"loaded"
+V esn_save_none|after|"-" "-" "-"
+V esn_save_none|used|"-" "-"
+V esn_save_none|popped|1.000000
+END esn_save_none
+BEGIN esn_save_loaded
+V esn_save_loaded|before|"nil 100" "nil 100" "nil 100"
+V esn_save_loaded|just_loaded_before|nil
+V esn_save_loaded|changed|"nil 100" "nil 100"
+V esn_save_loaded|pass|"loaded"
+V esn_save_loaded|after|"nil 100" "nil 100" "nil 100"
+V esn_save_loaded|used|"nil 29" "1 90"
+V esn_save_loaded|popped|1.000000
+END esn_save_loaded
+BEGIN esn_save_pool
+V esn_save_pool|before|"1 70" "1 60" "nil 100"
+V esn_save_pool|just_loaded_before|nil
+V esn_save_pool|changed|"nil nil" "nil 60"
+V esn_save_pool|pass|"loaded"
+V esn_save_pool|after|"nil 70" "nil 60" "nil 100"
+V esn_save_pool|used|"nil 29" "1 90"
+V esn_save_pool|popped|1.000000
+END esn_save_pool
+BEGIN esn_save_name
+V esn_save_name|before|"-" "-" "-"
+V esn_save_name|just_loaded_before|nil
+V esn_save_name|changed|"-" "-"
+V esn_save_name|pass|"loaded"
+V esn_save_name|after|"-" "-" "-"
+V esn_save_name|used|"-" "-"
+V esn_save_name|popped|1.000000
+END esn_save_name
+BEGIN esn_save_music
+V esn_save_music|before|"-" "-" "-"
+V esn_save_music|just_loaded_before|nil
+V esn_save_music|changed|"-" "-"
+V esn_save_music|pass|"loaded"
+V esn_save_music|after|"-" "-" "-"
+V esn_save_music|used|"-" "-"
+V esn_save_music|popped|1.000000
+END esn_save_music
+BEGIN esn_save_voice
+V esn_save_voice|before|"-" "-" "-" 1.000000
+V esn_save_voice|just_loaded_before|nil
+V esn_save_voice|changed|"-" "-"
+V esn_save_voice|pass|"loaded"
+V esn_save_voice|after|"-" "-" "-"
+V esn_save_voice|used|"-" "-"
+V esn_save_voice|popped|1.000000
+END esn_save_voice
+BEGIN egl1_prims
+V egl1_prims|line|"number"
+V egl1_prims|rect|"number"
+V egl1_prims|polygon|"number"
+V egl1_prims|change_line|nil
+V egl1_prims|change_rect|nil
+V egl1_prims|change_poly|nil
+END egl1_prims
+BEGIN egl1_blast_rect
+V egl1_blast_rect|has|"nil"
+END egl1_blast_rect
+BEGIN egl1_text_layer
+V egl1_text_layer|type|"userdata"
+V egl1_text_layer|dims|0.140625
+V egl1_text_layer|changed|0.140625
+END egl1_text_layer
 BEGIN emi_movie_play
 V emi_movie_play|start|1.000000
 V emi_movie_play|playing_at_once|1.000000
@@ -862,7 +1527,7 @@ V emi_movie_missing|second|1.000000
 V emi_movie_missing|ended|1.000000
 END emi_movie_missing
 BEGIN em_states
-V em_states|ended_never_played|128.000000 128.000000
+V em_states|ended_never_played|nil
 V em_states|ok|1.000000
 END em_states
 BEGIN em_loop
@@ -877,6 +1542,81 @@ END em_set
 BEGIN em_volume
 V em_volume|ok|1.000000
 END em_volume
+BEGIN rnd_e_alpha
+V rnd_e_alpha|draw1|missing
+U rnd_e_alpha|draw1
+V rnd_e_alpha|draw2|missing
+U rnd_e_alpha|draw2
+V rnd_e_alpha|half|0.000000 0.000000 3.000000
+V rnd_e_alpha|draw3|missing
+U rnd_e_alpha|draw3
+V rnd_e_alpha|draw4|missing
+U rnd_e_alpha|draw4
+V rnd_e_alpha|mesh|0.000000 0.000000 3.000000
+V rnd_e_alpha|draw5|missing
+U rnd_e_alpha|draw5
+END rnd_e_alpha
+BEGIN rnd_e_overworld
+V rnd_e_overworld|draw6|missing
+U rnd_e_overworld|draw6
+V rnd_e_overworld|draw7|missing
+U rnd_e_overworld|draw7
+V rnd_e_overworld|pos|0.000000 0.000000 3.000000
+V rnd_e_overworld|draw8|missing
+U rnd_e_overworld|draw8
+V rnd_e_overworld|rot|0.000000 45.000000 0.000000
+END rnd_e_overworld
+BEGIN rnd_e_costumes
+V rnd_e_costumes|draw9|missing
+U rnd_e_costumes|draw9
+V rnd_e_costumes|draw10|missing
+U rnd_e_costumes|draw10
+V rnd_e_costumes|rnd_add.cos|0.000000 30.000000 0.000000
+V rnd_e_costumes|draw11|missing
+U rnd_e_costumes|draw11
+V rnd_e_costumes|draw12|missing
+U rnd_e_costumes|draw12
+V rnd_e_costumes|rnd_nolit.cos|0.000000 30.000000 0.000000
+V rnd_e_costumes|draw13|missing
+U rnd_e_costumes|draw13
+V rnd_e_costumes|draw14|missing
+U rnd_e_costumes|draw14
+V rnd_e_costumes|rnd_spr.cos|0.000000 30.000000 0.000000
+V rnd_e_costumes|draw15|missing
+U rnd_e_costumes|draw15
+V rnd_e_costumes|draw16|missing
+U rnd_e_costumes|draw16
+V rnd_e_costumes|cr_esprite.cos|0.000000 30.000000 0.000000
+END rnd_e_costumes
+BEGIN rnd_e_say
+V rnd_e_say|draw17|missing
+U rnd_e_say|draw17
+V rnd_e_say|draw18|missing
+U rnd_e_say|draw18
+V rnd_e_say|draw19|missing
+U rnd_e_say|draw19
+V rnd_e_say|middle|1.000000
+V rnd_e_say|draw20|missing
+U rnd_e_say|draw20
+V rnd_e_say|draw21|missing
+U rnd_e_say|draw21
+V rnd_e_say|draw22|missing
+U rnd_e_say|draw22
+V rnd_e_say|draw23|missing
+U rnd_e_say|draw23
+V rnd_e_say|edge|1.000000
+V rnd_e_say|draw24|missing
+U rnd_e_say|draw24
+V rnd_e_say|draw25|missing
+U rnd_e_say|draw25
+V rnd_e_say|draw26|missing
+U rnd_e_say|draw26
+V rnd_e_say|draw27|missing
+U rnd_e_say|draw27
+V rnd_e_say|far|1.000000
+V rnd_e_say|draw28|missing
+U rnd_e_say|draw28
+END rnd_e_say
 BEGIN es_load
 V es_load|setup|0.000000
 V es_load|centre|0.000000 "floor" 4096.000000
@@ -952,6 +1692,23 @@ V es_switch|edge|1.000000 "e_right" 4096.000000
 V es_switch|flat_again|0.000000 "floor" 4096.000000
 V es_switch|setup|0.000000
 END es_switch
+BEGIN emi_smv_sub
+V emi_smv_sub|start|1.000000
+V emi_smv_sub|playing_at_once|1.000000
+V emi_smv_sub|playing|1.000000
+V emi_smv_sub|ended|1.000000
+V emi_smv_sub|after|nil
+END emi_smv_sub
+BEGIN emi_smv_sub_hidden
+V emi_smv_sub_hidden|start|1.000000
+V emi_smv_sub_hidden|playing_at_once|1.000000
+V emi_smv_sub_hidden|ended|1.000000
+END emi_smv_sub_hidden
+BEGIN emi_smv_latesub
+V emi_smv_latesub|start|1.000000
+V emi_smv_latesub|playing_at_once|1.000000
+V emi_smv_latesub|ended|1.000000
+END emi_smv_latesub
 BEGIN eso_load
 V eso_load|handle|"userdata"
 V eso_load|loaded|"nil 100"
@@ -2029,27 +2786,27 @@ V args_FunctionName_fn|r|"function 'cr_args_fn' (cr_zz_args_emi.lua:3)"
 END args_FunctionName_fn
 BEGIN args_GammaEnabled_none
 U args_GammaEnabled_none|r
-V args_GammaEnabled_none|r|1.000000
+V args_GammaEnabled_none|r|nil
 END args_GammaEnabled_none
 BEGIN args_GammaEnabled_nil
 U args_GammaEnabled_nil|r
-V args_GammaEnabled_nil|r|1.000000
+V args_GammaEnabled_nil|r|nil
 END args_GammaEnabled_nil
 BEGIN args_GammaEnabled_str
 U args_GammaEnabled_str|r
-V args_GammaEnabled_str|r|1.000000
+V args_GammaEnabled_str|r|nil
 END args_GammaEnabled_str
 BEGIN args_GammaEnabled_num
 U args_GammaEnabled_num|r
-V args_GammaEnabled_num|r|1.000000
+V args_GammaEnabled_num|r|nil
 END args_GammaEnabled_num
 BEGIN args_GammaEnabled_tab
 U args_GammaEnabled_tab|r
-V args_GammaEnabled_tab|r|1.000000
+V args_GammaEnabled_tab|r|nil
 END args_GammaEnabled_tab
 BEGIN args_GammaEnabled_fn
 U args_GammaEnabled_fn|r
-V args_GammaEnabled_fn|r|1.000000
+V args_GammaEnabled_fn|r|nil
 END args_GammaEnabled_fn
 BEGIN args_GetActiveCD_none
 V args_GetActiveCD_none|r|1.000000
@@ -2601,22 +3358,22 @@ BEGIN args_GetCPUSpeed_fn
 V args_GetCPUSpeed_fn|r|1768628.000000
 END args_GetCPUSpeed_fn
 BEGIN args_GetCameraFOV_none
-V args_GetCameraFOV_none|r|40.000000
+V args_GetCameraFOV_none|r|60.000000
 END args_GetCameraFOV_none
 BEGIN args_GetCameraFOV_nil
-V args_GetCameraFOV_nil|r|40.000000
+V args_GetCameraFOV_nil|r|60.000000
 END args_GetCameraFOV_nil
 BEGIN args_GetCameraFOV_str
-V args_GetCameraFOV_str|r|40.000000
+V args_GetCameraFOV_str|r|60.000000
 END args_GetCameraFOV_str
 BEGIN args_GetCameraFOV_num
-V args_GetCameraFOV_num|r|40.000000
+V args_GetCameraFOV_num|r|60.000000
 END args_GetCameraFOV_num
 BEGIN args_GetCameraFOV_tab
-V args_GetCameraFOV_tab|r|40.000000
+V args_GetCameraFOV_tab|r|60.000000
 END args_GetCameraFOV_tab
 BEGIN args_GetCameraFOV_fn
-V args_GetCameraFOV_fn|r|40.000000
+V args_GetCameraFOV_fn|r|60.000000
 END args_GetCameraFOV_fn
 BEGIN args_GetCameraLookVector_none
 V args_GetCameraLookVector_none|r|table
@@ -2655,22 +3412,22 @@ BEGIN args_GetCameraPitch_fn
 V args_GetCameraPitch_fn|r|0.000000
 END args_GetCameraPitch_fn
 BEGIN args_GetCameraPosition_none
-V args_GetCameraPosition_none|r|1.000000 2.000000 3.000000
+V args_GetCameraPosition_none|r|0.000000 6.000000 -0.500000
 END args_GetCameraPosition_none
 BEGIN args_GetCameraPosition_nil
-V args_GetCameraPosition_nil|r|1.000000 2.000000 3.000000
+V args_GetCameraPosition_nil|r|0.000000 6.000000 -0.500000
 END args_GetCameraPosition_nil
 BEGIN args_GetCameraPosition_str
-V args_GetCameraPosition_str|r|1.000000 2.000000 3.000000
+V args_GetCameraPosition_str|r|0.000000 6.000000 -0.500000
 END args_GetCameraPosition_str
 BEGIN args_GetCameraPosition_num
-V args_GetCameraPosition_num|r|1.000000 2.000000 3.000000
+V args_GetCameraPosition_num|r|0.000000 6.000000 -0.500000
 END args_GetCameraPosition_num
 BEGIN args_GetCameraPosition_tab
-V args_GetCameraPosition_tab|r|1.000000 2.000000 3.000000
+V args_GetCameraPosition_tab|r|0.000000 6.000000 -0.500000
 END args_GetCameraPosition_tab
 BEGIN args_GetCameraPosition_fn
-V args_GetCameraPosition_fn|r|1.000000 2.000000 3.000000
+V args_GetCameraPosition_fn|r|0.000000 6.000000 -0.500000
 END args_GetCameraPosition_fn
 BEGIN args_GetCameraRoll_none
 V args_GetCameraRoll_none|r|0.000000
@@ -2812,27 +3569,27 @@ V args_GetCurrentSetup_s_tab|r|0.000000
 END args_GetCurrentSetup_s_tab
 BEGIN args_GetDiskFreeSpace_none
 U args_GetDiskFreeSpace_none|r
-V args_GetDiskFreeSpace_none|r|54187.527344
+V args_GetDiskFreeSpace_none|r|64239.855469
 END args_GetDiskFreeSpace_none
 BEGIN args_GetDiskFreeSpace_nil
 U args_GetDiskFreeSpace_nil|r
-V args_GetDiskFreeSpace_nil|r|54187.523438
+V args_GetDiskFreeSpace_nil|r|64239.855469
 END args_GetDiskFreeSpace_nil
 BEGIN args_GetDiskFreeSpace_str
 U args_GetDiskFreeSpace_str|r
-V args_GetDiskFreeSpace_str|r|54187.523438
+V args_GetDiskFreeSpace_str|r|64239.855469
 END args_GetDiskFreeSpace_str
 BEGIN args_GetDiskFreeSpace_num
 U args_GetDiskFreeSpace_num|r
-V args_GetDiskFreeSpace_num|r|54187.523438
+V args_GetDiskFreeSpace_num|r|64239.828125
 END args_GetDiskFreeSpace_num
 BEGIN args_GetDiskFreeSpace_tab
 U args_GetDiskFreeSpace_tab|r
-V args_GetDiskFreeSpace_tab|r|54187.523438
+V args_GetDiskFreeSpace_tab|r|64239.828125
 END args_GetDiskFreeSpace_tab
 BEGIN args_GetDiskFreeSpace_fn
 U args_GetDiskFreeSpace_fn|r
-V args_GetDiskFreeSpace_fn|r|54187.523438
+V args_GetDiskFreeSpace_fn|r|64239.828125
 END args_GetDiskFreeSpace_fn
 BEGIN args_GetFontDimensions_none
 V args_GetFontDimensions_none|r|nil
@@ -6977,7 +7734,7 @@ ERROR args_ceil_fn bad argument #1 to function `ceil' (number expected)
 FAILED args_ceil_fn
 BEGIN args_collectgarbage_none
 U args_collectgarbage_none|r
-V args_collectgarbage_none|r|1964.000000
+V args_collectgarbage_none|r|6494.000000
 END args_collectgarbage_none
 BEGIN args_collectgarbage_nil
 ERROR args_collectgarbage_nil bad argument #1 to function `collectgarbage' (number expected)
@@ -7015,7 +7772,7 @@ ERROR args_cos_fn bad argument #1 to function `cos' (number expected)
 FAILED args_cos_fn
 BEGIN args_date_none
 U args_date_none|r
-V args_date_none|r|"11/10/26 07:01:08"
+V args_date_none|r|"11/10/26 18:00:59"
 END args_date_none
 BEGIN args_date_nil
 ERROR args_date_nil bad argument #1 to function `date' (string expected)
@@ -7764,11 +8521,11 @@ V args_tostring_num|r|"1.5"
 END args_tostring_num
 BEGIN args_tostring_tab
 U args_tostring_tab|r
-V args_tostring_tab|r|"table: 0283E420"
+V args_tostring_tab|r|"table: 028306D0"
 END args_tostring_tab
 BEGIN args_tostring_fn
 U args_tostring_fn|r
-V args_tostring_fn|r|"function: 134D5750"
+V args_tostring_fn|r|"function: 027E3310"
 END args_tostring_fn
 BEGIN args_type_none
 ERROR args_type_none API error - attempt to push a NOOBJECT
@@ -7797,4 +8554,4 @@ V lex_binary|short|nil
 ERROR lex_binary binary file cr_bin_old.lua too old: version=0x30; expected at least 0x31
 V lex_binary|old|nil
 END lex_binary
-SUMMARY 2313 tests, 247 failed
+SUMMARY 2451 tests, 247 failed

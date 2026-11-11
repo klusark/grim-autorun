@@ -1,4 +1,4 @@
-START 5167 tests
+START 5322 tests
 BEGIN boot_state
 V boot_state|movie_playing|nil
 V boot_state|fullscreen_movie_playing|nil
@@ -242,6 +242,26 @@ V chore_loop|after_stop|nil
 V chore_loop|completed|3.000000
 V chore_loop|completed_next|3.000000
 END chore_loop
+BEGIN floor_float_wall
+V floor_float_wall|float_wall_z|0.000000
+V floor_float_wall|float_wall_z_after|0.000000
+END floor_float_wall
+BEGIN floor_float_mover
+V floor_float_mover|float_mover_z|0.000000
+V floor_float_mover|float_mover_z_after|0.000000
+END floor_float_mover
+BEGIN floor_float_wall_half
+V floor_float_wall_half|float_wall_half_z|0.000000
+V floor_float_wall_half|float_wall_half_z_after|0.000000
+END floor_float_wall_half
+BEGIN floor_ctrx_wall
+V floor_ctrx_wall|ctrx_wall_z|0.000000
+V floor_ctrx_wall|ctrx_wall_z_after|0.000000
+END floor_ctrx_wall
+BEGIN floor_ctrx_mover
+V floor_ctrx_mover|ctrx_mover_z|0.000000
+V floor_ctrx_mover|ctrx_mover_z_after|0.000000
+END floor_ctrx_mover
 BEGIN cm_forward_m0_w0
 V cm_forward_m0_w0|cm_forward_m0_w0_f0|0.200000 -1.500000 0.000000
 V cm_forward_m0_w0|cm_forward_m0_w0_f20|0.083681 -1.180517 0.000000
@@ -511,7 +531,7 @@ V strings|ascii|65.000000
 END strings
 BEGIN next_order
 U next_order|order
-V next_order|order|"lupe,49,98,manny,domino,7,56,105,chepito,63,140,112,21,salvador,119,olivia,28,14,glottis,eva,126,70,35,meche,84,133,77,42,velasco,91,"
+V next_order|order|"84,49,meche,98,140,7,56,105,velasco,14,eva,63,21,domino,manny,126,70,119,28,77,lupe,35,salvador,133,112,42,olivia,glottis,chepito,91,"
 V next_order|globals_counted|1.000000
 END next_order
 BEGIN tasks
@@ -893,11 +913,36 @@ V builtins|fn_floor|"function"
 V builtins|fn_foreach|"function"
 V builtins|fn_foreachvar|"function"
 V builtins|fn_format|"function"
+V builtins|fn_gco_actor|"function"
+V builtins|fn_gco_att_nodes|"function"
+V builtins|fn_gco_chore|"function"
+V builtins|fn_gco_done|"function"
+V builtins|fn_gco_ft_dims|"function"
+V builtins|fn_gco_im|"function"
+V builtins|fn_gco_kf_alone|"function"
+V builtins|fn_gco_kf_nodes|"function"
+V builtins|fn_gco_kf_run|"function"
+V builtins|fn_gco_kf_test|"function"
+V builtins|fn_gco_pt|"function"
+V builtins|fn_gco_save_test|"function"
+V builtins|fn_gco_sp|"function"
 V builtins|fn_getenv|"function"
 V builtins|fn_getglobal|"function"
 V builtins|fn_gettagmethod|"function"
+V builtins|fn_gl1_nocos_test|"function"
+V builtins|fn_gl1_say_test|"function"
+V builtins|fn_gl1_snap_test|"function"
+V builtins|fn_gl1_sound_test|"function"
+V builtins|fn_gl1_text|"function"
+V builtins|fn_gl1_text_test|"function"
 V builtins|fn_gsub|"function"
 V builtins|fn_identify_script|"function"
+V builtins|fn_ims_live_group|"function"
+V builtins|fn_ims_many_counts|"function"
+V builtins|fn_ims_music_wait|"function"
+V builtins|fn_ims_params|"function"
+V builtins|fn_ims_reset|"function"
+V builtins|fn_ims_start_log|"function"
 V builtins|fn_log|"function"
 V builtins|fn_log10|"function"
 V builtins|fn_max|"function"
@@ -930,6 +975,11 @@ V builtins|fn_setlocale|"function"
 V builtins|fn_settag|"function"
 V builtins|fn_settagmethod|"function"
 V builtins|fn_sin|"function"
+V builtins|fn_smv_blocky|"function"
+V builtins|fn_smv_plays|"function"
+V builtins|fn_smv_test|"function"
+V builtins|fn_smv_wait_end|"function"
+V builtins|fn_smv_wait_s|"function"
 V builtins|fn_sqrt|"function"
 V builtins|fn_start_script|"function"
 V builtins|fn_stop_script|"function"
@@ -3216,18 +3266,18 @@ V registry_keys|RenderingMode|"nil"
 V registry_keys|Fullscreen|"nil"
 END registry_keys
 BEGIN registry_write
-V registry_write|VoiceVolume|"70" 1.000000
-V registry_write|Transcript|"FALSE" 1.000000
-V registry_write|TextSpeed|"5" 1.000000
-V registry_write|GrimLastSet|"cr_flat.set" 1.000000
 V registry_write|LastSavedGame|"3" 1.000000
+V registry_write|JoystickEnabled|"FALSE" 1.000000
+V registry_write|SfxVolume|"80" 1.000000
+V registry_write|GrimLastSet|"cr_flat.set" 1.000000
+V registry_write|VoiceVolume|"70" 1.000000
+V registry_write|TextSpeed|"5" 1.000000
 V registry_write|SpeechMode|"2" 1.000000
 V registry_write|MovementMode|"FALSE" 1.000000
 V registry_write|MusicVolume|"90" 1.000000
-V registry_write|Gamma|"1" 1.000000
+V registry_write|Transcript|"FALSE" 1.000000
 V registry_write|VoiceEffects|"FALSE" 1.000000
-V registry_write|JoystickEnabled|"FALSE" 1.000000
-V registry_write|SfxVolume|"80" 1.000000
+V registry_write|Gamma|"1" 1.000000
 END registry_write
 BEGIN registry_kinds
 V registry_kinds|string_digits|"string" "12"
@@ -3267,14 +3317,14 @@ END save_mode
 BEGIN save_actor_attrs
 V save_actor_attrs|changed|7.000000
 V save_actor_attrs|pass|"loading"
-V save_actor_attrs|kept_sector|1.000000
 V save_actor_attrs|kept_timescale|1.000000
-V save_actor_attrs|kept_walk_rate|1.000000
-V save_actor_attrs|kept_rot|"5 -180 -3 nil nil" "5 -182.793 -3 nil nil"
 V save_actor_attrs|kept_costume|1.000000
-V save_actor_attrs|kept_look_rate|1.000000
-V save_actor_attrs|kept_talk_color|1.000000
 V save_actor_attrs|kept_pos|1.000000
+V save_actor_attrs|kept_rot|"5 -180 -3 nil nil" "5 -182.793 -3 nil nil"
+V save_actor_attrs|kept_sector|1.000000
+V save_actor_attrs|kept_talk_color|1.000000
+V save_actor_attrs|kept_look_rate|1.000000
+V save_actor_attrs|kept_walk_rate|1.000000
 END save_actor_attrs
 BEGIN save_walking
 V save_walking|saved_pos|0.024042 0.024041 0.000000
@@ -3296,11 +3346,11 @@ END save_chore
 BEGIN save_set
 V save_set|changed|4.000000
 V save_set|pass|"loading"
-V save_set|kept_setup|1.000000
-V save_set|kept_active|1.000000
-V save_set|kept_right|1.000000
 V save_set|kept_left|1.000000
 V save_set|kept_off|1.000000
+V save_set|kept_active|1.000000
+V save_set|kept_right|1.000000
+V save_set|kept_setup|1.000000
 END save_set
 BEGIN save_setup
 V save_setup|changed|3.000000
@@ -3313,9 +3363,9 @@ BEGIN save_text
 V save_text|changed|2.000000
 V save_text|pass|"loading"
 V save_text|kept_d2|1.000000
-V save_text|kept_d3|1.000000
-V save_text|kept_speed|"4" "7"
 V save_text|kept_d1|1.000000
+V save_text|kept_speed|"4" "7"
+V save_text|kept_d3|1.000000
 V save_text|loaded_snap|100.000000 47.000000 534.000000 306.000000 1158.000000
 END save_text
 BEGIN save_primitives
@@ -3332,11 +3382,11 @@ END save_object_state
 BEGIN save_lua
 V save_lua|changed|3.000000
 V save_lua|pass|"loading"
-V save_lua|kept_n|1.000000
-V save_lua|kept_f|1.000000
-V save_lua|kept_s|1.000000
 V save_lua|kept_task|1.000000
+V save_lua|kept_n|1.000000
+V save_lua|kept_s|1.000000
 V save_lua|kept_deep|1.000000
+V save_lua|kept_f|1.000000
 V save_lua|kept_self|1.000000
 V save_lua|task_counts|1.000000
 END save_lua
@@ -3545,7 +3595,7 @@ V sound_params|group|"1 0 3 100 90 0"
 V sound_params|stopped|"0 0 -4 -4 -4 -4"
 END sound_params
 BEGIN sound_fade
-V sound_fade|trace|"127/64 127/64 127/64 127/64 127/64 127/64 127/64 127/64 127/64 127/64 127/64 120/67 120/67 120/67 120/67 120/67 120/67 120/67 120/67 120/67 120/67 120/67 120/67 120/67 120/67 "
+V sound_fade|trace|"127/64 127/64 127/64 127/64 127/64 127/64 127/64 127/64 127/64 127/64 127/64 127/64 127/64 127/64 127/64 127/64 127/64 127/64 127/64 127/64 127/64 127/64 127/64 120/67 120/67 "
 V sound_fade|after|"1 0 1 64 120 67"
 END sound_fade
 BEGIN sound_twice
@@ -3974,29 +4024,29 @@ V amc_shadow_below|below_dark|none
 END amc_shadow_below
 BEGIN asv_talk_lip
 V asv_talk_lip|changed|4.000000
-V asv_talk_lip|now_actor_going|"nil"
 V asv_talk_lip|now_going|"nil"
-V asv_talk_lip|now_lv|"100"
 V asv_talk_lip|now_pos|"0.5 nil nil nil nil"
+V asv_talk_lip|now_lv|"100"
+V asv_talk_lip|now_actor_going|"nil"
 V asv_talk_lip|pass|"loading"
 V asv_talk_lip|kept_going|"1" "nil"
-V asv_talk_lip|kept_actor_going|"1" "nil"
-V asv_talk_lip|kept_lv|"2" "100"
 V asv_talk_lip|kept_pos|1.000000
+V asv_talk_lip|kept_lv|"2" "100"
+V asv_talk_lip|kept_actor_going|"1" "nil"
 V asv_talk_lip|after_3|100.000000
 V asv_talk_lip|shut_up|100.000000
 END asv_talk_lip
 BEGIN asv_talk_mumble
 V asv_talk_mumble|changed|4.000000
 V asv_talk_mumble|now_going|"nil"
-V asv_talk_mumble|now_actor_going|"nil"
-V asv_talk_mumble|now_lv|"100"
 V asv_talk_mumble|now_pos|"0.5 nil nil nil nil"
+V asv_talk_mumble|now_lv|"100"
+V asv_talk_mumble|now_actor_going|"nil"
 V asv_talk_mumble|pass|"loading"
-V asv_talk_mumble|kept_going|"1" "nil"
-V asv_talk_mumble|kept_actor_going|"1" "nil"
 V asv_talk_mumble|kept_pos|1.000000
 V asv_talk_mumble|kept_lv|"50" "100"
+V asv_talk_mumble|kept_going|"1" "nil"
+V asv_talk_mumble|kept_actor_going|"1" "nil"
 V asv_talk_mumble|after_3|100.000000
 V asv_talk_mumble|shut_up|100.000000
 END asv_talk_mumble
@@ -4006,46 +4056,46 @@ V asv_shadow|saved_dark|none
 V asv_shadow|killed_dark|none
 V asv_shadow|changed|0.000000
 V asv_shadow|pass|"loading"
-V asv_shadow|kept_costume|1.000000
 V asv_shadow|kept_pos|1.000000
+V asv_shadow|kept_costume|1.000000
 V asv_shadow|loaded_dark|none
 END asv_shadow
 BEGIN asv_shadow_slot
 V asv_shadow_slot|saved_dark|none
 V asv_shadow_slot|changed|0.000000
 V asv_shadow_slot|pass|"loading"
-V asv_shadow_slot|kept_pos|1.000000
 V asv_shadow_slot|kept_costume|1.000000
+V asv_shadow_slot|kept_pos|1.000000
 V asv_shadow_slot|loaded_dark|none
 END asv_shadow_slot
 BEGIN asv_shadow_other_set
 V asv_shadow_other_set|changed|0.000000
 V asv_shadow_other_set|pass|"loading"
-V asv_shadow_other_set|kept_pos|1.000000
-V asv_shadow_other_set|kept_set|1.000000
 V asv_shadow_other_set|kept_costume|1.000000
+V asv_shadow_other_set|kept_set|1.000000
+V asv_shadow_other_set|kept_pos|1.000000
 V asv_shadow_other_set|loaded_dark|none
 END asv_shadow_other_set
 BEGIN asv_costume_stack
 V asv_costume_stack|lv_3|0.000000
 V asv_costume_stack|lv_8|0.000000
 V asv_costume_stack|changed|7.000000
-V asv_costume_stack|now_choring|"nil"
-V asv_costume_stack|now_c2|"nil"
 V asv_costume_stack|now_depth|"1"
-V asv_costume_stack|now_c1|"nil"
-V asv_costume_stack|now_c0|"cr_luav.cos"
-V asv_costume_stack|now_top|"cr_luav.cos"
+V asv_costume_stack|now_c2|"nil"
 V asv_costume_stack|now_lv|"-1"
+V asv_costume_stack|now_c1|"nil"
+V asv_costume_stack|now_top|"cr_luav.cos"
+V asv_costume_stack|now_choring|"nil"
+V asv_costume_stack|now_c0|"cr_luav.cos"
 V asv_costume_stack|pass|"loading"
-V asv_costume_stack|kept_choring|1.000000
-V asv_costume_stack|kept_pos|1.000000
 V asv_costume_stack|kept_c2|1.000000
-V asv_costume_stack|kept_c1|1.000000
-V asv_costume_stack|kept_c3|1.000000
-V asv_costume_stack|kept_top|1.000000
+V asv_costume_stack|kept_choring|1.000000
 V asv_costume_stack|kept_depth|1.000000
+V asv_costume_stack|kept_top|1.000000
 V asv_costume_stack|kept_c0|1.000000
+V asv_costume_stack|kept_c3|1.000000
+V asv_costume_stack|kept_pos|1.000000
+V asv_costume_stack|kept_c1|1.000000
 V asv_costume_stack|kept_lv|1.000000
 V asv_costume_stack|after_trace|"0/17 0/17 0/17 0/17 0/17 0/17 0/17 0/17 0/17 0/17 0/17 0/17 0/17 0/17 0/17 0/17 0/17 0/17 0/17 0/17 0/17 0/17 0/17 0/17 0/17 0/17 0/17 0/17 0/17 0/17 0/17 0/17 0/17 0/17 0/17 0/17 0/17 0/17 0/17 0/17 0/17 0/17 0/17 0/17 0/17 0/17 0/17 0/17 0/17 0/17 0/17 0/17 0/17 0/17 0/17 0/17 0/17 0/17 0/17 0/17 "
 V asv_costume_stack|after_frames|60.000000
@@ -4060,13 +4110,13 @@ V asv_costume_stack_top|lv_8|2.000000
 V asv_costume_stack_top|changed|4.000000
 V asv_costume_stack_top|now_choring|"nil"
 V asv_costume_stack_top|now_top|"cr_talk.cos"
-V asv_costume_stack_top|now_lv|"-1"
 V asv_costume_stack_top|now_depth|"2"
+V asv_costume_stack_top|now_lv|"-1"
 V asv_costume_stack_top|pass|"loading"
-V asv_costume_stack_top|kept_depth|1.000000
-V asv_costume_stack_top|kept_choring|1.000000
 V asv_costume_stack_top|kept_lv|1.000000
 V asv_costume_stack_top|kept_top|1.000000
+V asv_costume_stack_top|kept_depth|1.000000
+V asv_costume_stack_top|kept_choring|1.000000
 V asv_costume_stack_top|after_trace|"2/17 2/17 2/17 2/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 "
 V asv_costume_stack_top|after_frames|48.000000
 V asv_costume_stack_top|after_last|4.000000
@@ -7715,27 +7765,27 @@ V args_GetCurrentSetup_p1_tab|r|nil
 END args_GetCurrentSetup_p1_tab
 BEGIN args_GetDiskFreeSpace_none
 U args_GetDiskFreeSpace_none|r
-V args_GetDiskFreeSpace_none|r|54608.652344
+V args_GetDiskFreeSpace_none|r|64242.199219
 END args_GetDiskFreeSpace_none
 BEGIN args_GetDiskFreeSpace_nil
 U args_GetDiskFreeSpace_nil|r
-V args_GetDiskFreeSpace_nil|r|54608.652344
+V args_GetDiskFreeSpace_nil|r|64242.199219
 END args_GetDiskFreeSpace_nil
 BEGIN args_GetDiskFreeSpace_str
 U args_GetDiskFreeSpace_str|r
-V args_GetDiskFreeSpace_str|r|54608.652344
+V args_GetDiskFreeSpace_str|r|64242.199219
 END args_GetDiskFreeSpace_str
 BEGIN args_GetDiskFreeSpace_num
 U args_GetDiskFreeSpace_num|r
-V args_GetDiskFreeSpace_num|r|54608.652344
+V args_GetDiskFreeSpace_num|r|64242.199219
 END args_GetDiskFreeSpace_num
 BEGIN args_GetDiskFreeSpace_tab
 U args_GetDiskFreeSpace_tab|r
-V args_GetDiskFreeSpace_tab|r|54608.652344
+V args_GetDiskFreeSpace_tab|r|64242.199219
 END args_GetDiskFreeSpace_tab
 BEGIN args_GetDiskFreeSpace_fn
 U args_GetDiskFreeSpace_fn|r
-V args_GetDiskFreeSpace_fn|r|54608.652344
+V args_GetDiskFreeSpace_fn|r|64242.199219
 END args_GetDiskFreeSpace_fn
 SKIP args_GetFontDimensions_none
 SKIP args_GetFontDimensions_nil
@@ -7948,27 +7998,27 @@ V args_GetLightType_l_tab|r|"omni"
 END args_GetLightType_l_tab
 BEGIN args_GetMemoryUsage_none
 U args_GetMemoryUsage_none|r
-V args_GetMemoryUsage_none|r|13827144.000000
+V args_GetMemoryUsage_none|r|14401100.000000
 END args_GetMemoryUsage_none
 BEGIN args_GetMemoryUsage_nil
 U args_GetMemoryUsage_nil|r
-V args_GetMemoryUsage_nil|r|13828479.000000
+V args_GetMemoryUsage_nil|r|14402235.000000
 END args_GetMemoryUsage_nil
 BEGIN args_GetMemoryUsage_str
 U args_GetMemoryUsage_str|r
-V args_GetMemoryUsage_str|r|13829599.000000
+V args_GetMemoryUsage_str|r|14403355.000000
 END args_GetMemoryUsage_str
 BEGIN args_GetMemoryUsage_num
 U args_GetMemoryUsage_num|r
-V args_GetMemoryUsage_num|r|13830719.000000
+V args_GetMemoryUsage_num|r|14404475.000000
 END args_GetMemoryUsage_num
 BEGIN args_GetMemoryUsage_tab
 U args_GetMemoryUsage_tab|r
-V args_GetMemoryUsage_tab|r|13831943.000000
+V args_GetMemoryUsage_tab|r|14405699.000000
 END args_GetMemoryUsage_tab
 BEGIN args_GetMemoryUsage_fn
 U args_GetMemoryUsage_fn|r
-V args_GetMemoryUsage_fn|r|13833060.000000
+V args_GetMemoryUsage_fn|r|14406816.000000
 END args_GetMemoryUsage_fn
 BEGIN args_GetPhysicalBytes_none
 V args_GetPhysicalBytes_none|r|2147483648.000000
@@ -8494,27 +8544,27 @@ V args_GetTextSpeed_fn|r|7.000000
 END args_GetTextSpeed_fn
 BEGIN args_GetTickCount_none
 U args_GetTickCount_none|r
-V args_GetTickCount_none|r|131282888.000000
+V args_GetTickCount_none|r|170266016.000000
 END args_GetTickCount_none
 BEGIN args_GetTickCount_nil
 U args_GetTickCount_nil|r
-V args_GetTickCount_nil|r|131282888.000000
+V args_GetTickCount_nil|r|170266016.000000
 END args_GetTickCount_nil
 BEGIN args_GetTickCount_str
 U args_GetTickCount_str|r
-V args_GetTickCount_str|r|131282888.000000
+V args_GetTickCount_str|r|170266016.000000
 END args_GetTickCount_str
 BEGIN args_GetTickCount_num
 U args_GetTickCount_num|r
-V args_GetTickCount_num|r|131282904.000000
+V args_GetTickCount_num|r|170266016.000000
 END args_GetTickCount_num
 BEGIN args_GetTickCount_tab
 U args_GetTickCount_tab|r
-V args_GetTickCount_tab|r|131282904.000000
+V args_GetTickCount_tab|r|170266016.000000
 END args_GetTickCount_tab
 BEGIN args_GetTickCount_fn
 U args_GetTickCount_fn|r
-V args_GetTickCount_fn|r|131282904.000000
+V args_GetTickCount_fn|r|170266016.000000
 END args_GetTickCount_fn
 BEGIN args_GetTranslationMode_none
 V args_GetTranslationMode_none|r|0.000000
@@ -12018,27 +12068,27 @@ V args_ReadRegistryValue_p1_tab|r|nil
 END args_ReadRegistryValue_p1_tab
 BEGIN args_ResReport_none
 U args_ResReport_none|r
-V args_ResReport_none|r|14467119.000000
+V args_ResReport_none|r|14497414.000000
 END args_ResReport_none
 BEGIN args_ResReport_nil
 U args_ResReport_nil|r
-V args_ResReport_nil|r|14468390.000000
+V args_ResReport_nil|r|14498685.000000
 END args_ResReport_nil
 BEGIN args_ResReport_str
 U args_ResReport_str|r
-V args_ResReport_str|r|14469646.000000
+V args_ResReport_str|r|14499941.000000
 END args_ResReport_str
 BEGIN args_ResReport_num
 U args_ResReport_num|r
-V args_ResReport_num|r|14470902.000000
+V args_ResReport_num|r|14501197.000000
 END args_ResReport_num
 BEGIN args_ResReport_tab
 U args_ResReport_tab|r
-V args_ResReport_tab|r|14472262.000000
+V args_ResReport_tab|r|14502557.000000
 END args_ResReport_tab
 BEGIN args_ResReport_fn
 U args_ResReport_fn|r
-V args_ResReport_fn|r|14473511.000000
+V args_ResReport_fn|r|14503806.000000
 END args_ResReport_fn
 BEGIN args_ResetTextures_none
 V args_ResetTextures_none|r|nil
@@ -17080,7 +17130,7 @@ ERROR args_ceil_fn bad argument #1 to function `ceil' (number expected)
 FAILED args_ceil_fn
 BEGIN args_collectgarbage_none
 U args_collectgarbage_none|r
-V args_collectgarbage_none|r|2055.000000
+V args_collectgarbage_none|r|7848.000000
 END args_collectgarbage_none
 BEGIN args_collectgarbage_nil
 ERROR args_collectgarbage_nil bad argument #1 to function `collectgarbage' (number expected)
@@ -17118,7 +17168,7 @@ ERROR args_cos_fn bad argument #1 to function `cos' (number expected)
 FAILED args_cos_fn
 BEGIN args_date_none
 U args_date_none|r
-V args_date_none|r|"11/10/26 06:56:07"
+V args_date_none|r|"11/10/26 17:45:50"
 END args_date_none
 BEGIN args_date_nil
 ERROR args_date_nil bad argument #1 to function `date' (string expected)
@@ -17885,11 +17935,11 @@ V args_tostring_num|r|"1.5"
 END args_tostring_num
 BEGIN args_tostring_tab
 U args_tostring_tab|r
-V args_tostring_tab|r|"table: 0857647C"
+V args_tostring_tab|r|"table: 0A6824DC"
 END args_tostring_tab
 BEGIN args_tostring_fn
 U args_tostring_fn|r
-V args_tostring_fn|r|"function: 03F5D59C"
+V args_tostring_fn|r|"function: 04085D2C"
 END args_tostring_fn
 BEGIN args_type_none
 ERROR args_type_none API error - attempt to push a NOOBJECT
@@ -17918,6 +17968,832 @@ V lex_binary|short|nil
 ERROR lex_binary binary file cr_bin_old.lua too old: version=0x30; expected at least 0x31
 V lex_binary|old|nil
 END lex_binary
+BEGIN gco_cos_sound
+V gco_cos_sound|before|"0 -4 -4 -4 -4"
+V gco_cos_sound|play_choring|0.000000
+V gco_cos_sound|play_sound|"1 1 90 127 0"
+V gco_cos_sound|play_lv|1.000000
+V gco_cos_sound|unloop_choring|2.000000
+V gco_cos_sound|unloop_sound|"1 1 90 127 0"
+V gco_cos_sound|unloop_lv|1.000000
+V gco_cos_sound|stop_choring|1.000000
+V gco_cos_sound|stop_sound|"0 -4 -4 -4 -4"
+V gco_cos_sound|stop_lv|1.000000
+V gco_cos_sound|tone_choring|3.000000
+V gco_cos_sound|tone_sound|"1 1 100 127 0"
+V gco_cos_sound|tone_lv|1.000000
+V gco_cos_sound|bad_key_choring|4.000000
+V gco_cos_sound|bad_key_sound|"1 1 100 127 0"
+V gco_cos_sound|bad_key_lv|1.000000
+V gco_cos_sound|tone_after|"1 1 100 127 0"
+END gco_cos_sound
+BEGIN gco_cos_sound_side
+V gco_cos_sound_side|right_choring|0.000000
+V gco_cos_sound_side|right_sound|"1 1 90 20 0"
+V gco_cos_sound_side|right_lv|1.000000
+V gco_cos_sound_side|left_choring|0.000000
+V gco_cos_sound_side|left_sound|"1 1 90 20 0"
+V gco_cos_sound_side|left_lv|1.000000
+END gco_cos_sound_side
+BEGIN gco_cos_sound_end
+V gco_cos_sound_end|start_choring|5.000000
+V gco_cos_sound_end|start_sound|"1 1 90 127 0"
+V gco_cos_sound_end|start_lv|2.000000
+V gco_cos_sound_end|chore_done|nil 3.000000
+V gco_cos_sound_end|sound_after_chore|"1 1 90 127 0"
+V gco_cos_sound_end|sound_after_costume|"0 -4 -4 -4 -4"
+END gco_cos_sound_end
+BEGIN gco_cos_stream
+V gco_cos_stream|costume|"gco_stream.cos"
+V gco_cos_stream|play_choring|0.000000
+V gco_cos_stream|play_sound|"0 -4 -4 -4 -4"
+V gco_cos_stream|play_lv|1.000000
+V gco_cos_stream|stop_choring|1.000000
+V gco_cos_stream|stop_sound|"0 -4 -4 -4 -4"
+V gco_cos_stream|stop_lv|1.000000
+END gco_cos_stream
+BEGIN gco_att
+V gco_att|costume|"gco_att.cos"
+V gco_att|rest_node0|0.000000 0.000000 0.000000
+V gco_att|rest_node1|-0.700000 0.000000 0.000000
+V gco_att|rest_node2|0.700000 0.000000 0.000000
+V gco_att|rest_snap|220.000000 207.000000 420.000000 267.000000
+V gco_att|left_off_choring|0.000000
+V gco_att|left_off_lv|0.000000
+V gco_att|left_off_snap|357.000000 207.000000 420.000000 267.000000
+V gco_att|hat_off_choring|2.000000
+V gco_att|hat_off_lv|0.000000
+V gco_att|both_off_snap|357.000000 207.000000 420.000000 267.000000
+V gco_att|left_on_choring|1.000000
+V gco_att|left_on_lv|0.000000
+V gco_att|hat_off_snap|220.000000 207.000000 420.000000 267.000000
+V gco_att|hat_on_choring|3.000000
+V gco_att|hat_on_lv|0.000000
+V gco_att|hat_on_snap|164.000000 207.000000 420.000000 267.000000
+V gco_att|hat_mesh_off_choring|6.000000
+V gco_att|hat_mesh_off_lv|0.000000
+V gco_att|hat_mesh_off_snap|164.000000 207.000000 420.000000 267.000000
+END gco_att
+BEGIN gco_att_chores
+V gco_att_chores|main_off_choring|4.000000
+V gco_att_chores|main_off_lv|1.000000
+V gco_att_chores|main_off_snap|none
+V gco_att_chores|main_after|nil 2.000000
+V gco_att_chores|main_after_snap|none
+V gco_att_chores|hat_slide_node0|0.000000 0.000000 0.000000
+V gco_att_chores|hat_slide_node1|-0.700000 0.000000 0.000000
+V gco_att_chores|hat_slide_node2|0.700000 0.000000 0.000000
+V gco_att_chores|hat_slide_snap|none
+V gco_att_chores|hat_slide_done|nil
+V gco_att_chores|swapped|"cr_dbox.cos"
+END gco_att_chores
+BEGIN gco_kf_same_priority
+V gco_kf_same_priority|same_priority_costume|"gco_kfa.cos"
+V gco_kf_same_priority|same_priority_10_body|-1.000000 0.000000 0.000000
+V gco_kf_same_priority|same_priority_20_body|-1.000000 0.000000 0.000000
+V gco_kf_same_priority|same_priority_30_body|-1.000000 0.000000 0.000000
+END gco_kf_same_priority
+BEGIN gco_kf_other_priority
+V gco_kf_other_priority|other_priority_costume|"gco_kfa.cos"
+V gco_kf_other_priority|other_priority_10_body|-1.000000 0.000000 0.000000
+V gco_kf_other_priority|other_priority_20_body|-1.000000 0.000000 0.000000
+V gco_kf_other_priority|other_priority_30_body|-1.000000 0.000000 0.000000
+END gco_kf_other_priority
+BEGIN gco_kf_pause
+V gco_kf_pause|pause_costume|"gco_kfa.cos"
+V gco_kf_pause|pause_10_body|-1.000000 0.000000 0.000000
+V gco_kf_pause|pause_paused_body|-1.000000 0.000000 0.000000
+V gco_kf_pause|pause_paused_later_body|-1.000000 0.000000 0.000000
+V gco_kf_pause|pause_unpaused_body|-1.000000 0.000000 0.000000
+END gco_kf_pause
+BEGIN gco_kf_fade_in_0
+V gco_kf_fade_in_0|fade_in_0_costume|"gco_kfa.cos"
+V gco_kf_fade_in_0|fade_in_0_5_body|-1.000000 0.000000 0.000000
+V gco_kf_fade_in_0|fade_in_0_10_body|-1.000000 0.000000 0.000000
+V gco_kf_fade_in_0|fade_in_0_15_body|-1.000000 0.000000 0.000000
+V gco_kf_fade_in_0|fade_in_0_20_body|-1.000000 0.000000 0.000000
+END gco_kf_fade_in_0
+BEGIN gco_kf_fade_out_0
+V gco_kf_fade_out_0|fade_out_0_costume|"gco_kfa.cos"
+V gco_kf_fade_out_0|fade_out_0_10_body|-1.000000 0.000000 0.000000
+V gco_kf_fade_out_0|fade_out_0_5_body|-1.000000 0.000000 0.000000
+V gco_kf_fade_out_0|fade_out_0_10_body|-1.000000 0.000000 0.000000
+V gco_kf_fade_out_0|fade_out_0_15_body|-1.000000 0.000000 0.000000
+V gco_kf_fade_out_0|fade_out_0_20_body|-1.000000 0.000000 0.000000
+END gco_kf_fade_out_0
+BEGIN gco_kf_fade_in_1
+V gco_kf_fade_in_1|fade_in_1_costume|"gco_kfa.cos"
+V gco_kf_fade_in_1|fade_in_1_5_body|-1.000000 0.000000 0.000000
+V gco_kf_fade_in_1|fade_in_1_10_body|-1.000000 0.000000 0.000000
+V gco_kf_fade_in_1|fade_in_1_15_body|-1.000000 0.000000 0.000000
+V gco_kf_fade_in_1|fade_in_1_20_body|-1.000000 0.000000 0.000000
+END gco_kf_fade_in_1
+BEGIN gco_kf_fade_out_1
+V gco_kf_fade_out_1|fade_out_1_costume|"gco_kfa.cos"
+V gco_kf_fade_out_1|fade_out_1_10_body|-1.000000 0.000000 0.000000
+V gco_kf_fade_out_1|fade_out_1_5_body|-1.000000 0.000000 0.000000
+V gco_kf_fade_out_1|fade_out_1_10_body|-1.000000 0.000000 0.000000
+V gco_kf_fade_out_1|fade_out_1_15_body|-1.000000 0.000000 0.000000
+V gco_kf_fade_out_1|fade_out_1_20_body|-1.000000 0.000000 0.000000
+END gco_kf_fade_out_1
+BEGIN gco_kf_fade_in_2
+V gco_kf_fade_in_2|fade_in_2_costume|"gco_kfa.cos"
+V gco_kf_fade_in_2|fade_in_2_5_body|-1.000000 0.000000 0.000000
+V gco_kf_fade_in_2|fade_in_2_10_body|-1.000000 0.000000 0.000000
+V gco_kf_fade_in_2|fade_in_2_15_body|-1.000000 0.000000 0.000000
+V gco_kf_fade_in_2|fade_in_2_20_body|-1.000000 0.000000 0.000000
+END gco_kf_fade_in_2
+BEGIN gco_kf_fade_out_2
+V gco_kf_fade_out_2|fade_out_2_costume|"gco_kfa.cos"
+V gco_kf_fade_out_2|fade_out_2_10_body|-1.000000 0.000000 0.000000
+V gco_kf_fade_out_2|fade_out_2_5_body|-1.000000 0.000000 0.000000
+V gco_kf_fade_out_2|fade_out_2_10_body|-1.000000 0.000000 0.000000
+V gco_kf_fade_out_2|fade_out_2_15_body|-1.000000 0.000000 0.000000
+V gco_kf_fade_out_2|fade_out_2_20_body|-1.000000 0.000000 0.000000
+END gco_kf_fade_out_2
+BEGIN gco_kf_fade_in_3
+V gco_kf_fade_in_3|fade_in_3_costume|"gco_kfa.cos"
+V gco_kf_fade_in_3|fade_in_3_5_body|-1.000000 0.000000 0.000000
+V gco_kf_fade_in_3|fade_in_3_10_body|-1.000000 0.000000 0.000000
+V gco_kf_fade_in_3|fade_in_3_15_body|-1.000000 0.000000 0.000000
+V gco_kf_fade_in_3|fade_in_3_20_body|-1.000000 0.000000 0.000000
+END gco_kf_fade_in_3
+BEGIN gco_kf_fade_out_3
+V gco_kf_fade_out_3|fade_out_3_costume|"gco_kfa.cos"
+V gco_kf_fade_out_3|fade_out_3_10_body|-1.000000 0.000000 0.000000
+V gco_kf_fade_out_3|fade_out_3_5_body|-1.000000 0.000000 0.000000
+V gco_kf_fade_out_3|fade_out_3_10_body|-1.000000 0.000000 0.000000
+V gco_kf_fade_out_3|fade_out_3_15_body|-1.000000 0.000000 0.000000
+V gco_kf_fade_out_3|fade_out_3_20_body|-1.000000 0.000000 0.000000
+END gco_kf_fade_out_3
+BEGIN gco_kf_bad_key
+V gco_kf_bad_key|bad_key_costume|"gco_kfa.cos"
+V gco_kf_bad_key|bad_key_5_body|-1.000000 0.000000 0.000000
+END gco_kf_bad_key
+BEGIN gco_kf_nomark
+V gco_kf_nomark|nomark_costume|"gco_kfa.cos"
+V gco_kf_nomark|nomark_10_body|-1.000000 0.000000 0.000000
+V gco_kf_nomark|nomark_20_body|-1.000000 0.000000 0.000000
+V gco_kf_nomark|nomark_30_body|-1.000000 0.000000 0.000000
+V gco_kf_nomark|nomark_choring|14.000000
+END gco_kf_nomark
+BEGIN gco_kf_alone_x
+V gco_kf_alone_x|x_costume|"gco_kfx.cos"
+V gco_kf_alone_x|x_10_body|-1.000000 0.000000 0.000000
+V gco_kf_alone_x|x_20_body|-1.000000 0.000000 0.000000
+V gco_kf_alone_x|x_30_body|-1.000000 0.000000 0.000000
+END gco_kf_alone_x
+BEGIN gco_kf_alone_y
+V gco_kf_alone_y|y_costume|"gco_kfy.cos"
+V gco_kf_alone_y|y_10_body|-1.000000 0.000000 0.000000
+V gco_kf_alone_y|y_20_body|-1.000000 0.000000 0.000000
+V gco_kf_alone_y|y_30_body|-1.000000 0.000000 0.000000
+END gco_kf_alone_y
+SKIP gco_att_parts
+BEGIN gco_cos_bitmap
+V gco_cos_bitmap|costume|"gco_bmp.cos"
+V gco_cos_bitmap|state|"userdata"
+V gco_cos_bitmap|state_snap|none
+V gco_cos_bitmap|image1_choring|0.000000
+V gco_cos_bitmap|image1_lv|0.000000
+V gco_cos_bitmap|image1_snap|none
+V gco_cos_bitmap|image2_choring|1.000000
+V gco_cos_bitmap|image2_lv|0.000000
+V gco_cos_bitmap|image2_snap|0.000000 0.000000 63.000000 47.000000 3072.000000
+V gco_cos_bitmap|hide_choring|2.000000
+V gco_cos_bitmap|hide_lv|0.000000
+V gco_cos_bitmap|hide_snap|none
+V gco_cos_bitmap|missing_costume|nil
+V gco_cos_bitmap|missing_choring|nil
+V gco_cos_bitmap|missing_lv|0.000000
+END gco_cos_bitmap
+SKIP gco_fmt_bmodel
+BEGIN gco_registry_keys
+V gco_registry_keys|good_times|"string"
+V gco_registry_keys|GrimDeveloper|"nil"
+V gco_registry_keys|GrimDataDir|"string"
+V gco_registry_keys|savepath|"nil"
+V gco_registry_keys|SpewOnError|"nil"
+V gco_registry_keys|DirectorsCommentary|"nil"
+V gco_registry_keys|Widescreen|"nil"
+V gco_registry_keys|Language|"nil"
+V gco_registry_keys|ResolutionScaling|"nil"
+V gco_registry_keys|MouseSpeed|"nil"
+V gco_registry_keys|AdvancedLighting|"nil"
+V gco_registry_keys|DirectorsCommentaryVolume|"nil"
+V gco_registry_keys|RenderingMode|"nil"
+V gco_registry_keys|Fullscreen|"nil"
+END gco_registry_keys
+BEGIN gco_font_kerned
+V gco_font_kerned|font|"userdata"
+V gco_font_kerned|again|1.000000
+V gco_font_kerned|lower|18.000000 12.000000
+V gco_font_kerned|lower_snap|100.000000 97.000000 116.000000 106.000000
+V gco_font_kerned|upper|30.000000 12.000000
+V gco_font_kerned|upper_snap|101.000000 97.000000 127.000000 106.000000
+V gco_font_kerned|digits|18.000000 12.000000
+V gco_font_kerned|digits_snap|100.000000 97.000000 117.000000 106.000000
+V gco_font_kerned|mixed|33.000000 12.000000
+V gco_font_kerned|mixed_snap|101.000000 97.000000 131.000000 106.000000
+V gco_font_kerned|tab|18.000000 12.000000
+V gco_font_kerned|tab_snap|100.000000 97.000000 116.000000 106.000000
+V gco_font_kerned|centered|40.000000 12.000000
+V gco_font_kerned|centered_snap|301.000000 237.000000 338.000000 246.000000
+V gco_font_kerned|rjustify|34.000000 12.000000
+V gco_font_kerned|rjustify_snap|287.000000 237.000000 318.000000 246.000000
+V gco_font_kerned|wrapped|70.000000 60.000000
+V gco_font_kerned|wrapped_snap|0.000000 0.000000 318.000000 246.000000
+END gco_font_kerned
+BEGIN gco_font_perm
+V gco_font_perm|a|14.000000 12.000000
+V gco_font_perm|a_snap|100.000000 97.000000 318.000000 246.000000
+V gco_font_perm|b|4.000000 12.000000
+V gco_font_perm|b_snap|100.000000 97.000000 318.000000 246.000000
+V gco_font_perm|c|10.000000 12.000000
+V gco_font_perm|c_snap|100.000000 97.000000 318.000000 246.000000
+V gco_font_perm|d|6.000000 12.000000
+V gco_font_perm|d_snap|100.000000 97.000000 318.000000 246.000000
+END gco_font_perm
+BEGIN gco_text_keys
+V gco_text_keys|height|18.000000 12.000000
+V gco_text_keys|height_snap|287.000000 237.000000 318.000000 246.000000
+V gco_text_keys|bgcolor|18.000000 12.000000
+V gco_text_keys|bgcolor_snap|100.000000 97.000000 318.000000 246.000000
+V gco_text_keys|fxcolor|18.000000 12.000000
+V gco_text_keys|fxcolor_snap|100.000000 97.000000 318.000000 246.000000
+V gco_text_keys|duration|18.000000 12.000000
+V gco_text_keys|duration_snap|100.000000 97.000000 318.000000 246.000000
+V gco_text_keys|layer|18.000000 12.000000
+V gco_text_keys|layer_snap|100.000000 97.000000 318.000000 246.000000
+V gco_text_keys|coords|18.000000 12.000000
+V gco_text_keys|coords_snap|100.000000 97.000000 318.000000 246.000000
+V gco_text_keys|font_string|12.000000 6.000000
+V gco_text_keys|font_string_snap|100.000000 100.000000 318.000000 246.000000
+END gco_text_keys
+BEGIN gco_concat
+V gco_concat|actor_prefix|"x(actor"
+V gco_concat|actor_len|1.000000
+V gco_concat|actor_root|nil
+V gco_concat|number|"x12"
+ERROR gco_concat unexpected type
+V gco_concat|table|"x"
+END gco_concat
+BEGIN gco_concat_nil
+V gco_concat_nil|nil|"x(nil)"
+END gco_concat_nil
+BEGIN gco_lip_unknown
+V gco_lip_unknown|at_once|0.000000 1.000000
+V gco_lip_unknown|frame1|1.000000 1.000000
+V gco_lip_unknown|frame2|1.000000 1.000000
+V gco_lip_unknown|frame4|1.000000 1.000000
+V gco_lip_unknown|shut_up|100.000000
+END gco_lip_unknown
+BEGIN gco_lip_empty
+V gco_lip_empty|at_once|0.000000 1.000000
+V gco_lip_empty|frame1|100.000000 1.000000
+V gco_lip_empty|frame2|100.000000 1.000000
+V gco_lip_empty|frame4|100.000000 1.000000
+V gco_lip_empty|shut_up|100.000000
+END gco_lip_empty
+BEGIN gco_lip_twice
+V gco_lip_twice|first|1.000000 1.000000
+V gco_lip_twice|second|1.000000 1.000000
+END gco_lip_twice
+BEGIN gco_set_nolight
+V gco_set_nolight|setup|0.000000
+V gco_set_nolight|centre|nil
+END gco_set_nolight
+BEGIN gco_set_nosect
+V gco_set_nosect|setup|0.000000
+V gco_set_nosect|centre|nil
+END gco_set_nosect
+BEGIN gco_set_objs
+V gco_set_objs|setup|0.000000
+V gco_set_objs|centre|0.000000 "gco_floor" 4096.000000
+END gco_set_objs
+BEGIN gco_set_kinds
+V gco_set_kinds|floor|0.000000 "gco_floor" 4096.000000
+V gco_set_kinds|funnel|2.000000 "gco_funnel" 4096.000000
+V gco_set_kinds|nameless|nil
+V gco_set_kinds|thin|3.000000 "gco_thin" 4096.000000
+V gco_set_kinds|setup|1.000000
+END gco_set_kinds
+BEGIN gco_set_lights
+V gco_set_lights|done|1.000000
+END gco_set_lights
+BEGIN gco_set_shrink
+V gco_set_shrink|s02_thin_mid|3.000000 "gco_thin" 4096.000000
+V gco_set_shrink|s02_thin_end|nil
+V gco_set_shrink|s02_floor_edge|nil
+V gco_set_shrink|s1_thin_mid|nil
+V gco_set_shrink|s1_thin_end|nil
+V gco_set_shrink|s1_floor_mid|0.000000 "gco_floor" 4096.000000
+V gco_set_shrink|s1_floor_edge|nil
+V gco_set_shrink|un_thin_end|3.000000 "gco_thin" 4096.000000
+END gco_set_shrink
+BEGIN gco_set_sound_pos
+V gco_set_sound_pos|start|127.000000 64.000000
+V gco_set_sound_pos|centre|60.000000 64.000000
+V gco_set_sound_pos|right|53.000000 92.000000
+V gco_set_sound_pos|left|53.000000 35.000000
+V gco_set_sound_pos|far|120.000000 64.000000
+V gco_set_sound_pos|far_right|120.000000 127.000000
+V gco_set_sound_pos|camera|120.000000 0.000000
+V gco_set_sound_pos|no_dist|10.000000 78.000000
+V gco_set_sound_pos|max_below_min|100.000000 78.000000
+V gco_set_sound_pos|over_127|127.000000 78.000000
+V gco_set_sound_pos|neg_dist|10.000000 78.000000
+V gco_set_sound_pos|stopped|-4.000000 -4.000000
+END gco_set_sound_pos
+BEGIN gco_set_sound_actor
+V gco_set_sound_actor|by_actor|48.000000 85.000000
+V gco_set_sound_actor|other_set|48.000000 85.000000
+V gco_set_sound_actor|back|48.000000 85.000000
+END gco_set_sound_actor
+BEGIN gco_set_states
+V gco_set_states|missing|"userdata"
+V gco_set_states|noise|"userdata"
+V gco_set_states|noise_snap|none
+END gco_set_states
+SKIP gco_save_shrunk
+SKIP gco_save_zstate
+BEGIN gl1_fn_name_anon
+V gl1_fn_name_anon|anon|"unnamed function '<unknown>' (cr_zz_gl1.lua:23)
+END gl1_fn_name_anon
+BEGIN gl1_fn_name_cfunction
+V gl1_fn_name_cfunction|c|"unnamed function '<unknown>' ((C):-1)
+V gl1_fn_name_cfunction|back|"function"
+END gl1_fn_name_cfunction
+BEGIN gl1_fn_name_tag_method
+V gl1_fn_name_tag_method|index|"tm"
+V gl1_fn_name_tag_method|name|"tag method 'index' (cr_zz_gl1.lua:34)
+END gl1_fn_name_tag_method
+BEGIN gl1_text_file
+V gl1_text_file|writeto|"userdata"
+V gl1_text_file|type|"table"
+V gl1_text_file|count|4.000000
+V gl1_text_file|pos|0.000000 7.000000 20.000000 23.000000
+V gl1_text_file|line1|"second line
+V gl1_text_file|line2|"3
+V gl1_text_file|line_at_0|"first
+V gl1_text_file|line_at_3|"st
+V gl1_text_file|line_past_end|""
+V gl1_text_file|removed|"userdata"
+END gl1_text_file
+BEGIN gl1_enum_3d
+V gl1_enum_3d|type|"table"
+V gl1_enum_3d|entry|"number" "string"
+V gl1_enum_3d|n|1.000000
+V gl1_enum_3d|dev1|"table"
+END gl1_enum_3d
+BEGIN gl1_control_axes
+V gl1_control_axes|b4|nil
+V gl1_control_axes|joy_x|nil
+V gl1_control_axes|joy2_v|nil
+V gl1_control_axes|mouse_z|nil
+V gl1_control_axes|past|nil
+END gl1_control_axes
+BEGIN gl1_camera_actor_none
+V gl1_camera_actor_none|before|"actor"
+V gl1_camera_actor_none|after|"actor" 1.000000
+END gl1_camera_actor_none
+BEGIN gl1_prim_line_layer
+V gl1_prim_line_layer|type|"number"
+V gl1_prim_line_layer|px|100.000000 100.000000 200.000000 100.000000 101.000000
+END gl1_prim_line_layer
+BEGIN gl1_prim_polygon_layer
+V gl1_prim_polygon_layer|type|"number"
+V gl1_prim_polygon_layer|px|100.000000 100.000000 200.000000 150.000000 251.000000
+END gl1_prim_polygon_layer
+BEGIN gl1_prim_polygon_bad_y
+V gl1_prim_polygon_bad_y|r|"number"
+V gl1_prim_polygon_bad_y|px|100.000000 0.000000 200.000000 150.000000 451.000000
+END gl1_prim_polygon_bad_y
+BEGIN gl1_prim_blast_filled
+V gl1_prim_blast_filled|px|100.000000 100.000000 199.000000 149.000000 5000.000000
+V gl1_prim_blast_filled|next|100.000000 100.000000 199.000000 149.000000 5000.000000
+END gl1_prim_blast_filled
+BEGIN gl1_prim_change_layer
+V gl1_prim_change_layer|px|100.000000 100.000000 199.000000 149.000000 5000.000000
+END gl1_prim_change_layer
+BEGIN gl1_prim_change_size
+V gl1_prim_change_size|px|100.000000 100.000000 120.000000 110.000000 231.000000
+END gl1_prim_change_size
+BEGIN gl1_prim_polygon_moved
+V gl1_prim_polygon_moved|px|300.000000 200.000000 400.000000 250.000000 251.000000
+V gl1_prim_polygon_moved|x_only|50.000000 200.000000 150.000000 250.000000 251.000000
+END gl1_prim_polygon_moved
+BEGIN gl1_prim_line_end
+V gl1_prim_line_end|px|100.000000 100.000000 100.000000 300.000000 201.000000
+V gl1_prim_line_end|x2_only|100.000000 100.000000 250.000000 300.000000 351.000000
+V gl1_prim_line_end|y2_only|100.000000 100.000000 250.000000 120.000000 171.000000
+END gl1_prim_line_end
+BEGIN gl1_prim_killed_twice
+V gl1_prim_killed_twice|px|none
+END gl1_prim_killed_twice
+BEGIN gl1_sound_pos_actor
+V gl1_sound_pos_actor|params|"1 0 1 64 48 85"
+END gl1_sound_pos_actor
+BEGIN gl1_sound_pos_min_high
+V gl1_sound_pos_min_high|params|"1 0 1 64 127 78"
+END gl1_sound_pos_min_high
+BEGIN gl1_sound_pos_max_high
+V gl1_sound_pos_max_high|params|"1 0 1 64 26 78"
+END gl1_sound_pos_max_high
+BEGIN gl1_sound_pos_max_below_min
+V gl1_sound_pos_max_below_min|params|"1 0 1 64 100 78"
+END gl1_sound_pos_max_below_min
+BEGIN gl1_sound_pos_dist_negative
+V gl1_sound_pos_dist_negative|params|"1 0 1 64 20 78"
+END gl1_sound_pos_dist_negative
+SKIP gl1_sound_pos_dist
+BEGIN gl1_text_rjustify
+V gl1_text_rjustify|dims|62.000000
+V gl1_text_rjustify|px|258.000000 97.000000 318.000000 106.000000
+END gl1_text_rjustify
+BEGIN gl1_text_rjustify_wrap
+V gl1_text_rjustify_wrap|dims|91.000000
+V gl1_text_rjustify_wrap|px|9.000000 97.000000 98.000000 130.000000
+END gl1_text_rjustify_wrap
+BEGIN gl1_text_long_word
+V gl1_text_long_word|dims|216.000000
+V gl1_text_long_word|px|0.000000 97.000000 58.000000 106.000000
+END gl1_text_long_word
+BEGIN gl1_text_long_word_x
+V gl1_text_long_word_x|dims|276.000000
+V gl1_text_long_word_x|px|500.000000 97.000000 639.000000 106.000000
+END gl1_text_long_word_x
+BEGIN gl1_text_y_above
+V gl1_text_y_above|dims|33.000000
+V gl1_text_y_above|px|none
+END gl1_text_y_above
+BEGIN gl1_text_font13
+V gl1_text_font13|dims|51.000000
+V gl1_text_font13|px|100.000000 97.000000 149.000000 107.000000
+END gl1_text_font13
+BEGIN gl1_text_layer
+V gl1_text_layer|dims|33.000000
+V gl1_text_layer|px|100.000000 97.000000 131.000000 106.000000
+END gl1_text_layer
+BEGIN gl1_say_right_edge
+V gl1_say_right_edge|edge_going|1.000000
+V gl1_say_right_edge|edge_text|539.000000 183.000000 628.000000 204.000000
+END gl1_say_right_edge
+BEGIN gl1_nocos_play
+V gl1_nocos_play|r|nil
+END gl1_nocos_play
+BEGIN gl1_nocos_complete
+V gl1_nocos_complete|r|nil
+END gl1_nocos_complete
+BEGIN gl1_nocos_play_looping
+V gl1_nocos_play_looping|r|nil
+END gl1_nocos_play_looping
+BEGIN gl1_nocos_set_looping
+V gl1_nocos_set_looping|r|nil
+END gl1_nocos_set_looping
+BEGIN gl1_nocos_stop
+V gl1_nocos_stop|r|nil
+END gl1_nocos_stop
+BEGIN gl1_nocos_fade_out
+V gl1_nocos_fade_out|r|nil
+END gl1_nocos_fade_out
+BEGIN gl1_nocos_fade_in
+V gl1_nocos_fade_in|r|nil
+END gl1_nocos_fade_in
+BEGIN gl1_nocos_is_choring
+V gl1_nocos_is_choring|r|nil
+END gl1_nocos_is_choring
+BEGIN gl1_nocos_node_location
+V gl1_nocos_node_location|r|nil
+END gl1_nocos_node_location
+BEGIN gl1_nocos_look_at
+V gl1_nocos_look_at|r|nil
+END gl1_nocos_look_at
+BEGIN gl1_talk_chore_other_costume
+V gl1_talk_chore_other_costume|r|nil
+V gl1_talk_chore_other_costume|r_num|nil
+END gl1_talk_chore_other_costume
+BEGIN gl1_look_nil_rate
+V gl1_look_nil_rate|rate0|360.000000
+V gl1_look_nil_rate|rate|77.000000
+V gl1_look_nil_rate|rate_again|77.000000
+END gl1_look_nil_rate
+BEGIN gl1_walk_to_actor
+V gl1_walk_to_actor|moving|1.000000
+V gl1_walk_to_actor|end|1.015501 0.506979 0.000000
+END gl1_walk_to_actor
+BEGIN gl1_put_at_interest
+V gl1_put_at_interest|pos|0.000000 0.000000 0.000000
+END gl1_put_at_interest
+BEGIN gl1_movie_no_name
+V gl1_movie_no_name|start|nil
+V gl1_movie_no_name|full|nil
+V gl1_movie_no_name|playing|nil
+END gl1_movie_no_name
+SKIP gl1_music_state_load
+BEGIN gl1_say_number_after
+V gl1_say_number_after|going|1.000000
+END gl1_say_number_after
+BEGIN gl1_say_number_before
+V gl1_say_number_before|going|1.000000
+END gl1_say_number_before
+BEGIN gl1_say_function_before
+V gl1_say_function_before|going|nil
+END gl1_say_function_before
+BEGIN gl1_say_function_after
+V gl1_say_function_after|going|nil
+END gl1_say_function_after
+BEGIN gl1_blast_text_empty
+V gl1_blast_text_empty|r|nil
+END gl1_blast_text_empty
+BEGIN gl1_change_text_killed
+V gl1_change_text_killed|r|36.000000
+V gl1_change_text_killed|r_table|36.000000
+END gl1_change_text_killed
+BEGIN gl1_registry_manny
+V gl1_registry_manny|number|"5"
+V gl1_registry_manny|string|"walking"
+END gl1_registry_manny
+BEGIN gl1_prim_offset
+V gl1_prim_offset|r|nil
+V gl1_prim_offset|px|110.000000 105.000000 209.000000 154.000000 5000.000000
+END gl1_prim_offset
+BEGIN gl1_prim_rect_end
+V gl1_prim_rect_end|r|nil
+V gl1_prim_rect_end|px|100.000000 100.000000 300.000000 300.000000 40401.000000
+END gl1_prim_rect_end
+BEGIN gl1_movie_short_name
+V gl1_movie_short_name|num|nil
+V gl1_movie_short_name|short|nil
+V gl1_movie_short_name|playing|nil
+END gl1_movie_short_name
+BEGIN gl1_spew_startup
+V gl1_spew_startup|r|nil
+END gl1_spew_startup
+BEGIN gl1_save_nil
+V gl1_save_nil|pass|"loading"
+V gl1_save_nil|saved|"saved"
+END gl1_save_nil
+BEGIN gl1_save_table
+V gl1_save_table|save|nil
+V gl1_save_table|load|nil
+V gl1_save_table|not_loaded|"changed"
+END gl1_save_table
+BEGIN ims_formats
+V ims_formats|ims_8m.wav_id|"number" 0.000000
+V ims_formats|ims_8m.wav_at_once|"1 0 1 100 127 64"
+V ims_formats|ims_8m.wav_frame2|"1 0 1 100 127 64"
+V ims_formats|ims_8m.wav_stopped|"0 0 -4 -4 -4 -4"
+V ims_formats|ims_16s.wav_id|"number" 1.000000
+V ims_formats|ims_16s.wav_at_once|"1 0 1 100 127 64"
+V ims_formats|ims_16s.wav_frame2|"1 0 1 100 127 64"
+V ims_formats|ims_16s.wav_stopped|"0 0 -4 -4 -4 -4"
+V ims_formats|ims_8s.wav_id|"number" 2.000000
+V ims_formats|ims_8s.wav_at_once|"1 0 1 100 127 64"
+V ims_formats|ims_8s.wav_frame2|"1 0 1 100 127 64"
+V ims_formats|ims_8s.wav_stopped|"0 0 -4 -4 -4 -4"
+V ims_formats|ims_44k.wav_id|"number" 3.000000
+V ims_formats|ims_44k.wav_at_once|"1 0 1 100 127 64"
+V ims_formats|ims_44k.wav_frame2|"1 0 1 100 127 64"
+V ims_formats|ims_44k.wav_stopped|"0 0 -4 -4 -4 -4"
+V ims_formats|ims_11k.wav_id|"number" 4.000000
+V ims_formats|ims_11k.wav_at_once|"1 0 1 100 127 64"
+V ims_formats|ims_11k.wav_frame2|"1 0 1 100 127 64"
+V ims_formats|ims_11k.wav_stopped|"0 0 -4 -4 -4 -4"
+V ims_formats|ims_list.wav_id|"number" 5.000000
+V ims_formats|ims_list.wav_at_once|"1 0 1 100 127 64"
+V ims_formats|ims_list.wav_frame2|"1 0 1 100 127 64"
+V ims_formats|ims_list.wav_stopped|"0 0 -4 -4 -4 -4"
+V ims_formats|ims_float.wav_id|"number" 0.000000
+V ims_formats|ims_float.wav_at_once|"1 1 1 1 1 1"
+V ims_formats|ims_float.wav_frame2|"1 1 1 1 1 1"
+V ims_formats|ims_float.wav_stopped|"1 1 1 1 1 1"
+V ims_formats|ims_nodata.wav_id|"number" 26.000000
+V ims_formats|ims_nodata.wav_at_once|"1 0 1 100 127 64"
+V ims_formats|ims_nodata.wav_frame2|"1 0 1 100 127 64"
+V ims_formats|ims_nodata.wav_stopped|"0 0 -4 -4 -4 -4"
+V ims_formats|ims_notwave.wav_id|"number" 0.000000
+V ims_formats|ims_notwave.wav_at_once|"1 1 1 1 1 1"
+V ims_formats|ims_notwave.wav_frame2|"1 1 1 1 1 1"
+V ims_formats|ims_notwave.wav_stopped|"1 1 1 1 1 1"
+V ims_formats|ims_tone.aif_id|"number" 0.000000
+V ims_formats|ims_tone.aif_at_once|"1 1 1 1 1 1"
+V ims_formats|ims_tone.aif_frame2|"1 1 1 1 1 1"
+V ims_formats|ims_tone.aif_stopped|"1 1 1 1 1 1"
+V ims_formats|ims_44k.aif_id|"number" 0.000000
+V ims_formats|ims_44k.aif_at_once|"1 1 1 1 1 1"
+V ims_formats|ims_44k.aif_frame2|"1 1 1 1 1 1"
+V ims_formats|ims_44k.aif_stopped|"1 1 1 1 1 1"
+V ims_formats|ims_11k.aif_id|"number" 0.000000
+V ims_formats|ims_11k.aif_at_once|"1 1 1 1 1 1"
+V ims_formats|ims_11k.aif_frame2|"1 1 1 1 1 1"
+V ims_formats|ims_11k.aif_stopped|"1 1 1 1 1 1"
+V ims_formats|ims_aifc.aif_id|"number" 0.000000
+V ims_formats|ims_aifc.aif_at_once|"1 1 1 1 1 1"
+V ims_formats|ims_aifc.aif_frame2|"1 1 1 1 1 1"
+V ims_formats|ims_aifc.aif_stopped|"1 1 1 1 1 1"
+V ims_formats|ims_nossnd.aif_id|"number" 0.000000
+V ims_formats|ims_nossnd.aif_at_once|"1 1 1 1 1 1"
+V ims_formats|ims_nossnd.aif_frame2|"1 1 1 1 1 1"
+V ims_formats|ims_nossnd.aif_stopped|"1 1 1 1 1 1"
+V ims_formats|ims_nofrmt.imu_id|"number" 0.000000
+V ims_formats|ims_nofrmt.imu_at_once|"1 1 1 1 1 1"
+V ims_formats|ims_nofrmt.imu_frame2|"1 1 1 1 1 1"
+V ims_formats|ims_nofrmt.imu_stopped|"1 1 1 1 1 1"
+V ims_formats|ims_loop.imu_id|"number" 167.000000
+V ims_formats|ims_loop.imu_at_once|"1 0 1 100 127 64"
+V ims_formats|ims_loop.imu_frame2|"1 0 1 100 127 64"
+V ims_formats|ims_loop.imu_stopped|"0 0 -4 -4 -4 -4"
+V ims_formats|ims_mark.imu_id|"number" 168.000000
+V ims_formats|ims_mark.imu_at_once|"1 0 1 100 127 64"
+V ims_formats|ims_mark.imu_frame2|"1 0 1 100 127 64"
+V ims_formats|ims_mark.imu_stopped|"0 0 -4 -4 -4 -4"
+V ims_formats|ims_le.imu_id|"number" 169.000000
+V ims_formats|ims_le.imu_at_once|"1 0 1 100 127 64"
+V ims_formats|ims_le.imu_frame2|"1 0 1 100 127 64"
+V ims_formats|ims_le.imu_stopped|"0 0 -4 -4 -4 -4"
+V ims_formats|ims_st.imu_id|"number" 170.000000
+V ims_formats|ims_st.imu_at_once|"1 0 1 100 127 64"
+V ims_formats|ims_st.imu_frame2|"1 0 1 100 127 64"
+V ims_formats|ims_st.imu_stopped|"0 0 -4 -4 -4 -4"
+V ims_formats|ims_8.imu_id|"number" 171.000000
+V ims_formats|ims_8.imu_at_once|"1 0 1 100 127 64"
+V ims_formats|ims_8.imu_frame2|"1 0 1 100 127 64"
+V ims_formats|ims_8.imu_stopped|"0 0 -4 -4 -4 -4"
+V ims_formats|ims_12.imu_id|"number" 172.000000
+V ims_formats|ims_12.imu_at_once|"1 0 1 100 127 64"
+V ims_formats|ims_12.imu_frame2|"1 0 1 100 127 64"
+V ims_formats|ims_12.imu_stopped|"0 0 -4 -4 -4 -4"
+V ims_formats|ims_once.imu_id|"number" 173.000000
+V ims_formats|ims_once.imu_at_once|"1 0 1 100 127 64"
+V ims_formats|ims_once.imu_frame2|"1 0 1 100 127 64"
+V ims_formats|ims_once.imu_stopped|"0 0 -4 -4 -4 -4"
+V ims_formats|ims_mcmp.imu_id|"number" 174.000000
+V ims_formats|ims_mcmp.imu_at_once|"1 0 1 100 127 64"
+V ims_formats|ims_mcmp.imu_frame2|"1 0 1 100 127 64"
+V ims_formats|ims_mcmp.imu_stopped|"0 0 -4 -4 -4 -4"
+V ims_formats|ims_mcmpw.wav_id|"number" 175.000000
+V ims_formats|ims_mcmpw.wav_at_once|"1 0 1 100 127 64"
+V ims_formats|ims_mcmpw.wav_frame2|"1 0 1 100 127 64"
+V ims_formats|ims_mcmpw.wav_stopped|"0 0 -4 -4 -4 -4"
+END ims_formats
+BEGIN ims_formats_live
+U ims_formats_live|live_ims_8m.wav
+V ims_formats_live|live_ims_8m.wav|"0 0 -4 -4 -4 -4"
+U ims_formats_live|live_ims_16s.wav
+V ims_formats_live|live_ims_16s.wav|"0 0 -4 -4 -4 -4"
+U ims_formats_live|live_ims_8s.wav
+V ims_formats_live|live_ims_8s.wav|"1 0 1 63 0 58"
+U ims_formats_live|live_ims_44k.wav
+V ims_formats_live|live_ims_44k.wav|"0 0 -4 -4 -4 -4"
+U ims_formats_live|live_ims_11k.wav
+V ims_formats_live|live_ims_11k.wav|"0 0 -4 -4 -4 -4"
+U ims_formats_live|live_ims_list.wav
+V ims_formats_live|live_ims_list.wav|"0 0 -4 -4 -4 -4"
+U ims_formats_live|live_ims_loop.imu
+V ims_formats_live|live_ims_loop.imu|"1 0 1 61 117 127"
+U ims_formats_live|live_ims_mark.imu
+V ims_formats_live|live_ims_mark.imu|"1 0 1 62 107 0"
+U ims_formats_live|live_ims_le.imu
+V ims_formats_live|live_ims_le.imu|"1 0 1 63 0 58"
+U ims_formats_live|live_ims_st.imu
+V ims_formats_live|live_ims_st.imu|"1 0 1 64 87 74"
+U ims_formats_live|live_ims_8.imu
+V ims_formats_live|live_ims_8.imu|"0 0 -4 -4 -4 -4"
+U ims_formats_live|live_ims_12.imu
+V ims_formats_live|live_ims_12.imu|"1 0 1 66 67 106"
+U ims_formats_live|live_ims_once.imu
+V ims_formats_live|live_ims_once.imu|"0 0 -4 -4 -4 -4"
+V ims_formats_live|after|"0 0 -4 -4 -4 -4" "0 0 -4 -4 -4 -4"
+END ims_formats_live
+BEGIN ims_maps
+V ims_maps|ims_badtag.imu_id|"number" 0.000000
+V ims_maps|ims_badtag.imu_at_once|"0 0 -4 -4 -4 -4"
+V ims_maps|ims_badtag.imu_frame2|"0 0 -4 -4 -4 -4"
+V ims_maps|ims_badtag.imu_stopped|"0 0 -4 -4 -4 -4"
+V ims_maps|ims_badoff.imu_id|"number" 1.000000
+V ims_maps|ims_badoff.imu_at_once|"0 0 -4 -4 -4 -4"
+V ims_maps|ims_badoff.imu_frame2|"0 0 -4 -4 -4 -4"
+V ims_maps|ims_badoff.imu_stopped|"0 0 -4 -4 -4 -4"
+V ims_maps|ims_big.imu_id|"number" 2.000000
+V ims_maps|ims_big.imu_at_once|"0 0 -4 -4 -4 -4"
+V ims_maps|ims_big.imu_frame2|"0 0 -4 -4 -4 -4"
+V ims_maps|ims_big.imu_stopped|"0 0 -4 -4 -4 -4"
+V ims_maps|ims_unknown.imu_id|"number" 3.000000
+V ims_maps|ims_unknown.imu_at_once|"0 0 -4 -4 -4 -4"
+V ims_maps|ims_unknown.imu_frame2|"0 0 -4 -4 -4 -4"
+V ims_maps|ims_unknown.imu_stopped|"0 0 -4 -4 -4 -4"
+V ims_maps|ims_nostop.imu_id|"number" 4.000000
+V ims_maps|ims_nostop.imu_at_once|"1 0 1 100 127 64"
+V ims_maps|ims_nostop.imu_frame2|"1 0 1 100 127 64"
+V ims_maps|ims_nostop.imu_stopped|"0 0 -4 -4 -4 -4"
+U ims_maps|live_ims_badtag.imu
+V ims_maps|live_ims_badtag.imu|"0 0 -4 -4 -4 -4"
+U ims_maps|live_ims_badoff.imu
+V ims_maps|live_ims_badoff.imu|"0 0 -4 -4 -4 -4"
+U ims_maps|live_ims_big.imu
+V ims_maps|live_ims_big.imu|"0 0 -4 -4 -4 -4"
+U ims_maps|live_ims_unknown.imu
+V ims_maps|live_ims_unknown.imu|"0 0 -4 -4 -4 -4"
+U ims_maps|live_ims_nostop.imu
+V ims_maps|live_ims_nostop.imu|"0 0 -4 -4 -4 -4"
+END ims_maps
+BEGIN ims_ids
+V ims_ids|id|"number"
+V ims_ids|by_id|"1 0 1 90 127 64"
+V ims_ids|set_by_id|"1 0 1 90 50 20"
+V ims_ids|id_plus_1|0.000000
+V ims_ids|n1200|1.000000 1.000000
+V ims_ids|n10000|0.000000 -4.000000
+V ims_ids|n5|1.000000 1.000000
+V ims_ids|s10000|0.000000 -4.000000
+V ims_ids|s1200|1.000000 1.000000
+V ims_ids|s12|1.000000 1.000000
+V ims_ids|params|"2 0 0 1 90 50 20 0 0 0 -5 0 1 "
+V ims_ids|params_none|"2 0 -4 -4 -4 -4 -4 -4 -4 -4 -4 -4 -4 "
+V ims_ids|set|"2 0 0 1 90 50 20 100 0 7 -5 0 1 "
+V ims_ids|out_of_range|"2 0 0 1 90 50 20 100 0 7 -5 0 1 "
+U ims_ids|pos
+V ims_ids|pos|2.000000
+V ims_ids|stopped_by_id|"0 0 -4 -4 -4 -4"
+END ims_ids
+BEGIN ims_fades
+V ims_fades|r_prio|nil
+V ims_fades|r_detune|nil
+V ims_fades|r_transpose|nil
+V ims_fades|r_group|nil
+V ims_fades|r_negative|nil
+V ims_fades|r_none|nil
+V ims_fades|pan0|nil
+V ims_fades|vol0|nil
+V ims_fades|no_length|"1 0 1 90 127 100" "0 0 -4 -4 -4 -4"
+U ims_fades|many
+V ims_fades|many|"0 0 -4 -4 -4 -4" "1 0 1 100 127 64"
+U ims_fades|prio_trace
+V ims_fades|prio_trace|"2 0 -4 -4 -4 -4 -4 -4 -4 -4 -4 -4 -4 "
+END ims_fades
+BEGIN ims_pause
+V ims_pause|resumed_twice|"1 0 1 90 127 64"
+V ims_pause|paused_twice|"1 0 1 90 127 64"
+V ims_pause|resumed_once|"1 0 1 90 127 64"
+V ims_pause|resumed|"1 0 1 90 127 64"
+END ims_pause
+BEGIN ims_tracks
+V ims_tracks|same_prio|"100000000000 110000000000 111000000000 111100000000 111110000000 111111000000 111111100000 111111110000 111111111000 011111111100 001111111110 000111111111 "
+V ims_tracks|rising|"0111111111"
+V ims_tracks|low|"01111111110"
+V ims_tracks|high|"001111111101"
+END ims_tracks
+BEGIN ims_cache
+V ims_cache|ids|-225.000000 -224.000000 -217.000000
+U ims_cache|first_by_id
+V ims_cache|first_by_id|1.000000 0.000000
+V ims_cache|keep|-216.000000
+V ims_cache|last|14.000000
+V ims_cache|keep_after|"1 0 1 120 127 64" "1"
+END ims_cache
+BEGIN ims_component
+V ims_component|play|1.000000 "1 0 1 100 53 71" "1 0 1 90 45 71"
+V ims_component|playing|nil
+V ims_component|play_again|1.000000 "1 0 1 100 53 71"
+V ims_component|unloop|3.000000 "1 0 1 100 53 71" "1 0 1 90 45 71"
+U ims_component|unloop_later
+V ims_component|unloop_later|nil
+V ims_component|stop|2.000000 "0 0 -4 -4 -4 -4" "0 0 -4 -4 -4 -4"
+END ims_component
+BEGIN ims_states
+V ims_states|musiceff|"1 0 4 60 127 64"
+U ims_states|musiceff_faded
+V ims_states|musiceff_faded|"1 0 4 60 127 64"
+V ims_states|music|"0 0 -4 -4 -4 -4" "0 0 -4 -4 -4 -4"
+V ims_states|ok|1.000000
+END ims_states
+BEGIN ims_sequences
+V ims_sequences|seq|2001.000000
+V ims_sequences|again|2001.000000
+V ims_sequences|bogus|-1.000000
+V ims_sequences|current|2001.000000
+V ims_sequences|zero|2000.000000
+V ims_sequences|current_after|2000.000000
+V ims_sequences|null|2000.000000
+V ims_sequences|string|2001.000000
+V ims_sequences|nil|nil
+END ims_sequences
+BEGIN ims_voices
+V ims_voices|voice|2.000000 1.000000
+V ims_voices|shut_up|100.000000
+V ims_voices|background|1.000000 "0 0 -4 -4 -4 -4"
+V ims_voices|shut_up_both|nil
+V ims_voices|after|"0 0 -4 -4 -4 -4"
+END ims_voices
+BEGIN ims_save
+V ims_save|stopped|"0 0 -4 -4 -4 -4"
+V ims_save|loaded|"1 0 1 80 77 30" "0 0 -4 -4 -4 -4"
+V ims_save|loaded_playing|nil
+END ims_save
+BEGIN ims_save_voice
+V ims_save_voice|loaded|nil
+END ims_save_voice
 BEGIN lit_none
 V lit_none|snap|270.000000 207.000000 370.000000 267.000000 6123.000000 248.000000
 END lit_none
@@ -18113,4 +18989,217 @@ END rem_InitiateFindSaveGames
 BEGIN rem_GetCrossSaveStatus
 V rem_GetCrossSaveStatus|missing|1.000000
 END rem_GetCrossSaveStatus
-SUMMARY 5167 tests, 255 failed
+BEGIN rnd_blast_key
+V rnd_blast_key|type|"userdata"
+V rnd_blast_key|opaque|100.000000 100.000000 163.000000 147.000000 3072.000000 242.300000
+V rnd_blast_key|transparent|100.000000 100.000000 163.000000 147.000000 2816.000000 249.300000
+END rnd_blast_key
+BEGIN rnd_blast_edges
+V rnd_blast_edges|left_top|0.000000 0.000000 31.000000 23.000000 768.000000 249.300000
+V rnd_blast_edges|right_bottom|608.000000 456.000000 639.000000 479.000000 768.000000 249.300000
+V rnd_blast_edges|right_top|620.000000 0.000000 639.000000 7.000000 160.000000 249.300000
+V rnd_blast_edges|left_bottom|0.000000 470.000000 3.000000 479.000000 40.000000 249.300000
+END rnd_blast_edges
+BEGIN rnd_objstate
+V rnd_objstate|state|"userdata"
+V rnd_objstate|start|none
+V rnd_objstate|img2|232.000000 150.000000 263.000000 197.000000 1536.000000 145.300000
+V rnd_objstate|img1|200.000000 150.000000 263.000000 197.000000 3072.000000 249.300000
+V rnd_objstate|img0|200.000000 150.000000 263.000000 197.000000 3072.000000 249.300000
+V rnd_objstate|img2_again|200.000000 150.000000 263.000000 197.000000 3072.000000 197.300000
+V rnd_objstate|actor_gone|200.000000 150.000000 263.000000 197.000000 3072.000000 197.300000
+END rnd_objstate
+BEGIN rnd_holes
+V rnd_holes|alpha|270.000000 207.000000 370.000000 267.000000 3343.000000 248.000000
+V rnd_holes|no_alpha|270.000000 207.000000 370.000000 267.000000 3077.000000 248.000000
+V rnd_holes|white|270.000000 207.000000 370.000000 267.000000 6123.000000 248.000000
+V rnd_holes|mixed|270.000000 207.000000 370.000000 267.000000 6123.000000 248.000000
+END rnd_holes
+BEGIN rnd_text_colours
+V rnd_text_colours|green_size|62.000000
+V rnd_text_colours|green|100.000000 197.000000 160.000000 206.000000 389.000000 84.000000
+V rnd_text_colours|grey_size|56.000000
+V rnd_text_colours|grey|100.000000 197.000000 154.000000 206.000000 351.000000 128.000000
+V rnd_text_colours|white_size|62.000000
+V rnd_text_colours|white|100.000000 197.000000 160.000000 206.000000 389.000000 249.300000
+END rnd_text_colours
+BEGIN rnd_fonts
+V rnd_fonts|f5_size|30.000000
+V rnd_fonts|f5|101.000000 202.000000 127.000000 205.000000 34.000000 249.300000
+V rnd_fonts|f20_size|63.000000
+V rnd_fonts|f20|101.000000 188.000000 160.000000 205.000000 443.000000 249.300000
+V rnd_fonts|f40_size|164.000000
+V rnd_fonts|f40|101.000000 168.000000 261.000000 205.000000 2887.000000 249.300000
+END rnd_fonts
+BEGIN rnd_cam_down
+V rnd_cam_down|origin|270.000000 210.000000 370.000000 270.000000
+V rnd_cam_down|moved|367.000000 110.000000 470.000000 175.000000
+V rnd_cam_down|turned|359.000000 89.000000 479.000000 194.000000
+END rnd_cam_down
+BEGIN rnd_lights_many
+V rnd_lights_many|unlit|270.000000 207.000000 370.000000 267.000000 6123.000000 248.000000
+V rnd_lights_many|lit|270.000000 207.000000 370.000000 267.000000 6123.000000 248.000000
+END rnd_lights_many
+BEGIN rnd_near
+V rnd_near|start|270.000000 207.000000 370.000000 267.000000 6123.000000 248.000000
+V rnd_near|across|none
+V rnd_near|near|0.000000 0.000000 107.000000 286.000000 29600.000000 248.000000
+V rnd_near|around|none
+V rnd_near|behind|none
+END rnd_near
+BEGIN rnd_say_low
+V rnd_say_low|low_rect|269.000000 429.000000 103.000000 51.000000
+V rnd_say_low|low_going|1.000000
+V rnd_say_low|low_text|263.000000 417.000000 375.000000 426.000000
+V rnd_say_low|lower_rect|272.000000 478.000000 97.000000 2.000000
+V rnd_say_low|lower_going|1.000000
+V rnd_say_low|lower_text|263.000000 458.000000 375.000000 467.000000
+V rnd_say_low|corner_rect|576.000000 439.000000 64.000000 41.000000
+V rnd_say_low|corner_going|1.000000
+V rnd_say_low|corner_text|539.000000 415.000000 628.000000 436.000000
+END rnd_say_low
+BEGIN smv_stereo
+V smv_stereo|start|1.000000
+V smv_stereo|playing_at_once|1.000000
+V smv_stereo|playing|1.000000
+V smv_stereo|snap|100.000000 50.000000 259.000000 169.000000
+V smv_stereo|ended|1.000000
+END smv_stereo
+BEGIN smv_stereo_fullscreen
+V smv_stereo_fullscreen|start|1.000000
+V smv_stereo_fullscreen|playing|1.000000 1.000000
+V smv_stereo_fullscreen|ended|1.000000
+END smv_stereo_fullscreen
+BEGIN smv_track
+V smv_track|start|1.000000
+V smv_track|playing_at_once|1.000000
+V smv_track|playing|1.000000
+V smv_track|snap|100.000000 50.000000 259.000000 169.000000
+V smv_track|ended|1.000000
+END smv_track
+BEGIN smv_ima4
+V smv_ima4|start|1.000000
+V smv_ima4|playing_at_once|1.000000
+V smv_ima4|playing|1.000000
+V smv_ima4|snap|100.000000 50.000000 259.000000 169.000000
+V smv_ima4|ended|1.000000
+END smv_ima4
+BEGIN smv_vima
+V smv_vima|start|1.000000
+V smv_vima|playing_at_once|1.000000
+V smv_vima|playing|1.000000
+V smv_vima|snap|100.000000 50.000000 259.000000 169.000000
+V smv_vima|ended|1.000000
+END smv_vima
+BEGIN smv_flood
+V smv_flood|start|1.000000
+V smv_flood|playing_at_once|1.000000
+V smv_flood|playing|1.000000
+V smv_flood|snap|100.000000 50.000000 259.000000 169.000000
+V smv_flood|ended|1.000000
+END smv_flood
+BEGIN smv_big
+V smv_big|start|1.000000
+V smv_big|playing_at_once|1.000000
+V smv_big|playing|1.000000
+V smv_big|snap|100.000000 50.000000 259.000000 169.000000
+V smv_big|ended|1.000000
+END smv_big
+BEGIN smv_short
+V smv_short|start|1.000000
+V smv_short|playing_at_once|1.000000
+V smv_short|playing|1.000000
+V smv_short|snap|100.000000 50.000000 259.000000 169.000000
+V smv_short|ended|1.000000
+END smv_short
+BEGIN smv_anno
+V smv_anno|start|1.000000
+V smv_anno|playing_at_once|1.000000
+V smv_anno|playing|1.000000
+V smv_anno|snap|100.000000 50.000000 259.000000 169.000000
+V smv_anno|ended|1.000000
+END smv_anno
+BEGIN smv_extra
+V smv_extra|start|1.000000
+V smv_extra|playing_at_once|1.000000
+V smv_extra|playing|1.000000
+V smv_extra|snap|100.000000 50.000000 259.000000 169.000000
+V smv_extra|ended|1.000000
+END smv_extra
+BEGIN smv_old
+V smv_old|start|1.000000
+V smv_old|playing_at_once|1.000000
+V smv_old|playing|1.000000
+V smv_old|snap|100.000000 50.000000 259.000000 169.000000
+V smv_old|ended|1.000000
+END smv_old
+BEGIN smv_nowave
+V smv_nowave|start|1.000000
+V smv_nowave|playing_at_once|1.000000
+V smv_nowave|playing|1.000000
+V smv_nowave|snap|100.000000 50.000000 259.000000 169.000000
+V smv_nowave|ended|1.000000
+END smv_nowave
+BEGIN smv_badtop
+V smv_badtop|start|1.000000
+V smv_badtop|playing_at_once|1.000000
+V smv_badtop|playing_2s|nil
+V smv_badtop|ended|1.000000
+END smv_badtop
+BEGIN smv_badtop_loop
+V smv_badtop_loop|start|1.000000
+V smv_badtop_loop|playing_2s|1.000000
+V smv_badtop_loop|stopped|nil
+END smv_badtop_loop
+BEGIN smv_cut
+V smv_cut|start|1.000000
+V smv_cut|playing_at_once|1.000000
+V smv_cut|playing_2s|1.000000
+V smv_cut|ended|nil
+END smv_cut
+BEGIN smv_fewer
+V smv_fewer|start|1.000000
+V smv_fewer|playing_2s|nil
+V smv_fewer|ended|1.000000
+END smv_fewer
+BEGIN smv_more
+V smv_more|start|1.000000
+V smv_more|playing_2s|nil
+V smv_more|ended|1.000000
+END smv_more
+BEGIN smv_late
+V smv_late|start|1.000000
+V smv_late|playing|1.000000
+V smv_late|snap|none
+V smv_late|ended|1.000000
+END smv_late
+BEGIN smv_swap4
+V smv_swap4|start|1.000000
+V smv_swap4|playing|1.000000
+V smv_swap4|snap|80.000000 80.000000 87.000000 87.000000 64.000000
+END smv_swap4
+BEGIN smv_swap3
+V smv_swap3|start|1.000000
+V smv_swap3|playing|1.000000
+V smv_swap3|snap|240.000000 160.000000 247.000000 167.000000 64.000000
+END smv_swap3
+BEGIN smv_bomp8
+V smv_bomp8|start|1.000000
+V smv_bomp8|playing|1.000000
+V smv_bomp8|snap|0.000000 0.000000 639.000000 239.000000 51360.000000
+END smv_bomp8
+BEGIN smv_bomp5
+V smv_bomp5|start|1.000000
+V smv_bomp5|playing|1.000000
+V smv_bomp5|snap|0.000000 0.000000 639.000000 239.000000 51360.000000
+END smv_bomp5
+BEGIN smv_save_movie
+V smv_save_movie|saved_playing|1.000000
+V smv_save_movie|stopped|nil
+V smv_save_movie|pass|"loading"
+V smv_save_movie|loaded_playing|1.000000
+V smv_save_movie|loaded_playing_later|1.000000
+V smv_save_movie|loaded_snap|100.000000 50.000000 259.000000 169.000000
+V smv_save_movie|ended|1.000000
+END smv_save_movie
+SUMMARY 5322 tests, 255 failed

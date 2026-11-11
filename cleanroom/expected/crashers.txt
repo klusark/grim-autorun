@@ -122,6 +122,12 @@ args_SnapToPlane_tab
 asv_talk_no_voice
 font_dims_handle
 font_dims_name
+gco_att_parts
+gco_fmt_bmodel
+gco_save_shrunk
+gco_save_zstate
+gl1_music_state_load
+gl1_sound_pos_dist
 rest_chore_zero
 save_emergency_font
 shadow_color

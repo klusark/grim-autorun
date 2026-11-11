@@ -381,7 +381,8 @@ write at the end still happens, in a `CR_GCOV` build; nothing otherwise): such a
 sounds of our own (`sound.lua`), the registry, the primitives and the start-up state. 2026-11-10 (`--all`, every game
 and renderer): 69.4%, 29838 of 43016 lines (grim 69.5%, emi 68.3%, tinygl 57.9%, lua 87.6%, remastered 63.5%); after
 the actor tests (`zz_actor_*.lua`, `emi_actor_*.lua`) 71.2%, 30643 of 43018 (grim 71.3%, emi 73.7%), and `actor.cpp` from
-294 lines never run to 54 (82.4% to 96.8%). What is left is mostly iMUSE's music (its state tables) and streaming, the shader renderer (the tests use `gfx_mode=opengl`),
+294 lines never run to 54 (82.4% to 96.8%); after the second round of agents 75.5%, 32490 of 43018 (grim 75.5%,
+emi 89.5%, tinygl 60.0%, lua 87.8%, remastered 64.0%). What is left is mostly iMUSE's music (its state tables) and streaming, the shader renderer (the tests use `gfx_mode=opengl`),
 and the debugger.
 
 ## Wrong arguments and coverage
@@ -714,6 +715,67 @@ Hand-written tests, besides the per-frame walk and turn values:
   - Not reachable with new saves or our data: the old save versions' branches of `restoreState`, `getRestChore` (no
     caller), the PS2 `.scx` voice, `popCostume` on an empty stack, `setShadowColor` without a slot, `activateShadow`
     with every slot in use (needs an EMI set of 9 shadows).
+- A second round of eight agents (2026-11-10), each with its own files and data module (`assets_extra_<p>.py`,
+  `assets_emi_extra_<p>.py`): EMI's models and costumes (`emi_emd.lua`), EMI's Lua builtins (`emi_elu.lua`), EMI's sound
+  (`emi_esn*.lua`), Grim's iMUSE (`zz_ims.lua`), movies (`zz_smv*.lua`, `emi_smv.lua`), Grim's core and formats
+  (`zz_gco*.lua`), Grim's Lua builtins (`zz_gl1*.lua`, `emi_gl1.lua`) and the renderers (`zz_rnd.lua`, `emi_rnd.lua`).
+  What they found, by area:
+  - ScummVM crashes the original does not have (the tests are marked; their crashes are in the ScummVM crasher lists):
+    `ChangePrimitive` with `xoffset`/`yoffset` (`assert(0)`, lua_v1_graphics.cpp:306) and with `x2`/`y2` on a rectangle
+    (primitives.cpp:134); `StartMovie` of a name shorter than 4 characters (smush.cpp:149 erases size() - 4). Found and
+    left out of the tests: on EMI a looping MP3 track that reaches the end of its data is freed by the mixer while
+    `MP3Track::getPos`/`hasLooped` still read it (mp3track.cpp:201-211; the next Save divides by zero); the software
+    renderer's `BitmapFont::render` writes above its surface for a glyph that starts above the line (font.cpp:397-412);
+    a sound number of 1367 or more is taken for a pointer to a name (`getSoundKey`, `cacheGetSoundId`); a Save with no
+    current set (grim.cpp:1558). In the whole run, a Save late in it ends ScummVM now and then with 0xC0000409 (a stack
+    buffer overrun; `smv_save_movie` while a movie plays, `gl1_save_nil`, `ims_save`, not every run), and on EMI's
+    software renderer the Load after a layer was freed blits the freed bitmap
+    (`emd_save_layer`: `crossBlit` from `tglBlitOpaque`). `smv_stereo` crashed the shader renderer once in `SmushMixer::mixStereo16` (the timer
+    thread), not again in three runs.
+  - EMI: `SetChoreLooping(c, TRUE)` turns looping off; `StopChore` drops a fade of 0.6 s or more; `CompleteChore` and
+    `ScreenshotForSavegame` do nothing; `AdvanceChore` starts an ended chore again; `IsChoreValid` of an unloaded actor's
+    chore is nil (0 on the original); `WalkActorVector` turns at once and walks; a walk avoiding actors goes straight;
+    `MakeCurrentSetup` by name switches (the original keeps the setup); `WorldToScreen` projects points off the screen
+    (nil on the original); `GetActiveCD` is always 1 (on the original `SetActiveCD(2)` switches it, and every later
+`LoadSound` of the run is then nil, even after `SetActiveCD(1)`: no test calls it); `GetLayerFrame` / `GetLayerSortOrder` are missing, and
+    `SetLayerFrame` refuses frames the original keeps; `GetSectorName` can never find a sector (`findPointSector` with
+    `NoneType`, set.cpp:932); a rider on a joint follows the joint's animation only on ScummVM. Sound: a freed handle's
+    volume is 100 (nil), volumes read back 1 lower, a stopped sound plays again, `SetSoundVolume(-5)` wraps to 100,
+    paused sounds are still playing, stereo voices last twice as long (queued as mono, vimatrack.cpp:93), a voice ends
+    after 8 s (vimatrack.cpp:183), sounds resume after a Load, `ImStateHasLooped` is 1. Monkey4.exe's `Save` needs a
+    font (`SetSayLineDefaults`), or it crashes at 0x434042.
+  - Grim's iMUSE: `ImSetSequence` always returns 0 (the original the sequence playing); a `SayLine` without a table plays
+    as a background voice in iMUSE's cache (lua_v1_text.cpp:285); at the wrap of the sound ids at 256 ScummVM skips an
+    id a cached sound still has.
+  - Movies: a file cut short in a frame ends the movie on ScummVM; the original plays on. codec48, blocky8 and the demo
+    player (about 1500 lines) run only for the demo. EMI's original quits on a Bink subtitle header that is not in the
+    game's exact layout; ScummVM plays it.
+  - Grim's core: a costume's sound component with parameters is placed by the actor and capped (the original plays it
+    at 127, centred); `SetSoundPosition` gives other volumes; an object state of a missing bitmap is nil (the original
+    makes one); shrunk sectors stay shrunk after a Load; a funnel sector and a nameless one are found differently; a
+    font's code table is read the other way round (the original takes glyph c at position c); `MakeTextObject` with the
+    font as a file name gives no text object; costumes the original refuses (a parentless colormap, a bitmap component
+    of a missing file) load; an empty lip file plays the mumble (stop_talk on the original).
+  - Grim's builtins: `ChangePrimitive` with `x2` or `y2` alone sets the other to -1, width/height are ignored;
+    `SetSoundPosition` clamps the volume to 127; `PutActorAtInterest` skips hot sectors; a Load sets
+    `music_state.paused` to nil and calls `pause`; `WriteRegistryValue("GrimMannyState")` is ignored;
+    `SetSelectedActor(nil)` clears it; `SayLine(a, "/id/", function)` says the line (the original does not); words wider
+    than a line are broken with dashes (textobject.cpp:250); text at y < 0 is drawn at 0 (not at all on the original).
+    A text object ending in spaces hangs the original.
+  - The original's heap: a costume whose keyframe has a joint number past the model's joint count, or fewer joints and
+    one used twice (`gco_kfb.cos`, `gco_kfs.cos`), corrupts it, and in the whole run later tests crashed at
+    `Lua.dll+0x93A2` reading text as a pointer, a different test each run (found by full runs with those two tests
+    left out; they are no longer run). The original's Load crashes late in the whole run (the saves of `zz_gco_set`,
+    `zz_gl1_save`, `zz_ims`), as before with costumes loaded ahead of `save.lua`: expected/crashers.txt.
+- An actor pushed by another's collision sphere stays on the floor (`collision_floor.lua`, 2026-11-10; only the height is
+  logged, so the test has no mark). ScummVM's sphere collision pushed along the 3D line between the spheres' centres,
+  which are at different heights for `cr_float` and `cr_ctrx`; its per-frame snapping to the walkboxes put the actor
+  back. Without the snapping (`f6b233dca49`) the actor ends 4 to 12 mm off the floor; the push is fixed in branch
+  `grim-collision-plane` (`ef081e28a5e`, horizontal push only), which ends at 0 as the original.
+  - The renderers: ScummVM ignores a font's baseline (text 3, 13, 33 pixels higher for fonts of 5, 20, 40);
+    transparent texels are blended (GL) or opaque (TinyGL) where the original leaves them out; a hidden object state is
+    cleared (the original leaves the old picture); a text set's lights are off until `SetAmbientLight` (set.cpp:61), and
+    a lit model is then black on OpenGL and TinyGL but white with shaders.
 
 ## Not done yet
 

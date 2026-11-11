@@ -258,12 +258,26 @@ def svm_known():
 REM_CRASHERS = os.path.join(HERE, "expected", "remastered_crashers.txt")
 
 
+def open_expected(path, newline="\n"):
+    """Opens a file of expected/ to write, trying again for 10 s: on 2026-11-10 writes there failed now and then with
+    OSError 22 (Invalid argument) and worked a moment later, which lost the end of a 20-minute --save."""
+    for attempt in range(40):
+        try:
+            return open(path, "w", newline=newline)
+        except OSError as e:
+            if attempt == 39:
+                raise
+            if attempt == 0:
+                print("run.py: cannot write %s (%s); trying again" % (path, e), flush=True)
+            time.sleep(0.25)
+
+
 def write_rem_known(names):
     """Keeps the Remastered's crashers in expected/ (committed), like ScummVM's: skipped on the next runs, --fresh tries them again."""
     if READ_ONLY:
         return
     os.makedirs(os.path.dirname(REM_CRASHERS), exist_ok=True)
-    with open(REM_CRASHERS, "w", newline="\n") as f:
+    with open_expected(REM_CRASHERS) as f:
         f.write("# tests that crash or hang the Remastered (found by run.py); skipped, run.py remastered --fresh tries them again\n")
         f.write("".join(n + "\n" for n in sorted(names)))
 
@@ -273,7 +287,7 @@ def write_known(names):
     if READ_ONLY:
         return
     os.makedirs(os.path.dirname(svm_known()), exist_ok=True)
-    with open(svm_known(), "w", newline="\n") as f:
+    with open_expected(svm_known()) as f:
         f.write("# tests that crash or hang ScummVM (%s renderer; found by run.py); skipped, run.py --fresh tries them again\n" % RENDERER)
         f.write("".join(n + "\n" for n in sorted(names)))
 
@@ -393,7 +407,7 @@ def run_engine(engine, only=None, fresh=False):
     if engine == "remastered" and fresh and not new:
         write_rem_known(set())
     if engine == "original" and (new or fresh) and not READ_ONLY:
-        with open(CRASHERS, "w", newline="\n") as f:
+        with open_expected(CRASHERS) as f:
             f.write("# tests that crash the original (found by run.py); skipped on both engines\n")
             f.write("".join(n + "\n" for n in sorted(skip)))
     lines = prefix + lines
@@ -789,9 +803,9 @@ def main():
         unstable = sorted(compare.unstable_keys(runs) - compare.marked(*[t for _, t in runs]))
         os.makedirs(os.path.dirname(EXPECTED), exist_ok=True)
         # (without the DIFFERS lines: they are the tests' marks for ScummVM, not what the original did; ScummVM's log has them)
-        with open(os.path.join(LOGS, "original.log"), newline="") as src, open(EXPECTED, "w", newline="") as dst:
+        with open(os.path.join(LOGS, "original.log"), newline="") as src, open_expected(EXPECTED, "") as dst:
             dst.writelines(l for l in src if not l.startswith("DIFFERS "))
-        with open(UNSTABLE, "w", newline="\n") as f:
+        with open_expected(UNSTABLE) as f:
             f.write("# test|key values that differed between %d runs of the original; not compared\n" % a.repeat)
             f.write("".join(k + "\n" for k in unstable))
         print("saved %s (%d unstable values: %s)" % (EXPECTED, len(unstable), ", ".join(unstable) or "none"))
