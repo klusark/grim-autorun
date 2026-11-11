@@ -480,9 +480,13 @@ ar_wait_for_control = function()
 	if not ar_wait_for(function() return cutSceneLevel == 0 end, AR_CONTROL_TIMEOUT or 90000) then
 		ar_log("FAIL the game never gave control back")
 		AR_FAILED = TRUE
-		if not AR_KEEP_GOING then
+		-- (three in a row end the run even where it keeps going, an extra of the 100% modes: each step of the extra would wait its 90 s again, without end)
+		AR_CTRL_FAILS = (AR_CTRL_FAILS or 0) + 1
+		if not AR_KEEP_GOING or AR_CTRL_FAILS >= 3 then
 			ar_finish()
 		end
+	else
+		AR_CTRL_FAILS = 0
 	end
 end
 
@@ -2309,23 +2313,40 @@ if not AR_SETOV_OLD then
 	AR_SETOV_OLD = set_override
 end
 AR_OV_SERIAL = AR_OV_SERIAL or 0
+-- Overrides that are pressed only after the cutscene that set them has ended: the key stops the script that set the override (call_override), and
+-- nq.bowlsley_cam sets nq.esc_from_camera a second before its END_CUT_SCENE, which never ran then; esc_from_camera does not kill_override, so
+-- cutSceneLevel stayed 1 and the game never gave the control back (the second look at the monitor of the new headquarters, speed100)
+ar_ov_after_cutscene = function(f)
+	return nq and f == nq.esc_from_camera
+end
 ar_skip_timer = function(serial)
 	sleep_for(500)
+	while serial == AR_OV_SERIAL and cutSceneLevel > 0 and system.override and system.override.is_active and ar_ov_after_cutscene(system.override.override_func) do
+		break_here()
+	end
 	if serial == AR_OV_SERIAL and system.override and system.override.is_active and not AR_NO_SKIP and not AR_REAL then
 		ar_log("skipping a cutscene")
 		-- the movie is stopped first, as the overrides do not always stop it and the
 		-- next scene must not load with its sound still playing
 		ar_press_key(ar_real_key("OVERRIDE"))
-		-- (an override that is still active after the key, a cutscene of several parts: the next 500 ms)
+		-- (an override that is still active after the key, a cutscene of several parts: the next 500 ms. Not for ever: an override whose function does not
+		-- kill it stays active after it ran (nq.esc_from_camera, the second look at the monitor of the new headquarters: the camera view was left at the
+		-- first press, and every press after it ran the function again, without end). A part that sets an override of its own starts again at 0.)
 		AR_OV_SERIAL = AR_OV_SERIAL + 1
+		AR_OV_PRESSES = (AR_OV_PRESSES or 0) + 1
 		if system.override.is_active then
-			AR_OV_TASK = start_script(ar_skip_timer, AR_OV_SERIAL)
+			if AR_OV_PRESSES < 3 then
+				AR_OV_TASK = start_script(ar_skip_timer, AR_OV_SERIAL)
+			else
+				ar_log("the override is still active after " .. AR_OV_PRESSES .. " presses of the key: not pressed again")
+			end
 		end
 	end
 end
 set_override = function(func, table)
 	AR_SETOV_OLD(func, table)
 	AR_OV_SERIAL = AR_OV_SERIAL + 1
+	AR_OV_PRESSES = 0
 	AR_OV_ARMED = TRUE
 	AR_OV_TASK = start_script(ar_skip_timer, AR_OV_SERIAL)
 end
@@ -2349,6 +2370,7 @@ ar_override_clock = function()
 		if system.override and system.override.is_active then
 			if not AR_OV_ARMED then
 				AR_OV_ARMED = TRUE
+				AR_OV_PRESSES = 0
 				AR_OV_SERIAL = AR_OV_SERIAL + 1
 				AR_OV_TASK = start_script(ar_skip_timer, AR_OV_SERIAL)
 			end

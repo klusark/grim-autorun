@@ -64,10 +64,12 @@ for r in $GRIMON; do ini_set "$INI" "$r" true; done
 export SVM_DIR="${SVM_DIR:-/home/Joel/scummvm-autorun/${SVM_BUILD:-build-opt}}"
 cd "$SVM_DIR" || exit 1
 # STALL=<seconds>: a run that logs nothing of the autorun for that long is killed (default 90; 0 = never)
+# CHSTALL=<seconds>: a chapter that takes longer than that is killed (default 120 in speed100, where a chapter takes 32 s at most; 0 = never)
 export SCUMMVM_LUA_REMOTE="$AR/generated/remote_$$"
 mkdir -p "$SCUMMVM_LUA_REMOTE"
 : > "$AR/logs/$name.log"
-sh "$AR/stall_watch.sh" "$AR/logs/$name.log" "${STALL:-$([ -n "$REALTIME" ] && echo 0 || ([ -n "$REAL" ] && echo 90 || echo 15))}" $$ &
+rm -f "$AR/logs/$name.stall"
+sh "$AR/stall_watch.sh" "$AR/logs/$name.log" "${STALL:-$([ -n "$REALTIME" ] && echo 0 || ([ -n "$REAL" ] && echo 90 || ([ -n "$FULL" ] && echo 30 || echo 15)))}" $$ "${CHSTALL:-$([ -n "$FULL" ] && [ -z "$REAL" ] && echo 120 || echo 0)}" &
 stallpid=$!
 start=$(date +%s)
 timeout "$limit" ./scummvm.exe --config="$(cygpath -w "$AR/generated/_scummvm_$$.ini")" --savepath="$(cygpath -w "${SAVES:-$AR/saves}")" \
@@ -75,5 +77,7 @@ timeout "$limit" ./scummvm.exe --config="$(cygpath -w "$AR/generated/_scummvm_$$
 	$([ -z "$REALTIME" ] && echo "--engine-speed=${ES:-0} --sim-fps=${SIMFPS:-60}") $([ -z "$NOFPS" ] && echo --show-fps) "$@" "${TARGET:-grim-win}" > "$AR/logs/$name.log" 2>&1
 code=$?
 kill $stallpid 2>/dev/null
+# (what the stall watch wrote, after the engine and the log's writer have gone)
+[ -f "$AR/logs/$name.stall" ] && { cat "$AR/logs/$name.stall" >> "$AR/logs/$name.log"; rm -f "$AR/logs/$name.stall"; }
 echo "scummvm exit: $code after $(( $(date +%s) - start )) s" >> "$AR/logs/$name.log"
 grep -E 'AUTORUN|Autorun|rror|scummvm exit' "$AR/logs/$name.log" | grep -v '__autorun__\|ar_watchdog'

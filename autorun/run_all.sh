@@ -103,10 +103,12 @@ fi
 export SVM_DIR="${SVM_DIR:-/home/Joel/scummvm-autorun/${SVM_BUILD:-build-opt}}"
 cd "$SVM_DIR" || exit 1
 # STALL=<seconds>: a run that logs nothing of the autorun for that long is killed (default 90; 0 = never)
+# CHSTALL=<seconds>: a chapter that takes longer than that is killed (default 120 in speed100, where a chapter takes 32 s at most; 0 = never)
 export SCUMMVM_LUA_REMOTE="$AR/generated/remote_$$"
 mkdir -p "$SCUMMVM_LUA_REMOTE"
 : > "$AR/logs/${LOG:-all}.log"
-sh "$AR/stall_watch.sh" "$AR/logs/${LOG:-all}.log" "${STALL:-$([ -n "$REALTIME" ] && echo 0 || ([ -n "$REAL" ] && echo 90 || echo 15))}" $$ &
+rm -f "$AR/logs/${LOG:-all}.stall"
+sh "$AR/stall_watch.sh" "$AR/logs/${LOG:-all}.log" "${STALL:-$([ -n "$REALTIME" ] && echo 0 || ([ -n "$REAL" ] && echo 90 || ([ -n "$FULL" ] && echo 30 || echo 15)))}" $$ "${CHSTALL:-$([ -n "$FULL" ] && [ -z "$REAL" ] && echo 120 || echo 0)}" &
 stallpid=$!
 start=$(date +%s)
 timeout "$limit" ./scummvm.exe --config="$(cygpath -w "$AR/generated/_scummvm_$$.ini")" --savepath="$(cygpath -w "${SAVES:-$AR/saves}")" \
@@ -114,5 +116,7 @@ timeout "$limit" ./scummvm.exe --config="$(cygpath -w "$AR/generated/_scummvm_$$
 	$([ -z "$REALTIME" ] && echo "--engine-speed=${ES:-0} --sim-fps=${SIMFPS:-60}") $([ -z "$NOFPS" ] && echo --show-fps) "$@" grim-win 2>&1 	| python "$AR/tools/logts.py" "$AR/logs/${LOG:-all}.ts" | awk -v out="$AR/logs/${LOG:-all}.log" -v times="$AR/logs/${LOG:-all}_times.txt" -v t0="$start" '{ print > out; if (/=== chapter/) { n = systime() - t0; print n, $0 > times; fflush(times) } fflush(out) }'
 code=$?
 kill $stallpid 2>/dev/null
+# (what the stall watch wrote, after the engine and the log's writer have gone)
+[ -f "$AR/logs/${LOG:-all}.stall" ] && { cat "$AR/logs/${LOG:-all}.stall" >> "$AR/logs/${LOG:-all}.log"; rm -f "$AR/logs/${LOG:-all}.stall"; }
 echo "scummvm exit: $code after $(( $(date +%s) - start )) s" >> "$AR/logs/${LOG:-all}.log"
 grep -E 'AUTORUN|Autorun|rror|scummvm exit' "$AR/logs/${LOG:-all}.log" | grep -v '__autorun__\|ar_watchdog'

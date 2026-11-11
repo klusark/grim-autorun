@@ -142,11 +142,41 @@ Done and checked:
 Coverage of the whole game, speed and speed100 (only chapter 1 has extras): dialog lines 64 and 69 of 466, objects 145 and 152 of 681, sets entered 97 of 120, setups 157
 and 159 of 363, item combinations 52 of 252.
 
+## Status (2026-11-11): speed100 passes the whole game
+
+`MODE=speed100` plays all 65 chapters in one run (about 180 s; `logs/speed100_pass_1111d.log`). Coverage, `tools/cov100.py catalog.json <log>`:
+
+| | speed | speed100 |
+|---|---|---|
+| dialog lines said | 64 / 466 | 263 / 466 |
+| objects touched | 150 / 681 | 334 / 681 |
+| verbs done | 154 / 1487 | 675 / 1487 |
+| item combinations | 52 / 252 | 66 / 252 |
+| setups seen | 157 / 363 | 162 / 363 |
+
+How it works (ar_full.lua):
+
+* Each set is swept before it is left by `ar_go` or the chapter ends in it (look at everything, walk into the camera sectors, then the heavy step: use, pick up,
+  the carried items on every object). Not while a handler of its own has the keys (the Bone Wagon, the safe).
+* The people of a set (`AR_TALKERS`, `AR_TALKER_DLGS` of ex03_talkers.lua) are talked to once a chapter, before the set is left and before a chapter's own use of one
+  of them (Membrillo in the morgue is left by a cutscene). A person whose dialog has nothing new is skipped; a person whose dialog this chapter or a later one talks in
+  itself (`AR_DLG_LAST`, ex04_dlg_later.lua) is left to that chapter.
+* The dialog walker (`ar_talk_before`, before each line a chapter picks and before the exit line): every offered line except the ones a chapter picks now or later
+  (`AR_DLG_PICKS`, with the lines that share their response), the sub-menus it can come back from (`AR_DLG_MOVE`, `AR_DLG_EXIT` of ex02_dialogs.lua, also through the
+  dialog's own functions a response calls), a sub-menu that ends the talk and a line that only ends it when the talk is to end anyway (`AR_DLG_END`), and the talk opened
+  again for what is left. Test: `LUA=luajit sh synth/all.sh` (synth/test_talk.lua, a dialog of our own).
+* What an extra must not change is checked after it: an item that went (`an item was taken by`), the set left (`the set was left by`), the item in hand (taken in hand
+  again). An extra gives up after 2 failures; the stall watch kills a chapter of more than 120 s (`CHSTALL`), a run that logs nothing for 30 s.
+* `tools/sweep_fix.sh` plays the whole game until it passes and blocks what broke a chapter in ex00_sweep.lua (`tools/sweep_blame.py` names it: the object that took
+  the item the failure names, an object or extra that left the set in this chapter or the one before, else the last extra). Blocks: by set (`AR_NO_SWEEP`,
+  `AR_NO_HEAVY`), by object (`AR_NO_USE["bv.bone_wagon"]`), by dialog (`AR_NO_TALK`), by person, also in one chapter only (`AR_NO_TALKER["<set> <person>@<chapter>"]`).
+
+Left out, with the reason in ex00_sweep.lua: the dialogs of Celso in Rubamat (`ce1`), Nick Virago (`vi1`) and Charlie (`ch1`), whose chapters depend on the order in
+which their menus offer lines; the heavy step of the meadow, the theater backstage and the albinizod tunnel; the sweep of some sets where it strands Manny.
+
 Not done:
 
-* Extras for chapters 2-65 (step 9). A generic sweep of every set the first time the run is in it (`AR_SWEEP["set name"] = TRUE`) is there but off for every set: in the
-  garage and the hallway it strands Manny or takes him out through a door (he arrives on floor that only the sectors that are off give a way over; the elevators change
-  the floor when looked at). A sweep has to be tried set by set, from a point where Manny stands on the floor. Doors are left out of the look sweep.
 * Mode `full100` has not been run (it is `full` plus the same extras).
-* `ar_use_all` and `ar_items_on` have not been tried in a run. The 8 order-dependent dialog lines and the three either/or pairs are not handled yet.
+* The dialogs never opened: Domino's first (`do1`, Year 1, his office), Maximino (`mx1`), Carla's first (`ca1`), Aitor (`ai1`): their people are in sets the run
+  leaves without a door or a use of them.
 * The original (`build_original.sh MODE=`) was not run with the modes.
