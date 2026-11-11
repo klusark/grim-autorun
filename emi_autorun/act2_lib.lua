@@ -247,7 +247,7 @@ a2_dive = function(m1, m2, m3)
 	local t = 0
 	while system.buttonHandler ~= pla.dive_buttonHandler2 and t < 12000 do
 		if not ar_steer(-0.12, 29.78, -8.3, 8) then
-			guybrush:walk_forward()
+			ar_step(guybrush)
 		end
 		break_here()
 		t = t + system.frameTime
@@ -256,6 +256,7 @@ a2_dive = function(m1, m2, m3)
 			ar_log("dive walk " .. format("%.2f %.2f %.2f", p.x, p.y, p.z))
 		end
 	end
+	ar_drive_stop()
 	ar_wait_for(function() return system.buttonHandler == pla.dive_buttonHandler2 end, 60000, "the dive to start")
 	local moves = { m1, m2, m3 }
 	local i = 1

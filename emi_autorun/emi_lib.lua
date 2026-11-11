@@ -92,7 +92,12 @@ ar_approach = function(obj)
 	else
 		tx, ty, tz = o.x, o.y, o.z
 	end
+	local aset = system.currentSet
 	ar_walk_to(tx, ty, tz, ar_obj_offered)
+	-- (the walk went through a door on the way, or into the door that is the object: the caller sees the new set)
+	if system.currentSet ~= aset then
+		return TRUE
+	end
 	ar_try_wait(ar_obj_offered, 800)
 	local pts, np = ar_stand_points(obj)
 	local k = 1
@@ -104,6 +109,9 @@ ar_approach = function(obj)
 		if ar_floor_dist(pts[k - 1][1], pts[k - 1][3]) < 0.8 then
 			k = 99
 		end
+	end
+	if system.currentSet ~= aset then
+		return TRUE
 	end
 	-- (not in front of Guybrush: the game only sees what he faces)
 	ar_face(obj)
@@ -232,12 +240,12 @@ ar_skipper = function()
 			AR_MSG_TIME = 0
 		end
 		-- Manny's idle animation (scratching, smoking) runs until the player touches a key
-		if manny.is_idling then
+		if manny.is_idling and AR_DIRECT_WALK then
 			manny.stop_idle = TRUE
 		end
 		-- Manny runs, as a player holding the run key does. Every walk to an object turns
 		-- running off again, so it is switched on whenever he is walking.
-		if not AR_WALK and not AR_NEAR_SLOW and not manny.is_running and not manny.is_backward and manny:is_moving() then
+		if AR_DIRECT_WALK and not AR_WALK and not AR_NEAR_SLOW and not manny.is_running and not manny.is_backward and manny:is_moving() then
 			manny:set_run(TRUE)
 		end
 		AR_NOW = (AR_NOW or 0) + 100
@@ -335,13 +343,65 @@ end
 
 AR_TURN_SIGN = -1
 -- The heading toward a floor point in the frame of getrot().y: yaw 0 walks +z, yaw 90 walks +x (measured: yaw 270 walked -x).
--- GetActorYawToPoint of the engine gives atan2(-dx, dz) for EMI, the mirror of that, so it cannot be mixed with getrot().y.
--- (to check against the original in Ghidra: is this the engine's mistake or EMI's own convention?)
+-- Monkey4.exe's GetActorYawToPoint gives the TURN from the actor's heading to the point (-180..180), not the heading (measured on the
+-- original, Nov 11: at yaw 110, +x gives -20, +z -110); ScummVM gave the heading until its fix of that day. The heading is the yaw plus
+-- the turn. (Lua 3.1 here has no atan2)
+ar_yaw_turn = function(actor, x, y, z)
+	return GetActorYawToPoint(actor.hActor, x, y, z)
+end
 ar_want_yaw = function(x, z)
 	local mn = AR_WALKER or manny
 	local p = mn:getpos()
-	return GetActorYawToPoint(mn.hActor, x, p.y, z)  -- (Lua 3.1 here has no atan2)
+	return mn:getrot().y + ar_yaw_turn(mn, x, p.y, z)
 end
+-- Walking with the keys, through the game's button handler, as a player does: the forward key held starts the game's own move_actor
+-- (it walks while get_generic_control_state("MOVE_FORWARD") is on), the turn keys turn, the run key runs. The keys go to whatever has the
+-- keys (SampleButtonHandler on foot, the boat's or the raft's handler), never to a conversation (a table handler: its arrow keys pick
+-- lines). AR_DIRECT_WALK: the old way (walk_forward and TurnActor called from the script).
+ar_drive_on = function(mn)
+	return not AR_DIRECT_WALK and mn == system.currentActor and type(system.buttonHandler) == "function"
+end
+AR_DRIVE = AR_DRIVE or { }
+ar_drive_key = function(name, on)
+	if on and not AR_DRIVE[name] then
+		AR_DRIVE[name] = TRUE
+		ar_key_down(name)
+	elseif not on and AR_DRIVE[name] then
+		AR_DRIVE[name] = nil
+		ar_key_up(name)
+	end
+end
+-- turn: "TURN_LEFT", "TURN_RIGHT" or nil
+ar_drive_turn = function(turn)
+	ar_drive_key("TURN_LEFT", turn == "TURN_LEFT")
+	ar_drive_key("TURN_RIGHT", turn == "TURN_RIGHT")
+end
+-- a step forward: the forward key held (and the run key, unless a slow walk is wanted)
+ar_step = function(mn)
+	mn = mn or AR_WALKER or manny
+	if ar_drive_on(mn) then
+		ar_drive_key("RUN", not AR_WALK and not AR_NEAR_SLOW and not guybrush.no_running)
+		ar_drive_key("MOVE_FORWARD", TRUE)
+	elseif type(system.buttonHandler) ~= "table" or AR_ALLOW_STEP_UNDER_DIALOG then
+		if not AR_DIRECT_WALK and mn == manny then
+			AR_DRIVE_SKIPPED = (AR_DRIVE_SKIPPED or 0) + 1
+			if AR_DRIVE_SKIPPED == 1 or mod(AR_DRIVE_SKIPPED, 300) == 0 then
+				ar_log("walk: the keys do not reach Guybrush here (handler " .. tostring(system.buttonHandler) .. "), stepped by the script")
+			end
+		end
+		mn:walk_forward()
+	end
+end
+-- every key of the walk let go (the end of a walk, a turn on the spot)
+ar_drive_stop = function()
+	local k = next(AR_DRIVE, nil)
+	while k do
+		ar_key_up(k)
+		k = next(AR_DRIVE, k)
+	end
+	AR_DRIVE = { }
+end
+
 -- Copy of the Grim ar_steer, the sign of the turn made a variable
 ar_steer = function(x, y, z, thr)
 	local mn = AR_WALKER or manny
@@ -381,8 +441,18 @@ ar_steer = function(x, y, z, thr)
 			AR_STEER_TURNED = nil
 			return TRUE
 		end
+		if ar_drive_on(mn) then
+			-- (the turn key: TURN_LEFT lowers the yaw. Forward stays held through a small turn, as a player steers while walking)
+			if d > 0 then
+				ar_drive_turn("TURN_RIGHT")
+			else
+				ar_drive_turn("TURN_LEFT")
+			end
+			if abs(d) > 30 then
+				ar_drive_key("MOVE_FORWARD", nil)
+			end
 		-- EMI: TurnActor(+1) lowers the yaw (AR_TURN_SIGN = -1); in Grim it raises it (nil / 1)
-		if (d > 0) == ((AR_TURN_SIGN or 1) > 0) then
+		elseif (d > 0) == ((AR_TURN_SIGN or 1) > 0) then
 			TurnActor(mn.hActor, 1)
 		else
 			TurnActor(mn.hActor, -1)
@@ -390,6 +460,7 @@ ar_steer = function(x, y, z, thr)
 		AR_STEER_TURNED = TRUE
 		return TRUE
 	end
+	ar_drive_turn(nil)
 	AR_STEER_TURNED = nil
 	return nil
 end
@@ -402,10 +473,12 @@ ar_face = function(obj)
 		return ar_fail("no position for " .. tostring(obj.name))
 	end
 	local t = 0
+	ar_drive_key("MOVE_FORWARD", nil)
 	while ar_steer(o.x, o.y, o.z, 3) and t < 8000 do
 		break_here()
 		t = t + system.frameTime
 	end
+	ar_drive_stop()
 	if t >= 8000 then
 		return ar_fail("the turn toward " .. tostring(obj.name) .. " did not end in 8 seconds")
 	end
@@ -460,8 +533,13 @@ ar_walk_direct = function(x, y, z, stop_when, max_ms)
 	if not (stop_when and stop_when()) then
 		ar_wait_for_control()
 	end
-	mn:set_run(TRUE)
-	while system.currentSet == startset and ar_floor_dist(x, z) > (AR_WALK_TOL or 0.3) and waited < budget and not (stop_when and stop_when()) and stuck < 120 do
+	if not ar_drive_on(mn) then
+		mn:set_run(TRUE)
+	end
+	-- (the keys walk under the handler the walk began with: when the game puts in another one (the rock field of Knuttin town, whose
+	-- arrow keys hop from rock to rock), the walk is over, and the keys are let go)
+	local h0 = system.buttonHandler
+	while system.currentSet == startset and (system.buttonHandler == h0 or not ar_drive_on(mn)) and ar_floor_dist(x, z) > (AR_WALK_TOL or 0.3) and waited < budget and not (stop_when and stop_when()) and stuck < 120 do
 		if cutSceneLevel > 0 and not (stop_when and stop_when()) then
 			ar_wait_for_control()
 		end
@@ -499,7 +577,17 @@ ar_walk_direct = function(x, y, z, stop_when, max_ms)
 		end
 		local turning = ar_steer(aim_x, last.y, aim_z, 8)
 		if not turning then
-			mn:walk_forward()
+			ar_step(mn)
+		end
+		if AR_WALK_TRACE and mod(chk, 10) == 0 then
+			local tp = mn:getpos()
+			local hk = ""
+			local hkk = next(AR_DRIVE, nil)
+			while hkk do
+				hk = hk .. hkk .. " "
+				hkk = next(AR_DRIVE, hkk)
+			end
+			ar_log(format("WT %.2f %.2f yaw %.1f d %.1f turning %s keys ", tp.x, tp.z, mn:getrot().y, AR_STEER_D or 0, tostring(turning)) .. hk .. format("aim %.2f %.2f", aim_x, aim_z) .. " h " .. tostring(system.buttonHandler) .. " loc " .. tostring(kab and kab.current_loc and kab.current_loc.x) .. " cs " .. cutSceneLevel)
 		end
 		break_here()
 		waited = waited + system.frameTime
@@ -515,6 +603,11 @@ ar_walk_direct = function(x, y, z, stop_when, max_ms)
 		end
 	end
 	AR_STEER_TURNED = nil
+	ar_drive_stop()
+	if system.buttonHandler ~= h0 and type(system.buttonHandler) == "function" and not AR_DIRECT_WALK then
+		ar_log("walk: the game took the keys over (another button handler), the walk ends here")
+		return TRUE
+	end
 	if system.currentSet == startset and ar_floor_dist(x, z) > (AR_WALK_TOL or 0.3) and not (stop_when and stop_when()) then
 		local p = mn:getpos()
 		ar_log(format("walk stopped at %.2f %.2f after %d ms (stuck %d) toward %.2f %.2f", p.x, p.z, waited, stuck, x, z))
@@ -1133,11 +1226,12 @@ ar_walk_planned = function(x, y, z, stop_when, max_ms)
 					local lz = pts[n][3]
 					while abs(mn:getpos().y - p.y) < 0.8 and t < 3500 and system.currentSet == AR_WALK_SET do
 						if not ar_steer(lx, p.y, lz, 8) then
-							mn:walk_forward()
+							ar_step(mn)
 						end
 						break_here()
 						t = t + system.frameTime
 					end
+					ar_drive_stop()
 					ok = TRUE
 				end
 				if not again and ok and i > n then
@@ -1727,11 +1821,12 @@ ar_level_hop = function(ty)
 			local y0 = manny:getpos().y
 			while abs(manny:getpos().y - y0) < 1 and t < 6000 do
 				if not ar_steer(h.nx, 0, h.nz, 8) then
-					manny:walk_forward()
+					ar_step(manny)
 				end
 				break_here()
 				t = t + system.frameTime
 			end
+			ar_drive_stop()
 			sleep_for(300)
 		end
 		i = i + 1

@@ -310,7 +310,9 @@ a3_ribbon_walk = function(gx, gz, stop_when, max_ms)
 		A3R_TRIED = { }
 	end
 	ar_wait_for_control()
-	manny:set_run(TRUE)
+	if AR_DIRECT_WALK then
+		manny:set_run(TRUE)
+	end
 	while ar_floor_dist(gx, gz) > tol and waited < budget and system.currentSet == startset and not (stop_when and stop_when()) and rounds < 80 do
 		rounds = rounds + 1
 		local path, left = a3r_plan(gx, gz)

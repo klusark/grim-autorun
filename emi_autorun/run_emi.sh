@@ -21,6 +21,7 @@ mkdir -p "$EM/logs" "$EM/generated" "${SAVES:-$EM/saves}"
 	[ -n "$NOSCREEN" ] && echo "AR_NOSCREEN = TRUE"
 	cat "$EM/emi_prelude.lua"
 	[ -z "$NOLIB" ] && cat "${ARLIB:-$AR/ar_lib.lua}"
+	cat "$EM/emi_floors.lua" "$EM/emi_floors_fn.lua"
 	cat "$EM/emi_lib.lua"
 	for e in $EXTRA; do cat "$EM/$e"; done
 	cat "$script"; echo

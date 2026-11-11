@@ -256,7 +256,7 @@ ar_raft_drive_to = function(x, z, tol, max_frames)
 	while run and n < max_frames and not AR_RAFT_STOP and mot.cur_setup_id == setup do
 		local p = swampraft:getpos()
 		local dist = sqrt((p.x - x) * (p.x - x) + (p.z - z) * (p.z - z))
-		local d = GetActorYawToPoint(swampraft.hActor, x, y, z) - swampraft:getrot().y
+		local d = ar_yaw_turn(swampraft, x, y, z)
 		d = d - 360 * floor(d / 360 + 0.5)
 		local want_right = d > 12 and dist > tol
 		local want_left = d < -12 and dist > tol
@@ -446,7 +446,7 @@ ar_raft_gate_south = function()
 		local key = nil
 		local p = swampraft:getpos()
 		while sqrt((p.x - x) * (p.x - x) + (p.z - z) * (p.z - z)) > 0.15 and n < 900 and not AR_RAFT_STOP and mot.cur_setup_id == setup and cutSceneLevel == 0 do
-			local d = GetActorYawToPoint(swampraft.hActor, x, y, z) - swampraft:getrot().y
+			local d = ar_yaw_turn(swampraft, x, y, z)
 			d = d - 360 * floor(d / 360 + 0.5)
 			local want = "MOVE_FORWARD"
 			if d > 3 then
