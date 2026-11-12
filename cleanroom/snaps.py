@@ -8,14 +8,15 @@ the text. "none" when nothing is bright, "missing" when the file was not written
 pixels darker than any background (a shadow); cr_snap(key, "lit"): the box of the others (what an iris leaves open);
 cr_snap(key, "count"): the box of the bright pixels and how many there are (x0 y0 x1 y1 n: how thick a line is);
 cr_snap(key, "mean"): the box of the pixels that are not dark, how many there are and their mean brightness ((r + g + b) / 3,
-to a tenth: a lit model on a black background, zz_lit.lua)."""
+to a tenth: a lit model on a black background, zz_lit.lua); cr_snap(key, "seen"): "bright" when any pixel is bright, else
+"none" (whether a white model is drawn white, whatever the one-pixel differences of its box: draw_cmap.lua)."""
 import os
 import re
 import struct
 
 BRIGHT = 180  # (the backgrounds are at most 120 in any channel; ScummVM's screenshot is grey)
 
-SNAP = re.compile(r'^(V [^|]*\|[^|]*\|)"snap:([A-Za-z0-9_.]+)(:dark|:lit|:count|:mean)?"$')
+SNAP = re.compile(r'^(V [^|]*\|[^|]*\|)"snap:([A-Za-z0-9_.]+)(:dark|:lit|:count|:mean|:seen)?"$')
 DARK = 30  # (cr_snap(key, "dark"): the box of the pixels darker than any background, a shadow)
 
 
@@ -76,6 +77,10 @@ def resolve(lines, folder):
         if not os.path.exists(path):
             out.append(m.group(1) + "missing")
             continue
-        box = bright_box(path, m.group(3)[1:] if m.group(3) else None)
+        mode = m.group(3)[1:] if m.group(3) else None
+        box = bright_box(path, None if mode == "seen" else mode)
+        if mode == "seen":
+            out.append(m.group(1) + ("none" if box is None else '"bright"'))
+            continue
         out.append(m.group(1) + ("none" if box is None else " ".join("%.6f" % v for v in box)))
     return out

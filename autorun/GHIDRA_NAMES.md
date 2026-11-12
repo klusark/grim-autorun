@@ -189,3 +189,52 @@ Rule: every function that is decoded gets a name (and a plate comment for what i
 | 0x00451800 | rdLight_CalcFaceIntensity | (was rdKeyframe_InterpolateNode) flat face light for face light mode 2; every light treated as omni at the face's first vertex, normal negated for back faces |
 | 0x00450060 | Matrix34_TransformPoint | (was Vec3_Sub) out = a*R + t |
 | 0x0044efd0 | Matrix34_InvertRigid | (was Matrix_Transpose) rotation transposed, translation -(R^T t) |
+
+## Added 2026-11-11 (EMI skeleton animation, Monkey4.exe)
+| Address | Name | What it does |
+|---|---|---|
+| 0x0044b7d0 | Skeleton_BuildNodes | builds the node tree of a .skl: local pos at node+0x94, quat at +0xa0, parent found by name ("no_parent" = root) |
+| 0x00466450 | Node_UpdateLocalPosFromWorld | local pos (+0x94) from world pos (+0xe0) through the parent's world rotation |
+| 0x004661f0 | Node_UpdateLocalRot | local quat (+0xa0) from the world rotation matrix (+0xbc) and the parent's |
+| 0x00466560 | Node_UpdateChildren | recursive dirty-flag update of the children (flags at +0x90) |
+| 0x0047f590 | Animation_Load | loads an animation (ANIMNAME, ANIMENTRIES, ANIMLENGTH, ANIMENTRY); track type 3 = translation (vtable 0x4aee84), 4 = rotation (vtable 0x4aee54) |
+| 0x00481550 | RotationTrack_Evaluate | rotation key at a time: slerp between keys (vtable slot 0x24) |
+| 0x0047dec0 | ANode_ApplyAnimationChannels | a node with animation channels: position from translation channels only, starting at (0,0,0); rotation from rotation channels only, starting at identity; the bind pose is not the base (kitchen lever, bug 11794) |
+| 0x0047e4b0 | ANode_BlendRotationChannels | per-priority weighted quaternion blend of the rotation channels, levels combined low to high |
+| 0x004955e0 | Costume_ApplyComponentState | 'cmap' component writes its colormap into the parent model instance (+0x4c); called at draw for every costume sharing the main model, top first, so the lowest costume's colormap wins (bug #11818) |
+| 0x00496950 | ThingInstancer | model instance (+0x4c colormap) shared with the same-named component of the costume below |
+| 0x00494e80 / 0x00494e10 | sputCostume_PushCostume / sputCostume_PopCostume | push shares the draw list when the main model is the same; pop restores nothing |
+| 0x00466f10 | ??0CQuaternion@@QAE@XZ | (library name) the default quaternion is (0,0,0,0), not identity: the animation blend starts from it |
+| 0x0047e9f0 | Quat_AddInPlace | this += q component-wise |
+| 0x0046bf10 | Quat_ToMatrix33 | rotation matrix from a quaternion, not normalized: s*q gives (1-s^2)I + s^2 R |
+| 0x00465d80 | Node_UpdateWorld | world matrix of a node from its local quaternion/matrix and the parent's |
+| 0x0047dce0 | ANode_Construct | skeleton node animation part: channel count +4 = 0, flag +8 = 1, translation channel list +0xc, rotation list +0x10 |
+| 0x0047de40 | ANode_AddChannel | count++, channel into the translation (track type 3) or rotation (4) list |
+| 0x0047de80 | ANode_RemoveChannel | count--, channel out of its list |
+| 0x0047ec80 | ChannelList_Remove | removes a channel from the active or the inactive sublist (by the playback's 0x10 flag) |
+| 0x0047ee40 | ChannelList_Activate | channel from the inactive sublist into the active one, kept sorted by priority |
+| 0x0047ef40 | ChannelList_Deactivate | channel from the active sublist to the inactive one (stays attached) |
+| 0x0044ba00 | AnimInstance_Construct | animation component instance; attaches its channels to the skeleton nodes |
+| 0x0044bca0 | AnimInstance_Destruct | detaches the channels |
+| 0x0044bd80 | AnimInstance_AttachChannels | one channel per track to the node of that bone |
+| 0x0044bec0 | AnimInstance_DetachChannels | the reverse |
+| 0x0044c000 | AnimInstance_SetKey | costume keys 0 stop, 1 play, 2 pause, 3/4 loop on/off, 5-9 fade in, 10-14 fade out |
+| 0x00481e80 | AnimPlayback_Play | sets playing (time 0 unless paused, weight 1 unless fading), activates the channels |
+| 0x00481f10 | AnimPlayback_Pause | paused, channels activated (the pose is held) |
+| 0x00481f60 | AnimPlayback_Stop | flags 0, channels deactivated (still attached) |
+| 0x00481fa0 | AnimPlayback_FadeIn | weight 0, rate 1/t |
+| 0x00481fd0 | AnimPlayback_FadeOut | rate weight/t |
+| 0x00481ff0 | AnimPlayback_Update | fades (fade-out ends at weight 0 still playing), time; a one-shot past its end: flags 0, channels deactivated |
+| 0x0042ec80 | ChoreInstance_Construct | each PlayActorChore makes a new chore instance with a new handle |
+| 0x0042ed80 | ChoreInstance_CreateComponents | one component instance per track (the animation ones attach channels) |
+| 0x0042f580 | ChoreInstance_Update | chore time and keys; past the length and not looping: flagged done 0x80000000 |
+| 0x0042f1a0 | ChoreInstance_IsDone | flag 0x80000000 |
+| 0x00429810 | Actor_CreateChoreInstance | new chore instance, its handle appended to the actor's chore list +0x18c |
+| 0x00429690 | Actor_DestroyFinishedChores | destroys the done chore instances each frame: channels detached; a node with none left keeps its last pose |
+
+## Added 2026-11-11 (EMI joystick axes, Monkey4.exe)
+
+| Address | Name | What |
+| --- | --- | --- |
+| 0x00410080 | sputLua_NotifyAxisHandler | per frame: system.axisHandler(id, analog value) when the value changed; same as Grim's sputLua_NotifyControlHandlers (0x0049e150 area) axis branch |
+| 0x00443210 | stdControl_ReadAxis | (raw - centre) * scale, 0 inside the per-axis dead zone; same as Grim's 0x00477160 |

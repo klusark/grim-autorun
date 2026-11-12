@@ -21,7 +21,7 @@ def parse(path, tag=''):
     if not os.path.exists(path):
         return r
     for line in open(path, errors='replace'):
-        m = re.search(r'NAVTEST (unit|walk|move|coll|turn|slide|leak|rules) (\S+) (PASS|FAIL|KNOWN) ?(.*)', line)
+        m = re.search(r'NAVTEST (unit|walk|move|coll|turn|voice|slide|leak|rules) (\S+) (PASS|FAIL|KNOWN) ?(.*)', line)
         if m and 'AUTORUN' not in line.split('NAVTEST')[0]:
             r[(m.group(1), m.group(2) + ('@' + tag if m.group(1) == 'leak' else ''))] = (m.group(3), m.group(4)[:140])
     return r
@@ -35,7 +35,7 @@ def counts(r):
 
 # the processes that run side by side on ScummVM: (name, test file, tiers of test_nav.lua)
 GROUPS = [('unit', 'test_nav.lua', 'unit'), ('walk', 'test_nav.lua', 'walk'), ('move', 'test_nav.lua', 'move'), ('coll', 'test_nav.lua', 'coll'),
-          ('misc', 'test_nav.lua', 'turn slide'), ('rules', 'test_rules.lua', None)]
+          ('misc', 'test_nav.lua', 'turn voice slide'), ('rules', 'test_rules.lua', None)]
 
 def scummvm(tag, extra_lua=''):
     procs = []

@@ -17,7 +17,10 @@
 //   datadir    the game's data folder ("Install Path" in the registry) is the folder of the exe
 //   nocd       no disc check (the movies of the data folder are not looked for)
 //   simtime    fixed frame time, --simtime-ms N (default 17)
+//   taskclock  the scripts' clock keeps the fractions of a millisecond the game drops each frame (without simtime, at thousands of
+//              frames a second, it hardly moves: sleep_for and fades before and after a movie take many times as long)
 //   nopause    the game goes on when its window is not the active one (it stops otherwise)
+//   novsync    OpenGL (-gl) does not wait for the screen refresh at each frame (off: the scene stayed black with it, Nov 11)
 //   offscreen  the window opens 20000 pixels off the screen and never takes the focus (for unattended runs)    (off)
 //   f11        F11 runs lua_dofile("grimpatch.bin")
 //   debugmode  the game's own debug switches -log (debug.log of its engine messages) and -fps (hotkey), and the scripts' debug keys (see patchEmiDebugmode), and the jump menu (Ctrl+Alt+J)    (off)
@@ -467,6 +470,74 @@ static void patchEmiSimtime() {
 	write(LOAD, bytes({0xb8}) + le32(g_simtimeMs) + bytes({0x33, 0xd2, 0x90}));   // mov eax,ms; xor edx,edx; nop
 }
 
+// The Lua task update (0x40f740, once a frame) runs the scripts with lua_updatetasks(0, ms) (0x43e7f0), and ms is the frame time *
+// 1000 cut to an int by _ftol (0x48ad30, called at 0x40f7c1): the fraction is lost. The scripts' clock (sleep_for, the timers of
+// fades and waits) moves by those whole milliseconds only. Without simtime the game runs flat out, thousands of frames a second
+// (about 150000 while a movie plays): most frames are under 1 ms, they add 0, and the waits before and after a movie, which the
+// scripts time on that clock, take many times as long. The call goes through a stub that adds the remainder of the last frame
+// first and keeps the new remainder, so the clock adds up to the real time. With simtime's whole milliseconds it changes nothing.
+static void patchEmiTaskclock() {
+	static const DWORD CALL = 0x0040f7c1, FTOL = 0x0048ad30;
+	expect(CALL - 4, bytes({0xd9, 0x44, 0x24, 0x14, 0xe8}) + le32(FTOL - (CALL + 5)), "the EMI task clock");   // fld [esp+0x14]; call _ftol
+	DWORD rem = alloc(4, 4);
+	write(rem, le32(0));
+	DWORD va = alloc(32);
+	std::string c = bytes({0xd8, 0x05}) + le32(rem);                       // fadd dword [rem]
+	c += bytes({0x51, 0xd9, 0xc0});                                         // push ecx (a slot); fld st0
+	c += '\xe8'; c += le32(FTOL - (va + c.size() + 4));                   // call _ftol: eax = whole ms (pops)
+	c += bytes({0x89, 0x04, 0x24, 0xdb, 0x04, 0x24});                       // mov [esp],eax; fild dword [esp]
+	c += bytes({0xde, 0xe9, 0xd9, 0x1d}) + le32(rem);                       // fsubp st1,st0 (total - whole); fstp dword [rem]
+	c += bytes({0x59, 0xc3});                                               // pop ecx; ret
+	write(va, c);
+	write(CALL, bytes({0xe8}) + le32(va - (CALL + 5)));
+}
+
+// With OpenGL (-gl) every frame ends in SwapBuffers (its one call, 0x4631ba: push eax; call [IAT SwapBuffers]), which the driver
+// makes wait for the screen's refresh by default: the game ran at 60 frames a second, with simtime's 17 ms a frame real time. The exe
+// never sets the swap interval. The call goes through a stub that, the first time (a context is current then), asks opengl32's
+// wglGetProcAddress for wglSwapIntervalEXT and sets it to 0, then jumps to SwapBuffers. (The import table is filled by the loader
+// after this patch is made, so the call site is patched, not the table.)
+static void patchEmiNovsync() {
+	static const DWORD CALL = 0x004631ba, IAT_SWAPBUFFERS = 0x004ac04c, IAT_GETMODULEHANDLEA = 0x004ac1d0,
+		IAT_GETPROCADDRESS = 0x004ac164;
+	expect(CALL, bytes({0xff, 0x15}) + le32(IAT_SWAPBUFFERS), "the EMI SwapBuffers call");
+	DWORD flag = alloc(4, 4);
+	write(flag, le32(0));
+	DWORD dll = cstring("opengl32.dll"), gpa = cstring("wglGetProcAddress"), swi = cstring("wglSwapIntervalEXT");
+	std::string c;
+	c += bytes({0x80, 0x3d}) + le32(flag) + bytes({0x00});                // cmp byte [flag],0
+	c += bytes({0x75, 0x00});                                             // jne real (patched below)
+	size_t jneAt = c.size() - 1;
+	c += bytes({0xc6, 0x05}) + le32(flag) + bytes({0x01});                // mov byte [flag],1
+	c += bytes({0x60});                                                   // pushad
+	c += bytes({0x68}) + le32(dll);                                       // push "opengl32.dll"
+	c += bytes({0xff, 0x15}) + le32(IAT_GETMODULEHANDLEA);               // call [GetModuleHandleA]
+	c += bytes({0x85, 0xc0, 0x74, 0x00});                                 // test eax,eax; jz out
+	size_t jz1 = c.size() - 1;
+	c += bytes({0x68}) + le32(gpa);                                       // push "wglGetProcAddress"
+	c += bytes({0x50});                                                   // push eax
+	c += bytes({0xff, 0x15}) + le32(IAT_GETPROCADDRESS);                 // call [GetProcAddress]
+	c += bytes({0x85, 0xc0, 0x74, 0x00});                                 // test eax,eax; jz out
+	size_t jz2 = c.size() - 1;
+	c += bytes({0x68}) + le32(swi);                                       // push "wglSwapIntervalEXT"
+	c += bytes({0xff, 0xd0});                                             // call eax (wglGetProcAddress)
+	c += bytes({0x85, 0xc0, 0x74, 0x00});                                 // test eax,eax; jz out
+	size_t jz3 = c.size() - 1;
+	c += bytes({0x6a, 0x00, 0xff, 0xd0});                                 // push 0; call eax (wglSwapIntervalEXT)
+	size_t out = c.size();
+	c += bytes({0x61});                                                   // out: popad
+	size_t real = c.size();
+	c += bytes({0xff, 0x25}) + le32(IAT_SWAPBUFFERS);                    // real: jmp [SwapBuffers]
+	c[jneAt] = (char)(real - (jneAt + 1));
+	c[jz1] = (char)(out - (jz1 + 1));
+	c[jz2] = (char)(out - (jz2 + 1));
+	c[jz3] = (char)(out - (jz3 + 1));
+	DWORD va = alloc(c.size());
+	write(va, c);
+	// (call stub; nop: the stub's jmp returns from SwapBuffers to the nop, then on)
+	write(CALL, bytes({0xe8}) + le32(va - (CALL + 5)) + bytes({0x90}));
+}
+
 // The main loop (0x4065ac) pumps the messages and runs a frame (0x407280 -> 0x40be30) only while the byte at 0x4d4ef4 (set when the
 // window is activated, 0x4067bd) or the one at 0x4d4ef5 (written nowhere in the exe: it stays 0) is set. A game started behind other
 // windows, or one whose window loses the focus, stops at once and waits. The second byte is set to 1, so the game runs either way.
@@ -628,7 +699,9 @@ static const struct { const char *name; void (*apply)(); bool def; int games; } 
 	{"nocd", patchEmiNocd, true, EMI},
 	{"debugmode", patchEmiDebugmode, false, EMI},
 	{"simtime", patchEmiSimtime, true, EMI},
+	{"taskclock", patchEmiTaskclock, true, EMI},
 	{"nopause", patchEmiNopause, true, EMI},
+	{"novsync", patchEmiNovsync, false, EMI},
 	{"offscreen", patchEmiOffscreen, false, EMI},
 	{"f11", patchEmiF11, true, EMI},
 	{"undo640", patchEmiUndo640, true, EMI},   // only when the exe has the 640x480 compatibility setting
@@ -805,7 +878,7 @@ int main(int argc, char **argv) {
 			for (auto &p : PATCHES)
 				known |= n == p.name;
 			if (!known) {
-				fprintf(stderr, "no patch %s (Grim: debuglog, framelimit, simtime, config, windowed; Remastered: debuglog, windowed, simtime; EMI: debuglog, datadir, nocd, debugmode, simtime, nopause, offscreen, f11, undo640, windowed)\n", n.c_str());
+				fprintf(stderr, "no patch %s (Grim: debuglog, framelimit, simtime, config, windowed; Remastered: debuglog, windowed, simtime; EMI: debuglog, datadir, nocd, debugmode, simtime, taskclock, nopause, novsync, offscreen, f11, undo640, windowed)\n", n.c_str());
 				return 2;
 			}
 		}

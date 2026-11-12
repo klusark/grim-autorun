@@ -200,6 +200,43 @@ while AR_NT_MOVES[AR_NT_K] do
 end
 PrintDebug("NAVTEST SUMMARY move " .. AR_NT_PASS.move .. "/" .. AR_NT_RUN.move .. "\n")
 
+-- Voice volume (sputActor_SayLine 0x492b30, sputText_SayLineL 0x48b4c0): SayLine passes the table's volume and pan to the voice. A background line
+-- starts at 127 and then gets SoundsSetParam(0x600, volume); its pan is not set (64) unless the actor has 3D sound (flag 8). Glottis gambles at 10
+-- behind Nick (hl.check_glottis_volume, hl_nikcu); ScummVM played every voice at 127 until 2026-11-11.
+AR_NT_RUN.voice = 0
+AR_NT_PASS.voice = 0
+ar_nt_voice = function(id, line, tbl, want_vol, want_pan)
+	local wav = strsub(line, 2, strlen(line) - 1) .. ".wav"
+	ShutUpActor(glottis.hActor)
+	break_here()
+	SayLine(glottis.hActor, line, tbl)
+	local vol = ImGetParam(wav, 1536)
+	local pan = ImGetParam(wav, 1792)
+	ShutUpActor(glottis.hActor)
+	break_here()
+	ar_nt_log("voice", { id = id }, vol == want_vol and pan == want_pan, format("%s volume %s pan %s, want %d %d", wav, tostring(vol), tostring(pan), want_vol, want_pan))
+end
+if ar_nt_tier("voice") and (not AR_NT_ONLY or AR_NT_ONLY == "voice") then
+	-- the runs are muted (text only: no voice starts), speak for this tier (3 = voice and text)
+	local mode = GetSpeechMode()
+	SetSpeechMode(3)
+	ar_nt_voice("bg_default", "/hlgl100/", { background = TRUE }, 127, 64)
+	ar_nt_voice("bg_nikcu_10", "/hlgl101/", { background = TRUE, volume = 10, pan = 120 }, 10, 64)
+	ar_nt_voice("bg_dorrv_20", "/hlgl102/", { background = TRUE, volume = 20, pan = 100 }, 20, 64)
+	ar_nt_voice("bg_glot_120", "/hlgl103/", { background = TRUE, volume = 120, pan = 50 }, 120, 64)
+	-- the way hl does it: the volume of the camera, through Actor.say_line
+	hl:check_glottis_volume(hl_nikcu)
+	ShutUpActor(glottis.hActor)
+	break_here()
+	glottis:say_line("/hlgl104/", { background = TRUE, volume = glottis.gambling_volume, pan = glottis.gambling_pan, skip_log = TRUE })
+	local v = ImGetParam("hlgl104.wav", 1536)
+	ShutUpActor(glottis.hActor)
+	break_here()
+	ar_nt_log("voice", { id = "hl_nikcu_say_line" }, v == 10, format("glottis:say_line in hl_nikcu: volume %s, want 10", tostring(v)))
+	SetSpeechMode(mode)
+end
+PrintDebug("NAVTEST SUMMARY voice " .. AR_NT_PASS.voice .. "/" .. AR_NT_RUN.voice .. "\n")
+
 -- Turning: SetActorRot on an actor that has no walker (one that never walked, turned or followed boxes) sets the angles as they are asked, as
 -- the original does (the tumblers of the safe in vd read the angle back and compare it as a whole number); with a walker the angle that is read
 -- is where the walker's frame ended, a few thousandths of a degree off and counted from the angle before.
@@ -921,6 +958,6 @@ ar_fx_close()
 PrintDebug("NAVTEST SUMMARY leak " .. AR_NT_PASS.leak .. "/" .. AR_NT_RUN.leak .. "\n")
 PrintDebug("NAVTEST SUMMARY unit " .. AR_NT_PASS.unit .. "/" .. AR_NT_RUN.unit .. ", walk " .. AR_NT_PASS.walk .. "/" .. AR_NT_RUN.walk .. "\n")
 ar_log("NAVTEST SUMMARY unit " .. AR_NT_PASS.unit .. "/" .. AR_NT_RUN.unit .. ", walk " .. AR_NT_PASS.walk .. "/" .. AR_NT_RUN.walk)
-AR_FAILED = AR_NT_PASS.unit < AR_NT_RUN.unit or AR_NT_PASS.walk < AR_NT_RUN.walk or AR_NT_PASS.move < AR_NT_RUN.move or AR_NT_PASS.coll < AR_NT_RUN.coll or AR_NT_PASS.turn < AR_NT_RUN.turn or AR_NT_PASS.slide < AR_NT_RUN.slide or AR_NT_PASS.leak < AR_NT_RUN.leak
+AR_FAILED = AR_NT_PASS.unit < AR_NT_RUN.unit or AR_NT_PASS.walk < AR_NT_RUN.walk or AR_NT_PASS.move < AR_NT_RUN.move or AR_NT_PASS.coll < AR_NT_RUN.coll or AR_NT_PASS.turn < AR_NT_RUN.turn or AR_NT_PASS.voice < AR_NT_RUN.voice or AR_NT_PASS.slide < AR_NT_RUN.slide or AR_NT_PASS.leak < AR_NT_RUN.leak
 -- (the failures were counted, not stopped on: now the run ends and the game closes)
 AR_KEEP_GOING = nil

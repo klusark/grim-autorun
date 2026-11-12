@@ -127,7 +127,11 @@ gco_fmt_bmodel
 gco_save_shrunk
 gco_save_zstate
 gl1_music_state_load
+gl1_save_nil
 gl1_sound_pos_dist
+ims_formats_live
+ims_save
+ims_save_voice
 rest_chore_zero
 save_emergency_font
 shadow_color

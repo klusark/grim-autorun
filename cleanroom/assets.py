@@ -332,6 +332,12 @@ def files():
     out["cr_head.cos"] = F.costume([("MMDL", -1, "cr_head.3do"), ("LUAV", -1, "CR_LV"), ("CMAP", 0, "cr_pal.cmp")],
                                    BOX_COSTUME[1])
     out["cr_dbox.cos"] = F.costume(DRAW_COMPONENTS, BOX_COSTUME[1])
+    # (draw_cmap.lua, bug #11818: the colormap of a costume stack sharing one model) the white box through cr_pal.cmp, through
+    # cr_dim.cmp (index 255 is grey 85: not bright, not dark) and with no colormap of its own
+    out["cr_dim.cmp"] = F.colormap([(i // 3, i // 3, i // 3) for i in range(256)])
+    out["cr_cm_white.cos"] = F.costume(DRAW_COMPONENTS, BOX_COSTUME[1])
+    out["cr_cm_dim.cos"] = F.costume(DRAW_COMPONENTS[:2] + [("CMAP", 0, "cr_dim.cmp")], BOX_COSTUME[1])
+    out["cr_cm_none.cos"] = F.costume(DRAW_COMPONENTS[:2], BOX_COSTUME[1])
     out["cr_gbox.cos"] = F.costume([("MMDL", -1, "cr_gbox.3do")] + DRAW_COMPONENTS[1:], BOX_COSTUME[1])
     out["cr_kbox.cos"] = F.costume(DRAW_COMPONENTS + [("KEYF", 0, "cr_slide.key")], KEY_CHORES)
     out["cr_kbbox.cos"] = F.costume(DRAW_COMPONENTS + [("KEYF", 0, "cr_slide_b.key")], KEY_CHORES)
