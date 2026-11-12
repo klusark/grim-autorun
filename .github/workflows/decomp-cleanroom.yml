@@ -1,0 +1,120 @@
+# The clean-room tests (cleanroom/, see its README) against the rebuilt game of klusark/grim-decomp: builds its four
+# programs (as its own build.yml does) and runs `run.py decomp`, compared with the original's expected log
+# (cleanroom/expected/original.log). The tests make their own data: no game files on the runner.
+# The job fails when a test differs or crashes or hangs the rebuilt exe.
+name: Decomp clean-room tests
+
+on:
+  workflow_dispatch:
+    inputs:
+      decomp_repo:
+        description: grim-decomp repository to test
+        default: klusark/grim-decomp
+      decomp_ref:
+        description: Branch, tag or commit of it
+        default: main
+  push:
+
+concurrency:
+  group: decomp-cleanroom-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  DECOMP_REPO: ${{ inputs.decomp_repo || 'klusark/grim-decomp' }}
+  DECOMP_REF: ${{ inputs.decomp_ref || 'main' }}
+
+jobs:
+  decomp:
+    runs-on: windows-latest
+    timeout-minutes: 120
+    steps:
+      - name: Check out grim_tools
+        uses: actions/checkout@v4
+        with:
+          path: grim_tools
+
+      - name: Check out grim-decomp
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ env.DECOMP_REPO }}
+          ref: ${{ env.DECOMP_REF }}
+          path: grim-decomp
+
+      - uses: msys2/setup-msys2@v2
+        with:
+          msystem: UCRT64
+          update: true
+          # (as grim-decomp's build.yml: UCRT64 gcc compiles the i386 objects (-m32), the i686 toolchain links them)
+          install: >-
+            make
+            diffutils
+            mingw-w64-ucrt-x86_64-gcc
+            mingw-w64-ucrt-x86_64-python
+            mingw-w64-i686-gcc
+            mingw-w64-i686-zlib
+
+      - name: Build the decomp
+        shell: msys2 {0}
+        run: |
+          cd grim-decomp
+          echo "grim-decomp $DECOMP_REPO $DECOMP_REF: $(git rev-parse HEAD) $(git log -1 --format=%s)" | tee -a "$GITHUB_STEP_SUMMARY"
+          make -C build -j4
+          make -C build link
+          mkdir -p ../decomp
+          cp build/obj/GRIMFANDANGO.EXE/grimfandango.exe build/obj/LUA.DLL/lua.dll build/obj/IMUSE.DLL/imuse.dll \
+            build/obj/CHORE.DLL/chore.dll ../decomp/
+
+      # (a virtual sound card: the runner has none, and without DirectSound the game stops at startup with "could not
+      # initialize your hardware" (grimlib_GameStartup, DSound_Init))
+      - name: Audio device
+        uses: LABSN/sound-ci-helpers@v1
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      # (CR_VISIBLE: the window on the runner's desktop, no offscreen.exe to build; the runner is slower than a desk machine)
+      - name: Clean-room tests
+        shell: pwsh
+        env:
+          GRIM_DECOMP: ${{ github.workspace }}\decomp
+          CR_VISIBLE: "1"
+          CR_STALL: "30"
+          CR_STARTUP: "180"
+        run: |
+          # (screenshots of the runner's desktop now and then, in screens/: what a hang shows, as a message box)
+          New-Item -ItemType Directory screens | Out-Null
+          $shots = Start-Job -ArgumentList "$PWD\screens" {
+            param($dir)
+            Add-Type -AssemblyName System.Windows.Forms, System.Drawing
+            foreach ($t in 15, 45, 90, 150, 300, 600, 1200, 2400) {
+              Start-Sleep -Seconds ($t - $prev); $prev = $t
+              $b = [System.Windows.Forms.SystemInformation]::VirtualScreen
+              $bmp = New-Object System.Drawing.Bitmap $b.Width, $b.Height
+              [System.Drawing.Graphics]::FromImage($bmp).CopyFromScreen($b.Location, [System.Drawing.Point]::Empty, $b.Size)
+              $bmp.Save("$dir\screen_$t.png")
+            }
+          }
+          python grim_tools/cleanroom/run.py decomp 2>&1 | Tee-Object decomp.txt
+          $rc = $LASTEXITCODE
+          Stop-Job $shots; Receive-Job $shots
+          Add-Content $env:GITHUB_STEP_SUMMARY "### Clean-room tests`n``````"
+          Get-Content decomp.txt | Where-Object { $_ -match '^==== |REGRESSION|tests differ|crashed or hung|SUMMARY|^decomp:' } |
+            ForEach-Object { if ($_.Length -gt 400) { $_.Substring(0, 400) + " ..." } else { $_ } } |
+            Add-Content $env:GITHUB_STEP_SUMMARY
+          Add-Content $env:GITHUB_STEP_SUMMARY "``````"
+          exit $rc
+
+      - name: Logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: decomp-cleanroom-logs
+          path: |
+            decomp.txt
+            screens/
+            grim_tools/cleanroom/logs/
+            grim_tools/cleanroom/run/decomp/*.txt
+            grim_tools/cleanroom/run/decomp/*.log
+            grim_tools/cleanroom/run/decomp/*.ini
+          if-no-files-found: ignore
