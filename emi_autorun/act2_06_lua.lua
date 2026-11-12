@@ -39,7 +39,9 @@ ar_wait_for(function() return lua.flamin end, 120000, "the flaming scuttlefish")
 -- dx 3.278 and 3.262; the pour takes the flame within about 0.32 of the place). A lead of 3.3 only works with the longer one: the middle
 -- of the two leaves it 0.17 off either way). On the original it went on 3.45 (Nov 11: jam at dx 3.118, the flame stopped 0.33 past the
 -- place, and the pour failed). 3.2 is the middle of 2.95 and 3.45: 0.25 off at the most, on either engine)
-A2_JAM_LEAD = 3.2
+-- With the mechanism highlighted before (below), the verb is only the key, and the flame goes on 1.81 from it on ScummVM (Nov 11: jam
+-- at dx 3.195, stopped at dx 1.381, the boats stopped 1833 ms after the key).
+A2_JAM_LEAD = 1.81
 ar_hold(props.paintbrush)
 a2_flame_dx = function()
 	local t = lua.flamin_target
@@ -69,7 +71,20 @@ while not a2_flame_close() and n < 20000 do
 	a2_ft[n] = a2_t
 	a2_fd[n] = a2_flame_dx()
 	if n == 1 or mod(n, 300) == 0 then ar_log("flame dx=" .. a2_flame_dx()) end
+	if hot_object ~= a2_last_hot then
+		a2_last_hot = hot_object
+		ar_log("highlighted: " .. tostring(hot_object and hot_object.name) .. " at flame dx=" .. a2_flame_dx())
+	end
+	-- (the mechanism is made the highlighted object while the flame is still far, as a player faces it: the verb is then only the key. Highlighting it at
+	-- the moment of the verb took 1.1 s on ScummVM and 1.6 s on the original (the highlight follows the game's hotlist), and the flame
+	-- went on that much further)
+	-- (not in the last second before the jam: the flame comes round the belt from the upper lane, where dx is below 0, to the lower one
+	-- at about 4)
+	if hot_object ~= lua.mech and (a2_flame_dx() < 0 or a2_flame_dx() > A2_JAM_LEAD + 1) and mod(n, 30) == 0 then
+		ar_cycle_to(lua.mech)
+	end
 end
+ar_log("highlighted at the jam: " .. tostring(hot_object == lua.mech))
 -- (the speed: from the sample half a second back)
 local k = n
 while k > 1 and a2_ft[n] - a2_ft[k] < 500 do

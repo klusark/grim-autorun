@@ -435,3 +435,19 @@ Section A is done for all four acts. What changed since the puck:
   (autorun 3af56e0f6f4); the whole game passes with it.
 - The original now passes every part of the game: ch01..ch22 (Nov 10), ch23..act2_05, act2_06..act2_11, act2_12..act3_11 (after the
   inventory fix), act3_08..act3_14 and Act 4 to the credits (Nov 11), each run resumed from the checkpoint before it.
+- 2026-11-11 (late), a whole original run from a new game, then resumes:
+  - act2_06: the mechanism is now highlighted (CHANGE_HOT) while the flame is still round the belt, so the jam is only the key. The
+    "engine difference" above was the highlight latency (1.1 s ScummVM, 1.6 s original). From the key the flame goes on 1.81 on
+    ScummVM; A2_JAM_LEAD = 1.81 stops it 0.04 from the target.
+  - The combination drivers (act2_lib, emi_myst) wait for the combination's line and cutscene before closing the inventory. On the
+    original the voice plays in real time while the game runs fast, and "Gee, this might pass..." outlasted all ten close tries.
+  - act3_02: the picker is used only when Timmy is more than 3.5 from Guybrush at the use point. With Timmy near, the game runs him
+    to the bunch for the last use and then walks Guybrush to the spot Timmy stands on: 300,000 collisions in a cutscene on the
+    original (the game's own script; a player waits for him to run off).
+  - run_orig.sh: the takeover F11 of a resume is pressed with the pid found beforehand. Finding it starts PowerShell (1-2 s), and
+    the game, running as fast as it can, played on 20 game seconds into the next set. The game and its launcher are stopped until
+    gone. Monkey4.exe allows only one copy: a second (orig2/) exits at once, which is why orig2 never logged. Other sessions use
+    orig/ too, so check before a run.
+  - Open: act4_27 on the original once died of "unexpected type in arithmetic operation" right after "monkey wins" at level 6
+    (Charging Chimp beats Drunken Monkey). The game's task stood in a cutscene. There is no traceback on the original, and the
+    earlier original run passed the fight.

@@ -29,11 +29,27 @@ mine() {
 	powershell -NoProfile -Command "Get-CimInstance Win32_Process -Filter \"Name='Monkey4.exe'\" | Where-Object { \$_.ExecutablePath -eq '$(cygpath -w "$OD")\Monkey4.exe' } | ForEach-Object { \$_.ProcessId }" | tr -d '
 '
 }
-for p in $(mine); do taskkill //F //PID $p > /dev/null 2>&1; done
-sleep 1
+# (stopped until it is gone: a game stopped at a NOLOG once lived on, its launcher too, and held patch.m4b, Nov 11)
+mine_all() {
+	# (the game and the launcher started from this run folder)
+	powershell -NoProfile -Command "Get-CimInstance Win32_Process -Filter \"Name='Monkey4.exe' or Name='grimlaunch.exe'\" | Where-Object { \$_.ExecutablePath -like '$(cygpath -w "$OD")\*' } | ForEach-Object { \$_.ProcessId }" | tr -d ''
+}
+stop_mine() {
+	k=0
+	while [ $k -lt 10 ]; do
+		ps=$(mine_all)
+		[ -z "$ps" ] && return 0
+		for p in $ps; do taskkill //F //T //PID $p > /dev/null 2>&1; done
+		sleep 1
+		k=$((k + 1))
+	done
+	echo "run_orig.sh: the game of $OD could not be stopped" >&2
+	return 1
+}
+stop_mine || exit 1
 ORIG_M4B="$(cygpath -w "$OD/patch.m4b")" python "$EM/orig_patch_m4b.py" "grimpatch.bin=$gen" > /dev/null || exit 1
 
-for p in $(mine); do taskkill //F //PID $p > /dev/null 2>&1; done
+stop_mine
 log="$EM/logs/${LOG:-$name}.log"
 cd "$OD" || exit 1
 : > grimdebug.log
@@ -49,9 +65,22 @@ sleep 2
 "$EM/../crashdbg/postkey.exe" pid:$(mine | head -1) > /dev/null
 # (a resume: the first F11 loaded the save; once a set other than the boot one shows in the clock lines, F11 again)
 if [ -n "$RESUME" ]; then
+	# (the pid found before: finding it starts PowerShell, a second or two, and the game, as fast as it can go, plays on 20 game seconds
+	# in that time; the old task of the save walked on into another set before the press, Nov 11)
+	gpid=$(mine | head -1)
 	t=0
-	while [ $t -lt 1200 ] && ! grep -a "^CLOCK" grimdebug.log | grep -a -v " cdt.$\| cdt$" | grep -a -q .; do sleep 0.1; t=$((t + 1)); done
-	"$EM/../crashdbg/postkey.exe" pid:$(mine | head -1) > /dev/null
+	while [ $t -lt 6000 ] && ! grep -a "^CLOCK" grimdebug.log | grep -a -v " cdt.$\| cdt$" | grep -a -q .; do sleep 0.02; t=$((t + 1)); done
+	# (the press is taken when its script prints its first library line; a press the game left lying (Nov 11: 20 game seconds, the
+	# old task had walked on to another set by then) is pressed again after 3 s)
+	runs=$(grep -a -c "=== lib " grimdebug.log)
+	k=0
+	while [ $k -lt 10 ] && [ "$(grep -a -c "=== lib " grimdebug.log)" = "$runs" ]; do
+		"$EM/../crashdbg/postkey.exe" pid:$gpid > /dev/null
+		w=0
+		while [ $w -lt 30 ] && [ "$(grep -a -c "=== lib " grimdebug.log)" = "$runs" ]; do sleep 0.1; w=$((w + 1)); done
+		k=$((k + 1))
+	done
+	echo "RESUME: F11 pressed $k times" >> grimdebug.log
 fi
 nolog=${NOLOG:-30}
 last=-1; quiet=0
@@ -64,7 +93,7 @@ while [ -n "$(mine)" ]; do
 	if [ $((now - start)) -ge $limit ]; then echo "TIMEOUT: $limit s, stopping" >> grimdebug.log; break; fi
 	grep -a -q "AUTORUN RESULT" grimdebug.log && sleep 3 && break
 done
-for p in $(mine); do taskkill //F //PID $p > /dev/null 2>&1; done
+stop_mine
 echo "original exit after $(( $(date +%s) - start )) s" >> grimdebug.log
 cp grimdebug.log "$log"
 grep -a -E 'AUTORUN|rror|NOLOG|TIMEOUT|original exit' "$log" | grep -a -v 'Starting wait\|Waited' | tail -${TAIL:-40}

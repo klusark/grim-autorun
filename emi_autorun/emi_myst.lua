@@ -561,6 +561,21 @@ ar_inv_turn_to = function(item)
 		n = n + 1
 	end
 	sleep_for(400)
+	if Inventory.ordered_inventory_table[Inventory.index] ~= item then
+		-- (what the inventory showed: the items in its order, the one chosen, and whether the item is one of them)
+		local names = ""
+		local i = 1
+		local found = nil
+		while Inventory.ordered_inventory_table[i] and i < 40 do
+			local it = Inventory.ordered_inventory_table[i]
+			names = names .. tostring(it.name) .. "; "
+			if it == item then
+				found = i
+			end
+			i = i + 1
+		end
+		ar_log("inventory: after " .. n .. " presses at index " .. tostring(Inventory.index) .. " open " .. tostring(Inventory.open) .. ", the item at " .. tostring(found) .. " holding " .. tostring(manny.is_holding and manny.is_holding.name) .. ": " .. names)
+	end
 	return Inventory.ordered_inventory_table[Inventory.index] == item
 end
 
@@ -593,6 +608,9 @@ ar_comb_driver = function()
 			sleep_for(3000)
 		end
 	end
+	-- (the line the combination says, and its cutscene, end before the inventory is closed: keys do nothing meanwhile. On the original
+	-- the voice plays in real time while the game runs as fast as it can, and the line lasted all ten tries, 25 game seconds (Nov 11))
+	ar_try_wait(function() return not (Inventory.open and (IsMessageGoing() or cutSceneLevel > 0)) end, 120000)
 	local n = 0
 	while Inventory.open and n < 10 do
 		if Inventory.combine_idx or AR_COMB_BIND then

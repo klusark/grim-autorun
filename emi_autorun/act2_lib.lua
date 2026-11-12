@@ -111,6 +111,7 @@ end
 a2_inv_driver = function()
 	local a = A2_COMB_A
 	local b = A2_COMB_B
+	ar_log("inventory: driver started for " .. tostring(a and a.name) .. " and " .. tostring(b and b.name))
 	sleep_for(1500)
 	if not a2_inv_turn_to(a) then
 		ar_log("FAIL combine: could not turn to " .. tostring(a.name))
@@ -124,8 +125,13 @@ a2_inv_driver = function()
 			sleep_for(3000)
 		end
 	end
+	-- (the line the combination says, and its cutscene, end before the inventory is closed: keys do nothing meanwhile. On the original
+	-- the voice plays in real time while the game runs as fast as it can, and the line lasted all ten tries, 25 game seconds (Nov 11))
+	ar_try_wait(function() return not (Inventory.open and (IsMessageGoing() or cutSceneLevel > 0)) end, 120000)
 	local n = 0
 	while Inventory.open and n < 10 do
+		-- (each try logged: the run's own task is paused while the inventory is open, and an inventory that stays open is otherwise silent)
+		ar_log("inventory: closing, try " .. n .. ": combine_idx " .. tostring(Inventory.combine_idx) .. " cutscene " .. tostring(cutSceneLevel) .. " message " .. tostring(IsMessageGoing()) .. " holding " .. tostring(manny.is_holding and manny.is_holding.name))
 		if Inventory.combine_idx then
 			ar_press("inventory")
 		else
@@ -134,6 +140,7 @@ a2_inv_driver = function()
 		sleep_for(2500)
 		n = n + 1
 	end
+	ar_log("inventory: driver done, open " .. tostring(Inventory.open))
 	A2_COMB_DONE = TRUE
 end
 
