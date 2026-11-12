@@ -81,6 +81,12 @@ while movers[i] do
 end
 
 -- what each model gives the Lua side: the rectangle on the screen and the node locations
+-- (in expected/crashers.txt, so skipped on both engines: on the original this test damages the heap, and in a whole run a
+-- later test crashes or hangs, a different one each run: gco_save_shrunk, gco_save_zstate, gl1_music_state_load,
+-- gco_lip_unknown at Lua.dll+0x93A2, smv_save_movie, rnd_holes... Found 2026-11-12 by runs from different start points: every
+-- run with this test and its text models (cr_t*) crashed later, 3 of 3; with only the binary models, or none of it, no run
+-- did. Neither cr_tbox nor cr_trot alone did it. The decomp under GRIM_FENCE, a guard page after every block, finds no
+-- overrun or use after free here.)
 cr_t_mf_rects = function()
 	MakeCurrentSet("cr_flat.set")
 	local names = { "cr_box", "cr_tbox", "cr_trad", "cr_brad", "cr_tnodex", "cr_tfloat", "cr_wide", "cr_rot", "cr_trot",

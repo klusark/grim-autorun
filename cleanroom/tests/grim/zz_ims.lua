@@ -311,14 +311,16 @@ cr_t_ims_cache = function()
 		ImStopSound(IMS_CACHE[i])
 		i = i + 1
 	end
-	-- (the ids from the first one's)
-	cr_log("ids", ids[32] - ids[1], ids[33] - ids[1], ids[40] - ids[1])
+	-- (the ids from the first one's, mod 256: the ids turn at 256, and where the run's first id falls depends on the sounds
+	-- the earlier tests started; mod keeps the sign of a negative difference, hence the second one)
+	ims_id_diff = function(a, b) return mod(mod(a - b, 256) + 256, 256) end
+	cr_log("ids", ims_id_diff(ids[32], ids[1]), ims_id_diff(ids[33], ids[1]), ims_id_diff(ids[40], ids[1]))
 	-- (which stopped sound the cache drops first depends on its load time in milliseconds)
 	cr_unstable("first_by_id")
 	cr_log("first_by_id", ImGetParam(ids[1], CR_IM_PLAY), ImGetParam(ids[40], CR_IM_PLAY))
 	-- (a sound that plays is not dropped from the cache: one that keeps playing, then a turn of the ids, 256 of them)
 	local keep = ImStartSound("ims_loop.imu", 120, 1)
-	cr_log("keep", keep - ids[1])
+	cr_log("keep", ims_id_diff(keep, ids[1]))
 	local n = 0
 	local last
 	while n < 270 do
@@ -326,7 +328,7 @@ cr_t_ims_cache = function()
 		ImStopSound(IMS_MANY[mod(n, 40) + 1])
 		n = n + 1
 	end
-	cr_log("last", last - keep)
+	cr_log("last", ims_id_diff(last, keep))
 	cr_log("keep_after", cr_im("ims_loop.imu"), tostring(ImGetParam(keep, CR_IM_PLAY)))
 	ims_reset()
 end
