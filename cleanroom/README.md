@@ -17,8 +17,10 @@ python run.py decomp             # run the rebuilt exe of grim-decomp and compar
 ```
 
 **The decomp.** `run.py decomp` runs the rebuilt exe of `grim-decomp`. It takes `grimfandango.exe`, `lua.dll`,
-`imuse.dll` and `chore.dll` from `GRIM_DECOMP` (default `C:\Users\Joel\grim-decomp\build\run`) and the original's other
-program files from `GRIM_INSTALL`, all into `run/decomp/`. There is no `grimlaunch.exe`, because its patches look for the
+`imuse.dll` and `chore.dll` from `GRIM_DECOMP` (default `C:\Users\Joel\grim-decomp\build\run`) into `run/decomp/`, and
+nothing else: the rebuilt programs load none of the original's other program files (the HMI and NULLMUSE dlls,
+`HMILIBS.INI`, `grimdlg.dll`), so no install is needed. iMUSE's preset file `IMUSE.PSL` is test data like the rest
+(`assets.PRESET_LIBRARY`, the suite's own preset), in every engine's run folder. There is no `grimlaunch.exe`, because its patches look for the
 original's bytes at fixed addresses. The rebuilt exe is started directly with its own test knobs instead (grim-decomp
 `build/cleanroom/README.md`):
 
@@ -62,8 +64,9 @@ once keep the machine busy. `--coverage` is the coverage run (below). `tools/mar
 ## What is needed
 
 - **The original:** the program files of the install (`GRIMFANDANGO.exe`, `LUA.DLL`, `IMUSE.DLL`, `CHORE.DLL`, the HMI
-  and NULLMUSE dlls, `HMILIBS.INI`, `IMUSE.PSL`, `grimdlg.dll`). `run.py` copies them from `GRIM_INSTALL`
-  (default `C:\GOG Games\GRIMDATA`) into `run/original/`, once. No LAB, `GRIM.TAB` or other data file is copied.
+  and NULLMUSE dlls, `HMILIBS.INI`, `grimdlg.dll`). `run.py` copies them from `GRIM_INSTALL`
+  (default `C:\GOG Games\GRIMDATA`) into `run/original/`, once. No LAB, `GRIM.TAB`, `IMUSE.PSL` or other data file is
+  copied: the suite writes its own `IMUSE.PSL` (one preset of its own), as it writes the archives.
   `patch.dll` and `grimlaunch.exe` are built from `../launcher` into the run folder whenever the sources are newer.
   The game is started only through `grimlaunch.exe` (debuglog, simtime, config and windowed patches). `grim.ini` points
   `GrimDataDir` at the run folder and sets `good_times` (no CD check).

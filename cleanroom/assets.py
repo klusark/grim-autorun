@@ -443,6 +443,21 @@ def _extras(out, what):
 PATCH_OLD = F.lua_text('CR_PATCHED = "no"\nCR_PATCH_LINE = 1\n')
 PATCH_NEW = F.lua_text('CR_PATCHED = "yes"\nCR_PATCH_LINE = 2\nCR_PATCH_MORE = "added"\n')
 
+# iMUSE's voice-effect presets (HMI's preset library: INI sections, an effect line is its id, input channel, routing,
+# output channel and parameters). The suite's own: one preset, HMI's Filter 1 (2300) as a band-pass (type 1026) at
+# 900 Hz, 600 Hz wide, under a name no test asks for.
+PRESET_LIBRARY = ("[LIBRARY]\r\n"
+                  "Description  =  Grim engine test data, see grim_tools/cleanroom/README.md\r\n"
+                  "Author       =  cleanroom\r\n"
+                  "\r\n"
+                  "[INPUTFMT]\r\nRate  =  22050\r\nBitsPerSample  =  16\r\nChannels  =  1\r\n\r\n"
+                  "[OUTPUTFMT]\r\nRate  =  22050\r\nBitsPerSample  =  16\r\nChannels  =  2\r\n\r\n"
+                  "[PRESET0000]\r\n"
+                  "Description  =  cr_band_pass\r\n"
+                  "Flags  =  0\r\n"
+                  "Effect0000  =  2300, 0, 1, -1, 1026.00, 1000.00, 900.00, 600.00\r\n"
+                  "\r\n").encode("ascii")
+
 
 def loose_files():
     out = _loose_files()
@@ -461,6 +476,9 @@ def _loose_files():
             "cr_lines.txt": b"line1\r\nline2\r\nline3\r\n",
             # (a file the dofile test runs)
             "cr_dofile_target.lua": F.lua_text('CR_DOFILE = "yes"\n'),
+            # (iMUSE's voice-effect presets, read from the game folder at start-up: without the file HMI's library is
+            # NULL and the first ImSetVoiceEffect crashes, the original's as the decomp's)
+            "IMUSE.PSL": PRESET_LIBRARY,
             # (a file that is also in cr_extra.lab, with another value: which of the two is read)
             "cr_dup.lua": F.lua_text('CR_DUP = "loose"\n'),
             # an archive in the game folder beside the loose files (both engines open every .lab of the folder)

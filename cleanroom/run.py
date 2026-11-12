@@ -30,7 +30,8 @@ ScummVM runs every test once with each renderer of Grim (RENDERERS: OpenGL, Open
 logs/scummvm_<renderer>.log and logs/scummvm_<renderer>_raw.log; logs/scummvm.log is the first renderer's.
 
 Results go to logs/<engine>.log (only the CR lines, normalised) and logs/<engine>_raw.log (the whole engine log).
-Environment: SCUMMVM (scummvm.exe), GRIM_INSTALL (the folder the original exe and its DLLs are copied from, default
+Environment: SCUMMVM (scummvm.exe), GRIM_INSTALL (the folder the original exe and its DLLs are copied from by
+`run.py original`; `run.py decomp` does not use it; default
 C:\\GOG Games\\GRIMDATA), CR_VISIBLE=1 (the engines' windows on the screen; otherwise they run on a desktop of their own,
 tools/offscreen.c), EMI_INSTALL (the same for Monkey4.exe, default C:\\GOG Games\\Escape from Monkey Island), CR_STALL
 (seconds without a new line in the engine's log before a run counts as hung and is killed, default 2; CR_STARTUP, default 30, until the first line),
@@ -66,11 +67,12 @@ SCUMMVM = os.environ.get("SCUMMVM", r"C:\msys64\home\Joel\scummvm-cleanroom\buil
 GRIM_INSTALL = os.environ.get("GRIM_INSTALL", r"C:\GOG Games\GRIMDATA")
 REMASTERED_INSTALL = os.environ.get("REMASTERED_INSTALL", "C:/Program Files (x86)/Steam/steamapps/common/Grim Fandango Remastered")
 
-# The program files of the original (not data): the exe, its DLLs and the two small files iMUSE and the HMI driver read
+# The program files of the original (not data): the exe, its DLLs and the HMI driver's HMILIBS.INI. (iMUSE's preset
+# file IMUSE.PSL is test data now, assets.PRESET_LIBRARY, in every engine's run folder.)
 PROGRAM_FILES = ["GRIMFANDANGO.exe", "LUA.DLL", "IMUSE.DLL", "CHORE.DLL", "NULLMUSE.DLL", "HMIFXFP.DLL", "HMIFXLIB.DLL",
-                 "HMILIBS.INI", "IMUSE.PSL", "grimdlg.dll"]
-# The rebuilt exe of grim-decomp (build/run after `make -C build link`): these four come from GRIM_DECOMP, the rest of
-# PROGRAM_FILES from GRIM_INSTALL. Its test patches are build/cleanroom/ of that repository (README.md there).
+                 "HMILIBS.INI", "grimdlg.dll"]
+# The rebuilt exe of grim-decomp (build/run after `make -C build link`): these four come from GRIM_DECOMP and are all of
+# its program files (nothing from GRIM_INSTALL). Its test patches are build/cleanroom/ of that repository (README.md there).
 GRIM_DECOMP = os.environ.get("GRIM_DECOMP", r"C:\Users\Joel\grim-decomp\build\run")
 DECOMP_FILES = {"GRIMFANDANGO.exe": "grimfandango.exe", "LUA.DLL": "lua.dll", "IMUSE.DLL": "imuse.dll", "CHORE.DLL": "chore.dll"}
 # The Remastered: the exe and the dlls it loads (the game's data are not copied; the Lua is the same 3.1)
@@ -650,8 +652,9 @@ DECOMP_STALL = float(os.environ.get("CR_STALL", "15"))
 
 
 def prepare_decomp(d):
-    """The run folder of the rebuilt exe: its four programs from GRIM_DECOMP (again whenever the build changed them), the
-    original's other program files from the install, grim.ini as the original's, the data. No grimlaunch.exe or patch.dll."""
+    """The run folder of the rebuilt exe: its four programs from GRIM_DECOMP (again whenever the build changed them),
+    grim.ini as the original's, the data. Nothing of the install (the rebuilt programs load none of the original's other
+    program files) and no grimlaunch.exe or patch.dll."""
     os.makedirs(d, exist_ok=True)
     for f in PROGRAM_FILES:
         dst = os.path.join(d, f)
@@ -661,11 +664,8 @@ def prepare_decomp(d):
                 sys.exit("decomp: %s is missing (set GRIM_DECOMP to the folder of the rebuilt grimfandango.exe)" % src)
             if not os.path.exists(dst) or open(src, "rb").read() != open(dst, "rb").read():
                 shutil.copyfile(src, dst)
-        elif not os.path.exists(dst):
-            src = os.path.join(GRIM_INSTALL, f)
-            if not os.path.exists(src):
-                sys.exit("decomp: %s is missing (set GRIM_INSTALL to the folder of GRIMFANDANGO.exe)" % src)
-            shutil.copyfile(src, dst)
+        elif os.path.exists(dst):
+            os.remove(dst)   # (left by a run folder of an older run.py, which copied them from the install)
     with open(os.path.join(d, "grim.ini"), "w", newline="\r\n") as f:
         f.write("[Grim]\nGrimDataDir=%s\\\ngood_times=TRUE\nTextAllowed=true\nExperimentalDisplay=0\n"
                 "Last3DDevice=hex:00000000000000000000000000000000\n"
