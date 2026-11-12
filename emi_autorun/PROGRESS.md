@@ -448,6 +448,10 @@ Section A is done for all four acts. What changed since the puck:
     the game, running as fast as it can, played on 20 game seconds into the next set. The game and its launcher are stopped until
     gone. Monkey4.exe allows only one copy: a second (orig2/) exits at once, which is why orig2 never logged. Other sessions use
     orig/ too, so check before a run.
-  - Open: act4_27 on the original once died of "unexpected type in arithmetic operation" right after "monkey wins" at level 6
-    (Charging Chimp beats Drunken Monkey). The game's task stood in a cutscene. There is no traceback on the original, and the
-    earlier original run passed the fight.
+  - act2_06 with lead 1.81 passes on the original too (0.05 from the target; ScummVM 0.04): one lead for both engines.
+  - act4_27 on the original: "unexpected type in arithmetic operation" each time the monkey wins with Charging Chimp at level 6
+    (attack_fx, effect 5). It starts fadeto_global_alpha(energy, 0, 125), sleeps 125 ms and frees the actor. Actor.free clears
+    every field (global_alpha too), and on the original the fade task runs one more frame and does arithmetic on the nil. A race
+    in the game's own script that only kills the fade task. ScummVM ends the fade a frame sooner: a scheduling difference
+    (start_script running inline, sleep_for) to check. The fight passed with the error once and hung in a cutscene once (round 2,
+    the same move). Whether the hang came from it is not known: that log was overwritten.
