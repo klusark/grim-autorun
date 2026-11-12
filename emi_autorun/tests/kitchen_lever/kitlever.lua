@@ -1,0 +1,28 @@
+-- Kitchen of the Lua Bar (ScummVM bug 11794): the brass monkeys pull the stove lever. New game, jump 200, the bar, the kitchen,
+-- the stove close-up; the lever and the monkeys slowed to a tenth so that a capture sees the whole cycle (the three actors stay in
+-- step: the same time scale). "KITCHEN READY" = start capturing; the scene stays up for 12 s after it.
+ar_log("=== kitchen lever test ===")
+ar_wait_for_control()
+dofile("_jumpscripts.lua")
+start_script(jump_script, "200")
+ar_dlg("el15")
+sleep_for(2000)
+ar_exhaust("el15", nil, 20)
+ar_dlg_done("el15")
+ar_wait_for_control()
+switch_to_set("lua")
+sleep_for(2000)
+-- (the kitchen's timer reads the lead the jam in the bar gave)
+lua.lead = 100
+switch_to_set("kit")
+sleep_for(1000)
+guybrush:setpos(-3.2, 0, -4.2)
+sleep_for(1000)
+kit:current_setup(kit_cs_stove)
+sleep_for(500)
+kit.monkey.interest_actor:set_time_scale(0.1)
+kit.monkey2:set_time_scale(0.1)
+kit.handle:set_time_scale(0.1)
+sleep_for(500)
+ar_log("KITCHEN READY")
+sleep_for(12000)
