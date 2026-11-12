@@ -1,0 +1,238 @@
+# The clean-room tests (cleanroom/) of the branch knowngood of this repository on a pull request of scummvm/scummvm.
+# Started by hand (Actions > ScummVM PR clean-room tests > Run workflow, or `gh workflow run scummvm-pr.yml -f pr=1234`).
+#
+# The PR is tested as GitHub merges it into master (refs/pull/<n>/merge; the PR's head on its merge base when it does
+# not merge), with the branch cleanroom of klusark/scummvm merged in: the test patch and the fixes the clean room's marks
+# expect (upstream alone differs from the original's logs or crashes in tests without a mark). A PR that conflicts with
+# that branch fails at the build. The job "compare" (.github/scripts/cleanroom_pr_compare.py) then fails on a test that
+# differs from the original without a cr_scummvm_differs mark, or crashes ScummVM without one, as run.py does.
+# With compare_base, the PR's base (master, with the same branch merged in) is built and run the same way too, and the
+# PR is judged against it instead: only what the PR breaks fails; what it fixes and every value it changes are listed.
+name: ScummVM PR clean-room tests
+
+on:
+  workflow_dispatch:
+    inputs:
+      pr:
+        description: scummvm/scummvm pull request number
+        required: true
+      tests_ref:
+        description: Branch of this repository whose clean room runs
+        default: knowngood
+      merge_repo:
+        description: ScummVM repository whose branch is merged into the PR (the test patch and the clean room's fixes)
+        default: klusark/scummvm
+      merge_branch:
+        description: "The branch of it (empty: none, cleanroom/scummvm/grim-test-data.patch is applied instead)"
+        default: cleanroom
+      renderers:
+        description: Renderers, for Grim and EMI (comma separated)
+        default: opengl,opengl_shaders,software
+      compare_base:
+        description: Run the PR's base too and judge the PR by the difference (otherwise its results only)
+        type: boolean
+        default: false
+
+run-name: ScummVM PR ${{ inputs.pr }} (clean room of ${{ inputs.tests_ref }})
+
+concurrency:
+  group: scummvm-pr-${{ inputs.pr }}
+  cancel-in-progress: true
+
+env:
+  CR_RENDERERS: ${{ inputs.renderers }}
+
+jobs:
+  resolve:
+    runs-on: ubuntu-latest
+    outputs:
+      pr_sha: ${{ steps.r.outputs.pr_sha }}
+      base_sha: ${{ steps.r.outputs.base_sha }}
+      sides: ${{ steps.r.outputs.sides }}
+    steps:
+      - id: r
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR: ${{ inputs.pr }}
+          COMPARE_BASE: ${{ inputs.compare_base }}
+        run: |
+          set -e
+          api() { gh api "repos/scummvm/scummvm/$1" --jq "$2"; }
+          echo "### ScummVM PR [#$PR](https://github.com/scummvm/scummvm/pull/$PR): $(api pulls/$PR .title)" >> "$GITHUB_STEP_SUMMARY"
+          # (GitHub works out whether the PR merges when it is first asked: mergeable is null until then)
+          for i in 1 2 3 4 5 6; do
+            mergeable=$(api pulls/$PR .mergeable)
+            [ "$mergeable" != null ] && break
+            sleep 5
+          done
+          head=$(api pulls/$PR .head.sha)
+          if [ "$mergeable" = true ]; then
+            pr_sha=$(api pulls/$PR .merge_commit_sha)
+            base_sha=$(api commits/$pr_sha '.parents[0].sha')
+            what="merged into master"
+          else
+            pr_sha=$head
+            base_sha=$(api "compare/$(api pulls/$PR .base.ref)...$head" .merge_base_commit.sha)
+            what="its head (it does not merge into master: mergeable $mergeable)"
+          fi
+          echo "PR: $what, $pr_sha (head $head); base $base_sha; tests: ${{ inputs.tests_ref }}; merged in: ${{ inputs.merge_repo }} ${{ inputs.merge_branch }}" |
+            tee -a "$GITHUB_STEP_SUMMARY"
+          echo "pr_sha=$pr_sha" >> "$GITHUB_OUTPUT"
+          echo "base_sha=$base_sha" >> "$GITHUB_OUTPUT"
+          if [ "$COMPARE_BASE" = true ]; then echo 'sides=["base","pr"]' >> "$GITHUB_OUTPUT"; else echo 'sides=["pr"]' >> "$GITHUB_OUTPUT"; fi
+
+  # (as the job scummvm of scummvm-cleanroom.yml, once for the PR and once for its base)
+  run:
+    needs: resolve
+    runs-on: windows-latest
+    timeout-minutes: 150
+    strategy:
+      fail-fast: false
+      matrix:
+        side: ${{ fromJSON(needs.resolve.outputs.sides) }}
+    name: ${{ matrix.side }}
+    steps:
+      # (the runner's git writes CRLF on Windows: the patch, with LF, would not apply to ScummVM's files)
+      - name: LF line ends
+        run: git config --global core.autocrlf false
+
+      - name: Check out the clean room
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.tests_ref }}
+          path: grim_tools
+
+      - name: Check out ScummVM
+        uses: actions/checkout@v4
+        with:
+          repository: scummvm/scummvm
+          ref: ${{ matrix.side == 'pr' && needs.resolve.outputs.pr_sha || needs.resolve.outputs.base_sha }}
+          path: scummvm
+          # (the history, for the merge; without the blobs, which git fetches as the merge needs them)
+          fetch-depth: 0
+          filter: blob:none
+
+      - name: MSYS2 packages
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: UCRT64
+          release: false
+          update: false
+          install: make git
+          pacboy: >-
+            toolchain:p ccache:p SDL2:p zlib:p libpng:p libjpeg-turbo:p freetype:p
+            libvorbis:p flac:p libmad:p faad2:p a52dec:p libmpeg2:p libtheora:p fribidi:p mesa:p
+
+      - name: ccache
+        uses: actions/cache@v4
+        with:
+          path: ccache
+          key: ccache-ucrt64-pr-${{ matrix.side }}-${{ github.run_id }}
+          restore-keys: |
+            ccache-ucrt64-pr-${{ matrix.side }}-
+            ccache-ucrt64-
+
+      - name: Build ScummVM
+        shell: msys2 {0}
+        env:
+          CCACHE_DIR: ${{ github.workspace }}\ccache
+          CCACHE_MAXSIZE: 1G
+          MERGE_REPO: ${{ inputs.merge_repo }}
+          MERGE_BRANCH: ${{ inputs.merge_branch }}
+        run: |
+          cd scummvm
+          echo "ScummVM (${{ matrix.side }}): $(git rev-parse HEAD) $(git log -1 --format=%s)" | tee -a "$GITHUB_STEP_SUMMARY"
+          if [ -n "$MERGE_BRANCH" ]; then
+            git fetch -q "https://github.com/$MERGE_REPO" "$MERGE_BRANCH"
+            echo "merged in: $MERGE_REPO $MERGE_BRANCH $(git rev-parse FETCH_HEAD)" | tee -a "$GITHUB_STEP_SUMMARY"
+            git -c user.name=ci -c user.email=ci@localhost merge --no-edit FETCH_HEAD || {
+              echo "**$MERGE_REPO $MERGE_BRANCH does not merge into the ${{ matrix.side }}:** $(git diff --name-only --diff-filter=U | tr '\n' ' ')" |
+                tee -a "$GITHUB_STEP_SUMMARY"; exit 1; }
+          else
+            git apply ../grim_tools/cleanroom/scummvm/grim-test-data.patch || {
+              echo "**The test patch does not apply to the ${{ matrix.side }}**" | tee -a "$GITHUB_STEP_SUMMARY"; exit 1; }
+          fi
+          mkdir build && cd build
+          CXX="ccache g++" CC="ccache gcc" ../configure --disable-all-engines --enable-engines=grim,monkey4 --enable-release \
+            --disable-libcurl --disable-sdlnet --disable-cloud --disable-updates --disable-tts
+          make -j$(nproc)
+          ccache -s
+
+      # (Mesa's software OpenGL, llvmpipe: the runner has no GPU)
+      - name: Mesa llvmpipe
+        shell: pwsh
+        run: Copy-Item C:\msys64\ucrt64\bin\opengl32.dll scummvm\build\
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      # (the exit codes do not matter here: the job compare judges, from the logs)
+      - name: Grim
+        continue-on-error: true
+        shell: bash
+        env:
+          GALLIUM_DRIVER: llvmpipe
+          LP_NUM_THREADS: "1"
+          CR_VISIBLE: "1"
+          CR_STALL: "60"
+          CR_STARTUP: "180"
+        run: |
+          export SCUMMVM="$GITHUB_WORKSPACE\\scummvm\\build\\scummvm.exe"
+          CR_PARALLEL_DIR=run/parallel_grim bash grim_tools/cleanroom/tools/parallel.sh --games grim --renderers "$CR_RENDERERS" || true
+          cat grim_tools/cleanroom/run/parallel_grim/grim_*.txt > grim.txt
+
+      - name: EMI
+        continue-on-error: true
+        shell: bash
+        env:
+          GALLIUM_DRIVER: llvmpipe
+          LP_NUM_THREADS: "1"
+          CR_VISIBLE: "1"
+          CR_STALL: "60"
+          CR_STARTUP: "180"
+        run: |
+          export SCUMMVM="$GITHUB_WORKSPACE\\scummvm\\build\\scummvm.exe"
+          CR_PARALLEL_DIR=run/parallel_emi bash grim_tools/cleanroom/tools/parallel.sh --games emi --renderers "$CR_RENDERERS" || true
+          cat grim_tools/cleanroom/run/parallel_emi/emi_*.txt > emi.txt
+
+      - name: Logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: logs-${{ matrix.side }}
+          path: |
+            grim_tools/cleanroom/run/parallel_*/*.txt
+            grim_tools/cleanroom/run/parallel_*/*/logs/
+          if-no-files-found: ignore
+
+  compare:
+    needs: [resolve, run]
+    if: always() && needs.resolve.result == 'success'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the clean room
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.tests_ref }}
+          path: grim_tools
+
+      - name: Check out the compare script
+        uses: actions/checkout@v4
+        with:
+          path: workflow
+          sparse-checkout: .github/scripts
+
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: logs-*
+          path: logs
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: PR against base
+        run: |
+          python workflow/.github/scripts/cleanroom_pr_compare.py grim_tools/cleanroom logs/logs-base logs/logs-pr \
+            "$CR_RENDERERS" "$GITHUB_STEP_SUMMARY"
