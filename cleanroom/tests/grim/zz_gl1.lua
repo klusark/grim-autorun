@@ -422,3 +422,6 @@ cr_scummvm_differs("gl1_say_function_after", "SayLine with a function after the 
 
 -- (ScummVM differs: tools/mark_known.py)
 cr_scummvm_differs("gl1_prim_change_layer")
+
+-- (crashes or hangs ScummVM now and then: on the skip list)
+cr_scummvm_differs("gl1_prim_killed_twice", "crashes or hangs ScummVM now and then: on the skip list")

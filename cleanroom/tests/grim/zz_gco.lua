@@ -305,3 +305,9 @@ cr_t_gco_cos_bitmap = function()
 	gco_done(a)
 end
 cr_scummvm_differs("gco_cos_bitmap", "a bitmap component of a file that is not there: the original does not load the costume, ScummVM does (bitmap_component.cpp:46 only warns)") cr_test("gco_cos_bitmap", cr_t_gco_cos_bitmap)
+
+-- (crashes or hangs ScummVM now and then: on the skip list)
+cr_scummvm_differs("gco_kf_fade_out_3", "crashes or hangs ScummVM now and then: on the skip list")
+
+-- (crashes or hangs ScummVM now and then: on the skip list)
+cr_scummvm_differs("gco_kf_same_priority", "crashes or hangs ScummVM now and then: on the skip list")
