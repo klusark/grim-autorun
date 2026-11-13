@@ -46,7 +46,7 @@ cr_t_sound_play = function()
 	cr_log("frames", f >= 20 and f <= 45, f)
 	cr_log("after", cr_im("cr_tone.wav"))
 end
-cr_test("sound_play", cr_t_sound_play)
+cr_scummvm_differs("sound_play") cr_test("sound_play", cr_t_sound_play)
 
 -- the params set while it plays
 cr_t_sound_params = function()
@@ -139,7 +139,7 @@ cr_t_sound_pause_time = function()
 	local f = cr_im_wait("cr_tone.wav", 120)
 	cr_log("left_after_resume", f > 0, f)
 end
-cr_test("sound_pause_time", cr_t_sound_pause_time)
+cr_scummvm_differs("sound_pause_time") cr_test("sound_pause_time", cr_t_sound_pause_time)
 
 -- the old sound builtins: PlaySound, PlaySoundAt, SetSoundPosition, GetSoundVolume, SetSoundVolume
 cr_t_sound_old = function()

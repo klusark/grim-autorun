@@ -109,7 +109,7 @@ cr_t_movie_missing = function()
 	cr_frames(2)
 	cr_log("fullscreen_playing", IsFullscreenMoviePlaying())
 end
-cr_test("movie_missing", cr_t_movie_missing)
+cr_scummvm_differs("movie_missing") cr_test("movie_missing", cr_t_movie_missing)
 
 cr_t_screenshot = function()
 	local s = ScreenShot(160, 120)

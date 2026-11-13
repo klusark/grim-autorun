@@ -265,3 +265,6 @@ end, function()
 	cr_log("pop3", PopActorCostume(ASV_A), GetActorCostumeDepth(ASV_A))
 	PutActorInSet(ASV_A, nil)
 end)
+
+-- (ScummVM differs: tools/mark_known.py)
+cr_scummvm_differs("asv_shadow")

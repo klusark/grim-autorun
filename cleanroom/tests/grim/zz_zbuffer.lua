@@ -37,3 +37,7 @@ cr_zb_test("bar", function(k)
 	cr_snap(k .. "_box", "count")
 	PutActorInSet(a, nil)
 end)
+
+-- (ScummVM differs: tools/mark_known.py)
+cr_scummvm_differs("zbuffer_bar")
+cr_scummvm_differs("zbuffer_post")

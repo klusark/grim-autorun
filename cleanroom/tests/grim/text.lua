@@ -173,4 +173,4 @@ cr_t_text_blank = function()
 	cr_log("change_empty", w, h)
 	KillTextObject(t)
 end
-cr_test("text_blank", cr_t_text_blank)
+cr_scummvm_differs("text_blank") cr_test("text_blank", cr_t_text_blank)

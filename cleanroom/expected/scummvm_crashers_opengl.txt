@@ -1,6 +1,8 @@
 # tests that crash or hang ScummVM (opengl renderer; found by run.py); skipped, run.py --fresh tries them again
+frame_time
 gl1_movie_short_name
 gl1_prim_offset
 gl1_prim_rect_end
 gl1_save_nil
 ims_save
+movie_missing

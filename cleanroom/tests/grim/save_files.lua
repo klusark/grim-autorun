@@ -67,7 +67,7 @@ cr_t_save_find_dir = function()
 	cr_log("grim", s)
 	cr_log("any", n > 0)
 end
-cr_test("save_find_dir", cr_t_save_find_dir)
+cr_scummvm_differs("save_find_dir") cr_test("save_find_dir", cr_t_save_find_dir)
 
 -- the other .gsv files of the folder (the saves of save.lua): the original lists every one
 cr_t_save_find_others = function()
