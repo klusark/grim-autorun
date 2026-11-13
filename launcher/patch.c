@@ -231,8 +231,15 @@ static void __cdecl hookedTerminate(void) {
 }
 
 /* Points the exe's import of dll!fn (any dll when dll is NULL) at newFn; the old target is returned. */
+static void *hookImportIn(HMODULE module, const char *dll, const char *fn, void *newFn);
+
 static void *hookImport(const char *dll, const char *fn, void *newFn) {
-	BYTE *base = (BYTE *)GetModuleHandleA(NULL);
+	return hookImportIn(GetModuleHandleA(NULL), dll, fn, newFn);
+}
+
+/* points module's import of fn (from dll, any dll when NULL) at newFn; returns what it pointed at, NULL when not found */
+static void *hookImportIn(HMODULE module, const char *dll, const char *fn, void *newFn) {
+	BYTE *base = (BYTE *)module;
 	IMAGE_NT_HEADERS *nt = (IMAGE_NT_HEADERS *)(base + ((IMAGE_DOS_HEADER *)base)->e_lfanew);
 	IMAGE_DATA_DIRECTORY dir = nt->OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_IMPORT];
 	IMAGE_IMPORT_DESCRIPTOR *d;
@@ -595,4 +602,142 @@ __declspec(dllexport) void __cdecl GrimFrameLimit(void) {
 	next.QuadPart += freq.QuadPart / fps;
 	if (now.QuadPart > next.QuadPart + freq.QuadPart / 10)
 		next.QuadPart = now.QuadPart; /* long stall (a load): do not run to catch up */
+}
+
+/* ---- imusetime: iMUSE on game time (grimlaunch's imusetime patch) ----
+ * iMUSE is paced by the hardware: a WINMM timer (FUN_10008ce0 starts it) calls ImHeartbeat every 20 ms of real time, and a block of
+ * the DirectSound ring is refilled only when the play cursor (iMUSE_dsound__3a80) has left it. With simtime the game runs many times
+ * faster than real time, so a sound of 7 s lasts 7 s of real time, hundreds of seconds of game time. Here, as in grim-decomp's
+ * GRIM_SIMTIME block (build/overrides.c):
+ *   - the timer is never started (FUN_10008ce0 says it is running), so nothing races with the main thread;
+ *   - the play cursor is a byte counter that moves with game time (nAvgBytesPerSec of the stream format);
+ *   - GrimImuseFrame(ms), called by the launcher's stub once per frame, moves the cursor and runs ImHeartbeat once per 20 ms of game time;
+ *   - the two loops that wait for the heartbeat (SoundsFillStreamsWhileMusicCritical, SoundsFloodMusicBuffer) tick it themselves:
+ *     their calls of ImProcessStreams go to imProcessAndTick;
+ *   - the DirectSound buffer still plays, muted (it is filled faster than it plays);
+ *   - iMUSE's timeGetTime is game time too (imTimeGetTime).
+ * GrimImuseSimStart runs at the exe's entry point (iMUSE.dll is loaded, not yet initialised); iMUSE.dll is relocated (lua.dll, chore.dll
+ * and it all ask for 0x10000000), so everything is addressed from its load address. */
+#define IM_TIMER_START 0x8ce0      /* FUN_10008ce0: starts the WINMM timer, returns the heartbeat count (nonzero: running) */
+#define IM_TIMER_COUNT 0x31e84     /* g_dwTimerCounter */
+#define IM_PLAY_BLOCK  0x3a80      /* iMUSE_dsound__3a80: the block of the ring the play cursor is in, -1 when unknown */
+#define IM_DSBUFFER    0x2d83c     /* the IDirectSoundBuffer of the ring */
+#define IM_BLOCKS      0x2d824     /* blocks of 0x1800 bytes in the ring */
+#define IM_PLAY_POS    0x2d828     /* the play cursor GetCurrentPosition wrote */
+#define IM_FORMAT      0x170f0     /* WAVEFORMATEX of the stream */
+#define IM_LAST_BEAT   0x172bc     /* timeGetTime() of the last heartbeat (it insists on 20 ms of real time between two) */
+#define IM_HEARTBEAT   0x5190
+#define IM_PROCESS     0x4ef0      /* ImProcessStreams */
+static const DWORD IM_PROCESS_CALLS[] = { 0x7683, 0x7699, 0x77a2 };   /* in the two loops that wait for the heartbeat */
+
+static BYTE *imBase;
+static unsigned long long imSimMicro;   /* bytes of the ring the simulated play cursor has passed, times 1000 */
+static int imSimAcc;                    /* game ms not yet turned into 20 ms heartbeats */
+static DWORD imSimClock = 1000;         /* iMUSE's timeGetTime: game ms */
+static void *imMutedBuffer;
+static int (__cdecl *imHeartbeat)(void);
+static int (__cdecl *imProcessStreams)(void);
+
+static void imSimTick(int ms) {
+	DWORD avg = ((DWORD *)(imBase + IM_FORMAT))[2];   /* nAvgBytesPerSec */
+	imSimMicro += (unsigned long long)ms * avg;
+	imSimAcc += ms;
+	while (imSimAcc >= 20) {
+		imSimAcc -= 20;
+		imSimClock += 20;
+		*(DWORD *)(imBase + IM_LAST_BEAT) = 0xffffffffu;
+		imHeartbeat();
+	}
+}
+
+/* iMUSE's timeGetTime: the heartbeat's own 20 ms check and the sound cache, which stamps each sound it loads and, when it is
+ * full, drops the stopped one loaded first (CachePurgeOldestStoppedSound): on the real clock which one that is depended on how
+ * fast the machine was */
+static DWORD WINAPI imTimeGetTime(void) {
+	return imSimClock;
+}
+
+static int __cdecl imPlayBlock(void) {
+	int blocks = *(int *)(imBase + IM_BLOCKS);
+	unsigned ring = (unsigned)blocks * 0x1800, pos;
+	if (ring == 0)
+		return -1;
+	pos = (unsigned)((imSimMicro / 1000) % ring);
+	*(DWORD *)(imBase + IM_PLAY_POS) = pos;
+	return (int)(pos / 0x1800) % blocks;
+}
+
+static int __cdecl imProcessAndTick(void) {
+	int r = imProcessStreams();
+	imSimTick(20);
+	return r;
+}
+
+static void __cdecl GrimImuseFrame(int ms) {
+	void *buf = *(void **)(imBase + IM_DSBUFFER);
+	if (buf && buf != imMutedBuffer) {   /* IDirectSoundBuffer::SetVolume(DSBVOLUME_MIN) */
+		((HRESULT (WINAPI *)(void *, LONG))(*(void ***)buf)[0x3c / 4])(buf, -10000);
+		imMutedBuffer = buf;
+	}
+	if (ms > 0)
+		imSimTick(ms);
+}
+
+static void imWrite(DWORD rva, const void *data, size_t n) {
+	DWORD old;
+	VirtualProtect(imBase + rva, n, PAGE_EXECUTE_READWRITE, &old);
+	memcpy(imBase + rva, data, n);
+	VirtualProtect(imBase + rva, n, old, &old);
+	FlushInstructionCache(GetCurrentProcess(), imBase + rva, n);
+}
+
+static void imRel32(DWORD rva, BYTE op, void *to) {   /* call / jmp rel32 at rva */
+	BYTE c[5];
+	DWORD rel = (DWORD)((BYTE *)to - (imBase + rva + 5));
+	c[0] = op;
+	memcpy(c + 1, &rel, 4);
+	imWrite(rva, c, 5);
+}
+
+/* Called at the exe's entry point by the launcher's stub; puts GrimImuseFrame into *frameFn (the per-frame stub calls it). 1 when done. */
+__declspec(dllexport) int __cdecl GrimImuseSimStart(void **frameFn) {
+	static const BYTE timerStart[] = { 0x83, 0xec, 0x08, 0x8d, 0x44, 0x24, 0x00, 0x56 };
+	static const BYTE heartbeat[] = { 0x55, 0x56, 0x57, 0xe8 };
+	static const BYTE processCalls[3][5] = { { 0xe8, 0x68, 0xd8, 0xff, 0xff }, { 0xe8, 0x52, 0xd8, 0xff, 0xff }, { 0xe8, 0x49, 0xd7, 0xff, 0xff } };
+	BYTE playBlock[5], c[16];
+	DWORD a;
+	int k;
+
+	imBase = (BYTE *)GetModuleHandleA("iMUSE.dll");
+	if (!imBase) {
+		logLine("ERROR", "imusetime: iMUSE.dll is not loaded, iMUSE stays on real time");
+		return 0;
+	}
+	a = (DWORD)(imBase + IM_DSBUFFER);
+	playBlock[0] = 0xa1;   /* mov eax,[ring buffer] */
+	memcpy(playBlock + 1, &a, 4);
+	if (memcmp(imBase + IM_TIMER_START, timerStart, sizeof timerStart) || memcmp(imBase + IM_HEARTBEAT, heartbeat, sizeof heartbeat) ||
+	    memcmp(imBase + IM_PLAY_BLOCK, playBlock, sizeof playBlock)) {
+		logLine("ERROR", "imusetime: unexpected bytes in iMUSE.dll (not the v1.01 one?), iMUSE stays on real time");
+		return 0;
+	}
+	for (k = 0; k < 3; k++)
+		if (memcmp(imBase + IM_PROCESS_CALLS[k], processCalls[k], 5)) {
+			logLine("ERROR", "imusetime: unexpected bytes in iMUSE.dll's stream loops, iMUSE stays on real time");
+			return 0;
+		}
+	imHeartbeat = (int (__cdecl *)(void))(imBase + IM_HEARTBEAT);
+	imProcessStreams = (int (__cdecl *)(void))(imBase + IM_PROCESS);
+	/* FUN_10008ce0: mov dword [g_dwTimerCounter],1; mov eax,1; ret */
+	a = (DWORD)(imBase + IM_TIMER_COUNT);
+	c[0] = 0xc7; c[1] = 0x05; memcpy(c + 2, &a, 4); c[6] = 1; c[7] = c[8] = c[9] = 0;
+	c[10] = 0xb8; c[11] = 1; c[12] = c[13] = c[14] = 0; c[15] = 0xc3;
+	imWrite(IM_TIMER_START, c, 16);
+	imRel32(IM_PLAY_BLOCK, 0xe9, (void *)imPlayBlock);
+	for (k = 0; k < 3; k++)
+		imRel32(IM_PROCESS_CALLS[k], 0xe8, (void *)imProcessAndTick);
+	if (!hookImportIn((HMODULE)imBase, "WINMM.dll", "timeGetTime", (void *)imTimeGetTime))
+		logLine("ERROR", "imusetime: iMUSE.dll's timeGetTime import not found, its sound cache stays on real time");
+	*frameFn = (void *)GrimImuseFrame;
+	return 1;
 }

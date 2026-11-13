@@ -7,6 +7,10 @@
 //              (whose windowed patch keeps its SDL window a window instead of borderless over the desktop)
 //   framelimit 60 fps limiter (patch.dll)                                                       (off)
 //   simtime    fixed frame time, --simtime-ms N (default 17)
+//   smushtime  movies (SMUSH) on game time: the insane timer ticks once per 16 ms of simtime's frames, not of the clock    (off)
+//   imusetime  music and sounds (iMUSE) on game time: a heartbeat per 20 ms of game time, the play cursor moves with it,
+//              the sound is muted (patch.dll)                                                     (off)
+//   multi      more than one game at a time: the start-up look for another game's window is skipped               (off)
 //   config     the game reads its settings from grim.ini next to the exe instead of the registry (patch.dll)
 //   windowed   the game runs in a window: its own -w switch is added to the command line unless you pass it (full screen
 //              at a high desktop resolution makes its software blitter overrun a heap buffer and crash), and it no longer goes to
@@ -23,6 +27,7 @@
 //   novsync    OpenGL (-gl) does not wait for the screen refresh at each frame (off: the scene stayed black with it, Nov 11)
 //   offscreen  the window opens 20000 pixels off the screen and never takes the focus (for unattended runs)    (off)
 //   f11        F11 runs lua_dofile("grimpatch.bin")
+//   multi      more than one game at a time: the check for another game's mutex is skipped                       (off)
 //   debugmode  the game's own debug switches -log (debug.log of its engine messages) and -fps (hotkey), and the scripts' debug keys (see patchEmiDebugmode), and the jump menu (Ctrl+Alt+J)    (off)
 //   undo640    puts the desktop mode back first thing, when the exe has the 640x480 compatibility setting (below)
 //   windowed   the game's own -w switch is added to the command line unless you pass it
@@ -45,7 +50,7 @@
 // (config_test.c is a host test of config.c: gcc -DCONFIG_TEST -o ct config_test.c && ./ct)
 //
 // build (64-bit is fine, the game is a 32-bit process):  g++ -O2 -static -o grimlaunch.exe grimlaunch.cpp
-// usage:  grimlaunch [--with a,b|all] [--only a,b] [--skip a,b] [--simtime-ms N] [--no-ini] [--resume-delay MS] [<GRIMFANDANGO.exe|GrimFandango.exe|Monkey4.exe>] [game arguments...]
+// usage:  grimlaunch [--with a,b|all] [--only a,b] [--skip a,b] (each may be given more than once) [--simtime-ms N] [--no-ini] [--resume-delay MS] [<GRIMFANDANGO.exe|GrimFandango.exe|Monkey4.exe>] [game arguments...]
 // Without an exe argument (the first argument not ending in .exe), the current folder is searched for a game exe (any *.exe whose bytes
 // are one of the three); it is started if there is exactly one.
 
@@ -304,6 +309,138 @@ static void patchFramelimit() {
 static void patchSimtime() {
 	expect(0x00401721, bytes({0xa1, 0x48, 0x5a, 0x4f, 0x00}), "the fixed frame time load");
 	write(0x00401721, bytes({0xb8}) + le32(g_simtimeMs));
+}
+
+// smushtime / imusetime: the movies (SMUSH) and the music and sounds (iMUSE) on game time, so that with simtime they run as fast as the
+// frames do. Both need simtime: one stub at its frame time load (0x401721, once a frame) steps them by --simtime-ms, then gives the
+// frame its time (patchSimClocks, after the patches).
+static const DWORD SIM_FRAME_SITE = 0x00401721, INSANE_TICK = 0x004ce060, INSANE_CLOCK = 0x008da5c8;
+// SMUSH's sound stream (the insane_dsnd driver): its DirectSound buffer, its size in blocks of 0x1800 bytes, the play cursor
+// DSound_GetPlayBlock (0x4d2c60) stores; 22050 Hz, 16 bit, stereo (dsn_getrate, DsndDriver_InitDirectSound)
+static const DWORD DSND_BUFFER = 0x008dcc48, DSND_BLOCKS = 0x008db420, DSND_PLAY_POS = 0x008db428, DSND_PLAY_BLOCK = 0x004d2c60;
+static const DWORD DSND_BYTES_PER_S = 22050 * 4;
+static bool g_smushtime, g_imusetime;
+static DWORD g_imuseFrameFn;   // the slot GrimImuseSimStart (patch.dll) fills with its per-frame function
+static DWORD g_dsndPos;        // smushtime: the simulated play cursor of SMUSH's stream, in thousandths of a byte (less than the ring)
+
+static void expectSimtime(const char *patch) {
+	if (read(SIM_FRAME_SITE, 5) != bytes({0xb8}) + le32(g_simtimeMs))
+		die(std::string(patch) + " needs simtime");
+}
+
+// SMUSH paces itself with the insane timer: a thread (0x4cddf0) that runs InsaneTimer_Tick (0x4ce060: the movie's frame and sound
+// callbacks) every 16 ms of timeGetTime. The thread no longer ticks (its call becomes nops); the frame stub ticks once per 16 ms of
+// game time instead, on the main thread. sys_Delay (0x4cdfd0, waits for the clock to move by n ticks) ticks itself, or it would wait
+// forever. The movie's sound is mixed into a DirectSound ring by a timer callback (dsn_fill_thread) when the play cursor has left a
+// block; the player keeps the picture in step with the sound, so the play cursor (DSound_GetPlayBlock) moves with game time too, by
+// the frame stub, and the ring is muted (it is filled faster than it plays).
+static void patchSmushtime() {
+	static const DWORD THREAD_TICK = 0x004cde3c, SYS_DELAY = 0x004cdfd0;
+	expectSimtime("smushtime");
+	expect(THREAD_TICK, bytes({0xe8}) + le32(INSANE_TICK - (THREAD_TICK + 5)), "the timer thread's tick");
+	expect(SYS_DELAY, bytes({0xa1}) + le32(INSANE_CLOCK) + bytes({0x8b, 0x4c, 0x24, 0x04}), "sys_Delay");
+	expect(DSND_PLAY_BLOCK, bytes({0xa1}) + le32(DSND_BUFFER) + bytes({0x85, 0xc0, 0x74, 0x37}), "DSound_GetPlayBlock");
+	g_dsndPos = alloc(4, 4);
+	write(g_dsndPos, le32(0));
+	{
+		std::string c = bytes({0xa1}) + le32(DSND_BUFFER) + bytes({0x85, 0xc0, 0x74, 0x00});   // mov eax,[buffer]; test eax,eax; jz none
+		size_t jz = c.size() - 1;
+		c += bytes({0xa1}) + le32(g_dsndPos) + bytes({0x33, 0xd2, 0xb9}) + le32(1000) + bytes({0xf7, 0xf1});   // eax = pos / 1000
+		c += bytes({0xa3}) + le32(DSND_PLAY_POS);                                                  // mov [play pos],eax
+		c += bytes({0x33, 0xd2, 0xb9}) + le32(0x1800) + bytes({0xf7, 0xf1});                       // eax = eax / 0x1800
+		c += bytes({0x33, 0xd2, 0xf7, 0x35}) + le32(DSND_BLOCKS) + bytes({0x8b, 0xc2, 0xc3});     // edx = eax % blocks; return edx
+		c[jz] = (char)(c.size() - (jz + 1));
+		c += bytes({0x83, 0xc8, 0xff, 0xc3});                                                      // none: or eax,-1; ret
+		DWORD va = alloc(c.size());
+		write(va, c);
+		write(DSND_PLAY_BLOCK, jmp(DSND_PLAY_BLOCK, va));
+	}
+	write(THREAD_TICK, bytes({0x90, 0x90, 0x90, 0x90, 0x90}));
+	DWORD va = alloc(32);
+	std::string c = bytes({0xa1}) + le32(INSANE_CLOCK);                       // mov eax,[clock]
+	c += bytes({0x03, 0x44, 0x24, 0x04, 0x56, 0x8b, 0xf0});                  // add eax,[esp+4]; push esi; mov esi,eax
+	size_t loop = c.size();
+	c += bytes({0x39, 0x35}) + le32(INSANE_CLOCK) + bytes({0x7d, 0x07});     // cmp [clock],esi; jge done
+	c += bytes({0xe8}) + le32(INSANE_TICK - (va + c.size() + 5));            // call InsaneTimer_Tick
+	c += bytes({0xeb, (unsigned char)(loop - (c.size() + 2))});             // jmp loop
+	c += bytes({0x5e, 0xc3});                                                // done: pop esi; ret
+	write(va, c);
+	write(SYS_DELAY, jmp(SYS_DELAY, va));
+	g_smushtime = true;
+}
+
+// iMUSE (iMUSE.dll) is set up by patch.dll's GrimImuseSimStart (see there), called at the exe's entry point (0x4aca30): the dll is loaded
+// by then (an import of the exe) and iMUSE not yet started; it is relocated, so the launcher cannot patch it in the suspended process.
+static void patchImusetime() {
+	static const DWORD ENTRY = 0x004aca30;
+	expectSimtime("imusetime");
+	expect(ENTRY, bytes({0x55, 0x8b, 0xec, 0x6a, 0xff}), "the entry point");
+	g_imuseFrameFn = alloc(4, 4);
+	write(g_imuseFrameFn, le32(0));
+	DWORD start = loaderStub("GrimImuseSimStart");
+	DWORD va = alloc(32);
+	std::string c = bytes({0x68}) + le32(g_imuseFrameFn);                    // push slot
+	c += bytes({0xe8}) + le32(start - (va + c.size() + 5));                  // call GrimImuseSimStart
+	c += bytes({0x83, 0xc4, 0x04, 0x55, 0x8b, 0xec, 0x6a, 0xff});            // add esp,4; the entry point's first 5 bytes
+	c += jmp(va + c.size(), ENTRY + 5);
+	write(va, c);
+	write(ENTRY, jmp(ENTRY, va));
+	g_imusetime = true;
+}
+
+static void patchSimClocks() {
+	DWORD ms = (DWORD)g_simtimeMs;
+	DWORD va = alloc(256);
+	std::string c;
+	auto jumpHere = [&](size_t at) { c[at] = (char)(c.size() - (at + 1)); };   // a short jump's offset to the end of c
+	if (g_smushtime) {
+		// the play cursor of SMUSH's stream moves by ms of sound (thousandths of a byte, within the ring), then the ring is muted
+		c += bytes({0xa1}) + le32(DSND_BLOCKS) + bytes({0x69, 0xc0}) + le32(0x1800 * 1000);   // mov eax,[blocks]; imul eax,eax,ring*1000
+		c += bytes({0x85, 0xc0, 0x74, 0x00});                                                // test eax,eax; jz next
+		size_t noRing = c.size() - 1;
+		c += bytes({0x8b, 0xc8, 0xa1}) + le32(g_dsndPos);                                    // mov ecx,eax; mov eax,[pos]
+		c += bytes({0x05}) + le32(ms * DSND_BYTES_PER_S);                                    // add eax,ms*bytes/s
+		c += bytes({0x33, 0xd2, 0xf7, 0xf1, 0x89, 0x15}) + le32(g_dsndPos);                  // xor edx,edx; div ecx; mov [pos],edx
+		c += bytes({0xa1}) + le32(DSND_BUFFER) + bytes({0x85, 0xc0, 0x74, 0x00});            // mov eax,[buffer]; test eax,eax; jz next
+		size_t noBuffer = c.size() - 1;
+		c += bytes({0x68}) + le32((DWORD)-10000) + bytes({0x50, 0x8b, 0x08, 0xff, 0x51, 0x3c});   // IDirectSoundBuffer::SetVolume(buffer, -10000)
+		jumpHere(noRing);
+		jumpHere(noBuffer);
+		DWORD acc = alloc(4, 4);
+		write(acc, le32(0));
+		c += bytes({0x81, 0x05}) + le32(acc) + le32(ms);                     // add [acc],ms
+		size_t loop = c.size();
+		c += bytes({0x83, 0x3d}) + le32(acc) + bytes({0x10, 0x7c, 0x0e});    // cmp [acc],16; jl next
+		c += bytes({0x83, 0x2d}) + le32(acc) + bytes({0x10});               // sub [acc],16
+		c += bytes({0xe8}) + le32(INSANE_TICK - (va + c.size() + 5));        // call InsaneTimer_Tick
+		c += bytes({0xeb, (unsigned char)(loop - (c.size() + 2))});         // jmp loop
+	}
+	if (g_imusetime) {
+		c += bytes({0xa1}) + le32(g_imuseFrameFn) + bytes({0x85, 0xc0, 0x74, 0x0a});   // mov eax,[slot]; test eax,eax; jz next
+		c += bytes({0x68}) + le32(ms) + bytes({0xff, 0xd0, 0x83, 0xc4, 0x04});         // push ms; call eax; add esp,4
+	}
+	c += bytes({0xb8}) + le32(ms) + bytes({0xc3});                           // mov eax,ms; ret
+	if (c.size() > 256)
+		die("the frame stub is too long");
+	write(va, c);
+	write(SIM_FRAME_SITE, bytes({0xe8}) + le32(va - (SIM_FRAME_SITE + 5)));   // call (5 bytes, as the mov it replaces)
+}
+
+// multi: more than one game at a time. At start-up the game looks for a window of its own class (FindWindowA) twice, at 0x4abf4d
+// and 0x4ac2b4, and when there is one it brings it forward and exits: both jumps past that become unconditional. (FindWindowA
+// sees only the windows of its own desktop: the clean-room tests run every game on one offscreen desktop.)
+static void patchMulti() {
+	expect(0x004abf59, bytes({0x74, 0x1a}), "the first look for another game's window");    // je (none found)
+	expect(0x004ac2bc, bytes({0x74, 0x0a}), "the second look for another game's window");   // je (none found)
+	write(0x004abf59, bytes({0xeb, 0x1a}));
+	write(0x004ac2bc, bytes({0xeb, 0x0a}));
+}
+
+// EMI's multi: its WinMain (0x4063f0) creates a named mutex (0x406400) and, when GetLastError says it already exists (0xb7), returns
+// 0 and the game ends. The jump that goes on when it is new becomes unconditional.
+static void patchEmiMulti() {
+	expect(0x0040641e, bytes({0x75, 0x09}), "the EMI check for another game's mutex");   // jne (a new one)
+	write(0x0040641e, bytes({0xeb, 0x09}));
 }
 
 static void patchConfig() {
@@ -693,11 +830,15 @@ static const struct { const char *name; void (*apply)(); bool def; int games; } 
 	{"debuglog", patchDebuglog, true, GRIM | REMASTERED},
 	{"framelimit", patchFramelimit, false, GRIM},
 	{"simtime", patchSimtime, true, GRIM},
+	{"smushtime", patchSmushtime, false, GRIM},   // (after simtime: they check its bytes)
+	{"imusetime", patchImusetime, false, GRIM},
+	{"multi", patchMulti, false, GRIM},
 	{"config", patchConfig, true, GRIM},
 	{"debuglog", patchEmiDebuglog, true, EMI},
 	{"datadir", patchEmiDatadir, true, EMI},
 	{"nocd", patchEmiNocd, true, EMI},
 	{"debugmode", patchEmiDebugmode, false, EMI},
+	{"multi", patchEmiMulti, false, EMI},
 	{"simtime", patchEmiSimtime, true, EMI},
 	{"taskclock", patchEmiTaskclock, true, EMI},
 	{"nopause", patchEmiNopause, true, EMI},
@@ -856,9 +997,11 @@ int main(int argc, char **argv) {
 			fprintf(stderr, "%s needs a value\n", o.c_str());
 			return 2;
 		}
-		if (o == "--with") with = split(argv[++i]);
-		else if (o == "--only") only = split(argv[++i]);
-		else if (o == "--skip") skip = split(argv[++i]);
+		// (given more than once, the lists add up)
+		auto add = [&](std::vector<std::string> &list) { for (auto &n : split(argv[++i])) list.push_back(n); };
+		if (o == "--with") add(with);
+		else if (o == "--only") add(only);
+		else if (o == "--skip") add(skip);
 		else if (o == "--simtime-ms") g_simtimeMs = atoi(argv[++i]);
 		else if (o == "--resume-delay") resumeDelay = atoi(argv[++i]);
 		else {
@@ -878,7 +1021,7 @@ int main(int argc, char **argv) {
 			for (auto &p : PATCHES)
 				known |= n == p.name;
 			if (!known) {
-				fprintf(stderr, "no patch %s (Grim: debuglog, framelimit, simtime, config, windowed; Remastered: debuglog, windowed, simtime; EMI: debuglog, datadir, nocd, debugmode, simtime, taskclock, nopause, novsync, offscreen, f11, undo640, windowed)\n", n.c_str());
+				fprintf(stderr, "no patch %s (Grim: debuglog, framelimit, simtime, smushtime, imusetime, multi, config, windowed; Remastered: debuglog, windowed, simtime; EMI: debuglog, datadir, nocd, debugmode, multi, simtime, taskclock, nopause, novsync, offscreen, f11, undo640, windowed)\n", n.c_str());
 				return 2;
 			}
 		}
@@ -934,8 +1077,8 @@ int main(int argc, char **argv) {
 				"(\"Could not initialize your hardware!\")\n");
 	}
 	bool needDll = false;
-	for (const char *n : {"debuglog", "framelimit", "config"})
-		needDll |= game != EMI && enabled(n, strcmp(n, "framelimit") != 0);
+	for (const char *n : {"debuglog", "framelimit", "config", "imusetime"})
+		needDll |= game != EMI && enabled(n, strcmp(n, "framelimit") != 0 && strcmp(n, "imusetime") != 0);
 	if (needDll && GetFileAttributesA(g_dllPath.c_str()) == INVALID_FILE_ATTRIBUTES)
 		fprintf(stderr, "warning: %s does not exist, the stubs will do nothing\n", g_dllPath.c_str());
 	if (enabled("config", true) && !noIni) {
@@ -983,6 +1126,8 @@ int main(int argc, char **argv) {
 		}
 	if (game == EMI && !g_postSystemLua.empty())
 		patchEmiPostSystem();
+	if (g_smushtime || g_imusetime)
+		patchSimClocks();
 
 	if (resumeDelay) {
 		printf("pid %lu, resumed in %d ms\n", pi.dwProcessId, resumeDelay);
