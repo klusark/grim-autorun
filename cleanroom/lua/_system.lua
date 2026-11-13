@@ -63,6 +63,43 @@ cr_log = function(key, a, b, c, d)
 	cr_out("V " .. s)
 end
 
+-- The keys of a table, sorted (numbers first, then strings, then the rest), in a list from 1. The original's Lua hashes by
+-- address, so next() gives another order every run: a test that logs a line per key goes through cr_keys instead.
+cr_key_less = function(a, b)
+	local ta = type(a)
+	local tb = type(b)
+	if ta ~= tb then
+		if ta == "number" then
+			return 1
+		elseif tb == "number" then
+			return nil
+		end
+		return ta < tb
+	end
+	if ta == "number" or ta == "string" then
+		return a < b
+	end
+	return nil
+end
+
+cr_keys = function(t)
+	local ks = { }
+	local n = 0
+	local k = next(t, nil)
+	while k do
+		-- (insertion: the key goes before the first one it is less than)
+		local i = n
+		while i > 0 and cr_key_less(k, ks[i]) do
+			ks[i + 1] = ks[i]
+			i = i - 1
+		end
+		ks[i + 1] = k
+		n = n + 1
+		k = next(t, k)
+	end
+	return ks
+end
+
 -- (compare.py skips a key marked in either log; "(status)" marks how the test ends)
 cr_unstable = function(key)
 	cr_out("U " .. CR_CUR .. "|" .. key)

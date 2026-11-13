@@ -74,14 +74,17 @@ cr_t_save_case = function()
 		WriteRegistryValue("CrSavePass", "done")
 		cr_frames(1)
 		local now = c.look()
-		local k, v = next(CR_SAVE_LOOK, nil)
-		while k do
+		local ks = cr_keys(CR_SAVE_LOOK)
+		local j = 1
+		while ks[j] do
+			local k = ks[j]
+			local v = CR_SAVE_LOOK[k]
 			if now[k] == v then
 				cr_log("kept_" .. k, 1)
 			else
 				cr_log("kept_" .. k, v, now[k])
 			end
-			k, v = next(CR_SAVE_LOOK, k)
+			j = j + 1
 		end
 		if c.after then
 			c.after()

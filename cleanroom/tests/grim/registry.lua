@@ -23,8 +23,11 @@ end
 cr_scummvm_differs("registry_keys") cr_test("registry_keys", cr_t_registry_keys)
 
 cr_t_registry_write = function()
-	local k, v = next(CR_REG_WRITE, nil)
-	while k do
+	local ks = cr_keys(CR_REG_WRITE)
+	local j = 1
+	while ks[j] do
+		local k = ks[j]
+		local v = CR_REG_WRITE[k]
 		local old = ReadRegistryValue(k)
 		WriteRegistryValue(k, v)
 		local now = ReadRegistryValue(k)
@@ -32,7 +35,7 @@ cr_t_registry_write = function()
 		if old then
 			WriteRegistryValue(k, old)
 		end
-		k, v = next(CR_REG_WRITE, k)
+		j = j + 1
 	end
 end
 cr_test("registry_write", cr_t_registry_write)

@@ -82,14 +82,17 @@ cr_t_asv_emi_actor = function()
 		cr_log("pass", "loaded", JustLoaded())
 		cr_frames(1)
 		local now = asv_elook()
-		local k, v = next(ASV_ELOOK, nil)
-		while k do
+		local ks = cr_keys(ASV_ELOOK)
+		local j = 1
+		while ks[j] do
+			local k = ks[j]
+			local v = ASV_ELOOK[k]
 			if now[k] == v then
 				cr_log("kept_" .. k, 1)
 			else
 				cr_log("kept_" .. k, v, now[k])
 			end
-			k, v = next(ASV_ELOOK, k)
+			j = j + 1
 		end
 		-- (still attached: the rider follows the carrier)
 		PutActorAt(ASV_EC, 2, 0, 1)

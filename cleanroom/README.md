@@ -441,7 +441,8 @@ where Windows finds room, and that moves by multiples of 64 KB from run to run; 
 Two attempts did not change it, so both were dropped: ASLR off for the process (a creation flag in grimlaunch), and LUA.DLL's
 and the exe's heap calls redirected to a fixed arena from patch.dll (Lua's objects are not allocated there). The first region
 is reserved before patch.dll loads. Fixing it would need patch.dll loaded at the process entry, before the runtimes start.
-Until then, tests must not depend on table order (`next_order` marks its order `cr_unstable`).
+Until then, tests must not depend on table order (`next_order` marks its order `cr_unstable`): a test that logs a line
+per key of a table goes through `cr_keys(t)` (`_system.lua`, the keys sorted), not `next()`.
 
 ## Differences found (ScummVM grim-actor-fixes, 2026-11-05)
 

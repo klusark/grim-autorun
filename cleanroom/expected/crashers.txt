@@ -2,6 +2,8 @@
 args_ActivateActorShadow_p2_big
 args_AddShadowPlane_p2_nil
 args_AddShadowPlane_p2_tab
+args_DimRegion_p4_big
+args_DimRegion_p5_tab
 args_FadeInChore_p3_neg
 args_FadeOutChore_p3_neg
 args_FileFindFirst_p2_tab

@@ -29,12 +29,15 @@ cr_t_asv_case = function()
 		local after = c.look()
 		cr_log("changed", cr_save_diff(ASV_LOOK, after))
 		-- (the changed values, to see what change() did)
-		local k, v = next(ASV_LOOK, nil)
-		while k do
+		local ks = cr_keys(ASV_LOOK)
+		local j = 1
+		while ks[j] do
+			local k = ks[j]
+			local v = ASV_LOOK[k]
 			if after[k] ~= v then
 				cr_log("now_" .. k, after[k])
 			end
-			k, v = next(ASV_LOOK, k)
+			j = j + 1
 		end
 		Load(file)
 		cr_frames(10)
@@ -44,14 +47,17 @@ cr_t_asv_case = function()
 		WriteRegistryValue("CrSavePass", "done")
 		cr_frames(1)
 		local now = c.look()
-		local k, v = next(ASV_LOOK, nil)
-		while k do
+		local ks = cr_keys(ASV_LOOK)
+		local j = 1
+		while ks[j] do
+			local k = ks[j]
+			local v = ASV_LOOK[k]
 			if now[k] == v then
 				cr_log("kept_" .. k, 1)
 			else
 				cr_log("kept_" .. k, v, now[k])
 			end
-			k, v = next(ASV_LOOK, k)
+			j = j + 1
 		end
 		c.after()
 	end
