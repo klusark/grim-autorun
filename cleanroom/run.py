@@ -37,7 +37,8 @@ Results go to logs/<engine>.log (only the CR lines, normalised) and logs/<engine
 Environment: SCUMMVM (scummvm.exe), GRIM_INSTALL (the folder the original exe and its DLLs are copied from by
 `run.py original`; `run.py decomp` does not use it; default
 C:\\GOG Games\\GRIMDATA), CR_VISIBLE=1 (the engines' windows on the screen; otherwise they run on a desktop of their own,
-tools/offscreen.c), EMI_INSTALL (the same for Monkey4.exe, default C:\\GOG Games\\Escape from Monkey Island), CR_STALL
+tools/offscreen.c), CR_VERBOSE=1 (or --verbose: each game's command line, its tests as they begin and end, how it ended),
+EMI_INSTALL (the same for Monkey4.exe, default C:\\GOG Games\\Escape from Monkey Island), CR_STALL
 (seconds without a new line in the engine's log before a run counts as hung and is killed, default 2; CR_STARTUP, default 30, until the first line),
 GRIM_DECOMP (the folder of the rebuilt grimfandango.exe and its three DLLs, default C:\\Users\\Joel\\grim-decomp\\build\\run)."""
 import argparse
@@ -397,6 +398,17 @@ def say(*args):
         print(*args, flush=True)
 
 
+# (--verbose or CR_VERBOSE=1: each game's command line and knobs, its tests as they begin and end, how it ended; every line
+# starts with the seconds since run.py started and the run folder, e.g. "  12.3 scummvm_3 cr_menu.lua: ...")
+VERBOSE = os.environ.get("CR_VERBOSE") == "1"
+_T0 = time.time()
+
+
+def trace(folder, file, msg):
+    if VERBOSE:
+        say("%7.1f %s %s: %s" % (time.time() - _T0, os.path.basename(folder), file, msg))
+
+
 def reset_folder(d, keep):
     """Removes every file of the run folder d but the names in keep and the build's files (cr_manifest.txt)."""
     keep = set(n.lower() for n in keep) | {MANIFEST.lower()}
@@ -566,8 +578,9 @@ class GameRun:
         self.raw = ""        # its whole log
 
 
-def game_run(engine, folder, tests_lua):
-    """Runs one game of engine in folder (made by engine.prepare), with tests_lua as _cr_tests.lua."""
+def game_run(engine, folder, tests_lua, file="", start=None):
+    """Runs one game of engine in folder (made by engine.prepare), with tests_lua as _cr_tests.lua (the tests of file; from
+    the test start, when a game before crashed or hung)."""
     g = GameRun(folder)
     log = engine.log(folder)
     # (the original appends to its log: the last game's must be gone; Windows may hold it for a moment after the game ended)
@@ -583,16 +596,34 @@ def game_run(engine, folder, tests_lua):
     engine.reset(folder)
     engine.put_tests(folder, tests_lua)
     cmd, env = engine.command(folder)
+    cmd = offscreen(cmd)
     g.start = time.time()
     # (stdin closed: ScummVM's Lua read() falls back to the process's stdin when readfrom failed, and an open one blocks it)
-    p = subprocess.Popen(offscreen(cmd), cwd=folder, stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL,
+    p = subprocess.Popen(cmd, cwd=folder, stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL,
                          stderr=subprocess.DEVNULL, env=env)
+    if VERBOSE:
+        knobs = " ".join("%s=%s" % (k, env[k]) for k in sorted(env) if k != "PATH" and os.environ.get(k) != env[k])
+        trace(folder, file, "game started%s, pid %d%s: %s" % (" from " + start if start else "", p.pid,
+                                                              ", renderer " + RENDERER if engine.name == "scummvm" else "",
+                                                              subprocess.list2cmdline(cmd)))
+        if knobs:
+            trace(folder, file, "environment: " + knobs)
+    # (--verbose: the log as far as it was read, a line not yet whole, when each test began)
+    seen, tail, began = 0, b"", {}
     # (a game that writes nothing to its log for CR_STALL seconds hangs: it is killed. Until its first CR line the engine is
     # starting (ScummVM writes its header, then detects the game and starts the engine): CR_STARTUP)
     size, last, started = 0, time.time(), False
     while p.poll() is None:
         time.sleep(0.2)
         n = os.path.getsize(log) if os.path.exists(log) else 0
+        if VERBOSE and n > seen:
+            with open(log, "rb") as f:
+                f.seek(seen)
+                tail += f.read(n - seen)
+            seen = n
+            *whole, tail = tail.split(b"\n")
+            for l in compare.extract(b"\n".join(whole).decode("latin-1")):
+                trace_line(folder, file, l, began)
         if n != size:
             if not started and n > size:
                 with open(log, "rb") as f:
@@ -609,7 +640,31 @@ def game_run(engine, folder, tests_lua):
     g.exit = None if g.killed else p.returncode
     g.raw = open(log, "rb").read().decode("latin-1") if os.path.exists(log) else ""
     g.lines = snaps.resolve(compare.extract(g.raw), folder)
+    if VERBOSE:
+        # (what the game wrote after the last look at its log)
+        for l in compare.extract(g.raw[seen - len(tail):]):
+            trace_line(folder, file, l, began)
+        how = ("killed: nothing in its log for %.0f s" % g.killed if g.killed else
+               "exit code 0x%X" % (g.exit & 0xFFFFFFFF))
+        trace(folder, file, "game ended after %.1f s, %d tests begun, %s%s" % (
+            time.time() - g.start, len(began), how, "" if any(l.startswith("SUMMARY") for l in g.lines) else ", no SUMMARY"))
     return g
+
+
+def trace_line(folder, file, l, began):
+    """--verbose: a CR line of a game's log, when a test begins or ends (began: when each test began)."""
+    word, _, rest = l.partition(" ")
+    if word == "BEGIN":
+        began[rest] = time.time()
+        trace(folder, file, "test %s" % rest)
+    elif word in ("END", "FAILED", "TIMEOUT"):
+        t = began.get(rest)
+        trace(folder, file, "test %s %s%s" % (rest, "ok" if word == "END" else word,
+                                              " (%.1f s)" % (time.time() - t) if t else ""))
+    elif word == "SKIP":
+        trace(folder, file, "test %s skipped" % rest)
+    elif word == "ERROR":
+        trace(folder, file, "test " + rest)
 
 
 def run_test_file(engine, path, slots, skip, only):
@@ -621,7 +676,7 @@ def run_test_file(engine, path, slots, skip, only):
         out, crashed, raws, total = [], [], [], 0
         start = None
         for _ in range(500):
-            g = game_run(engine, folder, cr_tests_lua(only, skip | set(crashed), start, 0, name))
+            g = game_run(engine, folder, cr_tests_lua(only, skip | set(crashed), start, 0, name), name, start)
             raws.append(g.raw)
             for l in g.lines:
                 if l.startswith("START "):
@@ -1004,12 +1059,16 @@ def main():
                     help="scummvm: run the tests that crashed or hung ScummVM before again (expected/scummvm_crashers_<renderer>.txt)")
     ap.add_argument("--visible", action="store_true", help="show the engines' windows on the screen (same as CR_VISIBLE=1)")
     ap.add_argument("--work", metavar="DIR", help="build/, run/ and logs/ in DIR, and expected/ only read: for runs in parallel")
+    ap.add_argument("-v", "--verbose", action="store_true",
+                    help="print each game's command line, its tests as they begin and end, and how it ended (same as CR_VERBOSE=1)")
     a = ap.parse_args()
     if a.work and a.save:
         sys.exit("--save writes expected/: not with --work")
+    global VISIBLE, VERBOSE
     if a.visible:
-        global VISIBLE
         VISIBLE = True
+    if a.verbose:
+        VERBOSE = True
     set_game(a.game)
     if a.game == "emi" and a.what == "remastered":
         sys.exit("the Remastered is Grim's")
