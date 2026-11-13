@@ -179,8 +179,8 @@ jobs:
           CR_STARTUP: "180"
         run: |
           export SCUMMVM="$GITHUB_WORKSPACE\\scummvm\\build\\scummvm.exe"
-          CR_PARALLEL_DIR=run/parallel_grim bash grim_tools/cleanroom/tools/parallel.sh --games grim --renderers "$CR_RENDERERS" || true
-          cat grim_tools/cleanroom/run/parallel_grim/grim_*.txt > grim.txt
+          CR_PARALLEL_DIR="$(cygpath -u "$RUNNER_TEMP")/parallel_grim" bash grim_tools/cleanroom/tools/parallel.sh --games grim --renderers "$CR_RENDERERS" || true
+          cat "$(cygpath -u "$RUNNER_TEMP")"/parallel_grim/grim_*.txt > grim.txt
 
       - name: EMI
         continue-on-error: true
@@ -193,8 +193,8 @@ jobs:
           CR_STARTUP: "180"
         run: |
           export SCUMMVM="$GITHUB_WORKSPACE\\scummvm\\build\\scummvm.exe"
-          CR_PARALLEL_DIR=run/parallel_emi bash grim_tools/cleanroom/tools/parallel.sh --games emi --renderers "$CR_RENDERERS" || true
-          cat grim_tools/cleanroom/run/parallel_emi/emi_*.txt > emi.txt
+          CR_PARALLEL_DIR="$(cygpath -u "$RUNNER_TEMP")/parallel_emi" bash grim_tools/cleanroom/tools/parallel.sh --games emi --renderers "$CR_RENDERERS" || true
+          cat "$(cygpath -u "$RUNNER_TEMP")"/parallel_emi/emi_*.txt > emi.txt
 
       - name: Logs
         if: always()
@@ -202,8 +202,8 @@ jobs:
         with:
           name: logs-${{ matrix.side }}
           path: |
-            grim_tools/cleanroom/run/parallel_*/*.txt
-            grim_tools/cleanroom/run/parallel_*/*/logs/
+            ${{ runner.temp }}/parallel_*/*.txt
+            ${{ runner.temp }}/parallel_*/*/logs/
           if-no-files-found: ignore
 
   compare:
