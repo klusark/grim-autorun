@@ -90,7 +90,8 @@ once keep the machine busy. `--coverage` is the coverage run (below). `tools/mar
   original cannot start Direct3D on another desktop ("make sure you are not running any application that takes exclusive
   control of your hardware"), so it runs with its OpenGL renderer (`Monkey4.exe -gl`). The values are the same as with
   Direct3D except `GammaEnabled` (1 against nil: what the hardware can do), which is marked unstable. `CR_VISIBLE=1` shows
-  them all.
+  them all. They are also muted there: `offscreen.exe` mutes the audio sessions of the job's processes as they open (the
+  volume mixer's mute; the games' own volumes are unchanged) and unmutes them at the end; a visible run is not muted.
 
 ## Escape from Monkey Island
 

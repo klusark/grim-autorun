@@ -819,7 +819,7 @@ def offscreen(cmd):
     if not newer(OFFSCREEN, [src]):
         os.makedirs(os.path.dirname(OFFSCREEN), exist_ok=True)
         env = dict(os.environ, PATH=UCRT64 + os.pathsep + os.environ.get("PATH", ""))
-        subprocess.run([os.path.join(UCRT64, "gcc.exe"), "-O2", "-o", OFFSCREEN, src], check=True, env=env)
+        subprocess.run([os.path.join(UCRT64, "gcc.exe"), "-O2", "-o", OFFSCREEN, src, "-lole32"], check=True, env=env)
         print("built %s" % OFFSCREEN)
     return [OFFSCREEN] + cmd
 
