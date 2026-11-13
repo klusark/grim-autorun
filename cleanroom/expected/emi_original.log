@@ -1,4 +1,4 @@
-START 2451 tests
+START 2452 tests
 BEGIN numbers
 V numbers|arith|3.500000 1024.000000 -2.333333 1.#INF00
 V numbers|tostring|"0.333333" "100" "1e+015" "-0.5"
@@ -25,7 +25,7 @@ V strings|ascii|65.000000
 END strings
 BEGIN next_order
 U next_order|order
-V next_order|order|"manny,lupe,eva,chepito,velasco,olivia,salvador,7,meche,glottis,105,49,98,14,63,112,21,70,119,28,77,126,56,35,133,84,domino,42,91,140,"
+V next_order|order|"49,98,7,56,105,14,63,112,21,126,70,35,119,77,manny,28,eva,chepito,velasco,olivia,salvador,domino,meche,glottis,84,133,lupe,42,91,140,"
 V next_order|globals_counted|1.000000
 END next_order
 BEGIN tasks
@@ -533,18 +533,7 @@ BEGIN amc_material_again
 V amc_material_again|worn|9.000000 1.000000
 V amc_material_again|worn_again|9.000000 1.000000
 END amc_material_again
-BEGIN asv_emi_actor
-V asv_emi_actor|just_loaded_before|nil
-V asv_emi_actor|changed|5.000000
-V asv_emi_actor|pass|"loaded"
-V asv_emi_actor|kept_chore|1.000000
-V asv_emi_actor|kept_r_sort|1.000000
-V asv_emi_actor|kept_r_world|1.000000
-V asv_emi_actor|kept_c_pos|1.000000
-V asv_emi_actor|kept_c_sort|1.000000
-V asv_emi_actor|kept_r_pos|1.000000
-V asv_emi_actor|carrier_moved|1.000000
-END asv_emi_actor
+SKIP asv_emi_actor
 BEGIN eatk_lip
 V eatk_lip|at_once|0.000000 1.000000
 V eatk_lip|trace|"10 10 11 11 11 11 "
@@ -732,7 +721,7 @@ V emi_bitmap_flat|count|missing
 END emi_bitmap_flat
 BEGIN ec_load
 V ec_load|handle|"number" 1.000000 1.000000
-V ec_load|missing|36.000000
+V ec_load|missing|2.000000
 END ec_load
 BEGIN ec_keys
 V ec_keys|trace|"0/1 1/1 1/1 1/1 1/1 1/1 2/1 2/1 2/1 2/1 2/1 2/1 2/1 2/1 2/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 3/1 4/nil 4/nil 4/nil 4/nil 4/nil 4/nil 4/nil 4/nil 4/nil 4/nil 4/nil "
@@ -1039,7 +1028,7 @@ V elu_thumbnail|wrong|nil
 END elu_thumbnail
 BEGIN elu_file_find
 V elu_file_find|saves|nil
-V elu_file_find|gsv|"string"
+V elu_file_find|gsv|"nil"
 END elu_file_find
 BEGIN elu_movie_args
 V elu_movie_args|nil|nil
@@ -1169,15 +1158,8 @@ V emd_layer_get|advanced_2|1.000000
 V emd_layer_get|advanced_1|2.000000
 V emd_layer_get|sort|20.000000
 END emd_layer_get
-BEGIN emd_save
-V emd_save|just_loaded_before|nil
-V emd_save|pass|"loaded"
-V emd_save|chores|1.000000 1.000000 1.000000 1.000000
-V emd_save|trace|"-/8/1; -/8/1; -/8/1; -/8/1; -/8/1; "
-END emd_save
-BEGIN emd_save_layer
-V emd_save_layer|pass|"loaded"
-END emd_save_layer
+SKIP emd_save
+SKIP emd_save_layer
 BEGIN ee_sort_order
 V ee_sort_order|default|0.000000
 V ee_sort_order|set|7.000000
@@ -1378,56 +1360,28 @@ V esn_8bit_aiff|handle|"userdata"
 V esn_8bit_aiff|playing|"1 100"
 V esn_8bit_aiff|stopped|"nil nil"
 END esn_8bit_aiff
-BEGIN esn_voice_stereo
-V esn_voice_stereo|at_once|1.000000
-V esn_voice_stereo|going|1.000000
-V esn_voice_stereo|later|nil
-V esn_voice_stereo|much_later|nil
-V esn_voice_stereo|shut_up|nil
-END esn_voice_stereo
-BEGIN esn_voice_long
-V esn_voice_long|at_once|1.000000
-V esn_voice_long|going|1.000000
-V esn_voice_long|later|nil
-V esn_voice_long|much_later|nil
-V esn_voice_long|shut_up|nil
-END esn_voice_long
-BEGIN esn_voice_12s
-V esn_voice_12s|at_once|1.000000
-V esn_voice_12s|going|1.000000
-V esn_voice_12s|later|1.000000
-V esn_voice_12s|much_later|nil
-V esn_voice_12s|shut_up|nil
-END esn_voice_12s
-BEGIN esn_m_high
-V esn_m_high|ok|1.000000
-END esn_m_high
+SKIP esn_voice_stereo
+SKIP esn_voice_long
+SKIP esn_voice_12s
+SKIP esn_m_high
 BEGIN esn_m_msecs
 V esn_m_msecs|type|"number"
 U esn_m_msecs|ms
-V esn_m_msecs|ms|-1.000000
+V esn_m_msecs|ms|0.000000
 V esn_m_msecs|ok|1.000000
 END esn_m_msecs
-BEGIN esn_m_looped
-V esn_m_looped|looped|nil
-V esn_m_looped|ended|nil
-V esn_m_looped|ok|1.000000
-END esn_m_looped
+SKIP esn_m_looped
 BEGIN esn_m_set_fading
 V esn_m_set_fading|ok|1.000000
 END esn_m_set_fading
-BEGIN esn_m_set_stack
-V esn_m_set_stack|ok|1.000000
-END esn_m_set_stack
+SKIP esn_m_set_stack
 BEGIN esn_m_sync
 V esn_m_sync|ok|1.000000
 END esn_m_sync
 BEGIN esn_m_past_end
 V esn_m_past_end|ok|1.000000
 END esn_m_past_end
-BEGIN esn_m_over_end
-V esn_m_over_end|ok|1.000000
-END esn_m_over_end
+SKIP esn_m_over_end
 BEGIN esn_m_no_file
 V esn_m_no_file|ok|1.000000
 END esn_m_no_file
@@ -1467,15 +1421,7 @@ V esn_save_name|after|"-" "-" "-"
 V esn_save_name|used|"-" "-"
 V esn_save_name|popped|1.000000
 END esn_save_name
-BEGIN esn_save_music
-V esn_save_music|before|"-" "-" "-"
-V esn_save_music|just_loaded_before|nil
-V esn_save_music|changed|"-" "-"
-V esn_save_music|pass|"loaded"
-V esn_save_music|after|"-" "-" "-"
-V esn_save_music|used|"-" "-"
-V esn_save_music|popped|1.000000
-END esn_save_music
+SKIP esn_save_music
 BEGIN esn_save_voice
 V esn_save_voice|before|"-" "-" "-" 1.000000
 V esn_save_voice|just_loaded_before|nil
@@ -1526,19 +1472,10 @@ V emi_movie_missing|playing|nil
 V emi_movie_missing|second|1.000000
 V emi_movie_missing|ended|1.000000
 END emi_movie_missing
-BEGIN em_states
-V em_states|ended_never_played|nil
-V em_states|ok|1.000000
-END em_states
-BEGIN em_loop
-V em_loop|ok|1.000000
-END em_loop
-BEGIN em_stack
-V em_stack|ok|1.000000
-END em_stack
-BEGIN em_set
-V em_set|ok|1.000000
-END em_set
+SKIP em_states
+SKIP em_loop
+SKIP em_stack
+SKIP em_set
 BEGIN em_volume
 V em_volume|ok|1.000000
 END em_volume
@@ -1753,6 +1690,14 @@ V et_text|changed|0.303125
 V et_text|char_pos|0.065625
 V et_text|second|0.018750
 END et_text
+BEGIN et_text_blank
+V et_text_blank|word|0.018750 0.050000
+V et_text_blank|space|0.015625 0.050000
+V et_text_blank|spaces|0.046875 0.050000
+V et_text_blank|empty|0.000000 0.050000
+V et_text_blank|trailing|0.068750 0.050000
+V et_text_blank|change_space|0.015625 0.050000
+END et_text_blank
 BEGIN upvalues
 V upvalues|upvalue_frozen|11.000000
 V upvalues|global_counter|2.000000
@@ -2056,7 +2001,7 @@ V lex_tags|rawset|nil 1.000000
 V lex_tags|error_nil|nil
 END lex_tags
 BEGIN frame_time
-V frame_time|steady|"17 17 17 17 17 17 17 17 "
+V frame_time|steady|"0 17 17 17 17 17 17 17 "
 END frame_time
 BEGIN sleep_for
 V sleep_for|sleep_100ms_frames|7.000000
@@ -2786,27 +2731,27 @@ V args_FunctionName_fn|r|"function 'cr_args_fn' (cr_zz_args_emi.lua:3)"
 END args_FunctionName_fn
 BEGIN args_GammaEnabled_none
 U args_GammaEnabled_none|r
-V args_GammaEnabled_none|r|nil
+V args_GammaEnabled_none|r|1.000000
 END args_GammaEnabled_none
 BEGIN args_GammaEnabled_nil
 U args_GammaEnabled_nil|r
-V args_GammaEnabled_nil|r|nil
+V args_GammaEnabled_nil|r|1.000000
 END args_GammaEnabled_nil
 BEGIN args_GammaEnabled_str
 U args_GammaEnabled_str|r
-V args_GammaEnabled_str|r|nil
+V args_GammaEnabled_str|r|1.000000
 END args_GammaEnabled_str
 BEGIN args_GammaEnabled_num
 U args_GammaEnabled_num|r
-V args_GammaEnabled_num|r|nil
+V args_GammaEnabled_num|r|1.000000
 END args_GammaEnabled_num
 BEGIN args_GammaEnabled_tab
 U args_GammaEnabled_tab|r
-V args_GammaEnabled_tab|r|nil
+V args_GammaEnabled_tab|r|1.000000
 END args_GammaEnabled_tab
 BEGIN args_GammaEnabled_fn
 U args_GammaEnabled_fn|r
-V args_GammaEnabled_fn|r|nil
+V args_GammaEnabled_fn|r|1.000000
 END args_GammaEnabled_fn
 BEGIN args_GetActiveCD_none
 V args_GetActiveCD_none|r|1.000000
@@ -3569,27 +3514,27 @@ V args_GetCurrentSetup_s_tab|r|0.000000
 END args_GetCurrentSetup_s_tab
 BEGIN args_GetDiskFreeSpace_none
 U args_GetDiskFreeSpace_none|r
-V args_GetDiskFreeSpace_none|r|64239.855469
+V args_GetDiskFreeSpace_none|r|149788.031250
 END args_GetDiskFreeSpace_none
 BEGIN args_GetDiskFreeSpace_nil
 U args_GetDiskFreeSpace_nil|r
-V args_GetDiskFreeSpace_nil|r|64239.855469
+V args_GetDiskFreeSpace_nil|r|149788.031250
 END args_GetDiskFreeSpace_nil
 BEGIN args_GetDiskFreeSpace_str
 U args_GetDiskFreeSpace_str|r
-V args_GetDiskFreeSpace_str|r|64239.855469
+V args_GetDiskFreeSpace_str|r|149788.031250
 END args_GetDiskFreeSpace_str
 BEGIN args_GetDiskFreeSpace_num
 U args_GetDiskFreeSpace_num|r
-V args_GetDiskFreeSpace_num|r|64239.828125
+V args_GetDiskFreeSpace_num|r|149788.031250
 END args_GetDiskFreeSpace_num
 BEGIN args_GetDiskFreeSpace_tab
 U args_GetDiskFreeSpace_tab|r
-V args_GetDiskFreeSpace_tab|r|64239.828125
+V args_GetDiskFreeSpace_tab|r|149788.031250
 END args_GetDiskFreeSpace_tab
 BEGIN args_GetDiskFreeSpace_fn
 U args_GetDiskFreeSpace_fn|r
-V args_GetDiskFreeSpace_fn|r|64239.828125
+V args_GetDiskFreeSpace_fn|r|149788.031250
 END args_GetDiskFreeSpace_fn
 BEGIN args_GetFontDimensions_none
 V args_GetFontDimensions_none|r|nil
@@ -3828,22 +3773,22 @@ BEGIN args_GetTextObjectDimensions_fn
 V args_GetTextObjectDimensions_fn|r|nil
 END args_GetTextObjectDimensions_fn
 BEGIN args_GetTextSpeed_none
-V args_GetTextSpeed_none|r|5.000000
+V args_GetTextSpeed_none|r|6.000000
 END args_GetTextSpeed_none
 BEGIN args_GetTextSpeed_nil
-V args_GetTextSpeed_nil|r|5.000000
+V args_GetTextSpeed_nil|r|6.000000
 END args_GetTextSpeed_nil
 BEGIN args_GetTextSpeed_str
-V args_GetTextSpeed_str|r|5.000000
+V args_GetTextSpeed_str|r|6.000000
 END args_GetTextSpeed_str
 BEGIN args_GetTextSpeed_num
-V args_GetTextSpeed_num|r|5.000000
+V args_GetTextSpeed_num|r|6.000000
 END args_GetTextSpeed_num
 BEGIN args_GetTextSpeed_tab
-V args_GetTextSpeed_tab|r|5.000000
+V args_GetTextSpeed_tab|r|6.000000
 END args_GetTextSpeed_tab
 BEGIN args_GetTextSpeed_fn
-V args_GetTextSpeed_fn|r|5.000000
+V args_GetTextSpeed_fn|r|6.000000
 END args_GetTextSpeed_fn
 BEGIN args_GetTranslationMode_none
 V args_GetTranslationMode_none|r|0.000000
@@ -3910,7 +3855,7 @@ BEGIN args_ImGetMillisecondPosition_str
 V args_ImGetMillisecondPosition_str|r|nil
 END args_ImGetMillisecondPosition_str
 BEGIN args_ImGetMillisecondPosition_num
-V args_ImGetMillisecondPosition_num|r|-1.000000
+V args_ImGetMillisecondPosition_num|r|0.000000
 END args_ImGetMillisecondPosition_num
 BEGIN args_ImGetMillisecondPosition_tab
 V args_ImGetMillisecondPosition_tab|r|nil
@@ -7734,7 +7679,7 @@ ERROR args_ceil_fn bad argument #1 to function `ceil' (number expected)
 FAILED args_ceil_fn
 BEGIN args_collectgarbage_none
 U args_collectgarbage_none|r
-V args_collectgarbage_none|r|6494.000000
+V args_collectgarbage_none|r|1581.000000
 END args_collectgarbage_none
 BEGIN args_collectgarbage_nil
 ERROR args_collectgarbage_nil bad argument #1 to function `collectgarbage' (number expected)
@@ -7772,7 +7717,7 @@ ERROR args_cos_fn bad argument #1 to function `cos' (number expected)
 FAILED args_cos_fn
 BEGIN args_date_none
 U args_date_none|r
-V args_date_none|r|"11/10/26 18:00:59"
+V args_date_none|r|"11/12/26 22:39:07"
 END args_date_none
 BEGIN args_date_nil
 ERROR args_date_nil bad argument #1 to function `date' (string expected)
@@ -8112,22 +8057,22 @@ BEGIN args_mod_fn
 ERROR args_mod_fn bad argument #1 to function `mod' (number expected)
 FAILED args_mod_fn
 BEGIN args_newtag_none
-V args_newtag_none|r|-14.000000
+V args_newtag_none|r|-10.000000
 END args_newtag_none
 BEGIN args_newtag_nil
-V args_newtag_nil|r|-15.000000
+V args_newtag_nil|r|-11.000000
 END args_newtag_nil
 BEGIN args_newtag_str
-V args_newtag_str|r|-16.000000
+V args_newtag_str|r|-12.000000
 END args_newtag_str
 BEGIN args_newtag_num
-V args_newtag_num|r|-17.000000
+V args_newtag_num|r|-13.000000
 END args_newtag_num
 BEGIN args_newtag_tab
-V args_newtag_tab|r|-18.000000
+V args_newtag_tab|r|-14.000000
 END args_newtag_tab
 BEGIN args_newtag_fn
-V args_newtag_fn|r|-19.000000
+V args_newtag_fn|r|-15.000000
 END args_newtag_fn
 BEGIN args_next_none
 ERROR args_next_none bad argument #1 to function `next' (table expected)
@@ -8202,7 +8147,7 @@ BEGIN args_rad_fn
 ERROR args_rad_fn bad argument #1 to function `rad' (number expected)
 FAILED args_rad_fn
 BEGIN args_random_none
-V args_random_none|r|0.123783
+V args_random_none|r|0.120182
 END args_random_none
 BEGIN args_random_nil
 ERROR args_random_nil bad argument #1 to function `random' (number expected)
@@ -8211,7 +8156,7 @@ BEGIN args_random_str
 ERROR args_random_str bad argument #1 to function `random' (number expected)
 FAILED args_random_str
 BEGIN args_random_num
-V args_random_num|r|1.000000
+V args_random_num|r|2.000000
 END args_random_num
 BEGIN args_random_tab
 ERROR args_random_tab bad argument #1 to function `random' (number expected)
@@ -8521,11 +8466,11 @@ V args_tostring_num|r|"1.5"
 END args_tostring_num
 BEGIN args_tostring_tab
 U args_tostring_tab|r
-V args_tostring_tab|r|"table: 028306D0"
+V args_tostring_tab|r|"table: 128033A0"
 END args_tostring_tab
 BEGIN args_tostring_fn
 U args_tostring_fn|r
-V args_tostring_fn|r|"function: 027E3310"
+V args_tostring_fn|r|"function: 02820B20"
 END args_tostring_fn
 BEGIN args_type_none
 ERROR args_type_none API error - attempt to push a NOOBJECT
@@ -8554,4 +8499,4 @@ V lex_binary|short|nil
 ERROR lex_binary binary file cr_bin_old.lua too old: version=0x30; expected at least 0x31
 V lex_binary|old|nil
 END lex_binary
-SUMMARY 2451 tests, 247 failed
+SUMMARY 2452 tests, 247 failed

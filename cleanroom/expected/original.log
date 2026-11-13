@@ -531,7 +531,7 @@ V strings|ascii|65.000000
 END strings
 BEGIN next_order
 U next_order|order
-V next_order|order|"84,49,98,lupe,119,56,105,salvador,14,7,63,olivia,glottis,chepito,21,70,35,meche,28,77,126,domino,velasco,eva,133,112,42,manny,91,140,"
+V next_order|order|"meche,49,98,7,manny,velasco,105,lupe,14,63,domino,21,70,35,119,chepito,28,77,glottis,126,56,salvador,133,84,olivia,112,42,eva,91,140,"
 V next_order|globals_counted|1.000000
 END next_order
 BEGIN tasks
@@ -559,7 +559,6 @@ V builtins|fn_BlastImage|"function"
 V builtins|fn_BlastRect|"function"
 V builtins|fn_BlastText|"function"
 V builtins|fn_BuildCache|"function"
-V builtins|fn_CR_LOOKING|"function"
 V builtins|fn_CacheRect|"function"
 V builtins|fn_CanActorSee|"function"
 V builtins|fn_ChangePrimitive|"function"
@@ -2618,83 +2617,7 @@ V mf_cr_tprot_mover_sphere|cr_tprot_mover_sphere_f80|0.016541 -1.190997 0.000000
 V mf_cr_tprot_mover_sphere|cr_tprot_mover_sphere_f120|-0.397278 -1.011096 0.000000
 V mf_cr_tprot_mover_sphere|cr_tprot_mover_sphere_end|-0.747856 -0.476309 0.000000
 END mf_cr_tprot_mover_sphere
-BEGIN mf_rects
-V mf_rects|cr_box_rect|640.000000
-V mf_rects|cr_box_node0|4.000000 -4.000000 0.000000
-V mf_rects|cr_box_node1|0.000000 0.000000 0.000000
-V mf_rects|cr_box_node2|0.000000 0.000000 1.700000
-V mf_rects|cr_box_node3|0.300000 0.100000 1.200000
-V mf_rects|cr_tbox_rect|640.000000
-V mf_rects|cr_tbox_node0|0.500000 -0.500000 0.000000
-V mf_rects|cr_tbox_node1|0.500000 -0.500000 0.000000
-V mf_rects|cr_tbox_node2|0.500000 -0.500000 1.700000
-V mf_rects|cr_tbox_node3|0.800000 -0.400000 1.200000
-V mf_rects|cr_trad_rect|640.000000
-V mf_rects|cr_trad_node0|0.500000 -0.500000 0.000000
-V mf_rects|cr_trad_node1|0.500000 -0.500000 0.000000
-V mf_rects|cr_trad_node2|0.500000 -0.500000 1.700000
-V mf_rects|cr_trad_node3|0.800000 -0.400000 1.200000
-V mf_rects|cr_brad_rect|640.000000
-V mf_rects|cr_brad_node0|4.000000 -4.000000 0.000000
-V mf_rects|cr_brad_node1|0.000000 0.000000 0.000000
-V mf_rects|cr_brad_node2|0.000000 0.000000 1.700000
-V mf_rects|cr_brad_node3|0.300000 0.100000 1.200000
-V mf_rects|cr_tnodex_rect|640.000000
-V mf_rects|cr_tnodex_node0|0.500000 -0.500000 0.000000
-V mf_rects|cr_tnodex_node1|1.000000 -0.500000 0.000000
-V mf_rects|cr_tnodex_node2|1.000000 -0.500000 1.700000
-V mf_rects|cr_tnodex_node3|1.300000 -0.400000 1.200000
-V mf_rects|cr_tfloat_rect|640.000000
-V mf_rects|cr_tfloat_node0|0.500000 -0.500000 0.000000
-V mf_rects|cr_tfloat_node1|0.500000 -0.500000 0.000000
-V mf_rects|cr_tfloat_node2|0.500000 -0.500000 1.700000
-V mf_rects|cr_tfloat_node3|0.800000 -0.400000 1.200000
-V mf_rects|cr_wide_rect|640.000000
-V mf_rects|cr_wide_node0|4.000000 -4.000000 0.000000
-V mf_rects|cr_wide_node1|0.000000 0.000000 0.000000
-V mf_rects|cr_wide_node2|0.000000 0.000000 1.700000
-V mf_rects|cr_wide_node3|0.300000 0.100000 1.200000
-V mf_rects|cr_rot_rect|640.000000
-V mf_rects|cr_rot_node0|4.000000 -4.000000 0.000000
-V mf_rects|cr_rot_node1|0.000000 0.000000 0.000000
-V mf_rects|cr_rot_node2|0.000000 0.000000 1.700000
-V mf_rects|cr_rot_node3|0.300000 0.100000 1.200000
-V mf_rects|cr_trot_rect|640.000000
-V mf_rects|cr_trot_node0|0.500000 -0.500000 0.000000
-V mf_rects|cr_trot_node1|0.500000 -0.500000 0.000000
-V mf_rects|cr_trot_node2|0.500000 -0.500000 1.700000
-V mf_rects|cr_trot_node3|0.400000 -0.200000 1.200000
-V mf_rects|cr_rotx_rect|640.000000
-V mf_rects|cr_rotx_node0|4.000000 -4.000000 0.000000
-V mf_rects|cr_rotx_node1|0.000000 0.000000 0.000000
-V mf_rects|cr_rotx_node2|0.000000 0.000000 1.700000
-V mf_rects|cr_rotx_node3|0.300000 0.100000 1.200000
-V mf_rects|cr_trotx_rect|640.000000
-V mf_rects|cr_trotx_node0|0.500000 -0.500000 0.000000
-V mf_rects|cr_trotx_node1|0.500000 -0.500000 0.000000
-V mf_rects|cr_trotx_node2|0.500000 -2.200000 0.000000
-V mf_rects|cr_trotx_node3|0.800000 -1.700000 0.100000
-V mf_rects|cr_piv_rect|640.000000
-V mf_rects|cr_piv_node0|4.500000 -4.000000 0.000000
-V mf_rects|cr_piv_node1|0.500000 0.000000 0.000000
-V mf_rects|cr_piv_node2|0.000000 0.000000 1.700000
-V mf_rects|cr_piv_node3|0.300000 0.100000 1.200000
-V mf_rects|cr_tpiv_rect|640.000000
-V mf_rects|cr_tpiv_node0|0.500000 -0.500000 0.000000
-V mf_rects|cr_tpiv_node1|1.500000 -0.500000 0.000000
-V mf_rects|cr_tpiv_node2|0.500000 -0.500000 1.700000
-V mf_rects|cr_tpiv_node3|0.800000 -0.400000 1.200000
-V mf_rects|cr_prot_rect|640.000000
-V mf_rects|cr_prot_node0|4.500000 -4.000000 0.000000
-V mf_rects|cr_prot_node1|0.000000 0.500000 0.000000
-V mf_rects|cr_prot_node2|0.000000 0.000000 1.700000
-V mf_rects|cr_prot_node3|0.300000 0.100000 1.200000
-V mf_rects|cr_tprot_rect|640.000000
-V mf_rects|cr_tprot_node0|0.500000 -0.500000 0.000000
-V mf_rects|cr_tprot_node1|0.500000 0.500000 0.000000
-V mf_rects|cr_tprot_node2|0.500000 -0.500000 1.700000
-V mf_rects|cr_tprot_node3|0.400000 -0.200000 1.200000
-END mf_rects
+SKIP mf_rects
 BEGIN hdr_ctrx_wall_sphere
 V hdr_ctrx_wall_sphere|ctrx_wall_sphere_f0|0.000000 -1.000000 0.000000
 V hdr_ctrx_wall_sphere|ctrx_wall_sphere_f15|-0.042799 -1.362689 0.000000
@@ -3320,18 +3243,18 @@ V registry_keys|RenderingMode|"nil"
 V registry_keys|Fullscreen|"nil"
 END registry_keys
 BEGIN registry_write
-V registry_write|SfxVolume|"80" 1.000000
-V registry_write|SpeechMode|"2" 1.000000
-V registry_write|MovementMode|"FALSE" 1.000000
-V registry_write|MusicVolume|"90" 1.000000
-V registry_write|Gamma|"1" 1.000000
-V registry_write|VoiceEffects|"FALSE" 1.000000
-V registry_write|JoystickEnabled|"FALSE" 1.000000
-V registry_write|VoiceVolume|"70" 1.000000
-V registry_write|GrimLastSet|"cr_flat.set" 1.000000
 V registry_write|Transcript|"FALSE" 1.000000
 V registry_write|TextSpeed|"5" 1.000000
+V registry_write|SpeechMode|"2" 1.000000
+V registry_write|MovementMode|"FALSE" 1.000000
+V registry_write|VoiceVolume|"70" 1.000000
+V registry_write|GrimLastSet|"cr_flat.set" 1.000000
+V registry_write|VoiceEffects|"FALSE" 1.000000
 V registry_write|LastSavedGame|"3" 1.000000
+V registry_write|MusicVolume|"90" 1.000000
+V registry_write|JoystickEnabled|"FALSE" 1.000000
+V registry_write|SfxVolume|"80" 1.000000
+V registry_write|Gamma|"1" 1.000000
 END registry_write
 BEGIN registry_kinds
 V registry_kinds|string_digits|"string" "12"
@@ -3371,13 +3294,13 @@ END save_mode
 BEGIN save_actor_attrs
 V save_actor_attrs|changed|7.000000
 V save_actor_attrs|pass|"loading"
-V save_actor_attrs|kept_pos|1.000000
-V save_actor_attrs|kept_sector|1.000000
 V save_actor_attrs|kept_rot|"5 -180 -3 nil nil" "5 -182.793 -3 nil nil"
-V save_actor_attrs|kept_costume|1.000000
+V save_actor_attrs|kept_pos|1.000000
 V save_actor_attrs|kept_look_rate|1.000000
-V save_actor_attrs|kept_walk_rate|1.000000
 V save_actor_attrs|kept_talk_color|1.000000
+V save_actor_attrs|kept_sector|1.000000
+V save_actor_attrs|kept_costume|1.000000
+V save_actor_attrs|kept_walk_rate|1.000000
 V save_actor_attrs|kept_timescale|1.000000
 END save_actor_attrs
 BEGIN save_walking
@@ -3400,18 +3323,18 @@ END save_chore
 BEGIN save_set
 V save_set|changed|4.000000
 V save_set|pass|"loading"
-V save_set|kept_setup|1.000000
-V save_set|kept_right|1.000000
-V save_set|kept_left|1.000000
 V save_set|kept_off|1.000000
+V save_set|kept_left|1.000000
+V save_set|kept_setup|1.000000
 V save_set|kept_active|1.000000
+V save_set|kept_right|1.000000
 END save_set
 BEGIN save_setup
 V save_setup|changed|3.000000
 V save_setup|pass|"loading"
+V save_setup|kept_screen|1.000000
 V save_setup|kept_fov|1.000000
 V save_setup|kept_setup|1.000000
-V save_setup|kept_screen|1.000000
 END save_setup
 BEGIN save_text
 V save_text|changed|2.000000
@@ -3436,12 +3359,12 @@ END save_object_state
 BEGIN save_lua
 V save_lua|changed|3.000000
 V save_lua|pass|"loading"
-V save_lua|kept_s|1.000000
 V save_lua|kept_deep|1.000000
-V save_lua|kept_n|1.000000
+V save_lua|kept_s|1.000000
 V save_lua|kept_task|1.000000
-V save_lua|kept_f|1.000000
 V save_lua|kept_self|1.000000
+V save_lua|kept_n|1.000000
+V save_lua|kept_f|1.000000
 V save_lua|task_counts|1.000000
 END save_lua
 BEGIN save_find_dir
@@ -3449,7 +3372,7 @@ V save_find_dir|grim|" grim03.gsv grim07.gsv"
 V save_find_dir|any|1.000000
 END save_find_dir
 BEGIN save_find_others
-V save_find_others|others|1.000000
+V save_find_others|others|nil
 END save_find_others
 BEGIN save_find_nodir
 V save_find_nodir|grim|""
@@ -3639,8 +3562,8 @@ V sound_play|before|"0 0 -4 -4 -4 -4"
 V sound_play|id|"number"
 V sound_play|at_once|"1 0 1 124 127 64"
 V sound_play|next_frame|"1 0 1 124 127 64"
-V sound_play|frames|nil 120.000000
-V sound_play|after|"1 0 1 124 127 64"
+V sound_play|frames|1.000000 26.000000
+V sound_play|after|"0 0 -4 -4 -4 -4"
 END sound_play
 BEGIN sound_params
 V sound_params|set|"1 0 1 100 90 20"
@@ -3649,8 +3572,8 @@ V sound_params|group|"1 0 3 100 90 0"
 V sound_params|stopped|"0 0 -4 -4 -4 -4"
 END sound_params
 BEGIN sound_fade
-V sound_fade|trace|"127/64 127/64 127/64 127/64 127/64 127/64 127/64 127/64 127/64 127/64 127/64 127/64 127/64 127/64 127/64 127/64 127/64 127/64 127/64 127/64 127/64 127/64 127/64 127/64 127/64 "
-V sound_fade|after|"1 0 1 64 127 64"
+V sound_fade|trace|"120/67 120/67 120/67 120/67 120/67 120/67 80/87 80/87 80/87 80/87 80/87 80/87 40/107 40/107 40/107 40/107 40/107 40/107 -4/-4 -4/-4 -4/-4 -4/-4 -4/-4 -4/-4 -4/-4 "
+V sound_fade|after|"0 0 -4 -4 -4 -4"
 END sound_fade
 BEGIN sound_twice
 V sound_twice|two|"2 0 1 64 127 64"
@@ -3664,7 +3587,7 @@ V sound_groups|all_stopped|"0 0 -4 -4 -4 -4"
 END sound_groups
 BEGIN sound_pause_time
 V sound_pause_time|paused_1s|1.000000
-V sound_pause_time|left_after_resume|1.000000 120.000000
+V sound_pause_time|left_after_resume|1.000000 32.000000
 END sound_pause_time
 BEGIN sound_old
 V sound_old|play|nil
@@ -4090,29 +4013,29 @@ V amc_shadow_below|below_dark|none
 END amc_shadow_below
 BEGIN asv_talk_lip
 V asv_talk_lip|changed|4.000000
-V asv_talk_lip|now_going|"nil"
-V asv_talk_lip|now_lv|"100"
 V asv_talk_lip|now_actor_going|"nil"
 V asv_talk_lip|now_pos|"0.5 nil nil nil nil"
+V asv_talk_lip|now_lv|"100"
+V asv_talk_lip|now_going|"nil"
 V asv_talk_lip|pass|"loading"
 V asv_talk_lip|kept_going|"1" "nil"
-V asv_talk_lip|kept_pos|1.000000
 V asv_talk_lip|kept_actor_going|"1" "nil"
 V asv_talk_lip|kept_lv|"2" "100"
+V asv_talk_lip|kept_pos|1.000000
 V asv_talk_lip|after_3|100.000000
 V asv_talk_lip|shut_up|100.000000
 END asv_talk_lip
 BEGIN asv_talk_mumble
 V asv_talk_mumble|changed|4.000000
 V asv_talk_mumble|now_going|"nil"
-V asv_talk_mumble|now_pos|"0.5 nil nil nil nil"
 V asv_talk_mumble|now_actor_going|"nil"
 V asv_talk_mumble|now_lv|"100"
+V asv_talk_mumble|now_pos|"0.5 nil nil nil nil"
 V asv_talk_mumble|pass|"loading"
-V asv_talk_mumble|kept_going|"1" "nil"
+V asv_talk_mumble|kept_lv|"50" "100"
 V asv_talk_mumble|kept_pos|1.000000
 V asv_talk_mumble|kept_actor_going|"1" "nil"
-V asv_talk_mumble|kept_lv|"50" "100"
+V asv_talk_mumble|kept_going|"1" "nil"
 V asv_talk_mumble|after_3|100.000000
 V asv_talk_mumble|shut_up|100.000000
 END asv_talk_mumble
@@ -4122,23 +4045,23 @@ V asv_shadow|saved_dark|none
 V asv_shadow|killed_dark|none
 V asv_shadow|changed|0.000000
 V asv_shadow|pass|"loading"
-V asv_shadow|kept_pos|1.000000
 V asv_shadow|kept_costume|1.000000
+V asv_shadow|kept_pos|1.000000
 V asv_shadow|loaded_dark|none
 END asv_shadow
 BEGIN asv_shadow_slot
 V asv_shadow_slot|saved_dark|none
 V asv_shadow_slot|changed|0.000000
 V asv_shadow_slot|pass|"loading"
-V asv_shadow_slot|kept_pos|1.000000
 V asv_shadow_slot|kept_costume|1.000000
+V asv_shadow_slot|kept_pos|1.000000
 V asv_shadow_slot|loaded_dark|none
 END asv_shadow_slot
 BEGIN asv_shadow_other_set
 V asv_shadow_other_set|changed|0.000000
 V asv_shadow_other_set|pass|"loading"
-V asv_shadow_other_set|kept_pos|1.000000
 V asv_shadow_other_set|kept_costume|1.000000
+V asv_shadow_other_set|kept_pos|1.000000
 V asv_shadow_other_set|kept_set|1.000000
 V asv_shadow_other_set|loaded_dark|none
 END asv_shadow_other_set
@@ -4146,23 +4069,23 @@ BEGIN asv_costume_stack
 V asv_costume_stack|lv_3|0.000000
 V asv_costume_stack|lv_8|0.000000
 V asv_costume_stack|changed|7.000000
-V asv_costume_stack|now_top|"cr_luav.cos"
-V asv_costume_stack|now_c2|"nil"
-V asv_costume_stack|now_c1|"nil"
 V asv_costume_stack|now_choring|"nil"
 V asv_costume_stack|now_c0|"cr_luav.cos"
-V asv_costume_stack|now_depth|"1"
 V asv_costume_stack|now_lv|"-1"
+V asv_costume_stack|now_top|"cr_luav.cos"
+V asv_costume_stack|now_depth|"1"
+V asv_costume_stack|now_c2|"nil"
+V asv_costume_stack|now_c1|"nil"
 V asv_costume_stack|pass|"loading"
+V asv_costume_stack|kept_c0|1.000000
 V asv_costume_stack|kept_depth|1.000000
-V asv_costume_stack|kept_c2|1.000000
-V asv_costume_stack|kept_choring|1.000000
-V asv_costume_stack|kept_pos|1.000000
 V asv_costume_stack|kept_c1|1.000000
 V asv_costume_stack|kept_c3|1.000000
-V asv_costume_stack|kept_c0|1.000000
-V asv_costume_stack|kept_top|1.000000
+V asv_costume_stack|kept_c2|1.000000
 V asv_costume_stack|kept_lv|1.000000
+V asv_costume_stack|kept_top|1.000000
+V asv_costume_stack|kept_pos|1.000000
+V asv_costume_stack|kept_choring|1.000000
 V asv_costume_stack|after_trace|"0/17 0/17 0/17 0/17 0/17 0/17 0/17 0/17 0/17 0/17 0/17 0/17 0/17 0/17 0/17 0/17 0/17 0/17 0/17 0/17 0/17 0/17 0/17 0/17 0/17 0/17 0/17 0/17 0/17 0/17 0/17 0/17 0/17 0/17 0/17 0/17 0/17 0/17 0/17 0/17 0/17 0/17 0/17 0/17 0/17 0/17 0/17 0/17 0/17 0/17 0/17 0/17 0/17 0/17 0/17 0/17 0/17 0/17 0/17 0/17 "
 V asv_costume_stack|after_frames|60.000000
 V asv_costume_stack|after_last|0.000000
@@ -4174,15 +4097,15 @@ BEGIN asv_costume_stack_top
 V asv_costume_stack_top|lv_3|1.000000
 V asv_costume_stack_top|lv_8|2.000000
 V asv_costume_stack_top|changed|4.000000
-V asv_costume_stack_top|now_choring|"nil"
-V asv_costume_stack_top|now_lv|"-1"
-V asv_costume_stack_top|now_top|"cr_talk.cos"
 V asv_costume_stack_top|now_depth|"2"
+V asv_costume_stack_top|now_lv|"-1"
+V asv_costume_stack_top|now_choring|"nil"
+V asv_costume_stack_top|now_top|"cr_talk.cos"
 V asv_costume_stack_top|pass|"loading"
-V asv_costume_stack_top|kept_lv|1.000000
 V asv_costume_stack_top|kept_top|1.000000
-V asv_costume_stack_top|kept_choring|1.000000
 V asv_costume_stack_top|kept_depth|1.000000
+V asv_costume_stack_top|kept_lv|1.000000
+V asv_costume_stack_top|kept_choring|1.000000
 V asv_costume_stack_top|after_trace|"2/17 2/17 2/17 2/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 3/17 "
 V asv_costume_stack_top|after_frames|48.000000
 V asv_costume_stack_top|after_last|4.000000
@@ -5163,23 +5086,23 @@ BEGIN args_BuildCache_fn
 V args_BuildCache_fn|r|nil
 END args_BuildCache_fn
 BEGIN args_CR_LOOKING_none
-V args_CR_LOOKING_none|r|nil
-END args_CR_LOOKING_none
+ERROR args_CR_LOOKING_none call expression not a function
+FAILED args_CR_LOOKING_none
 BEGIN args_CR_LOOKING_nil
-V args_CR_LOOKING_nil|r|nil
-END args_CR_LOOKING_nil
+ERROR args_CR_LOOKING_nil call expression not a function
+FAILED args_CR_LOOKING_nil
 BEGIN args_CR_LOOKING_str
-V args_CR_LOOKING_str|r|nil
-END args_CR_LOOKING_str
+ERROR args_CR_LOOKING_str call expression not a function
+FAILED args_CR_LOOKING_str
 BEGIN args_CR_LOOKING_num
-V args_CR_LOOKING_num|r|nil
-END args_CR_LOOKING_num
+ERROR args_CR_LOOKING_num call expression not a function
+FAILED args_CR_LOOKING_num
 BEGIN args_CR_LOOKING_tab
-V args_CR_LOOKING_tab|r|nil
-END args_CR_LOOKING_tab
+ERROR args_CR_LOOKING_tab call expression not a function
+FAILED args_CR_LOOKING_tab
 BEGIN args_CR_LOOKING_fn
-V args_CR_LOOKING_fn|r|nil
-END args_CR_LOOKING_fn
+ERROR args_CR_LOOKING_fn call expression not a function
+FAILED args_CR_LOOKING_fn
 BEGIN args_CacheRect_none
 V args_CacheRect_none|r|userdata
 END args_CacheRect_none
@@ -5712,7 +5635,7 @@ BEGIN args_DrawLine_fn
 V args_DrawLine_fn|r|nil
 END args_DrawLine_fn
 BEGIN args_DrawLine_p0
-V args_DrawLine_p0|r|21.000000
+V args_DrawLine_p0|r|6.000000
 END args_DrawLine_p0
 BEGIN args_DrawLine_p1_nil
 V args_DrawLine_p1_nil|r|nil
@@ -5721,16 +5644,16 @@ BEGIN args_DrawLine_p1_str
 V args_DrawLine_p1_str|r|nil
 END args_DrawLine_p1_str
 BEGIN args_DrawLine_p1_num
-V args_DrawLine_p1_num|r|22.000000
+V args_DrawLine_p1_num|r|7.000000
 END args_DrawLine_p1_num
 BEGIN args_DrawLine_p1_tab
 V args_DrawLine_p1_tab|r|nil
 END args_DrawLine_p1_tab
 BEGIN args_DrawLine_p1_neg
-V args_DrawLine_p1_neg|r|23.000000
+V args_DrawLine_p1_neg|r|8.000000
 END args_DrawLine_p1_neg
 BEGIN args_DrawLine_p1_big
-V args_DrawLine_p1_big|r|24.000000
+V args_DrawLine_p1_big|r|9.000000
 END args_DrawLine_p1_big
 BEGIN args_DrawLine_p2_nil
 V args_DrawLine_p2_nil|r|nil
@@ -5739,16 +5662,16 @@ BEGIN args_DrawLine_p2_str
 V args_DrawLine_p2_str|r|nil
 END args_DrawLine_p2_str
 BEGIN args_DrawLine_p2_num
-V args_DrawLine_p2_num|r|25.000000
+V args_DrawLine_p2_num|r|10.000000
 END args_DrawLine_p2_num
 BEGIN args_DrawLine_p2_tab
 V args_DrawLine_p2_tab|r|nil
 END args_DrawLine_p2_tab
 BEGIN args_DrawLine_p2_neg
-V args_DrawLine_p2_neg|r|26.000000
+V args_DrawLine_p2_neg|r|11.000000
 END args_DrawLine_p2_neg
 BEGIN args_DrawLine_p2_big
-V args_DrawLine_p2_big|r|27.000000
+V args_DrawLine_p2_big|r|12.000000
 END args_DrawLine_p2_big
 BEGIN args_DrawLine_p3_nil
 V args_DrawLine_p3_nil|r|nil
@@ -5757,16 +5680,16 @@ BEGIN args_DrawLine_p3_str
 V args_DrawLine_p3_str|r|nil
 END args_DrawLine_p3_str
 BEGIN args_DrawLine_p3_num
-V args_DrawLine_p3_num|r|28.000000
+V args_DrawLine_p3_num|r|13.000000
 END args_DrawLine_p3_num
 BEGIN args_DrawLine_p3_tab
 V args_DrawLine_p3_tab|r|nil
 END args_DrawLine_p3_tab
 BEGIN args_DrawLine_p3_neg
-V args_DrawLine_p3_neg|r|29.000000
+V args_DrawLine_p3_neg|r|14.000000
 END args_DrawLine_p3_neg
 BEGIN args_DrawLine_p3_big
-V args_DrawLine_p3_big|r|30.000000
+V args_DrawLine_p3_big|r|15.000000
 END args_DrawLine_p3_big
 BEGIN args_DrawLine_p4_nil
 V args_DrawLine_p4_nil|r|nil
@@ -5775,22 +5698,22 @@ BEGIN args_DrawLine_p4_str
 V args_DrawLine_p4_str|r|nil
 END args_DrawLine_p4_str
 BEGIN args_DrawLine_p4_num
-V args_DrawLine_p4_num|r|31.000000
+V args_DrawLine_p4_num|r|16.000000
 END args_DrawLine_p4_num
 BEGIN args_DrawLine_p4_tab
 V args_DrawLine_p4_tab|r|nil
 END args_DrawLine_p4_tab
 BEGIN args_DrawLine_p4_neg
-V args_DrawLine_p4_neg|r|32.000000
+V args_DrawLine_p4_neg|r|17.000000
 END args_DrawLine_p4_neg
 BEGIN args_DrawLine_p4_big
-V args_DrawLine_p4_big|r|33.000000
+V args_DrawLine_p4_big|r|18.000000
 END args_DrawLine_p4_big
 BEGIN args_DrawLine_p5_nil
-V args_DrawLine_p5_nil|r|34.000000
+V args_DrawLine_p5_nil|r|19.000000
 END args_DrawLine_p5_nil
 BEGIN args_DrawLine_p5_str
-V args_DrawLine_p5_str|r|35.000000
+V args_DrawLine_p5_str|r|20.000000
 END args_DrawLine_p5_str
 BEGIN args_DrawPolygon_none
 V args_DrawPolygon_none|r|nil
@@ -5844,7 +5767,7 @@ BEGIN args_DrawRectangle_fn
 V args_DrawRectangle_fn|r|nil
 END args_DrawRectangle_fn
 BEGIN args_DrawRectangle_p0
-V args_DrawRectangle_p0|r|36.000000
+V args_DrawRectangle_p0|r|21.000000
 END args_DrawRectangle_p0
 BEGIN args_DrawRectangle_p1_nil
 V args_DrawRectangle_p1_nil|r|nil
@@ -5853,16 +5776,16 @@ BEGIN args_DrawRectangle_p1_str
 V args_DrawRectangle_p1_str|r|nil
 END args_DrawRectangle_p1_str
 BEGIN args_DrawRectangle_p1_num
-V args_DrawRectangle_p1_num|r|37.000000
+V args_DrawRectangle_p1_num|r|22.000000
 END args_DrawRectangle_p1_num
 BEGIN args_DrawRectangle_p1_tab
 V args_DrawRectangle_p1_tab|r|nil
 END args_DrawRectangle_p1_tab
 BEGIN args_DrawRectangle_p1_neg
-V args_DrawRectangle_p1_neg|r|38.000000
+V args_DrawRectangle_p1_neg|r|23.000000
 END args_DrawRectangle_p1_neg
 BEGIN args_DrawRectangle_p1_big
-V args_DrawRectangle_p1_big|r|39.000000
+V args_DrawRectangle_p1_big|r|24.000000
 END args_DrawRectangle_p1_big
 BEGIN args_DrawRectangle_p2_nil
 V args_DrawRectangle_p2_nil|r|nil
@@ -5871,16 +5794,16 @@ BEGIN args_DrawRectangle_p2_str
 V args_DrawRectangle_p2_str|r|nil
 END args_DrawRectangle_p2_str
 BEGIN args_DrawRectangle_p2_num
-V args_DrawRectangle_p2_num|r|40.000000
+V args_DrawRectangle_p2_num|r|25.000000
 END args_DrawRectangle_p2_num
 BEGIN args_DrawRectangle_p2_tab
 V args_DrawRectangle_p2_tab|r|nil
 END args_DrawRectangle_p2_tab
 BEGIN args_DrawRectangle_p2_neg
-V args_DrawRectangle_p2_neg|r|41.000000
+V args_DrawRectangle_p2_neg|r|26.000000
 END args_DrawRectangle_p2_neg
 BEGIN args_DrawRectangle_p2_big
-V args_DrawRectangle_p2_big|r|42.000000
+V args_DrawRectangle_p2_big|r|27.000000
 END args_DrawRectangle_p2_big
 BEGIN args_DrawRectangle_p3_nil
 V args_DrawRectangle_p3_nil|r|nil
@@ -5889,16 +5812,16 @@ BEGIN args_DrawRectangle_p3_str
 V args_DrawRectangle_p3_str|r|nil
 END args_DrawRectangle_p3_str
 BEGIN args_DrawRectangle_p3_num
-V args_DrawRectangle_p3_num|r|43.000000
+V args_DrawRectangle_p3_num|r|28.000000
 END args_DrawRectangle_p3_num
 BEGIN args_DrawRectangle_p3_tab
 V args_DrawRectangle_p3_tab|r|nil
 END args_DrawRectangle_p3_tab
 BEGIN args_DrawRectangle_p3_neg
-V args_DrawRectangle_p3_neg|r|44.000000
+V args_DrawRectangle_p3_neg|r|29.000000
 END args_DrawRectangle_p3_neg
 BEGIN args_DrawRectangle_p3_big
-V args_DrawRectangle_p3_big|r|45.000000
+V args_DrawRectangle_p3_big|r|30.000000
 END args_DrawRectangle_p3_big
 BEGIN args_DrawRectangle_p4_nil
 V args_DrawRectangle_p4_nil|r|nil
@@ -5907,22 +5830,22 @@ BEGIN args_DrawRectangle_p4_str
 V args_DrawRectangle_p4_str|r|nil
 END args_DrawRectangle_p4_str
 BEGIN args_DrawRectangle_p4_num
-V args_DrawRectangle_p4_num|r|46.000000
+V args_DrawRectangle_p4_num|r|31.000000
 END args_DrawRectangle_p4_num
 BEGIN args_DrawRectangle_p4_tab
 V args_DrawRectangle_p4_tab|r|nil
 END args_DrawRectangle_p4_tab
 BEGIN args_DrawRectangle_p4_neg
-V args_DrawRectangle_p4_neg|r|47.000000
+V args_DrawRectangle_p4_neg|r|32.000000
 END args_DrawRectangle_p4_neg
 BEGIN args_DrawRectangle_p4_big
-V args_DrawRectangle_p4_big|r|48.000000
+V args_DrawRectangle_p4_big|r|33.000000
 END args_DrawRectangle_p4_big
 BEGIN args_DrawRectangle_p5_nil
-V args_DrawRectangle_p5_nil|r|49.000000
+V args_DrawRectangle_p5_nil|r|34.000000
 END args_DrawRectangle_p5_nil
 BEGIN args_DrawRectangle_p5_str
-V args_DrawRectangle_p5_str|r|50.000000
+V args_DrawRectangle_p5_str|r|35.000000
 END args_DrawRectangle_p5_str
 BEGIN args_DriveActorTo_none
 V args_DriveActorTo_none|r|nil
@@ -6859,7 +6782,7 @@ V args_GetActorNodeLocation_p2_tab|r|nil
 END args_GetActorNodeLocation_p2_tab
 BEGIN args_GetActorNodeLocation_p2_neg
 U args_GetActorNodeLocation_p2_neg|r
-V args_GetActorNodeLocation_p2_neg|r|0.000000 0.000000 0.000000
+V args_GetActorNodeLocation_p2_neg|r|0.000000 0.000000 326.463928
 END args_GetActorNodeLocation_p2_neg
 SKIP args_GetActorNodeLocation_p2_big
 BEGIN args_GetActorPos_none
@@ -7831,27 +7754,27 @@ V args_GetCurrentSetup_p1_tab|r|nil
 END args_GetCurrentSetup_p1_tab
 BEGIN args_GetDiskFreeSpace_none
 U args_GetDiskFreeSpace_none|r
-V args_GetDiskFreeSpace_none|r|40614.906250
+V args_GetDiskFreeSpace_none|r|149809.203125
 END args_GetDiskFreeSpace_none
 BEGIN args_GetDiskFreeSpace_nil
 U args_GetDiskFreeSpace_nil|r
-V args_GetDiskFreeSpace_nil|r|40614.906250
+V args_GetDiskFreeSpace_nil|r|149809.203125
 END args_GetDiskFreeSpace_nil
 BEGIN args_GetDiskFreeSpace_str
 U args_GetDiskFreeSpace_str|r
-V args_GetDiskFreeSpace_str|r|40614.906250
+V args_GetDiskFreeSpace_str|r|149809.203125
 END args_GetDiskFreeSpace_str
 BEGIN args_GetDiskFreeSpace_num
 U args_GetDiskFreeSpace_num|r
-V args_GetDiskFreeSpace_num|r|40614.906250
+V args_GetDiskFreeSpace_num|r|149809.203125
 END args_GetDiskFreeSpace_num
 BEGIN args_GetDiskFreeSpace_tab
 U args_GetDiskFreeSpace_tab|r
-V args_GetDiskFreeSpace_tab|r|40614.906250
+V args_GetDiskFreeSpace_tab|r|149809.203125
 END args_GetDiskFreeSpace_tab
 BEGIN args_GetDiskFreeSpace_fn
 U args_GetDiskFreeSpace_fn|r
-V args_GetDiskFreeSpace_fn|r|40614.906250
+V args_GetDiskFreeSpace_fn|r|149809.203125
 END args_GetDiskFreeSpace_fn
 SKIP args_GetFontDimensions_none
 SKIP args_GetFontDimensions_nil
@@ -8064,27 +7987,27 @@ V args_GetLightType_l_tab|r|"omni"
 END args_GetLightType_l_tab
 BEGIN args_GetMemoryUsage_none
 U args_GetMemoryUsage_none|r
-V args_GetMemoryUsage_none|r|13990049.000000
+V args_GetMemoryUsage_none|r|9566535.000000
 END args_GetMemoryUsage_none
 BEGIN args_GetMemoryUsage_nil
 U args_GetMemoryUsage_nil|r
-V args_GetMemoryUsage_nil|r|13991184.000000
+V args_GetMemoryUsage_nil|r|9567665.000000
 END args_GetMemoryUsage_nil
 BEGIN args_GetMemoryUsage_str
 U args_GetMemoryUsage_str|r
-V args_GetMemoryUsage_str|r|13992304.000000
+V args_GetMemoryUsage_str|r|9568780.000000
 END args_GetMemoryUsage_str
 BEGIN args_GetMemoryUsage_num
 U args_GetMemoryUsage_num|r
-V args_GetMemoryUsage_num|r|13993424.000000
+V args_GetMemoryUsage_num|r|9569895.000000
 END args_GetMemoryUsage_num
 BEGIN args_GetMemoryUsage_tab
 U args_GetMemoryUsage_tab|r
-V args_GetMemoryUsage_tab|r|13994648.000000
+V args_GetMemoryUsage_tab|r|9571114.000000
 END args_GetMemoryUsage_tab
 BEGIN args_GetMemoryUsage_fn
 U args_GetMemoryUsage_fn|r
-V args_GetMemoryUsage_fn|r|13995765.000000
+V args_GetMemoryUsage_fn|r|9572226.000000
 END args_GetMemoryUsage_fn
 BEGIN args_GetPhysicalBytes_none
 V args_GetPhysicalBytes_none|r|2147483648.000000
@@ -8447,22 +8370,22 @@ BEGIN args_GetSoundParameters_fn
 V args_GetSoundParameters_fn|r|8.000000 20.000000 127.000000 1.500000
 END args_GetSoundParameters_fn
 BEGIN args_GetSpeechMode_none
-V args_GetSpeechMode_none|r|3.000000
+V args_GetSpeechMode_none|r|2.000000
 END args_GetSpeechMode_none
 BEGIN args_GetSpeechMode_nil
-V args_GetSpeechMode_nil|r|3.000000
+V args_GetSpeechMode_nil|r|2.000000
 END args_GetSpeechMode_nil
 BEGIN args_GetSpeechMode_str
-V args_GetSpeechMode_str|r|3.000000
+V args_GetSpeechMode_str|r|2.000000
 END args_GetSpeechMode_str
 BEGIN args_GetSpeechMode_num
-V args_GetSpeechMode_num|r|3.000000
+V args_GetSpeechMode_num|r|2.000000
 END args_GetSpeechMode_num
 BEGIN args_GetSpeechMode_tab
-V args_GetSpeechMode_tab|r|3.000000
+V args_GetSpeechMode_tab|r|2.000000
 END args_GetSpeechMode_tab
 BEGIN args_GetSpeechMode_fn
-V args_GetSpeechMode_fn|r|3.000000
+V args_GetSpeechMode_fn|r|2.000000
 END args_GetSpeechMode_fn
 BEGIN args_GetTextCharPosition_none
 V args_GetTextCharPosition_none|r|nil
@@ -8591,46 +8514,46 @@ BEGIN args_GetTextObjectDimensions_p1_big
 V args_GetTextObjectDimensions_p1_big|r|nil
 END args_GetTextObjectDimensions_p1_big
 BEGIN args_GetTextSpeed_none
-V args_GetTextSpeed_none|r|7.000000
+V args_GetTextSpeed_none|r|6.000000
 END args_GetTextSpeed_none
 BEGIN args_GetTextSpeed_nil
-V args_GetTextSpeed_nil|r|7.000000
+V args_GetTextSpeed_nil|r|6.000000
 END args_GetTextSpeed_nil
 BEGIN args_GetTextSpeed_str
-V args_GetTextSpeed_str|r|7.000000
+V args_GetTextSpeed_str|r|6.000000
 END args_GetTextSpeed_str
 BEGIN args_GetTextSpeed_num
-V args_GetTextSpeed_num|r|7.000000
+V args_GetTextSpeed_num|r|6.000000
 END args_GetTextSpeed_num
 BEGIN args_GetTextSpeed_tab
-V args_GetTextSpeed_tab|r|7.000000
+V args_GetTextSpeed_tab|r|6.000000
 END args_GetTextSpeed_tab
 BEGIN args_GetTextSpeed_fn
-V args_GetTextSpeed_fn|r|7.000000
+V args_GetTextSpeed_fn|r|6.000000
 END args_GetTextSpeed_fn
 BEGIN args_GetTickCount_none
 U args_GetTickCount_none|r
-V args_GetTickCount_none|r|306166560.000000
+V args_GetTickCount_none|r|360446176.000000
 END args_GetTickCount_none
 BEGIN args_GetTickCount_nil
 U args_GetTickCount_nil|r
-V args_GetTickCount_nil|r|306166560.000000
+V args_GetTickCount_nil|r|360446176.000000
 END args_GetTickCount_nil
 BEGIN args_GetTickCount_str
 U args_GetTickCount_str|r
-V args_GetTickCount_str|r|306166560.000000
+V args_GetTickCount_str|r|360446176.000000
 END args_GetTickCount_str
 BEGIN args_GetTickCount_num
 U args_GetTickCount_num|r
-V args_GetTickCount_num|r|306166560.000000
+V args_GetTickCount_num|r|360446176.000000
 END args_GetTickCount_num
 BEGIN args_GetTickCount_tab
 U args_GetTickCount_tab|r
-V args_GetTickCount_tab|r|306166560.000000
+V args_GetTickCount_tab|r|360446176.000000
 END args_GetTickCount_tab
 BEGIN args_GetTickCount_fn
 U args_GetTickCount_fn|r
-V args_GetTickCount_fn|r|306166560.000000
+V args_GetTickCount_fn|r|360446176.000000
 END args_GetTickCount_fn
 BEGIN args_GetTranslationMode_none
 V args_GetTranslationMode_none|r|0.000000
@@ -8651,10 +8574,10 @@ BEGIN args_GetTranslationMode_fn
 V args_GetTranslationMode_fn|r|0.000000
 END args_GetTranslationMode_fn
 BEGIN args_GetVisibleThings_none
-V args_GetVisibleThings_none|r|table table
+V args_GetVisibleThings_none|r|nil
 END args_GetVisibleThings_none
 BEGIN args_GetVisibleThings_nil
-V args_GetVisibleThings_nil|r|table table
+V args_GetVisibleThings_nil|r|nil
 END args_GetVisibleThings_nil
 BEGIN args_GetVisibleThings_str
 V args_GetVisibleThings_str|r|table
@@ -10140,7 +10063,7 @@ BEGIN args_IsSoundPlaying_p1_big
 V args_IsSoundPlaying_p1_big|r|nil
 END args_IsSoundPlaying_p1_big
 BEGIN args_JustLoaded_none
-V args_JustLoaded_none|r|1.000000
+V args_JustLoaded_none|r|nil
 END args_JustLoaded_none
 BEGIN args_JustLoaded_nil
 V args_JustLoaded_nil|r|nil
@@ -10848,10 +10771,10 @@ BEGIN args_MakeTextObject_nil
 V args_MakeTextObject_nil|r|nil
 END args_MakeTextObject_nil
 BEGIN args_MakeTextObject_str
-V args_MakeTextObject_str|r|userdata 36.000000 12.000000
+V args_MakeTextObject_str|r|userdata 24.000000 6.000000
 END args_MakeTextObject_str
 BEGIN args_MakeTextObject_num
-V args_MakeTextObject_num|r|userdata 20.000000 12.000000
+V args_MakeTextObject_num|r|userdata 12.000000 6.000000
 END args_MakeTextObject_num
 BEGIN args_MakeTextObject_tab
 V args_MakeTextObject_tab|r|nil
@@ -10875,7 +10798,7 @@ BEGIN args_MakeTextObject_t_tab
 V args_MakeTextObject_t_tab|r|nil
 END args_MakeTextObject_t_tab
 BEGIN args_MakeTextObject_p0
-V args_MakeTextObject_p0|r|userdata 6.000000 12.000000
+V args_MakeTextObject_p0|r|userdata 4.000000 6.000000
 END args_MakeTextObject_p0
 BEGIN args_MakeTextObject_p1_nil
 V args_MakeTextObject_p1_nil|r|nil
@@ -10884,10 +10807,10 @@ BEGIN args_MakeTextObject_p1_tab
 V args_MakeTextObject_p1_tab|r|nil
 END args_MakeTextObject_p1_tab
 BEGIN args_MakeTextObject_p2_nil
-V args_MakeTextObject_p2_nil|r|userdata 6.000000 12.000000
+V args_MakeTextObject_p2_nil|r|userdata 4.000000 6.000000
 END args_MakeTextObject_p2_nil
 BEGIN args_MakeTextObject_p2_str
-V args_MakeTextObject_p2_str|r|userdata 6.000000 12.000000
+V args_MakeTextObject_p2_str|r|userdata 4.000000 6.000000
 END args_MakeTextObject_p2_str
 BEGIN args_MarkDirtyRect_none
 V args_MarkDirtyRect_none|r|nil
@@ -12134,27 +12057,27 @@ V args_ReadRegistryValue_p1_tab|r|nil
 END args_ReadRegistryValue_p1_tab
 BEGIN args_ResReport_none
 U args_ResReport_none|r
-V args_ResReport_none|r|14647392.000000
+V args_ResReport_none|r|10225321.000000
 END args_ResReport_none
 BEGIN args_ResReport_nil
 U args_ResReport_nil|r
-V args_ResReport_nil|r|14648663.000000
+V args_ResReport_nil|r|10226592.000000
 END args_ResReport_nil
 BEGIN args_ResReport_str
 U args_ResReport_str|r
-V args_ResReport_str|r|14649919.000000
+V args_ResReport_str|r|10227848.000000
 END args_ResReport_str
 BEGIN args_ResReport_num
 U args_ResReport_num|r
-V args_ResReport_num|r|14651175.000000
+V args_ResReport_num|r|10229904.000000
 END args_ResReport_num
 BEGIN args_ResReport_tab
 U args_ResReport_tab|r
-V args_ResReport_tab|r|14652535.000000
+V args_ResReport_tab|r|10231264.000000
 END args_ResReport_tab
 BEGIN args_ResReport_fn
 U args_ResReport_fn|r
-V args_ResReport_fn|r|14653784.000000
+V args_ResReport_fn|r|10232513.000000
 END args_ResReport_fn
 BEGIN args_ResetTextures_none
 V args_ResetTextures_none|r|nil
@@ -15621,7 +15544,7 @@ BEGIN args_SetSelectedActor_fn
 V args_SetSelectedActor_fn|r|nil
 END args_SetSelectedActor_fn
 BEGIN args_SetSelectedActor_a
-V args_SetSelectedActor_a|r|actor
+V args_SetSelectedActor_a|r|nil
 END args_SetSelectedActor_a
 BEGIN args_SetSelectedActor_a_nil
 V args_SetSelectedActor_a_nil|r|actor
@@ -17196,7 +17119,7 @@ ERROR args_ceil_fn bad argument #1 to function `ceil' (number expected)
 FAILED args_ceil_fn
 BEGIN args_collectgarbage_none
 U args_collectgarbage_none|r
-V args_collectgarbage_none|r|928.000000
+V args_collectgarbage_none|r|929.000000
 END args_collectgarbage_none
 BEGIN args_collectgarbage_nil
 ERROR args_collectgarbage_nil bad argument #1 to function `collectgarbage' (number expected)
@@ -17234,7 +17157,7 @@ ERROR args_cos_fn bad argument #1 to function `cos' (number expected)
 FAILED args_cos_fn
 BEGIN args_date_none
 U args_date_none|r
-V args_date_none|r|"11/12/26 07:30:53"
+V args_date_none|r|"11/12/26 22:35:36"
 END args_date_none
 BEGIN args_date_nil
 ERROR args_date_nil bad argument #1 to function `date' (string expected)
@@ -17592,22 +17515,22 @@ BEGIN args_mod_fn
 ERROR args_mod_fn bad argument #1 to function `mod' (number expected)
 FAILED args_mod_fn
 BEGIN args_newtag_none
-V args_newtag_none|r|-14.000000
+V args_newtag_none|r|-10.000000
 END args_newtag_none
 BEGIN args_newtag_nil
-V args_newtag_nil|r|-15.000000
+V args_newtag_nil|r|-11.000000
 END args_newtag_nil
 BEGIN args_newtag_str
-V args_newtag_str|r|-16.000000
+V args_newtag_str|r|-12.000000
 END args_newtag_str
 BEGIN args_newtag_num
-V args_newtag_num|r|-17.000000
+V args_newtag_num|r|-13.000000
 END args_newtag_num
 BEGIN args_newtag_tab
-V args_newtag_tab|r|-18.000000
+V args_newtag_tab|r|-14.000000
 END args_newtag_tab
 BEGIN args_newtag_fn
-V args_newtag_fn|r|-19.000000
+V args_newtag_fn|r|-15.000000
 END args_newtag_fn
 BEGIN args_next_none
 ERROR args_next_none bad argument #1 to function `next' (table expected)
@@ -17682,7 +17605,7 @@ BEGIN args_rad_fn
 ERROR args_rad_fn bad argument #1 to function `rad' (number expected)
 FAILED args_rad_fn
 BEGIN args_random_none
-V args_random_none|r|0.123783
+V args_random_none|r|0.001251
 END args_random_none
 BEGIN args_random_nil
 ERROR args_random_nil bad argument #1 to function `random' (number expected)
@@ -17691,7 +17614,7 @@ BEGIN args_random_str
 ERROR args_random_str bad argument #1 to function `random' (number expected)
 FAILED args_random_str
 BEGIN args_random_num
-V args_random_num|r|1.000000
+V args_random_num|r|2.000000
 END args_random_num
 BEGIN args_random_tab
 ERROR args_random_tab bad argument #1 to function `random' (number expected)
@@ -18001,11 +17924,11 @@ V args_tostring_num|r|"1.5"
 END args_tostring_num
 BEGIN args_tostring_tab
 U args_tostring_tab|r
-V args_tostring_tab|r|"table: 084BF20C"
+V args_tostring_tab|r|"table: 04246AAC"
 END args_tostring_tab
 BEGIN args_tostring_fn
 U args_tostring_fn|r
-V args_tostring_fn|r|"function: 04325DFC"
+V args_tostring_fn|r|"function: 03EFC8FC"
 END args_tostring_fn
 BEGIN args_type_none
 ERROR args_type_none API error - attempt to push a NOOBJECT
@@ -18037,36 +17960,36 @@ END lex_binary
 BEGIN gco_cos_sound
 V gco_cos_sound|before|"0 -4 -4 -4 -4"
 V gco_cos_sound|play_choring|0.000000
-V gco_cos_sound|play_sound|"1 1 90 127 0"
+V gco_cos_sound|play_sound|"1 1 90 127 64"
 V gco_cos_sound|play_lv|1.000000
 V gco_cos_sound|unloop_choring|2.000000
-V gco_cos_sound|unloop_sound|"1 1 90 127 0"
+V gco_cos_sound|unloop_sound|"1 1 90 127 64"
 V gco_cos_sound|unloop_lv|1.000000
 V gco_cos_sound|stop_choring|1.000000
 V gco_cos_sound|stop_sound|"0 -4 -4 -4 -4"
 V gco_cos_sound|stop_lv|1.000000
 V gco_cos_sound|tone_choring|3.000000
-V gco_cos_sound|tone_sound|"1 1 100 127 0"
+V gco_cos_sound|tone_sound|"1 1 100 55 64"
 V gco_cos_sound|tone_lv|1.000000
 V gco_cos_sound|bad_key_choring|4.000000
-V gco_cos_sound|bad_key_sound|"1 1 100 127 0"
+V gco_cos_sound|bad_key_sound|"1 1 100 55 64"
 V gco_cos_sound|bad_key_lv|1.000000
-V gco_cos_sound|tone_after|"1 1 100 127 0"
+V gco_cos_sound|tone_after|"0 -4 -4 -4 -4"
 END gco_cos_sound
 BEGIN gco_cos_sound_side
 V gco_cos_sound_side|right_choring|0.000000
-V gco_cos_sound_side|right_sound|"1 1 90 20 0"
+V gco_cos_sound_side|right_sound|"1 1 90 127 64"
 V gco_cos_sound_side|right_lv|1.000000
 V gco_cos_sound_side|left_choring|0.000000
-V gco_cos_sound_side|left_sound|"1 1 90 20 0"
+V gco_cos_sound_side|left_sound|"1 1 90 127 64"
 V gco_cos_sound_side|left_lv|1.000000
 END gco_cos_sound_side
 BEGIN gco_cos_sound_end
 V gco_cos_sound_end|start_choring|5.000000
-V gco_cos_sound_end|start_sound|"1 1 90 127 0"
+V gco_cos_sound_end|start_sound|"1 1 90 127 64"
 V gco_cos_sound_end|start_lv|2.000000
 V gco_cos_sound_end|chore_done|nil 3.000000
-V gco_cos_sound_end|sound_after_chore|"1 1 90 127 0"
+V gco_cos_sound_end|sound_after_chore|"1 1 90 127 64"
 V gco_cos_sound_end|sound_after_costume|"0 -4 -4 -4 -4"
 END gco_cos_sound_end
 BEGIN gco_cos_stream
@@ -18204,10 +18127,10 @@ V gco_kf_nomark|nomark_30_body|-1.000000 0.000000 0.000000
 V gco_kf_nomark|nomark_choring|14.000000
 END gco_kf_nomark
 BEGIN gco_kf_alone_x
-V gco_kf_alone_x|x_costume|nil
-V gco_kf_alone_x|x_10_body|nil
-V gco_kf_alone_x|x_20_body|nil
-V gco_kf_alone_x|x_30_body|nil
+V gco_kf_alone_x|x_costume|"gco_kfx.cos"
+V gco_kf_alone_x|x_10_body|-1.000000 0.000000 0.000000
+V gco_kf_alone_x|x_20_body|-1.000000 0.000000 0.000000
+V gco_kf_alone_x|x_30_body|-1.000000 0.000000 0.000000
 END gco_kf_alone_x
 BEGIN gco_kf_alone_y
 V gco_kf_alone_y|y_costume|"gco_kfy.cos"
@@ -18215,7 +18138,14 @@ V gco_kf_alone_y|y_10_body|-1.000000 0.000000 0.000000
 V gco_kf_alone_y|y_20_body|-1.000000 0.000000 0.000000
 V gco_kf_alone_y|y_30_body|-1.000000 0.000000 0.000000
 END gco_kf_alone_y
-SKIP gco_att_parts
+BEGIN gco_att_parts
+V gco_att_parts|a|"gco_atta.cos"
+V gco_att_parts|b|"gco_attb.cos"
+V gco_att_parts|c|"gco_attc.cos"
+V gco_att_parts|d|"gco_attd.cos"
+V gco_att_parts|e|"gco_atte.cos"
+V gco_att_parts|f|nil
+END gco_att_parts
 BEGIN gco_cos_bitmap
 V gco_cos_bitmap|costume|"gco_bmp.cos"
 V gco_cos_bitmap|state|"userdata"
@@ -18233,7 +18163,12 @@ V gco_cos_bitmap|missing_costume|nil
 V gco_cos_bitmap|missing_choring|nil
 V gco_cos_bitmap|missing_lv|0.000000
 END gco_cos_bitmap
-SKIP gco_fmt_bmodel
+BEGIN gco_fmt_bmodel
+V gco_fmt_bmodel|costume|"gco_bbox.cos"
+V gco_fmt_bmodel|body|0.000000 0.000000 0.000000
+V gco_fmt_bmodel|binary_snap|270.000000 207.000000 370.000000 267.000000
+V gco_fmt_bmodel|text_snap|270.000000 207.000000 370.000000 267.000000
+END gco_fmt_bmodel
 BEGIN gco_registry_keys
 V gco_registry_keys|good_times|"string"
 V gco_registry_keys|GrimDeveloper|"nil"
@@ -18309,21 +18244,21 @@ V gco_concat_nil|nil|"x(nil)"
 END gco_concat_nil
 BEGIN gco_lip_unknown
 V gco_lip_unknown|at_once|0.000000 1.000000
-V gco_lip_unknown|frame1|50.000000 1.000000
-V gco_lip_unknown|frame2|50.000000 1.000000
-V gco_lip_unknown|frame4|50.000000 1.000000
+V gco_lip_unknown|frame1|1.000000 1.000000
+V gco_lip_unknown|frame2|1.000000 1.000000
+V gco_lip_unknown|frame4|1.000000 1.000000
 V gco_lip_unknown|shut_up|100.000000
 END gco_lip_unknown
 BEGIN gco_lip_empty
 V gco_lip_empty|at_once|0.000000 1.000000
-V gco_lip_empty|frame1|50.000000 1.000000
-V gco_lip_empty|frame2|50.000000 1.000000
-V gco_lip_empty|frame4|50.000000 1.000000
+V gco_lip_empty|frame1|100.000000 1.000000
+V gco_lip_empty|frame2|100.000000 1.000000
+V gco_lip_empty|frame4|100.000000 1.000000
 V gco_lip_empty|shut_up|100.000000
 END gco_lip_empty
 BEGIN gco_lip_twice
-V gco_lip_twice|first|50.000000 1.000000
-V gco_lip_twice|second|50.000000 1.000000
+V gco_lip_twice|first|1.000000 1.000000
+V gco_lip_twice|second|1.000000 1.000000
 END gco_lip_twice
 BEGIN gco_set_nolight
 V gco_set_nolight|setup|0.000000
@@ -18381,8 +18316,17 @@ V gco_set_states|missing|"userdata"
 V gco_set_states|noise|"userdata"
 V gco_set_states|noise_snap|none
 END gco_set_states
-SKIP gco_save_shrunk
-SKIP gco_save_zstate
+BEGIN gco_save_shrunk
+V gco_save_shrunk|changed|1.000000
+V gco_save_shrunk|pass|"loading"
+V gco_save_shrunk|kept_thin_mid|1.000000
+V gco_save_shrunk|kept_thin_end|"nil nil" "3 gco_thin"
+END gco_save_shrunk
+BEGIN gco_save_zstate
+V gco_save_zstate|changed|0.000000
+V gco_save_zstate|pass|"loading"
+V gco_save_zstate|kept_state|1.000000
+END gco_save_zstate
 BEGIN gl1_fn_name_anon
 V gl1_fn_name_anon|anon|"unnamed function '<unknown>' (cr_zz_gl1.lua:23)
 END gl1_fn_name_anon
@@ -18472,7 +18416,9 @@ END gl1_sound_pos_max_below_min
 BEGIN gl1_sound_pos_dist_negative
 V gl1_sound_pos_dist_negative|params|"1 0 1 64 20 78"
 END gl1_sound_pos_dist_negative
-SKIP gl1_sound_pos_dist
+BEGIN gl1_sound_pos_dist
+V gl1_sound_pos_dist|params|"1 0 1 64 100 92"
+END gl1_sound_pos_dist
 BEGIN gl1_text_rjustify
 V gl1_text_rjustify|dims|62.000000
 V gl1_text_rjustify|px|258.000000 97.000000 318.000000 106.000000
@@ -18503,7 +18449,7 @@ V gl1_text_layer|px|100.000000 97.000000 131.000000 106.000000
 END gl1_text_layer
 BEGIN gl1_say_right_edge
 V gl1_say_right_edge|edge_going|1.000000
-V gl1_say_right_edge|edge_text|550.000000 195.000000 599.000000 204.000000
+V gl1_say_right_edge|edge_text|539.000000 183.000000 628.000000 204.000000
 END gl1_say_right_edge
 BEGIN gl1_nocos_play
 V gl1_nocos_play|r|nil
@@ -18556,7 +18502,11 @@ V gl1_movie_no_name|start|nil
 V gl1_movie_no_name|full|nil
 V gl1_movie_no_name|playing|nil
 END gl1_movie_no_name
-SKIP gl1_music_state_load
+BEGIN gl1_music_state_load
+V gl1_music_state_load|pass|"loading"
+V gl1_music_state_load|paused|1.000000
+V gl1_music_state_load|calls|0.000000
+END gl1_music_state_load
 BEGIN gl1_say_number_after
 V gl1_say_number_after|going|1.000000
 END gl1_say_number_after
@@ -18596,7 +18546,10 @@ END gl1_movie_short_name
 BEGIN gl1_spew_startup
 V gl1_spew_startup|r|nil
 END gl1_spew_startup
-SKIP gl1_save_nil
+BEGIN gl1_save_nil
+V gl1_save_nil|pass|"loading"
+V gl1_save_nil|saved|"saved"
+END gl1_save_nil
 BEGIN gl1_save_table
 V gl1_save_table|save|nil
 V gl1_save_table|load|nil
@@ -18700,7 +18653,35 @@ V ims_formats|ims_mcmpw.wav_at_once|"1 0 1 100 127 64"
 V ims_formats|ims_mcmpw.wav_frame2|"1 0 1 100 127 64"
 V ims_formats|ims_mcmpw.wav_stopped|"0 0 -4 -4 -4 -4"
 END ims_formats
-SKIP ims_formats_live
+BEGIN ims_formats_live
+U ims_formats_live|live_ims_8m.wav
+V ims_formats_live|live_ims_8m.wav|"0 0 -4 -4 -4 -4"
+U ims_formats_live|live_ims_16s.wav
+V ims_formats_live|live_ims_16s.wav|"0 0 -4 -4 -4 -4"
+U ims_formats_live|live_ims_8s.wav
+V ims_formats_live|live_ims_8s.wav|"1 0 1 63 0 58"
+U ims_formats_live|live_ims_44k.wav
+V ims_formats_live|live_ims_44k.wav|"0 0 -4 -4 -4 -4"
+U ims_formats_live|live_ims_11k.wav
+V ims_formats_live|live_ims_11k.wav|"0 0 -4 -4 -4 -4"
+U ims_formats_live|live_ims_list.wav
+V ims_formats_live|live_ims_list.wav|"0 0 -4 -4 -4 -4"
+U ims_formats_live|live_ims_loop.imu
+V ims_formats_live|live_ims_loop.imu|"1 0 1 61 117 127"
+U ims_formats_live|live_ims_mark.imu
+V ims_formats_live|live_ims_mark.imu|"1 0 1 62 107 0"
+U ims_formats_live|live_ims_le.imu
+V ims_formats_live|live_ims_le.imu|"1 0 1 63 0 58"
+U ims_formats_live|live_ims_st.imu
+V ims_formats_live|live_ims_st.imu|"1 0 1 64 87 74"
+U ims_formats_live|live_ims_8.imu
+V ims_formats_live|live_ims_8.imu|"0 0 -4 -4 -4 -4"
+U ims_formats_live|live_ims_12.imu
+V ims_formats_live|live_ims_12.imu|"1 0 1 66 67 106"
+U ims_formats_live|live_ims_once.imu
+V ims_formats_live|live_ims_once.imu|"0 0 -4 -4 -4 -4"
+V ims_formats_live|after|"0 0 -4 -4 -4 -4" "0 0 -4 -4 -4 -4"
+END ims_formats_live
 BEGIN ims_maps
 V ims_maps|ims_badtag.imu_id|"number" 0.000000
 V ims_maps|ims_badtag.imu_at_once|"0 0 -4 -4 -4 -4"
@@ -18749,7 +18730,7 @@ V ims_ids|params_none|"2 0 -4 -4 -4 -4 -4 -4 -4 -4 -4 -4 -4 "
 V ims_ids|set|"2 0 0 1 90 50 20 100 0 7 -5 0 0 "
 V ims_ids|out_of_range|"2 0 0 1 90 50 20 100 0 7 -5 0 0 "
 U ims_ids|pos
-V ims_ids|pos|2.000000
+V ims_ids|pos|3.000000
 V ims_ids|stopped_by_id|"0 0 -4 -4 -4 -4"
 END ims_ids
 BEGIN ims_fades
@@ -18782,9 +18763,9 @@ END ims_tracks
 BEGIN ims_cache
 V ims_cache|ids|31.000000 32.000000 39.000000
 U ims_cache|first_by_id
-V ims_cache|first_by_id|1.000000 0.000000
+V ims_cache|first_by_id|0.000000 0.000000
 V ims_cache|keep|40.000000
-V ims_cache|last|-242.000000
+V ims_cache|last|15.000000
 V ims_cache|keep_after|"1 0 1 120 127 64" "1"
 END ims_cache
 BEGIN ims_component
@@ -18821,8 +18802,14 @@ V ims_voices|background|1.000000 "0 0 -4 -4 -4 -4"
 V ims_voices|shut_up_both|nil
 V ims_voices|after|"0 0 -4 -4 -4 -4"
 END ims_voices
-SKIP ims_save
-SKIP ims_save_voice
+BEGIN ims_save
+V ims_save|stopped|"0 0 -4 -4 -4 -4"
+V ims_save|loaded|"1 0 1 80 77 30" "0 0 -4 -4 -4 -4"
+V ims_save|loaded_playing|nil
+END ims_save
+BEGIN ims_save_voice
+V ims_save_voice|loaded|nil
+END ims_save_voice
 BEGIN lit_none
 V lit_none|snap|270.000000 207.000000 370.000000 267.000000 6123.000000 248.000000
 END lit_none
@@ -19237,4 +19224,4 @@ END zbuffer_post
 BEGIN zbuffer_bar
 V zbuffer_bar|bar_box|458.000000 207.000000 571.000000 267.000000 6601.000000
 END zbuffer_bar
-SUMMARY 5333 tests, 255 failed
+SUMMARY 5333 tests, 261 failed

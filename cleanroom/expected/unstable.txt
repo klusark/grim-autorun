@@ -1,10 +1,1 @@
 # test|key values that differed between 3 runs of the original; not compared
-ims_cache|keep_after
-ims_save_voice|(status)
-ims_save_voice|loaded
-ims_save|(status)
-ims_save|loaded
-ims_save|loaded_playing
-ims_save|stopped
-sound_fade|after
-sound_fade|trace
