@@ -3,5 +3,3 @@ gl1_movie_short_name
 gl1_prim_offset
 gl1_prim_rect_end
 movie_missing
-rnd_objstate
-tp_spot_behind_camera

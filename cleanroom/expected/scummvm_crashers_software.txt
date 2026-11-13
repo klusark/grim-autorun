@@ -1,11 +1,8 @@
 # tests that crash or hang ScummVM (software renderer; found by run.py); skipped, run.py --fresh tries them again
-asv_shadow
-atk_look_head
+atk_movie
 gl1_movie_short_name
 gl1_prim_offset
 gl1_prim_rect_end
-mf_cr_nodex_wall_sphere
 movie_missing
-rnd_say_low
-save_find_dir
-tp_table_xy_no_set
+movie_mode6
+smv_stereo
