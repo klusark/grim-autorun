@@ -1,8 +1,9 @@
-# The clean-room engine tests (cleanroom/, see its README) against ScummVM: builds the branch cleanroom of klusark/scummvm
-# (the test patch and the fixes in progress, as in ~/scummvm-cleanroom) and runs `run.py scummvm` for Grim and for EMI
-# (cleanroom/tools/parallel.sh: the renderers of a game at once), compared with the expected logs of the originals (cleanroom/expected/). Another repository or branch can be given by hand;
-# one without the test patch (upstream master) gets cleanroom/scummvm/grim-test-data.patch with "apply_patch". The
-# originals themselves are not run here (no game files on the runner).
+# The clean-room engine tests (cleanroom/, see its README) against ScummVM: builds upstream master of scummvm/scummvm with
+# cleanroom/scummvm/grim-test-data.patch applied (nothing else: the reference the expected crasher lists are made with) and
+# runs `run.py scummvm` for Grim and for EMI (cleanroom/tools/parallel.sh: the renderers of a game at once), compared with
+# the expected logs of the originals (cleanroom/expected/). Another repository or branch can be given by hand; one that
+# already has the test patch (as klusark/scummvm cleanroom) is run with "apply_patch" off. The originals themselves are
+# not run here (no game files on the runner).
 # The job fails when a test differs without a cr_scummvm_differs mark, or crashes ScummVM without one.
 # The job "coverage" runs the same tests (both games and the Remastered mode, every renderer, all at once) on a gcov build of the same ScummVM and writes the
 # coverage of engines/grim and graphics/tinygl (autorun/tools/covreport.py --all) to the run's summary, with the pages of
@@ -14,14 +15,14 @@ on:
     inputs:
       scummvm_repo:
         description: ScummVM repository to test
-        default: klusark/scummvm
+        default: scummvm/scummvm
       scummvm_ref:
         description: Branch, tag or commit of it
-        default: cleanroom
+        default: master
       apply_patch:
-        description: Apply cleanroom/scummvm/grim-test-data.patch (for a branch without it, as upstream master)
+        description: Apply cleanroom/scummvm/grim-test-data.patch (off for a branch that has it already)
         type: boolean
-        default: false
+        default: true
       renderers:
         description: Renderers, for Grim and EMI (comma separated)
         default: opengl,opengl_shaders,software
@@ -38,9 +39,10 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  SCUMMVM_REPO: ${{ inputs.scummvm_repo || 'klusark/scummvm' }}
-  SCUMMVM_REF: ${{ inputs.scummvm_ref || 'cleanroom' }}
-  APPLY_PATCH: ${{ inputs.apply_patch && '1' || '' }}
+  SCUMMVM_REPO: ${{ inputs.scummvm_repo || 'scummvm/scummvm' }}
+  SCUMMVM_REF: ${{ inputs.scummvm_ref || 'master' }}
+  # (the schedule and pushes have no inputs: they apply the patch too)
+  APPLY_PATCH: ${{ (github.event_name != 'workflow_dispatch' || inputs.apply_patch) && '1' || '' }}
   CR_RENDERERS: ${{ inputs.renderers || 'opengl,opengl_shaders,software' }}
 
 jobs:
