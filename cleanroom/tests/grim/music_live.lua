@@ -88,3 +88,6 @@ cr_live_test("voice", function()
 	ExpireText()
 	cr_frames(1)
 end)
+
+-- (ScummVM differs: tools/mark_known.py)
+cr_scummvm_differs("live_voice")

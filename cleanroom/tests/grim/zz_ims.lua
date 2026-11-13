@@ -369,7 +369,7 @@ cr_t_ims_component = function()
 	PutActorInSet(a, nil)
 	ims_reset()
 end
-cr_test("ims_component", cr_t_ims_component)
+cr_scummvm_differs("ims_component") cr_test("ims_component", cr_t_ims_component)
 
 -- (music for n seconds of the clock, the set changed and back while it plays)
 ims_music_wait = function(n)

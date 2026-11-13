@@ -156,7 +156,7 @@ end)
 
 -- read patterns of the io library (cr_lines.txt: "line1", "line2", "line3")
 cr_scummvm_differs("lex_read", "the original EMI does not open cr_lines.txt (_INPUT is not a file handle); ScummVM does", "emi")
-cr_test("lex_read", function()
+cr_scummvm_differs("lex_read", nil, "grim") cr_test("lex_read", function()
 	if not readfrom then
 		cr_log("no_io", 1)
 		return

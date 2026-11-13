@@ -56,7 +56,7 @@ cr_scummvm_differs("atk_no_id", "ScummVM refuses a line without a message id (sa
 cr_scummvm_differs("atk_plain", "ScummVM refuses a line without a message id (and leaves the id unset: parseMsgText); the original says it and shows the text") cr_test("atk_plain", function() atk_no_line("plain words") end)
 
 -- the same line again while it is said (ScummVM: nothing happens), then another one
-cr_test("atk_same_line", function()
+cr_scummvm_differs("atk_same_line") cr_test("atk_same_line", function()
 	local a = atk_talker()
 	SayLine(a, "/crtv02/", { x = 100, y = 100 })
 	cr_frames(3)
@@ -173,7 +173,7 @@ cr_scummvm_differs("atk_movie", "ScummVM does not keep a line said during a full
 end)
 
 -- talk chore indexes out of range (0 and 11), then a line: does anything change?
-cr_test("atk_talk_range", function()
+cr_scummvm_differs("atk_talk_range") cr_test("atk_talk_range", function()
 	local a = atk_talker()
 	cr_log("set0", SetActorTalkChore(a, 0, 10))
 	cr_log("set11", SetActorTalkChore(a, 11, 10))

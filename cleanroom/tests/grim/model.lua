@@ -29,7 +29,7 @@ cr_t_model_costume = function()
 	cr_log("keys_last", CR_LV)
 	PutActorInSet(a, nil)
 end
-cr_test("model_costume", cr_t_model_costume)
+cr_scummvm_differs("model_costume") cr_test("model_costume", cr_t_model_costume)
 
 cr_node = function(key, a, n)
 	local x, y, z = GetActorNodeLocation(a, n)

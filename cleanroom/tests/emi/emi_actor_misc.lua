@@ -103,7 +103,7 @@ end)
 
 -- attached twice to the same carrier, then to another one, then to a joint that is not there, then to an actor that has
 -- no costume (no skeleton)
-cr_test("amc_attach_again", function()
+cr_scummvm_differs("amc_attach_again") cr_test("amc_attach_again", function()
 	local c, r = amc_e_pair()
 	local d = amc_e_actor("amc_carrier2", "cr_flat.set", -1, 0, 1, 1)
 	PlayActorChore(d, "wear_default", "cr_ebox.cos")

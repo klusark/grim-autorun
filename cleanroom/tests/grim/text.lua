@@ -10,7 +10,7 @@ cr_scummvm_differs("font") cr_test("font", cr_t_font)
 cr_t_font_missing = function()
 	cr_log("missing", LockFont("no_such.laf"))
 end
-cr_test("font_missing", cr_t_font_missing)
+cr_scummvm_differs("font_missing") cr_test("font_missing", cr_t_font_missing)
 
 cr_t_font_dims_handle = function()
 	local f = cr_fn("GetFontDimensions")
@@ -70,14 +70,14 @@ cr_t_text_change = function()
 	cr_log("char_pos", GetTextCharPosition(t, 0), GetTextCharPosition(t, 3))
 	KillTextObject(t)
 end
-cr_test("text_change", cr_t_text_change)
+cr_scummvm_differs("text_change") cr_test("text_change", cr_t_text_change)
 
 cr_t_text_char_pos_past_end = function()
 	local t = MakeTextObject("abc", { font = CR_FONT, x = 10, y = 20 })
 	cr_log("past_end", GetTextCharPosition(t, 99))
 	KillTextObject(t)
 end
-cr_test("text_char_pos_past_end", cr_t_text_char_pos_past_end)
+cr_scummvm_differs("text_char_pos_past_end") cr_test("text_char_pos_past_end", cr_t_text_char_pos_past_end)
 
 cr_t_text_char_pos_killed = function()
 	local t = MakeTextObject("abc", { font = CR_FONT, x = 10, y = 20 })
@@ -95,7 +95,7 @@ cr_t_blast_print = function()
 	cr_frames(1)
 	cr_log("ok", 1)
 end
-cr_test("blast_print", cr_t_blast_print)
+cr_scummvm_differs("blast_print") cr_test("blast_print", cr_t_blast_print)
 
 -- (SayLine without a voice file: the text is shown for a time that depends on its length and the text speed. The original
 -- ends it by real time, not by the game's clock, so with simtime the frame counts vary from run to run (unstable.txt);

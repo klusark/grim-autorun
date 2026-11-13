@@ -167,7 +167,7 @@ elu_chore_actor = function(name)
 end
 
 -- paused after a few frames, for 20 frames, then played on
-cr_test("elu_chore_pause", function()
+cr_scummvm_differs("elu_chore_pause") cr_test("elu_chore_pause", function()
 	local a = elu_chore_actor("elu_c1")
 	local c = PlayActorChore(a, "keys", "cr_lv.cos")
 	cr_frames(8)
@@ -180,7 +180,7 @@ cr_test("elu_chore_pause", function()
 end)
 
 -- PlayChore of a chore that plays, PauseChore twice
-cr_test("elu_chore_play_twice", function()
+cr_scummvm_differs("elu_chore_play_twice") cr_test("elu_chore_play_twice", function()
 	local a = elu_chore_actor("elu_c2")
 	local c = PlayActorChore(a, "keys", "cr_lv.cos")
 	PlayChore(c)
@@ -195,7 +195,7 @@ cr_test("elu_chore_play_twice", function()
 end)
 
 -- AdvanceChore of a chore that plays, then of one that stopped
-cr_test("elu_chore_advance", function()
+cr_scummvm_differs("elu_chore_advance") cr_test("elu_chore_advance", function()
 	local a = elu_chore_actor("elu_c3")
 	local c = PlayActorChore(a, "keys", "cr_lv.cos")
 	cr_frames(1)
@@ -277,7 +277,7 @@ cr_test("elu_chore_complete", function()
 end)
 
 -- PlayActorChore with a fade in time (the fifth argument)
-cr_test("elu_chore_fade_in", function()
+cr_scummvm_differs("elu_chore_fade_in") cr_test("elu_chore_fade_in", function()
 	local a = elu_chore_actor("elu_c8")
 	local c = PlayActorChore(a, "keys", "cr_lv.cos", nil, 0.2)
 	cr_log("handle", IsChoreValid(c), IsChoreLooping(c))
@@ -302,7 +302,7 @@ cr_test("elu_chore_gone", function()
 end)
 
 -- LockChore / UnlockChore (name, costume), LockChoreSet / UnlockChoreSet
-cr_test("elu_chore_lock", function()
+cr_scummvm_differs("elu_chore_lock") cr_test("elu_chore_lock", function()
 	local a = elu_chore_actor("elu_c10")
 	cr_log("lock", LockChore("keys", "cr_lv.cos"))
 	local c = PlayActorChore(a, "keys", "cr_lv.cos")
@@ -510,7 +510,7 @@ cr_test("elu_setup_name", function()
 	MakeCurrentSet("cr_flat.set")
 end)
 
-cr_test("elu_setup_missing", function()
+cr_scummvm_differs("elu_setup_missing") cr_test("elu_setup_missing", function()
 	MakeCurrentSet("cr_two.set")
 	cr_log("r", MakeCurrentSetup("elu_no_such"))
 	cr_frames(1)

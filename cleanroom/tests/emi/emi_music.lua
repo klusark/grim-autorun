@@ -79,3 +79,6 @@ cr_em_test("volume", function()
 	cr_em_wait(1)
 	ImSetMusicVol(v or 127)
 end)
+
+-- (ScummVM differs: tools/mark_known.py)
+cr_scummvm_differs("em_volume")

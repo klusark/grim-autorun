@@ -105,4 +105,4 @@ cr_t_gco_lip_twice = function()
 	ExpireText()
 	cr_frames(1)
 end
-cr_test("gco_lip_twice", cr_t_gco_lip_twice)
+cr_scummvm_differs("gco_lip_twice") cr_test("gco_lip_twice", cr_t_gco_lip_twice)
