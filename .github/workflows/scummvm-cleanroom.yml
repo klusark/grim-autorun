@@ -110,7 +110,7 @@ jobs:
           python-version: "3.12"
 
       # (each game's renderers at once: tools/parallel.sh, a run.py --work of its own for each, under
-      # cleanroom/run/parallel_grim/ and parallel_emi/; grim.txt and emi.txt are their outputs one after the other)
+      # $RUNNER_TEMP/parallel_grim/ and parallel_emi/: the checkout's path would make the game folders too long; grim.txt and emi.txt are their outputs one after the other)
       - name: Grim
         id: grim
         continue-on-error: true
@@ -126,8 +126,8 @@ jobs:
         run: |
           export SCUMMVM="$GITHUB_WORKSPACE\\scummvm\\build\\scummvm.exe"
           rc=0
-          CR_PARALLEL_DIR=run/parallel_grim bash grim_tools/cleanroom/tools/parallel.sh --games grim --renderers "$CR_RENDERERS" || rc=$?
-          cat grim_tools/cleanroom/run/parallel_grim/grim_*.txt > grim.txt
+          CR_PARALLEL_DIR="$(cygpath -u "$RUNNER_TEMP")/parallel_grim" bash grim_tools/cleanroom/tools/parallel.sh --games grim --renderers "$CR_RENDERERS" || rc=$?
+          cat "$(cygpath -u "$RUNNER_TEMP")"/parallel_grim/grim_*.txt > grim.txt
           exit $rc
 
       - name: EMI
@@ -143,8 +143,8 @@ jobs:
         run: |
           export SCUMMVM="$GITHUB_WORKSPACE\\scummvm\\build\\scummvm.exe"
           rc=0
-          CR_PARALLEL_DIR=run/parallel_emi bash grim_tools/cleanroom/tools/parallel.sh --games emi --renderers "$CR_RENDERERS" || rc=$?
-          cat grim_tools/cleanroom/run/parallel_emi/emi_*.txt > emi.txt
+          CR_PARALLEL_DIR="$(cygpath -u "$RUNNER_TEMP")/parallel_emi" bash grim_tools/cleanroom/tools/parallel.sh --games emi --renderers "$CR_RENDERERS" || rc=$?
+          cat "$(cygpath -u "$RUNNER_TEMP")"/parallel_emi/emi_*.txt > emi.txt
           exit $rc
 
       - name: Summary
@@ -168,7 +168,7 @@ jobs:
           path: |
             grim.txt
             emi.txt
-            grim_tools/cleanroom/run/parallel_*/*/logs/
+            ${{ runner.temp }}/parallel_*/*/logs/
           if-no-files-found: ignore
 
       - name: Result
@@ -262,8 +262,8 @@ jobs:
         run: |
           export SCUMMVM="$GITHUB_WORKSPACE\\scummvm\\build\\scummvm.exe"
           rc=0
-          CR_PARALLEL_DIR=run/parallel_cov bash grim_tools/cleanroom/tools/parallel.sh --games grim,emi,remastered --renderers "$CR_RENDERERS" || true
-          for g in grim emi remastered; do cat grim_tools/cleanroom/run/parallel_cov/${g}_*.txt > $g.txt; done
+          CR_PARALLEL_DIR="$(cygpath -u "$RUNNER_TEMP")/parallel_cov" bash grim_tools/cleanroom/tools/parallel.sh --games grim,emi,remastered --renderers "$CR_RENDERERS" || true
+          for g in grim emi remastered; do cat "$(cygpath -u "$RUNNER_TEMP")"/parallel_cov/${g}_*.txt > $g.txt; done
           exit 0
 
       - name: Report
