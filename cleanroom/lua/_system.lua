@@ -194,6 +194,12 @@ cr_main = function()
 			while find_script(id) and f < (CR_ALLOWED or CR_MAX_FRAMES) do
 				break_here()
 				f = f + 1
+				-- (a line in the log every 15 frames while a test waits, so that run.py's stall limit catches a game that
+				-- stopped drawing frames, not a test that waits seconds of game time without logging; not a CR line, the
+				-- results do not see it)
+				if mod(f, 15) == 0 then
+					PrintDebug("CRTICK\n")
+				end
 			end
 			if find_script(id) then
 				stop_script(id)

@@ -44,6 +44,12 @@ that differs between those runs goes to `expected/unstable.txt` and is not compa
 every `--save`, so a value known to vary belongs in the test, not there. `chore_short` once differed in one run out of
 seven, so it may need more repeats.
 
+`--save` writes the same files every time when nothing compared has changed, so a change of `expected/original.log` in
+git is a real one: the values that are not compared (marked or in unstable.txt) are written as `(unstable)`, the keys of a
+table are logged in a fixed order (`cr_keys`), and when a run finds a new crasher the runs start over, so that all of them
+skip it. While a test runs, `_system.lua` writes `CRTICK` to the log every 15 frames (not a result line): the stall limit
+then catches a game that stopped drawing frames, not a test that waits seconds of game time without logging.
+
 **Known differences and regressions.** A test that ScummVM is known to get wrong is marked next to its `cr_test`:
 `cr_scummvm_differs("name", "why")` (a third argument, `"grim"` or `"emi"`, limits it to one game in a file both run). The
 ScummVM runs compare with `--known`: a marked test that differs is **known**, a marked one that is the same now is
