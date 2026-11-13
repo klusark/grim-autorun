@@ -3,37 +3,16 @@
 -- unknown chunk between frames, a file cut short; frames without sound and sound without frames (the player slows down,
 -- speeds up and skips late frames); the Blocky16 buffer swap 2 and BOMP data with raw runs. 160 x 120 at (100, 50) but
 -- the Blocky16 ones (640 x 480 at 0, 0); 15 frames a second. Seen as movie.lua sees its movies: IsMoviePlaying while the
--- clock goes on, and cr_snap (the box of the white pixels).
+-- frames of game time go on (movie.lua's cr_wait_s / cr_movie_wait), and cr_snap (the box of the white pixels).
 
--- (n changes of the clock's second: between n - 1 and n seconds)
+-- (n seconds of game time)
 smv_wait_s = function(n)
-	local s = date("%S")
-	while n > 0 do
-		break_here()
-		local t = date("%S")
-		if t ~= s then
-			s = t
-			n = n - 1
-			-- (a line that is not a result, each second: run.py takes a log that stops for CR_STALL seconds for a hang)
-			PrintDebug("wait\n")
-		end
-	end
+	cr_wait_s(n)
 end
 
--- (until the movie stops, at most about n seconds; whether it stopped)
+-- (until the movie stops, at most n seconds of game time; whether it stopped)
 smv_wait_end = function(n)
-	local s = date("%S")
-	while n > 0 and IsMoviePlaying() do
-		break_here()
-		local t = date("%S")
-		if t ~= s then
-			s = t
-			n = n - 1
-			-- (a line that is not a result, each second: run.py takes a log that stops for CR_STALL seconds for a hang)
-			PrintDebug("wait\n")
-		end
-	end
-	return not IsMoviePlaying()
+	return cr_movie_wait(n)
 end
 
 smv_test = function(name, fn)

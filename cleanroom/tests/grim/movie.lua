@@ -2,34 +2,29 @@
 -- 15 frames a second): cr_white.snm, 90 white frames (6 s), and cr_steps.snm, 5 frames from grey to white.
 -- StartMovie(name, looping, x, y), StartFullscreenMovie(name), IsMoviePlaying, IsFullscreenMoviePlaying, PauseMovie,
 -- StopMovie, GetSmushLength. What is on the screen is seen through cr_snap (the box of the bright pixels: the movie's white
--- on cr_flat). A movie plays by real time on both engines, and the frames of a test run go much faster than that: the tests
--- wait for seconds of the clock (date), not for frames, and log no frame counts.
+-- on cr_flat). The tests wait in frames of 17 ms (game time), not for seconds of the clock: on the original, grimlaunch's
+-- smushtime and imusetime patches play movies and sound by game time (`CR_GRIMLAUNCH="--with smushtime,imusetime"`).
 
--- (n changes of the clock's second: between n - 1 and n seconds; at most max frames)
-cr_wait_s = function(n, max)
-	local s = date("%S")
-	local f = 0
-	while n > 0 and f < (max or 1000000000) do
-		break_here()
-		f = f + 1
-		local t = date("%S")
-		if t ~= s then
-			s = t
-			n = n - 1
-		end
-	end
+-- (the frames of n seconds of game time, frames of 17 ms)
+cr_s_frames = function(n)
+	return floor(n * 1000 / 17 + 0.5)
 end
 
--- (until the movie stops, at most about n seconds; whether it stopped)
+-- (n seconds of game time; at most max frames)
+cr_wait_s = function(n, max)
+	local f = cr_s_frames(n)
+	if max and max < f then
+		f = max
+	end
+	cr_frames(f)
+end
+
+-- (until the movie stops, at most n seconds of game time; whether it stopped)
 cr_movie_wait = function(n)
-	local s = date("%S")
-	while n > 0 and IsMoviePlaying() do
+	local f = cr_s_frames(n)
+	while f > 0 and IsMoviePlaying() do
 		break_here()
-		local t = date("%S")
-		if t ~= s then
-			s = t
-			n = n - 1
-		end
+		f = f - 1
 	end
 	return not IsMoviePlaying()
 end
