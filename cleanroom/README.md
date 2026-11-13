@@ -27,7 +27,6 @@ original's bytes at fixed addresses. The rebuilt exe is started directly with it
 - `GRIM_INI`: grim.ini instead of the registry.
 - `GRIM_DEBUGLOG`: the PrintDebug log and the `CRSNAP:` screenshots.
 - `GRIM_SIMTIME=17`: every frame is 17 ms.
-- `GRIM_ACTIVE=1`: keeps drawing behind other windows.
 - `GRIM_MULTI=cleanroom`: its own window title.
 
 Its crashes are bugs of the rebuild. They are reported and fail the run, but are not kept in a list. A crash leaves

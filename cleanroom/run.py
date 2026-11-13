@@ -507,7 +507,6 @@ class DecompEngine(Engine):
                    GRIM_INI=os.path.join(d, "grim.ini"),   # config: grim.ini, not the registry (whose GrimDataDir is the real game)
                    GRIM_DEBUGLOG=log,                      # debuglog, and the CRSNAP: screenshots
                    GRIM_SIMTIME="17",                      # simtime: every frame is 17 ms, iMUSE on game time too
-                   GRIM_ACTIVE="1",                        # draws although its window is never the active one (offscreen.exe)
                    GRIM_MULTI="%s_%s" % (DECOMP_TAG, os.path.basename(d)))   # (its own window title: games side by side)
         for k in ("GRIM_NOMOVIE", "GRIM_LUA_FILE", "GRIM_DISPLAY_DEVICE", "GRIM_MODS", "GRIM_WALK_SCALE", "GRIM_IMUSE_REALTIME"):
             env.pop(k, None)   # (knobs that change the run)

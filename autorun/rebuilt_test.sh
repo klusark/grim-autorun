@@ -4,7 +4,7 @@
 #   env: REBUILT_DIR (default /c/Users/Joel/grim-decomp/build/run), SIMTIME (ms per frame, default 17 = the original's patched frame time),
 #        REBUILT_DELAY (seconds from start to the injection, default 25; the game must be in Manny's office), NOMOVIE (default 1)
 # The engine side is in grim-decomp: GRIM_LUA_FILE (lines run as Lua, once, between frames), GRIM_DEBUGLOG (PrintDebug -> log, like
-# grimdlg.dll), GRIM_SIMTIME (fixed frame time like patches/grim/simtime.py), GRIM_ACTIVE (no pause when unfocused), GRIM_NOMOVIE.
+# grimdlg.dll), GRIM_SIMTIME (fixed frame time like patches/grim/simtime.py), GRIM_NOMOVIE.
 # Only kills the game it started (by pid), never the user's own copy.
 AR=/c/Users/Joel/grim_tools/autorun
 # GRIMDATA/autorun_all.lua, grimdebug.log and the saves are shared: one run at a time, others wait here
@@ -32,7 +32,7 @@ CMD="$(cygpath -w "$AR/logs/rebuilt_cmd.lua")"
 : > "$L"
 TESTFILE="$file" sh "$AR/build_original.sh" > /dev/null || { echo "build_original.sh failed"; exit 1; }
 cd "$GD"
-GRIM_MULTI=autorun GRIM_ACTIVE=1 GRIM_NOMOVIE="${NOMOVIE:-1}" GRIM_SIMTIME="${SIMTIME:-17}" GRIM_DEBUGLOG="$(cygpath -w "$L")" \
+GRIM_MULTI=autorun GRIM_NOMOVIE="${NOMOVIE:-1}" GRIM_SIMTIME="${SIMTIME:-17}" GRIM_DEBUGLOG="$(cygpath -w "$L")" \
 	GRIM_LUA_FILE="$CMD" GRIM_LUA_LOG="$(cygpath -w "$AR/logs/rebuilt_hook.log")" "$EXE_DIR/grimfandango.exe" > "$AR/logs/rebuilt_game.out" 2>&1 &
 PID=$!
 sleep "${REBUILT_DELAY:-25}"
