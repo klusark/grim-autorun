@@ -8,6 +8,12 @@ args_CompleteChore_none
 args_CompleteChore_num
 args_CompleteChore_str
 args_CompleteChore_tab
+args_DimRegion_fn
+args_DimRegion_nil
+args_DimRegion_none
+args_DimRegion_num
+args_DimRegion_str
+args_DimRegion_tab
 args_GetCurrentSetup_num
 args_GetCurrentSetup_str
 args_GetSoundVolume_fn

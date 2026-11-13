@@ -214,3 +214,6 @@ end, function()
 		FreeObjectState(GCO_ZS)
 	end
 end)
+
+-- (crashes or hangs ScummVM now and then: on the skip list)
+cr_scummvm_differs("gco_save_zstate", "crashes or hangs ScummVM now and then: on the skip list")

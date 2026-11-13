@@ -152,3 +152,12 @@ end)
 
 -- (ScummVM differs: tools/mark_known.py)
 cr_scummvm_differs("movie_place")
+
+-- (crashes ScummVM now and then: on the skip list)
+cr_scummvm_differs("movie_fullscreen", "crashes or hangs ScummVM now and then: on the skip list")
+
+-- (crashes or hangs ScummVM now and then: on the skip list)
+cr_scummvm_differs("movie_play", "crashes or hangs ScummVM now and then: on the skip list")
+
+-- (crashes or hangs ScummVM now and then: on the skip list)
+cr_scummvm_differs("movie_loop", "crashes or hangs ScummVM now and then: on the skip list")
