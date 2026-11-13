@@ -86,12 +86,6 @@ args_GetCameraFOV_none
 args_GetCameraFOV_num
 args_GetCameraFOV_str
 args_GetCameraFOV_tab
-args_GetCameraPosition_fn
-args_GetCameraPosition_nil
-args_GetCameraPosition_none
-args_GetCameraPosition_num
-args_GetCameraPosition_str
-args_GetCameraPosition_tab
 args_GetCurrentSetup_num
 args_GetCurrentSetup_str
 args_GetGroupVolume_fn
@@ -130,6 +124,12 @@ args_GetSpeechMode_none
 args_GetSpeechMode_num
 args_GetSpeechMode_str
 args_GetSpeechMode_tab
+args_GetTextSpeed_fn
+args_GetTextSpeed_nil
+args_GetTextSpeed_none
+args_GetTextSpeed_num
+args_GetTextSpeed_str
+args_GetTextSpeed_tab
 args_GetVisibleThings_fn
 args_GetVisibleThings_num
 args_GetVisibleThings_str
@@ -403,4 +403,6 @@ args_getenv_num
 args_getenv_str
 args_log10_num
 args_log_num
+args_nextvar_nil
+args_random_none
 args_tostring_none

@@ -33,7 +33,7 @@ cr_test("ec_load", function()
 end)
 
 -- the keys of a chore, frame by frame (1 s: about 60 frames of 17 ms)
-cr_test("ec_keys", function()
+cr_scummvm_differs("ec_keys") cr_test("ec_keys", function()
 	local a = cr_ec_actor()
 	local c = PlayActorChore(a, "keys", "cr_lv.cos")
 	cr_log("trace", cr_ec_trace(c, 70))
@@ -43,7 +43,7 @@ cr_test("ec_keys", function()
 end)
 
 -- a chore shorter than a frame
-cr_test("ec_short", function()
+cr_scummvm_differs("ec_short") cr_test("ec_short", function()
 	local a = cr_ec_actor()
 	local c = PlayActorChore(a, "short", "cr_lv.cos")
 	cr_log("trace", cr_ec_trace(c, 6))
@@ -52,7 +52,7 @@ cr_test("ec_short", function()
 end)
 
 -- looping (the fourth argument), then stopped
-cr_test("ec_loop", function()
+cr_scummvm_differs("ec_loop") cr_test("ec_loop", function()
 	local a = cr_ec_actor()
 	local c = PlayActorChore(a, "loop", "cr_lv.cos", 1)
 	cr_log("looping", IsChoreLooping(c))

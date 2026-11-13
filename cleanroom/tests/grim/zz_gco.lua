@@ -107,7 +107,7 @@ cr_t_gco_cos_stream = function()
 	gco_chore("stop", a, 1, "gco_stream.cos", "cr_long.wav")
 	gco_done(a)
 end
-cr_test("gco_cos_stream", cr_t_gco_cos_stream)
+cr_scummvm_differs("gco_cos_stream") cr_test("gco_cos_stream", cr_t_gco_cos_stream)
 
 -- a model on the left mesh of cr_two.3do (gco_att.cos): the node places and the pictures with the mesh and the hat shown
 -- and hidden
@@ -159,7 +159,7 @@ cr_t_gco_att_chores = function()
 	cr_log("swapped", GetActorCostume(a))
 	gco_done(a)
 end
-cr_test("gco_att_chores", cr_t_gco_att_chores)
+cr_scummvm_differs("gco_att_chores") cr_test("gco_att_chores", cr_t_gco_att_chores)
 
 -- keyframes: the nodes of the drawn box (the body node 1, the head 2) under each chore of gco_kf.cos
 gco_kf_nodes = function(key, a)

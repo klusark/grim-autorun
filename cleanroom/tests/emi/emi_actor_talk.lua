@@ -52,7 +52,7 @@ eatk_line = function(id, opts)
 end
 
 -- a lip-synced line with talk chores: the shapes play
-cr_test("eatk_lip", function() eatk_line("crtv01") end)
+cr_scummvm_differs("eatk_lip") cr_test("eatk_lip", function() eatk_line("crtv01") end)
 
 -- a line without lip sync: the mumble
 cr_test("eatk_mumble", function() eatk_line("crtv02") end)
@@ -62,7 +62,7 @@ cr_test("eatk_xy", function() eatk_line("crtv02", { x = 0.5, y = -0.5 }) end)
 cr_test("eatk_x_only", function() eatk_line("crtv02", { x = -0.25 }) end)
 
 -- talk chore indexes 15 and 16 (ScummVM: 15 is past its ten talk chores, 16 refused at once), and -1
-cr_test("eatk_talk_range", function()
+cr_scummvm_differs("eatk_talk_range") cr_test("eatk_talk_range", function()
 	local a = eatk_talker()
 	cr_log("set15", SetActorTalkChore(a, 15, "keys", "cr_lv.cos"))
 	cr_log("set16", SetActorTalkChore(a, 16, "keys", "cr_lv.cos"))

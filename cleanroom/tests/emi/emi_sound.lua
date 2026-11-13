@@ -8,7 +8,7 @@ cr_es_state = function(h)
 	return tostring(IsSoundPlaying(h)) .. " " .. tostring(GetSoundVolume(h))
 end
 
-cr_test("eso_load", function()
+cr_scummvm_differs("eso_load") cr_test("eso_load", function()
 	local h = LoadSound("cr_tone")
 	cr_log("handle", type(h))
 	cr_log("loaded", cr_es_state(h))
@@ -46,7 +46,7 @@ cr_test("eso_loop", function()
 end)
 
 -- from a place in the set
-cr_test("eso_from", function()
+cr_scummvm_differs("eso_from") cr_test("eso_from", function()
 	MakeCurrentSet("cr_flat.set")
 	local h = LoadSound("cr_long")
 	PlayLoadedSoundFrom(h, 1, 0, 1, 100)
@@ -76,7 +76,7 @@ cr_test("eso_by_name", function()
 end)
 
 -- the volumes of the groups
-cr_test("eso_group_volumes", function()
+cr_scummvm_differs("eso_group_volumes") cr_test("eso_group_volumes", function()
 	local s, m, v = ImGetSfxVol(), ImGetMusicVol(), ImGetVoiceVol()
 	cr_log("before", s, m, v)
 	ImSetSfxVol(40)

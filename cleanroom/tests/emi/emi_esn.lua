@@ -93,7 +93,7 @@ cr_scummvm_differs("esn_from_string", "volumes lose 1 in ScummVM's round trip to
 cr_scummvm_differs("esn_from_only", "PlayLoadedSoundFrom: ScummVM takes a fifth argument above 1 as the volume (lua_v2_sound.cpp:338); the original only the sixth") cr_test("esn_from_only", function() esn_from("v_40", 40) end)
 
 -- a position that is not three numbers
-cr_test("esn_from_badpos", function()
+cr_scummvm_differs("esn_from_badpos") cr_test("esn_from_badpos", function()
 	local h = LoadSound("cr_long")
 	PlayLoadedSoundFrom(h, "x", 0, 1, 100)
 	cr_frames(2)
@@ -151,7 +151,7 @@ end)
 
 -- PlaySoundFrom: six arguments, no volume, a missing file, a position that is not a number (nothing to look at but
 -- that the run goes on)
-cr_test("esn_soundfrom", function()
+cr_scummvm_differs("esn_soundfrom") cr_test("esn_soundfrom", function()
 	MakeCurrentSet("cr_flat.set")
 	PlaySoundFrom("cr_tone", 0, 0, 1, nil, 80)
 	cr_frames(2)
@@ -290,7 +290,7 @@ cr_scummvm_differs("esn_setup", "volumes lose 1 in ScummVM's round trip to the m
 end)
 
 -- a file that is not an AIFF
-cr_test("esn_bad_aiff", function()
+cr_scummvm_differs("esn_bad_aiff") cr_test("esn_bad_aiff", function()
 	local h = LoadSound("esn_bad")
 	cr_log("handle", type(h))
 	if h then

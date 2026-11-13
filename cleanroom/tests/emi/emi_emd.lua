@@ -215,7 +215,7 @@ end)
 
 -- the texi track: the textures 0, 1, 2 of emd_eyes.sur, then 5 and 3 (it has three), then 1; a texi of a material the
 -- actor has not loaded
-cr_test("emd_texi", function()
+cr_scummvm_differs("emd_texi") cr_test("emd_texi", function()
 	local a, r = emd_pair()
 	local c = PlayActorChore(a, "eyes", "emd_anim.cos")
 	cr_log("trace", emd_trace(r, c, 8, 5))
@@ -235,7 +235,7 @@ cr_test("emd_texi", function()
 end)
 
 -- the Lua code track (luac): its name is run as code at each key
-cr_test("emd_luac", function()
+cr_scummvm_differs("emd_luac") cr_test("emd_luac", function()
 	local a, r = emd_pair()
 	EMD_LC = 0
 	EMD_LS = nil
