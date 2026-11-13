@@ -13131,156 +13131,182 @@ cr_t_args_2180 = function()
 	cr_args_for("NewObjectState")
 	local r1, r2, r3, r4 = NewObjectState()
 	cr_log("r", r1, r2, r3, r4)
+	if type(r1) == "userdata" then FreeObjectState(r1) end
 end
 cr_scummvm_differs("args_NewObjectState_none") cr_test("args_NewObjectState_none", cr_t_args_2180)
 cr_t_args_2181 = function()
 	cr_args_for("NewObjectState")
 	local r1, r2, r3, r4 = NewObjectState(nil)
 	cr_log("r", r1, r2, r3, r4)
+	if type(r1) == "userdata" then FreeObjectState(r1) end
 end
 cr_scummvm_differs("args_NewObjectState_nil") cr_test("args_NewObjectState_nil", cr_t_args_2181)
 cr_t_args_2182 = function()
 	cr_args_for("NewObjectState")
 	local r1, r2, r3, r4 = NewObjectState("cr")
 	cr_log("r", r1, r2, r3, r4)
+	if type(r1) == "userdata" then FreeObjectState(r1) end
 end
 cr_scummvm_differs("args_NewObjectState_str") cr_test("args_NewObjectState_str", cr_t_args_2182)
 cr_t_args_2183 = function()
 	cr_args_for("NewObjectState")
 	local r1, r2, r3, r4 = NewObjectState(1.5)
 	cr_log("r", r1, r2, r3, r4)
+	if type(r1) == "userdata" then FreeObjectState(r1) end
 end
 cr_scummvm_differs("args_NewObjectState_num") cr_test("args_NewObjectState_num", cr_t_args_2183)
 cr_t_args_2184 = function()
 	cr_args_for("NewObjectState")
 	local r1, r2, r3, r4 = NewObjectState({ })
 	cr_log("r", r1, r2, r3, r4)
+	if type(r1) == "userdata" then FreeObjectState(r1) end
 end
 cr_scummvm_differs("args_NewObjectState_tab") cr_test("args_NewObjectState_tab", cr_t_args_2184)
 cr_t_args_2185 = function()
 	cr_args_for("NewObjectState")
 	local r1, r2, r3, r4 = NewObjectState(cr_args_fn)
 	cr_log("r", r1, r2, r3, r4)
+	if type(r1) == "userdata" then FreeObjectState(r1) end
 end
 cr_scummvm_differs("args_NewObjectState_fn") cr_test("args_NewObjectState_fn", cr_t_args_2185)
 cr_t_args_2186 = function()
 	cr_args_for("NewObjectState")
 	local r1, r2, r3, r4 = NewObjectState(0, 0, "cr_obj.bm", "cr_obj.bm", TRUE)
 	cr_log("r", r1, r2, r3, r4)
+	if type(r1) == "userdata" then FreeObjectState(r1) end
 end
 cr_test("args_NewObjectState_p0", cr_t_args_2186)
 cr_t_args_2187 = function()
 	cr_args_for("NewObjectState")
 	local r1, r2, r3, r4 = NewObjectState(nil, 0, "cr_obj.bm", "cr_obj.bm", TRUE)
 	cr_log("r", r1, r2, r3, r4)
+	if type(r1) == "userdata" then FreeObjectState(r1) end
 end
 cr_scummvm_differs("args_NewObjectState_p1_nil") cr_test("args_NewObjectState_p1_nil", cr_t_args_2187)
 cr_t_args_2188 = function()
 	cr_args_for("NewObjectState")
 	local r1, r2, r3, r4 = NewObjectState("cr", 0, "cr_obj.bm", "cr_obj.bm", TRUE)
 	cr_log("r", r1, r2, r3, r4)
+	if type(r1) == "userdata" then FreeObjectState(r1) end
 end
 cr_scummvm_differs("args_NewObjectState_p1_str") cr_test("args_NewObjectState_p1_str", cr_t_args_2188)
 cr_t_args_2189 = function()
 	cr_args_for("NewObjectState")
 	local r1, r2, r3, r4 = NewObjectState(1.5, 0, "cr_obj.bm", "cr_obj.bm", TRUE)
 	cr_log("r", r1, r2, r3, r4)
+	if type(r1) == "userdata" then FreeObjectState(r1) end
 end
 cr_test("args_NewObjectState_p1_num", cr_t_args_2189)
 cr_t_args_2190 = function()
 	cr_args_for("NewObjectState")
 	local r1, r2, r3, r4 = NewObjectState({ }, 0, "cr_obj.bm", "cr_obj.bm", TRUE)
 	cr_log("r", r1, r2, r3, r4)
+	if type(r1) == "userdata" then FreeObjectState(r1) end
 end
 cr_scummvm_differs("args_NewObjectState_p1_tab") cr_test("args_NewObjectState_p1_tab", cr_t_args_2190)
 cr_t_args_2191 = function()
 	cr_args_for("NewObjectState")
 	local r1, r2, r3, r4 = NewObjectState(-1, 0, "cr_obj.bm", "cr_obj.bm", TRUE)
 	cr_log("r", r1, r2, r3, r4)
+	if type(r1) == "userdata" then FreeObjectState(r1) end
 end
 cr_test("args_NewObjectState_p1_neg", cr_t_args_2191)
 cr_t_args_2192 = function()
 	cr_args_for("NewObjectState")
 	local r1, r2, r3, r4 = NewObjectState(1000000000, 0, "cr_obj.bm", "cr_obj.bm", TRUE)
 	cr_log("r", r1, r2, r3, r4)
+	if type(r1) == "userdata" then FreeObjectState(r1) end
 end
 cr_test("args_NewObjectState_p1_big", cr_t_args_2192)
 cr_t_args_2193 = function()
 	cr_args_for("NewObjectState")
 	local r1, r2, r3, r4 = NewObjectState(0, nil, "cr_obj.bm", "cr_obj.bm", TRUE)
 	cr_log("r", r1, r2, r3, r4)
+	if type(r1) == "userdata" then FreeObjectState(r1) end
 end
 cr_test("args_NewObjectState_p2_nil", cr_t_args_2193)
 cr_t_args_2194 = function()
 	cr_args_for("NewObjectState")
 	local r1, r2, r3, r4 = NewObjectState(0, "cr", "cr_obj.bm", "cr_obj.bm", TRUE)
 	cr_log("r", r1, r2, r3, r4)
+	if type(r1) == "userdata" then FreeObjectState(r1) end
 end
 cr_test("args_NewObjectState_p2_str", cr_t_args_2194)
 cr_t_args_2195 = function()
 	cr_args_for("NewObjectState")
 	local r1, r2, r3, r4 = NewObjectState(0, 1.5, "cr_obj.bm", "cr_obj.bm", TRUE)
 	cr_log("r", r1, r2, r3, r4)
+	if type(r1) == "userdata" then FreeObjectState(r1) end
 end
 cr_test("args_NewObjectState_p2_num", cr_t_args_2195)
 cr_t_args_2196 = function()
 	cr_args_for("NewObjectState")
 	local r1, r2, r3, r4 = NewObjectState(0, { }, "cr_obj.bm", "cr_obj.bm", TRUE)
 	cr_log("r", r1, r2, r3, r4)
+	if type(r1) == "userdata" then FreeObjectState(r1) end
 end
 cr_test("args_NewObjectState_p2_tab", cr_t_args_2196)
 cr_t_args_2197 = function()
 	cr_args_for("NewObjectState")
 	local r1, r2, r3, r4 = NewObjectState(0, -1, "cr_obj.bm", "cr_obj.bm", TRUE)
 	cr_log("r", r1, r2, r3, r4)
+	if type(r1) == "userdata" then FreeObjectState(r1) end
 end
 cr_test("args_NewObjectState_p2_neg", cr_t_args_2197)
 cr_t_args_2198 = function()
 	cr_args_for("NewObjectState")
 	local r1, r2, r3, r4 = NewObjectState(0, 1000000000, "cr_obj.bm", "cr_obj.bm", TRUE)
 	cr_log("r", r1, r2, r3, r4)
+	if type(r1) == "userdata" then FreeObjectState(r1) end
 end
 cr_test("args_NewObjectState_p2_big", cr_t_args_2198)
 cr_t_args_2199 = function()
 	cr_args_for("NewObjectState")
 	local r1, r2, r3, r4 = NewObjectState(0, 0, nil, "cr_obj.bm", TRUE)
 	cr_log("r", r1, r2, r3, r4)
+	if type(r1) == "userdata" then FreeObjectState(r1) end
 end
 cr_test("args_NewObjectState_p3_nil", cr_t_args_2199)
 cr_t_args_2200 = function()
 	cr_args_for("NewObjectState")
 	local r1, r2, r3, r4 = NewObjectState(0, 0, { }, "cr_obj.bm", TRUE)
 	cr_log("r", r1, r2, r3, r4)
+	if type(r1) == "userdata" then FreeObjectState(r1) end
 end
 cr_test("args_NewObjectState_p3_tab", cr_t_args_2200)
 cr_t_args_2201 = function()
 	cr_args_for("NewObjectState")
 	local r1, r2, r3, r4 = NewObjectState(0, 0, "cr_obj.bm", nil, TRUE)
 	cr_log("r", r1, r2, r3, r4)
+	if type(r1) == "userdata" then FreeObjectState(r1) end
 end
 cr_test("args_NewObjectState_p4_nil", cr_t_args_2201)
 cr_t_args_2202 = function()
 	cr_args_for("NewObjectState")
 	local r1, r2, r3, r4 = NewObjectState(0, 0, "cr_obj.bm", { }, TRUE)
 	cr_log("r", r1, r2, r3, r4)
+	if type(r1) == "userdata" then FreeObjectState(r1) end
 end
 cr_test("args_NewObjectState_p4_tab", cr_t_args_2202)
 cr_t_args_2203 = function()
 	cr_args_for("NewObjectState")
 	local r1, r2, r3, r4 = NewObjectState(0, 0, "cr_obj.bm", "cr_obj.bm", nil)
 	cr_log("r", r1, r2, r3, r4)
+	if type(r1) == "userdata" then FreeObjectState(r1) end
 end
 cr_test("args_NewObjectState_p5_nil", cr_t_args_2203)
 cr_t_args_2204 = function()
 	cr_args_for("NewObjectState")
 	local r1, r2, r3, r4 = NewObjectState(0, 0, "cr_obj.bm", "cr_obj.bm", "cr")
 	cr_log("r", r1, r2, r3, r4)
+	if type(r1) == "userdata" then FreeObjectState(r1) end
 end
 cr_test("args_NewObjectState_p5_str", cr_t_args_2204)
 cr_t_args_2205 = function()
 	cr_args_for("NewObjectState")
 	local r1, r2, r3, r4 = NewObjectState(0, 0, "cr_obj.bm", "cr_obj.bm", { })
 	cr_log("r", r1, r2, r3, r4)
+	if type(r1) == "userdata" then FreeObjectState(r1) end
 end
 cr_test("args_NewObjectState_p5_tab", cr_t_args_2205)
 cr_t_args_2206 = function()
