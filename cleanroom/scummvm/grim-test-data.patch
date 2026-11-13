@@ -1,6 +1,35 @@
+diff --git a/engines/grim/actor.cpp b/engines/grim/actor.cpp
+index 7656e254..bf5c3640 100644
+--- a/engines/grim/actor.cpp
++++ b/engines/grim/actor.cpp
+@@ -1795,6 +1795,12 @@ void Actor::draw() {
+ 		}
+ 	}
+ 
++	placeTalkText();
++}
++
++// Puts the text of the line the actor says over its costume on the screen, once after the line started. Part of draw(); the
++// test data's frames that are not drawn call it alone, so that the text's position does not wait for a drawn frame.
++void Actor::placeTalkText() {
+ 	if (_mustPlaceText) {
+ 		Common::Point p1, p2;
+ 		if (g_grim->getGameType() == GType_GRIM) {
+diff --git a/engines/grim/actor.h b/engines/grim/actor.h
+index 609724bf..5eeaf387 100644
+--- a/engines/grim/actor.h
++++ b/engines/grim/actor.h
+@@ -504,6 +504,7 @@ public:
+ 	 */
+ 	bool updateTalk();
+ 	void draw();
++	void placeTalkText();
+ 
+ 	bool isLookAtVectorZero() {
+ 		return _lookAtVector.isZero();
 diff --git a/engines/grim/crashdump.cpp b/engines/grim/crashdump.cpp
 new file mode 100644
-index 00000000000..94528bfe573
+index 00000000..94528bfe
 --- /dev/null
 +++ b/engines/grim/crashdump.cpp
 @@ -0,0 +1,88 @@
@@ -93,7 +122,7 @@ index 00000000000..94528bfe573
 +
 +#endif
 diff --git a/engines/grim/detection.h b/engines/grim/detection.h
-index e46e49e80fa..b438f7a4863 100644
+index e46e49e8..b438f7a4 100644
 --- a/engines/grim/detection.h
 +++ b/engines/grim/detection.h
 @@ -32,6 +32,13 @@ static const Engines::ObsoleteGameID obsoleteGameIDsTable[] = {
@@ -111,7 +140,7 @@ index e46e49e80fa..b438f7a4863 100644
  	GType_GRIM,
  	GType_MONKEY4
 diff --git a/engines/grim/detection_tables.h b/engines/grim/detection_tables.h
-index 1013f938dc7..5a5393e99a0 100644
+index 1013f938..5a5393e9 100644
 --- a/engines/grim/detection_tables.h
 +++ b/engines/grim/detection_tables.h
 @@ -27,6 +27,45 @@
@@ -161,7 +190,7 @@ index 1013f938dc7..5a5393e99a0 100644
  		// Grim Fandango English version (patched)
  		{
 diff --git a/engines/grim/emi/emi.cpp b/engines/grim/emi/emi.cpp
-index 1202b9167ec..639dac0084b 100644
+index 1202b916..639dac00 100644
 --- a/engines/grim/emi/emi.cpp
 +++ b/engines/grim/emi/emi.cpp
 @@ -50,7 +50,7 @@ LuaBase *EMIEngine::createLua() {
@@ -174,7 +203,7 @@ index 1202b9167ec..639dac0084b 100644
  			case Common::FR_FRA:
  				return "MonkeyUpdate_FRA.exe";
 diff --git a/engines/grim/emi/sound/emisound.cpp b/engines/grim/emi/sound/emisound.cpp
-index d495a79df1c..fcdf0cd0b87 100644
+index d495a79d..fcdf0cd0 100644
 --- a/engines/grim/emi/sound/emisound.cpp
 +++ b/engines/grim/emi/sound/emisound.cpp
 @@ -708,7 +708,9 @@ void EMISound::initMusicTable() {
@@ -189,7 +218,7 @@ index d495a79df1c..fcdf0cd0b87 100644
  			_numMusicStates = 126;
  			_musicTable = musicTable;
 diff --git a/engines/grim/grim.cpp b/engines/grim/grim.cpp
-index c84f3cc2a3e..422fedfe42b 100644
+index 549a3887..d9da5f06 100644
 --- a/engines/grim/grim.cpp
 +++ b/engines/grim/grim.cpp
 @@ -72,6 +72,9 @@
@@ -202,7 +231,16 @@ index c84f3cc2a3e..422fedfe42b 100644
  #include "engines/grim/sound.h"
  #include "engines/grim/debugger.h"
  #include "engines/grim/remastered/overlay.h"
-@@ -87,9 +90,13 @@ GrimEngine *g_grim = nullptr;
+@@ -81,15 +84,22 @@
+ #include "engines/grim/emi/sound/emisound.h"
+ #include "engines/grim/lua/lua.h"
+ 
++// (engines/engine.cpp: the ScummVM logo has been shown)
++extern bool splash;
++
+ namespace Grim {
+ 
+ GrimEngine *g_grim = nullptr;
  GfxBase *g_driver = nullptr;
  int g_imuseState = -1;
  
@@ -216,7 +254,7 @@ index c84f3cc2a3e..422fedfe42b 100644
  
  	setDebugger(new Debugger());
  	_gameType = gameType;
-@@ -329,13 +336,27 @@ GfxBase *GrimEngine::createRenderer(int screenW, int screenH) {
+@@ -331,13 +341,31 @@ GfxBase *GrimEngine::createRenderer(int screenW, int screenH) {
  }
  
  const char *GrimEngine::getUpdateFilename() {
@@ -240,12 +278,16 @@ index c84f3cc2a3e..422fedfe42b 100644
 +		// original with the simtime patch of grimlaunch, so that what a test measures per frame is the same every run)
 +		if (ConfMan.hasKey("sim_frame_ms"))
 +			_testFrameMs = CLIP(ConfMan.getInt("sim_frame_ms"), 1, 1000);
++		if (ConfMan.hasKey("sim_render_every"))
++			_testRenderEvery = MAX(ConfMan.getInt("sim_render_every"), 0);
++		// (no ScummVM logo: it waits 0.6 s at the start of every game, and the tests start a game per file)
++		splash = true;
 +	}
 +
  	// Try to see if we have the EMI Mac installer present
  	// Currently, this requires the data fork to be standalone
  	if (getGameType() == GType_MONKEY4) {
-@@ -354,7 +375,7 @@ Common::Error GrimEngine::run() {
+@@ -356,7 +384,7 @@ Common::Error GrimEngine::run() {
  	}
  
  	ConfMan.registerDefault("check_gamedata", true);
@@ -254,7 +296,7 @@ index c84f3cc2a3e..422fedfe42b 100644
  		MD5CheckDialog d;
  		if (!d.runModal()) {
  			Common::U32String confirmString = Common::U32String::format(_(
-@@ -828,7 +849,10 @@ void GrimEngine::luaUpdate() {
+@@ -830,7 +858,10 @@ void GrimEngine::luaUpdate() {
  	_frameTime = newStart - _frameStart;
  	_frameStart = newStart;
  
@@ -266,7 +308,46 @@ index c84f3cc2a3e..422fedfe42b 100644
  		_frameTime = 0;
  	}
  
-@@ -985,6 +1009,25 @@ void GrimEngine::drawNormalMode() {
+@@ -916,6 +947,38 @@ void GrimEngine::updateDrawMode() {
+ 	_movieTime = 0;
+ }
+ 
++// Test data, a frame that is not drawn: what updateDisplayScene would have changed besides the picture. The movie time the
++// scripts get is taken there, the text of a line an actor says is placed when the actor is drawn, and a text's time
++// counts from its first drawing.
++void GrimEngine::updateUndrawnFrame() {
++	if (_mode == SmushMode) {
++		if (g_movie->isPlaying())
++			_movieTime = g_movie->getMovieTime();
++		if (_movieSubtitle)
++			_movieSubtitle->create();
++	} else if (_mode == NormalMode || _mode == OverworldMode) {
++		if (!_currSet || !_flipEnable)
++			return;
++		if (getGameType() == GType_GRIM) {
++			_prevSmushFrame = 0;
++			_movieTime = 0;
++			if (g_movie->isPlaying() && _movieSetup == _currSet->getCurrSetup()->_name)
++				_movieTime = g_movie->getMovieTime();
++		}
++		_currSet->setupCamera();
++		g_driver->set3DMode();
++		buildActiveActorsList();
++		for (Actor *a : _activeActors) {
++			if (a->isVisible())
++				a->placeTalkText();
++		}
++		for (TextObject *t : TextObject::getPool())
++			t->create();
++	} else if (_mode == DrawMode) {
++		updateDrawMode();
++	}
++}
++
+ void GrimEngine::drawNormalMode() {
+ 	_prevSmushFrame = 0;
+ 	_movieTime = 0;
+@@ -987,6 +1050,25 @@ void GrimEngine::drawNormalMode() {
  	_currSet->drawBitmaps(ObjectState::OBJSTATE_OVERLAY);
  }
  
@@ -292,17 +373,18 @@ index c84f3cc2a3e..422fedfe42b 100644
  void GrimEngine::doFlip() {
  	_frameCounter++;
  	// When possible, flip the buffer
-@@ -1152,7 +1195,20 @@ void GrimEngine::mainLoop() {
+@@ -1154,7 +1236,21 @@ void GrimEngine::mainLoop() {
  			}
  		}
  
 -		if (_mode != PauseMode) {
 +		// (test data with a fixed frame time: the frames go as fast as they can, and drawing them all is most of what a run
-+		// costs. One frame in 8 is drawn, by the count of frames so that a run is the same every time, and the frame of a
-+		// change of setup, mode or set)
++		// costs. One frame in sim_render_every (8) is drawn, by the count of frames so that a run is the same every time, and the
++		// frame of a change of setup, mode or set; the others keep what drawing changes besides the picture: updateUndrawnFrame)
 +		bool renderFrame = true;
 +		if (_testFrameMs) {
-+			if (_setupChanged || _mode != _testLastMode || _currSet != _testLastSet || _frameCounter % 8 == 0) {
++			if (_setupChanged || _mode != _testLastMode || _currSet != _testLastSet ||
++			    (_testRenderEvery > 0 && _frameCounter % _testRenderEvery == 0)) {
 +				_testLastMode = _mode;
 +				_testLastSet = _currSet;
 +			} else {
@@ -314,8 +396,12 @@ index c84f3cc2a3e..422fedfe42b 100644
  			// Draw the display scene before doing the luaUpdate.
  			// This give a large performance boost as OpenGL stores commands
  			// in a queue on the gpu to be rendered later. When doFlip is
-@@ -1162,7 +1218,10 @@ void GrimEngine::mainLoop() {
+@@ -1162,9 +1258,14 @@ void GrimEngine::mainLoop() {
+ 			// Now, it will queue all the OpenGL commands and draw them on the
+ 			// GPU while the CPU is busy updating the game world.
  			updateDisplayScene();
++		} else if (_mode != PauseMode) {
++			updateUndrawnFrame();
  		}
  
 -		doFlip();
@@ -327,7 +413,7 @@ index c84f3cc2a3e..422fedfe42b 100644
  		// We do not want the scripts to update while a movie is playing in the PS2-version.
  		if (!(getGamePlatform() == Common::kPlatformPS2 && _mode == SmushMode)) {
 diff --git a/engines/grim/grim.h b/engines/grim/grim.h
-index 3bd29bd1803..fc6b8feaa82 100644
+index 793bd3a8..227c3b65 100644
 --- a/engines/grim/grim.h
 +++ b/engines/grim/grim.h
 @@ -89,6 +89,9 @@ public:
@@ -340,7 +426,15 @@ index 3bd29bd1803..fc6b8feaa82 100644
  
  	void setMode(EngineMode mode);
  	EngineMode getMode() { return _mode; }
-@@ -255,6 +258,10 @@ protected:
+@@ -224,6 +227,7 @@ protected:
+ 	virtual void updateNormalMode();
+ 	virtual void updateDrawMode();
+ 	virtual void drawNormalMode();
++	void updateUndrawnFrame();
+ 
+ 	void savegameSave();
+ 	void saveGRIM();
+@@ -259,6 +263,12 @@ protected:
  	unsigned int _frameCounter = 0;
  	unsigned int _lastFrameTime = 0;
  	unsigned _speedLimitMs;
@@ -348,11 +442,13 @@ index 3bd29bd1803..fc6b8feaa82 100644
 +	unsigned _testFrameMs = 0;
 +	EngineMode _testLastMode = NormalMode;
 +	Set *_testLastSet = nullptr;
++	/** Test data: one frame in this many is drawn (sim_render_every; 0 = only the frames that must be: a change of setup, mode or set) */
++	int _testRenderEvery = 8;
  	bool _showFps;
  	bool _softRenderer;
  
 diff --git a/engines/grim/lua_v1.cpp b/engines/grim/lua_v1.cpp
-index c577f59f1a8..fd4269b7159 100644
+index c577f59f..fd4269b7 100644
 --- a/engines/grim/lua_v1.cpp
 +++ b/engines/grim/lua_v1.cpp
 @@ -77,7 +77,30 @@ void Lua_V1::new_dofile() {
@@ -387,7 +483,7 @@ index c577f59f1a8..fd4269b7159 100644
  		return;
  	Common::String msg("Debug: ");
 diff --git a/engines/grim/module.mk b/engines/grim/module.mk
-index 290824df7ca..55cc1a8e1dc 100644
+index 290824df..55cc1a8e 100644
 --- a/engines/grim/module.mk
 +++ b/engines/grim/module.mk
 @@ -2,6 +2,7 @@ MODULE := engines/grim
@@ -399,7 +495,7 @@ index 290824df7ca..55cc1a8e1dc 100644
  	costume/colormap_component.o \
  	costume/component.o \
 diff --git a/engines/grim/resource.cpp b/engines/grim/resource.cpp
-index 3fe51625f63..8c92c1eadd6 100644
+index 3fe51625..8c92c1ea 100644
 --- a/engines/grim/resource.cpp
 +++ b/engines/grim/resource.cpp
 @@ -20,6 +20,8 @@
@@ -437,3 +533,48 @@ index 3fe51625f63..8c92c1eadd6 100644
  		error("%s", "Cannot find game data - check configuration file");
  
  	// Load labs
+diff --git a/engines/grim/textobject.cpp b/engines/grim/textobject.cpp
+index bb2ce6d9..1d4aa24e 100644
+--- a/engines/grim/textobject.cpp
++++ b/engines/grim/textobject.cpp
+@@ -383,10 +383,7 @@ void TextObject::draw() {
+ 	if (!_lines)
+ 		return;
+ 
+-	if (!_created) {
+-		g_driver->createTextObject(this);
+-		_created = true;
+-	}
++	create();
+ 
+ 	if (_justify > 3 || _justify < 0)
+ 		warning("TextObject::draw: Unknown justification code (%d)", _justify);
+@@ -394,6 +391,16 @@ void TextObject::draw() {
+ 	g_driver->drawTextObject(this);
+ }
+ 
++// The renderer's copy of the text is made the first time it is drawn, and the time it is shown counts from then (update).
++// The test data's frames that are not drawn make it too, so that the time does not wait for a drawn frame.
++void TextObject::create() {
++	if (!_lines || _created)
++		return;
++
++	g_driver->createTextObject(this);
++	_created = true;
++}
++
+ void TextObject::update() {
+ 	if (!_duration || !_created) {
+ 		return;
+diff --git a/engines/grim/textobject.h b/engines/grim/textobject.h
+index 52e7aa7e..1a00da3b 100644
+--- a/engines/grim/textobject.h
++++ b/engines/grim/textobject.h
+@@ -111,6 +111,7 @@ public:
+ 
+ 	const Common::String &getName() const { return _textID; }
+ 	void draw();
++	void create();
+ 	void update();
+ 
+ 	void invalidate();

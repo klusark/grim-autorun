@@ -546,9 +546,11 @@ class ScummvmEngine(Engine):
                     # (no waiting for the screen's refresh at each picture drawn: with it a run takes 5 times as long)
                     "vsync=false\n\n"
                     "[cleanroom]\ngameid=%s\nengineid=grim\ndescription=%s engine test data, renderer %s\nextra=Test data\n"
-                    "path=%s\\\nlanguage=en\nplatform=windows\ncheck_gamedata=false\nfullscreen=false\n"
-                    "speech_mute=true\nsim_frame_ms=17\nrenderer=%s\n" % ("monkey4" if GAME == "emi" else "grim",
-                                                                        "EMI" if GAME == "emi" else "Grim", RENDERER, d, RENDERER))
+                    "path=%s%s\nlanguage=en\nplatform=windows\ncheck_gamedata=false\nfullscreen=false\n"
+                    "speech_mute=true\nsim_frame_ms=17\nrenderer=%s\n%s" % ("monkey4" if GAME == "emi" else "grim",
+                                                                        "EMI" if GAME == "emi" else "Grim", RENDERER, d, os.sep, RENDERER,
+                                                                        # (CR_RENDER_EVERY=n: one frame in n is drawn, 0 only those that must be; the engine's default is 8)
+                                                                        "sim_render_every=%s\n" % RENDER_EVERY if RENDER_EVERY else ""))
 
     def command(self, d):
         cmd = [SCUMMVM, "--config=" + os.path.join(d, "scummvm.ini"), "--savepath=" + os.path.join(d, "saves"),
@@ -598,6 +600,9 @@ def game_run(engine, folder, tests_lua, file="", start=None):
     cmd, env = engine.command(folder)
     cmd = offscreen(cmd)
     g.start = time.time()
+    # (elsewhere than Windows, SDL's offscreen video driver keeps the window off the screen: OpenGL through EGL, no desktop)
+    if not VISIBLE and os.name != "nt":
+        env = dict(env or os.environ, SDL_VIDEODRIVER="offscreen")
     # (stdin closed: ScummVM's Lua read() falls back to the process's stdin when readfrom failed, and an open one blocks it)
     p = subprocess.Popen(cmd, cwd=folder, stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL,
                          stderr=subprocess.DEVNULL, env=env)
@@ -808,12 +813,13 @@ def compare_with(reference, engine, crashed, only=None):
 # The engines run on a desktop of their own (tools/offscreen.c): their windows do not open on the screen and cannot take the
 # focus. They draw as before (OpenGL, DirectDraw). CR_VISIBLE=1 runs them on the user's desktop.
 VISIBLE = os.environ.get("CR_VISIBLE") == "1"
+RENDER_EVERY = os.environ.get("CR_RENDER_EVERY", "")
 OFFSCREEN = os.path.join(HERE, "run", "offscreen.exe")
 
 
 def offscreen(cmd):
     """The command, started through offscreen.exe (built from tools/offscreen.c when older than it)."""
-    if VISIBLE:
+    if VISIBLE or os.name != "nt":
         return cmd
     src = os.path.join(HERE, "tools", "offscreen.c")
     if not newer(OFFSCREEN, [src]):
@@ -1014,7 +1020,6 @@ def run_scummvm_all(reference, only, fresh, renderers):
 def lock_folder(path=None, what="another run.py is running in this folder"):
     """Waits until no other run.py works in this folder (they share build/, run/ and logs/: two at once spoil each other's
     runs), then holds the lock until this process ends (Windows releases it when the process dies)."""
-    import msvcrt
     path = path or os.path.join(LOGS, "run.lock")
     os.makedirs(os.path.dirname(path), exist_ok=True)
     f = open(path, "a+")
@@ -1022,7 +1027,12 @@ def lock_folder(path=None, what="another run.py is running in this folder"):
     while True:
         try:
             f.seek(0)
-            msvcrt.locking(f.fileno(), msvcrt.LK_NBLCK, 1)
+            if os.name == "nt":
+                import msvcrt
+                msvcrt.locking(f.fileno(), msvcrt.LK_NBLCK, 1)
+            else:
+                import fcntl
+                fcntl.flock(f.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
             return f
         except OSError:
             if not warned:
