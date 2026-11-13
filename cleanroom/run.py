@@ -1096,9 +1096,20 @@ def main():
         if a.only:
             sys.exit("--save writes the whole expected log: run it without --only")
         # (the reference must repeat itself: the values that differ between runs are kept in unstable.txt and not compared)
+        # (a test that crashes or hangs in one run is skipped by the next ones, which then differ from it: the runs start over
+        # whenever the crash list grows, so that all of them skip the same tests)
         runs = []
-        for i in range(a.repeat):
+        restarts = 0
+        while len(runs) < a.repeat:
+            i = len(runs)
+            before = read_names(CRASHERS)
             run_engine("original", a.only)
+            if read_names(CRASHERS) != before and restarts < 5:
+                restarts += 1
+                say("original: new crashers in run %d (%s); the runs start over" %
+                    (i + 1, ", ".join(sorted(read_names(CRASHERS) - before))))
+                runs = []
+                continue
             path = os.path.join(LOGS, "original_%d.log" % (i + 1))
             shutil.copyfile(os.path.join(LOGS, "original.log"), path)
             lines = open(path).read().splitlines()
@@ -1110,8 +1121,18 @@ def main():
         unstable = sorted(compare.unstable_keys(runs) - compare.marked(*[t for _, t in runs]))
         os.makedirs(os.path.dirname(EXPECTED), exist_ok=True)
         # (without the DIFFERS lines: they are the tests' marks for ScummVM, not what the original did; ScummVM's log has them)
+        # (and the values that are not compared, cr_unstable or in unstable.txt, written as "(unstable)": a tick count, an
+        # address or next()'s order would change the file on every --save, though nothing that is compared changed)
+        skip = compare.marked(*[t for _, t in runs]) | set(unstable)
         with open(os.path.join(LOGS, "original.log"), newline="") as src, open_expected(EXPECTED, "") as dst:
-            dst.writelines(l for l in src if not l.startswith("DIFFERS "))
+            for l in src:
+                if l.startswith("DIFFERS "):
+                    continue
+                if l.startswith("V "):
+                    name, key, _ = (l[2:].split("|", 2) + ["", ""])[:3]
+                    if "%s|%s" % (name, key) in skip:
+                        l = "V %s|%s|(unstable)%s" % (name, key, "\r\n" if l.endswith("\r\n") else "\n")
+                dst.write(l)
         with open_expected(UNSTABLE) as f:
             f.write("# test|key values that differed between %d runs of the original; not compared\n" % a.repeat)
             f.write("".join(k + "\n" for k in unstable))

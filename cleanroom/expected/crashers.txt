@@ -124,7 +124,9 @@ args_SnapToPlane_tab
 asv_talk_no_voice
 font_dims_handle
 font_dims_name
+light_details
 mf_rects
 rest_chore_zero
 save_emergency_font
 shadow_color
+smv_cut
