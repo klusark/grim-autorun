@@ -92,9 +92,10 @@ cr_scummvm_differs = function(name, why, game)
 	end
 end
 
+-- (CR_LOADING: the test file being read, set by _cr_tests.lua before each dofile; CR_FILE: run only that file's tests)
 cr_test = function(name, fn)
 	CR_N = CR_N + 1
-	CR_TESTS[CR_N] = { name = name, fn = fn }
+	CR_TESTS[CR_N] = { name = name, fn = fn, file = CR_LOADING }
 end
 
 cr_frames = function(n)
@@ -127,7 +128,7 @@ end
 cr_main = function()
 	local i = 1
 	local id, f
-	-- (CR_FROM: a run that goes on after a crash starts at the first test of the file that crashed; CR_FAILS0: failures before)
+	-- (CR_FROM: a run that goes on after a crash starts at that test; CR_FAILS0: failures before)
 	if CR_FROM then
 		while i <= CR_N and CR_TESTS[i].name ~= CR_FROM do
 			i = i + 1
@@ -136,7 +137,9 @@ cr_main = function()
 	end
 	cr_out("START " .. CR_N .. " tests")
 	while i <= CR_N do
-		if CR_SKIP and CR_SKIP[CR_TESTS[i].name] then
+		if CR_FILE and CR_TESTS[i].file ~= CR_FILE then
+			-- (another file's test: another process runs it)
+		elseif CR_SKIP and CR_SKIP[CR_TESTS[i].name] then
 			cr_out("SKIP " .. CR_TESTS[i].name)
 			if CR_DIFFERS[CR_TESTS[i].name] then
 				cr_out("DIFFERS " .. CR_TESTS[i].name .. "|" .. CR_DIFFERS[CR_TESTS[i].name])
