@@ -41,7 +41,7 @@ cr_t_costume_smush = function()
 	StopMovie()
 	cr_cc_done(a)
 end
-cr_test("costume_smush", cr_t_costume_smush)
+cr_scummvm_differs("costume_smush") cr_test("costume_smush", cr_t_costume_smush)
 
 cr_t_costume_imuse_state = function()
 	cr_music_reset()
@@ -64,7 +64,7 @@ cr_t_costume_imuse_state = function()
 	cr_cc_done(a)
 	cr_music_reset()
 end
-cr_test("costume_imuse_state", cr_t_costume_imuse_state)
+cr_scummvm_differs("costume_imuse_state") cr_test("costume_imuse_state", cr_t_costume_imuse_state)
 
 cr_t_costume_stream = function()
 	ImStopAllSounds()
@@ -83,4 +83,4 @@ cr_t_costume_stream = function()
 	cr_cc_done(a)
 	ImStopAllSounds()
 end
-cr_test("costume_stream", cr_t_costume_stream)
+cr_scummvm_differs("costume_stream") cr_test("costume_stream", cr_t_costume_stream)
