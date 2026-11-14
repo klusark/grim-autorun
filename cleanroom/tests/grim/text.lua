@@ -59,6 +59,30 @@ cr_t_text_no_font = function()
 end
 cr_scummvm_differs("text_no_font") cr_test("text_no_font", cr_t_text_no_font)
 
+-- characters above 0x7f (accented letters, inverted marks): Text_NextChar reads them unsigned, 0xfe breaks a line like
+-- the space (grim-decomp sign-extended them and indexed before the glyph table: the whole-game run crashed in
+-- Font_GlyphAdvance on a 0xa1 in ch19)
+cr_t_text_high_chars = function()
+	local white = MakeColor(255, 255, 255)
+	local hi = format("a%cb%c%c", 161, 233, 191)
+	cr_text_dims("high", hi, { font = CR_FONT, fgcolor = white, x = 10, y = 20 })
+	cr_text_dims("high_only", format("%c%c%c%c", 128, 200, 255, 161), { font = CR_FONT, x = 10, y = 20 })
+	cr_text_dims("high_wrapped", hi .. " " .. hi .. " " .. hi .. " " .. hi, { font = CR_FONT, x = 0, y = 0, width = 40 })
+	cr_text_dims("high_fe_break", format("abcd%cefgh%cijkl", 254, 254), { font = CR_FONT, x = 0, y = 0, width = 40 })
+end
+cr_scummvm_differs("text_high_chars") cr_test("text_high_chars", cr_t_text_high_chars)
+
+-- (the same characters drawn: grim-decomp's main build crashed in Glyph_Blit16Clipped at the start of the whole-game run)
+cr_t_text_high_drawn = function()
+	MakeCurrentSet("cr_flat.set")
+	local t = MakeTextObject(format("A%c%c%c%cB", 161, 233, 191, 255), { font = CR_FONT, fgcolor = MakeColor(255, 255, 255), x = 100, y = 100 })
+	cr_frames(3)
+	cr_snap("high_drawn")
+	KillTextObject(t)
+	cr_frames(1)
+end
+cr_scummvm_differs("text_high_drawn") cr_test("text_high_drawn", cr_t_text_high_drawn)
+
 cr_t_text_change = function()
 	local t = MakeTextObject("abc", { font = CR_FONT, x = 10, y = 20 })
 	ChangeTextObject(t, "abcdef")
