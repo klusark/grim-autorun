@@ -172,6 +172,9 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+      # (the clean room's snaps.py reads the screenshots with numpy)
+      - name: numpy
+        run: python -m pip install numpy
 
       # (the exit codes do not matter here: the job compare judges, from the logs)
       - name: Grim

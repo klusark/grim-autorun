@@ -82,6 +82,9 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+      # (the clean room's snaps.py reads the screenshots with numpy)
+      - name: numpy
+        run: python -m pip install numpy
 
       # (no CR_VISIBLE: the game runs on offscreen.exe's desktop of its own, as on a desk machine. On the runner's desktop it
       # lost and got back the focus now and then, and WM_ACTIVATEAPP calls sputRender_ForceRefresh: the whole screen drawn
