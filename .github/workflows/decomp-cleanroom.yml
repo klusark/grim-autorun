@@ -2,6 +2,7 @@
 # programs (as its own build.yml does) and runs `run.py decomp`, compared with the original's expected log
 # (cleanroom/expected/original.log). The tests make their own data: no game files on the runner.
 # The job fails when a test differs or crashes or hangs the rebuilt exe.
+# It runs on pushes to main, by hand, and on every pull request through pr.yml (workflow_call).
 name: Decomp clean-room tests
 
 on:
@@ -13,7 +14,10 @@ on:
       decomp_ref:
         description: Branch, tag or commit of it
         default: main
+  workflow_call:
+  # (a PR branch's pushes run through pr.yml, as the PR)
   push:
+    branches: [main]
 
 concurrency:
   group: decomp-cleanroom-${{ github.ref }}

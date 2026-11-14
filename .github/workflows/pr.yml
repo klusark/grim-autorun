@@ -1,0 +1,71 @@
+# Every pull request: the clean-room tests on grim-decomp (main, decomp-cleanroom.yml) and on ScummVM (upstream master with
+# the test patch, scummvm-cleanroom.yml), with the PR's clean room. The job "Clean-room tests pass" passes only when both
+# pass: it is the check a branch protection rule of main requires. When anything fails, the job comment names on the PR what
+# failed (cleanroom/tools/pr_comment.py: the tests that differ, with what differs, and the crashers), and edits the same
+# comment on later runs.
+name: PR clean-room tests
+
+on:
+  pull_request:
+
+concurrency:
+  group: pr-cleanroom-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  decomp:
+    uses: ./.github/workflows/decomp-cleanroom.yml
+
+  scummvm:
+    uses: ./.github/workflows/scummvm-cleanroom.yml
+
+  pass:
+    name: Clean-room tests pass
+    needs: [decomp, scummvm]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Both pass
+        run: |
+          echo "decomp: ${{ needs.decomp.result }}, ScummVM: ${{ needs.scummvm.result }}"
+          [ "${{ needs.decomp.result }}" = success ] && [ "${{ needs.scummvm.result }}" = success ]
+
+  # (a PR from a fork gets a read-only token: no comment then; the runs' summaries have the same)
+  comment:
+    needs: [decomp, scummvm]
+    if: always() && github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: cleanroom/tools
+
+      - uses: actions/download-artifact@v4
+        continue-on-error: true
+        with:
+          name: decomp-cleanroom-logs
+          path: out/decomp
+
+      - uses: actions/download-artifact@v4
+        continue-on-error: true
+        with:
+          name: cleanroom-logs
+          path: out/scummvm
+
+      - name: Comment
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          # (where the outputs are in the artifacts: upload-artifact keeps the paths below the files' common folder)
+          f() { find out/$1 -name "$2" -not -path '*/logs/*' | head -n1; }
+          python3 cleanroom/tools/pr_comment.py \
+            --job "Decomp (grim-decomp main)" "${{ needs.decomp.result }}" $(f decomp decomp.txt) \
+            --job "ScummVM (upstream master)" "${{ needs.scummvm.result }}" $(f scummvm grim.txt) $(f scummvm emi.txt) \
+            --url "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
+            --out comment.md --post "${{ github.repository }}" "${{ github.event.pull_request.number }}"
+          cat comment.md >> "$GITHUB_STEP_SUMMARY"
