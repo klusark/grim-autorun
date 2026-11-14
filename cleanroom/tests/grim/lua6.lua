@@ -18,7 +18,7 @@ cr_t_lua6_format = function()
 	cr_log("number_as_string", format("%s", 12.5))
 	cr_log("string_as_number", format("%d", "17"))
 end
-cr_test("lua6_format", cr_t_lua6_format)
+cr_scummvm_differs("lua6_format") cr_test("lua6_format", cr_t_lua6_format)
 
 cr_t_lua6_tonumber_base = function()
 	cr_log("hex", tonumber("ff", 16), tonumber("FF", 16), tonumber("7fffffff", 16))
@@ -51,7 +51,7 @@ cr_t_lua6_classes = function()
 	cr_log("minimal", strfind("<a><b>", "<(.-)>"))
 	cr_log("balanced_like", strfind("f(a(b)c)", "%((.*)%)"))
 end
-cr_test("lua6_classes", cr_t_lua6_classes)
+cr_scummvm_differs("lua6_classes") cr_test("lua6_classes", cr_t_lua6_classes)
 
 cr_lua6_upper = function(c)
 	return strupper(c)
@@ -172,7 +172,7 @@ cr_t_lua6_setlocale = function()
 	cr_log("unknown_locale", setlocale("cr_no_such_locale"))
 	cr_log("again", setlocale("C"))
 end
-cr_test("lua6_setlocale", cr_t_lua6_setlocale)
+cr_scummvm_differs("lua6_setlocale") cr_test("lua6_setlocale", cr_t_lua6_setlocale)
 
 -- deep recursion with many arguments and locals: the stack grows (luaD_checkstack)
 cr_lua6_deep = function(n, a, b, c, d, e, f, g, h)

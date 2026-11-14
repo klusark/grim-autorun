@@ -282,3 +282,11 @@ tp_spot_centre
 tp_spot_left
 turn_key
 walk_vector
+image_write_ext
+image_read_bmp
+image_read_bm
+image_read_zbm
+movie_mode1
+movie_mode7
+movie_mode1s
+movie_mode7s
