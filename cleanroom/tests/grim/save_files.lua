@@ -234,3 +234,15 @@ cr_t_save_image_dim = function()
 	cr_frames(2)
 end
 cr_scummvm_differs("save_image_dim", "ScummVM's thumbnail: almost black (OpenGL) or darker") cr_test("save_image_dim", cr_t_save_image_dim)
+
+-- (a memory error in ScummVM under valgrind: on the skip list)
+cr_scummvm_differs("save_find_end", "a memory error in ScummVM under valgrind (uninitialised value or invalid access): on the skip list")
+
+-- (a memory error in ScummVM under valgrind: on the skip list)
+cr_scummvm_differs("save_find_one", "a memory error in ScummVM under valgrind (uninitialised value or invalid access): on the skip list")
+
+-- (a memory error in ScummVM under valgrind: on the skip list)
+cr_scummvm_differs("save_find_restart", "a memory error in ScummVM under valgrind (uninitialised value or invalid access): on the skip list")
+
+-- (a memory error in ScummVM under valgrind: on the skip list)
+cr_scummvm_differs("save_image", "a memory error in ScummVM under valgrind (uninitialised value or invalid access): on the skip list")

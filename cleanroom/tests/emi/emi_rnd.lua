@@ -127,3 +127,9 @@ cr_test("rnd_e_say", function()
 	cr_t_rnd_e_say()
 	CR_RND_E_OVER = nil
 end)
+
+-- (a memory error in ScummVM under valgrind: on the skip list)
+cr_scummvm_differs("rnd_e_alpha", "a memory error in ScummVM under valgrind (uninitialised value or invalid access): on the skip list")
+
+-- (a memory error in ScummVM under valgrind: on the skip list)
+cr_scummvm_differs("rnd_e_overworld", "a memory error in ScummVM under valgrind (uninitialised value or invalid access): on the skip list")

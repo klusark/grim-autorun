@@ -132,3 +132,6 @@ cr_t_resources = function()
 	cr_log("set_after", GetCurrentSetup("cr_flat.set"))
 end
 cr_test("resources", cr_t_resources)
+
+-- (a memory error in ScummVM under valgrind: on the skip list)
+cr_scummvm_differs("imuse_state", "a memory error in ScummVM under valgrind (uninitialised value or invalid access): on the skip list")

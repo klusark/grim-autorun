@@ -30,3 +30,15 @@ cr_mode_test(2, "count")
 -- (ScummVM differs: tools/mark_known.py)
 cr_scummvm_differs("movie_mode6")
 cr_scummvm_differs("movie_mode8")
+
+-- (a memory error in ScummVM under valgrind: on the skip list)
+cr_scummvm_differs("movie_mode2", "a memory error in ScummVM under valgrind (uninitialised value or invalid access): on the skip list")
+
+-- (a memory error in ScummVM under valgrind: on the skip list)
+cr_scummvm_differs("movie_mode3", "a memory error in ScummVM under valgrind (uninitialised value or invalid access): on the skip list")
+
+-- (a memory error in ScummVM under valgrind: on the skip list)
+cr_scummvm_differs("movie_mode4", "a memory error in ScummVM under valgrind (uninitialised value or invalid access): on the skip list")
+
+-- (a memory error in ScummVM under valgrind: on the skip list)
+cr_scummvm_differs("movie_mode5", "a memory error in ScummVM under valgrind (uninitialised value or invalid access): on the skip list")

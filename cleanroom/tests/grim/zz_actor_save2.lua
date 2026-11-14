@@ -276,3 +276,6 @@ cr_scummvm_differs("asv_shadow_other_set", "crashes or hangs ScummVM now and the
 
 -- (crashes or hangs ScummVM now and then: on the skip list)
 cr_scummvm_differs("asv_shadow", "crashes or hangs ScummVM now and then: on the skip list")
+
+-- (a memory error in ScummVM under valgrind: on the skip list)
+cr_scummvm_differs("asv_shadow_slot", "a memory error in ScummVM under valgrind (uninitialised value or invalid access): on the skip list")

@@ -161,3 +161,6 @@ cr_scummvm_differs("movie_play", "crashes or hangs ScummVM now and then: on the 
 
 -- (crashes or hangs ScummVM now and then: on the skip list)
 cr_scummvm_differs("movie_loop", "crashes or hangs ScummVM now and then: on the skip list")
+
+-- (a memory error in ScummVM under valgrind: on the skip list)
+cr_scummvm_differs("movie_short", "a memory error in ScummVM under valgrind (uninitialised value or invalid access): on the skip list")

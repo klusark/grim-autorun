@@ -449,3 +449,15 @@ cr_scummvm_differs("save_setup")
 cr_scummvm_differs("save_text")
 cr_scummvm_differs("save_walking")
 cr_scummvm_differs("save_chore")
+
+-- (a memory error in ScummVM under valgrind: on the skip list)
+cr_scummvm_differs("save_data_empty", "a memory error in ScummVM under valgrind (uninitialised value or invalid access): on the skip list")
+
+-- (a memory error in ScummVM under valgrind: on the skip list)
+cr_scummvm_differs("save_data_three", "a memory error in ScummVM under valgrind (uninitialised value or invalid access): on the skip list")
+
+-- (a memory error in ScummVM under valgrind: on the skip list)
+cr_scummvm_differs("save_lua", "a memory error in ScummVM under valgrind (uninitialised value or invalid access): on the skip list")
+
+-- (a memory error in ScummVM under valgrind: on the skip list)
+cr_scummvm_differs("save_object_state", "a memory error in ScummVM under valgrind (uninitialised value or invalid access): on the skip list")

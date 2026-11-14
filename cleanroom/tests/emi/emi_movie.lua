@@ -92,3 +92,6 @@ end)
 
 -- (ScummVM differs: tools/mark_known.py)
 cr_scummvm_differs("emi_movie_extension")
+
+-- (a memory error in ScummVM under valgrind: on the skip list)
+cr_scummvm_differs("emi_movie_pause", "a memory error in ScummVM under valgrind (uninitialised value or invalid access): on the skip list")

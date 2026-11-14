@@ -98,6 +98,15 @@ once keep the machine busy. `--coverage` is the coverage run (below). `tools/mar
   volume mixer's mute; the games' own volumes are unchanged) and unmutes them at the end; a visible run is not muted.
   On Linux, ScummVM runs with `SDL_VIDEODRIVER=offscreen` (hidden windows, OpenGL through EGL), unless `CR_VISIBLE=1`.
 
+**Valgrind (Linux).** `SCUMMVM=tools/valgrind_scummvm.sh CR_STALL=180 CR_STARTUP=600 python3 run.py scummvm` runs ScummVM
+(a `-g` build) under valgrind, which ends it at the first memory error: the test running then becomes a crasher, as if it
+had crashed, and the valgrind report is in its `logs/crashes/` file. The tests found this way are marked "a memory error in
+ScummVM under valgrind". On 2026-11-14 (upstream master with the patch) the errors were: SmushMixer::mixMono16 reading past
+its buffer (the movies), uninitialised bytes written into a save (GZipWriteStream from SoundPlayer::saveState and others),
+TinyGL comparing uninitialised draw calls (dirty rectangles) and transforming uninitialised vertices, GfxOpenGLS::createBitmap
+on uninitialised data, Actor::setShadowValid and Set::setLightEnabled writing out of range, GetCameraLookVector reading
+past its matrix, to_string reading freed memory, Actor::sayLine, GrimEngine::saveGRIM.
+
 ## Escape from Monkey Island
 
 ```sh

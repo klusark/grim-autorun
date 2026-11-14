@@ -186,3 +186,6 @@ cr_t_env = function()
 	cr_log("date_type", type(date()))
 end
 cr_scummvm_differs("env") cr_test("env", cr_t_env)
+
+-- (a memory error in ScummVM under valgrind: on the skip list)
+cr_scummvm_differs("iris", "a memory error in ScummVM under valgrind (uninitialised value or invalid access): on the skip list")

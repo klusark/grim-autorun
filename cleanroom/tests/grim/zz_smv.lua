@@ -201,3 +201,27 @@ cr_scummvm_differs("smv_track", "crashes or hangs ScummVM now and then: on the s
 
 -- (crashes or hangs ScummVM now and then: on the skip list)
 cr_scummvm_differs("smv_more", "crashes or hangs ScummVM now and then: on the skip list")
+
+-- (a memory error in ScummVM under valgrind: on the skip list)
+cr_scummvm_differs("smv_badtop", "a memory error in ScummVM under valgrind (uninitialised value or invalid access): on the skip list")
+
+-- (a memory error in ScummVM under valgrind: on the skip list)
+cr_scummvm_differs("smv_badtop_loop", "a memory error in ScummVM under valgrind (uninitialised value or invalid access): on the skip list")
+
+-- (a memory error in ScummVM under valgrind: on the skip list)
+cr_scummvm_differs("smv_fewer", "a memory error in ScummVM under valgrind (uninitialised value or invalid access): on the skip list")
+
+-- (a memory error in ScummVM under valgrind: on the skip list)
+cr_scummvm_differs("smv_ima4", "a memory error in ScummVM under valgrind (uninitialised value or invalid access): on the skip list")
+
+-- (a memory error in ScummVM under valgrind: on the skip list)
+cr_scummvm_differs("smv_late", "a memory error in ScummVM under valgrind (uninitialised value or invalid access): on the skip list")
+
+-- (a memory error in ScummVM under valgrind: on the skip list)
+cr_scummvm_differs("smv_swap3", "a memory error in ScummVM under valgrind (uninitialised value or invalid access): on the skip list")
+
+-- (a memory error in ScummVM under valgrind: on the skip list)
+cr_scummvm_differs("smv_swap4", "a memory error in ScummVM under valgrind (uninitialised value or invalid access): on the skip list")
+
+-- (a memory error in ScummVM under valgrind: on the skip list)
+cr_scummvm_differs("smv_vima", "a memory error in ScummVM under valgrind (uninitialised value or invalid access): on the skip list")
