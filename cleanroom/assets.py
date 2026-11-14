@@ -185,6 +185,26 @@ _q = lambda a, b, c, d: [[a, b, c, d], [d, c, b, a]]
 DRAW_FACES = _q(1, 5, 7, 3) + _q(0, 4, 5, 1) + _q(2, 3, 7, 6) + _q(0, 1, 3, 2) + _q(4, 6, 7, 5)
 
 
+# (render_modes.lua) name, modes of formats.model3do_text, material: geometry 1 and 2 (vertices, wireframe), 3 (solid) in
+# each lighting mode, opaque and translucent (type 2), and 4 (textured) in each lighting and texture mode, opaque and
+# translucent, with the plain white texture, the white one flagged masked and the masked checker
+RENDER_MODES = [("cr_rm_g%d" % g, dict(geo=g, light=0), "cr_white.mat") for g in (1, 2)]
+RENDER_MODES += [("cr_rm_g3_l%d_y%d" % (l, y), dict(geo=3, light=l, type=y), "cr_white.mat") for l in range(4) for y in (0, 2)]
+# (not translucent textured faces lit flat or diffuse, but masked: their 16 bpp span fillers look the colour up at colour *
+# 256 of the 64 KB 16 bpp -> index table, as the original's do (grim-decomp build/overrides_asm_q5.c, ...TFIT_16), and read
+# up to 16 MB past it: a crash or not, by what lies there)
+RENDER_MODES += [("cr_rm_g4_l%d_t%d_y%d_%s" % (l, t, y, m), dict(geo=4, light=l, tex=t, type=y), mat)
+                 for l in range(4) for t in (0, 1) for y in (0, 2)
+                 for m, mat in (("w", "cr_white.mat"), ("f", "cr_rm_tex1.mat"), ("k", "cr_rm_mask.mat"))
+                 if not (y == 2 and l in (1, 2) and m != "k")]
+
+
+def _rgb565_grey(v):
+    """The index of cr_rm_pal.cmp's grey ramp nearest a 16-bit RGB565 colour (its 16 bpp -> index table)."""
+    r, g, b = (v >> 11) & 31, (v >> 5) & 63, v & 31
+    return (r * 255 // 31 + g * 255 // 63 + b * 255 // 31) // 3
+
+
 def _draw_model(name, mat):
     return F.model3do_text(name, [("body", DRAW_BOX)], BOX_MODEL[2], materials=[mat],
                            faces={0: [(0, f) for f in DRAW_FACES]}, lighting=0)
@@ -343,6 +363,18 @@ def files():
     # (shadow_mesh.lua) the white draw box with a mesh that casts a shadow, and the files the shadow is drawn with (the game
     # loads shadow.mat and shadow.cmp by these names when the first shadow is drawn): index 20 of shadow.cmp is grey 12,
     # darker than every background (snaps.DARK)
+    # (render_modes.lua) the white draw box in each geometry, lighting and texture mode, opaque and translucent, with a
+    # plain texture and with a masked one (texture flag 1; colour 0 in a checker: the masked rasterisers skip it), one
+    # model and costume each: RENDER_MODES
+    out["cr_rm_pal.cmp"] = F.colormap([(i, i, i) for i in range(256)], light=lambda lvl, c: c * lvl // 255,
+                                      rgb_index=_rgb565_grey)
+    out["cr_rm_mask.mat"] = F.material(8, 8, tex_flags=1, pixels=lambda x, y: 255 if (x // 2 + y // 2) % 2 else 0)
+    out["cr_rm_tex1.mat"] = F.material(8, 8, 255, tex_flags=1)
+    for name, md, mat in RENDER_MODES:
+        out[name + ".3do"] = F.model3do_text(name + ".3do", [("body", DRAW_BOX)], BOX_MODEL[2], materials=[mat],
+                                             faces={0: [(0, f) for f in DRAW_FACES]}, modes=md)
+        out[name + ".cos"] = F.costume([("MMDL", -1, name + ".3do"), ("LUAV", -1, "CR_LV"), ("CMAP", 0, "cr_rm_pal.cmp")],
+                                       BOX_COSTUME[1])
     out["cr_sbox.3do"] = F.model3do_text("cr_sbox.3do", [("body", DRAW_BOX)], BOX_MODEL[2], materials=["cr_white.mat"],
                                          faces={0: [(0, f) for f in DRAW_FACES]}, lighting=0, shadow=1)
     out["cr_sbox.cos"] = F.costume([("MMDL", -1, "cr_sbox.3do")] + DRAW_COMPONENTS[1:], BOX_COSTUME[1])
@@ -420,6 +452,10 @@ def files():
     out["cr_lit.bm"] = F.bitmap(W, H, F.checker(W, H, 40, (0, 0, 0), (0, 0, 0)))
     out["cr_lit.set"] = F.set_file(["cr_pal.cmp"], [dict(CAMERA, name="cr_lit_0", background="cr_lit.bm", zbuffer="cr_open.zbm")],
                                    LIT_LIGHTS, SETS["cr_open"][1])
+    # (render_modes.lua) cr_lit with cr_rm_pal.cmp, the colormap with a light table and the 16-bit -> index table the
+    # lit and translucent rasterisers read from the set's colormap
+    out["cr_rm.set"] = F.set_file(["cr_rm_pal.cmp"], [dict(CAMERA, name="cr_rm_0", background="cr_lit.bm", zbuffer="cr_open.zbm")],
+                                  LIT_LIGHTS, SETS["cr_open"][1])
     # zz_zbuffer.lua: cr_open with a z-buffer that is far (0) but for thin parts in front of the box of draw.lua (at
     # 270..370 x 207..267 at the centre): a post 2 pixels wide (columns 320, 321), a bar 2 pixels high (rows 237, 238) and
     # the columns left of 290, all at 30000 (about 1.2 m from the camera, the box is at 6 m). The thin parts are the
