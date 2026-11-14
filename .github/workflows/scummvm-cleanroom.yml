@@ -5,7 +5,8 @@
 # already has the test patch (as klusark/scummvm cleanroom) is run with "apply_patch" off. The originals themselves are
 # not run here (no game files on the runner).
 # The job fails when a test differs without a cr_scummvm_differs mark, or crashes ScummVM without one.
-# The coverage of the same tests: scummvm-coverage.yml.
+# It runs nightly (upstream master moves), on pushes to main, by hand, and on every pull request through pr.yml
+# (workflow_call). The coverage of the same tests: scummvm-coverage.yml.
 name: ScummVM clean-room tests
 
 on:
@@ -24,9 +25,12 @@ on:
       renderers:
         description: Renderers, for Grim and EMI (comma separated)
         default: opengl,opengl_shaders,software
+  workflow_call:
   schedule:
     - cron: "23 5 * * *"
+  # (a PR branch's pushes run through pr.yml, as the PR)
   push:
+    branches: [main]
     paths:
       - "cleanroom/**"
       - ".github/workflows/scummvm-cleanroom.yml"
