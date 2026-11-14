@@ -363,6 +363,18 @@ def files():
     # (shadow_mesh.lua) the white draw box with a mesh that casts a shadow, and the files the shadow is drawn with (the game
     # loads shadow.mat and shadow.cmp by these names when the first shadow is drawn): index 20 of shadow.cmp is grey 12,
     # darker than every background (snaps.DARK)
+    # (render_modes.lua) the white draw box in each geometry, lighting and texture mode, opaque and translucent, with a
+    # plain texture and with a masked one (texture flag 1; colour 0 in a checker: the masked rasterisers skip it), one
+    # model and costume each: RENDER_MODES; drawn through cr_rm_pal.cmp (a light table and a 16 bpp -> index table)
+    out["cr_rm_pal.cmp"] = F.colormap([(i, i, i) for i in range(256)], light=lambda lvl, c: c * lvl // 255,
+                                      rgb_index=_rgb565_grey)
+    out["cr_rm_mask.mat"] = F.material(8, 8, tex_flags=1, pixels=lambda x, y: 255 if (x // 2 + y // 2) % 2 else 0)
+    out["cr_rm_tex1.mat"] = F.material(8, 8, 255, tex_flags=1)
+    for name, md, mat in RENDER_MODES:
+        out[name + ".3do"] = F.model3do_text(name + ".3do", [("body", DRAW_BOX)], BOX_MODEL[2], materials=[mat],
+                                             faces={0: [(0, f) for f in DRAW_FACES]}, modes=md)
+        out[name + ".cos"] = F.costume([("MMDL", -1, name + ".3do"), ("LUAV", -1, "CR_LV"), ("CMAP", 0, "cr_rm_pal.cmp")],
+                                       BOX_COSTUME[1])
     out["cr_sbox.3do"] = F.model3do_text("cr_sbox.3do", [("body", DRAW_BOX)], BOX_MODEL[2], materials=["cr_white.mat"],
                                          faces={0: [(0, f) for f in DRAW_FACES]}, lighting=0, shadow=1)
     out["cr_sbox.cos"] = F.costume([("MMDL", -1, "cr_sbox.3do")] + DRAW_COMPONENTS[1:], BOX_COSTUME[1])

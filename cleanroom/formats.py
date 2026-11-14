@@ -224,9 +224,9 @@ def colormap(colors, light=None, rgb_index=None):
     colour) -> index, the 64 KB light-level table of rdColormap_LoadEntry 0x404420 (bit 1 of the second header word, the
     flags at +0x20 of the colormap: after the palette);
     rgb_index: a function (RGB565 value) -> index, the 64 KB table after it that v1.01 reads to +0x34c (the translucent
-    rasterisers' 16 bpp -> index lookup), then 64 KB it skips. Without them the flags are 0x1E and the file ends after the
-    palette (the tables are then null: the lit and translucent rasterisers read them from the set's colormap). The
-    flags are 4 (bit 4: the 16-bit light table built from the palette) or 5 with the tables."""
+    rasterisers' 16 bpp -> index lookup), then 64 KB it skips. Without them the file ends after the palette (the tables
+    are then null: the lit and translucent rasterisers read them from the set's colormap). The flags are 4 (the 16-bit
+    light table built from the palette) or 5 with the tables."""
     pal = bytearray(768)
     for i, (r, g, b) in enumerate(colors[:256]):
         pal[3 * i:3 * i + 3] = bytes((r, g, b))
@@ -537,7 +537,7 @@ def model3do(name, meshes, nodes, header=None):
 
 
 def model3do_text(name, meshes, nodes, radius=None, insert=(0.0, 0.0, 0.0), materials=(), faces=None, lighting=3,
-                  vertex_light=1.0, shadow=0):
+                  vertex_light=1.0, shadow=0, modes=None):
     """The same model as model3do, in the text .3do format (the one the original's rdModel3_LoadEntryText parses when a file
     does not start with LDOM). It has no bounding box or centre, only a radius (by default the one the original works out:
     it replaces the one of the file in rdModel3_LoadPostProcess, as it does a binary header's).
@@ -546,7 +546,10 @@ def model3do_text(name, meshes, nodes, radius=None, insert=(0.0, 0.0, 0.0), mate
     the texture as they are; 3: lit); vertex_light: the light level of every vertex (the 5th number of a vertex line: what
     the original's rdLight_CalcVertexIntensities starts each vertex from, zz_lit.lua); shadow: the "shadow" value of every
     mesh (not 0: the mesh casts a shadow, the 16 corners of its box projected onto the shadow plane, sputCostume_DrawMeshShadow
-    0x494940, drawn with shadow.mat through shadow.cmp; shadow_mesh.lua)."""
+    0x494940, drawn with shadow.mat through shadow.cmp; shadow_mesh.lua); modes: dict(geo, light, tex, type, extralight) for
+    every mesh and face instead of geometry mode 4, lighting `lighting`, texture mode 0 (affine), type 0 and no extra light
+    (render_modes.lua: geometry 1 vertices, 2 wireframe, 3 solid, 4 textured; lighting 0 none, 1 flat, 2 diffuse, 3
+    gouraud; texture 1 perspective; type 2 translucent)."""
     g = lambda v: "%.6f" % v
     faces = faces or {}
     out = ["section: header", "3do 2.1", "section: modelresource", "materials %d" % len(materials)]
@@ -560,8 +563,8 @@ def model3do_text(name, meshes, nodes, radius=None, insert=(0.0, 0.0, 0.0), mate
     for i, (mname, verts) in enumerate(meshes):
         mr = max([sum(c * c for c in v) ** 0.5 for v in verts] or [0.0])
         mf = faces.get(i, [])
-        out += ["mesh %d" % i, "name " + mname, "radius " + g(mr), "shadow %d" % shadow, "geometrymode 4",
-                "lightingmode %d" % lighting, "texturemode 0", "vertices %d" % len(verts)]
+        out += ["mesh %d" % i, "name " + mname, "radius " + g(mr), "shadow %d" % shadow, "geometrymode %d" % md["geo"],
+                "lightingmode %d" % md["light"], "texturemode %d" % md["tex"], "vertices %d" % len(verts)]
         out += ["%d: %s %s" % (k, " ".join(g(c) for c in v), "1.0" if vertex_light == 1.0 else g(vertex_light))
                 for k, v in enumerate(verts)]
         out += ["texture vertices %d" % (len(corners) if mf else 0)]
