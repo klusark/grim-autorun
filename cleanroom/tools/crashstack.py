@@ -14,8 +14,8 @@ import subprocess
 import sys
 
 CRASHDUMPS = os.path.join(os.environ.get("LOCALAPPDATA", ""), "CrashDumps")
-NM = r"C:\msys64\ucrt64\bin\nm.exe"
-CPPFILT = r"C:\msys64\ucrt64\bin\c++filt.exe"
+NM = "nm"   # (binutils from PATH: MSYS2's ucrt64\bin)
+CPPFILT = "c++filt"
 EXIT_MARK = 0xE0455849   # patch.dll's made-up exception code for "the process is ending itself"
 CODES = {0xC0000005: "access violation", 0xC00000FD: "stack overflow", 0xC0000094: "integer divide by zero",
          0xC000001D: "illegal instruction", 0xC0000374: "heap corruption", 0xC0000409: "stack buffer overrun (fast fail)",
@@ -143,7 +143,7 @@ class Symbols:
                 self.names.append(p[2])
         self.image_base = 0
         try:
-            hdr = subprocess.run([r"C:\msys64\ucrt64\bin\objdump.exe", "-p", exe], capture_output=True, text=True, timeout=60).stdout
+            hdr = subprocess.run(["objdump", "-p", exe], capture_output=True, text=True, timeout=60).stdout
             for line in hdr.splitlines():
                 if line.startswith("ImageBase"):
                     self.image_base = int(line.split()[1], 16)
