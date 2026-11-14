@@ -353,6 +353,18 @@ def files():
                                         materials=["cr_white.mat", "cr_two.mat"],
                                         faces={0: [(0, f) for f in DRAW_FACES], 1: [(1, f) for f in DRAW_FACES]}, lighting=0)
     out["cr_comp.cos"] = F.costume(COMP_COMPONENTS, COMP_CHORES)
+    # (costume_comp.lua) the components no other costume has: a SMUSH movie (a key of 0 plays it: SmushChanger), the iMUSE
+    # state and sequence (int keys: the state or sequence number) and a streamed iMUSE sound (keys as IMLS: 0 play,
+    # 2 stop looping, 1 stop)
+    out["cr_cc_smush.cos"] = F.costume([("MMDL", -1, "cr_dbox.3do"), ("LUAV", -1, "CR_LV"), ("HSMS", -1, "cr_white.snm")],
+                                       [("play", 200, [(2, [(0, 0)])]), ("other", 200, [(2, [(0, 1)])])])
+    out["cr_cc_imuse.cos"] = F.costume([("MMDL", -1, "cr_dbox.3do"), ("IMST", -1, "state"), ("IMSE", -1, "sequence"),
+                                        ("IMSS", -1, "cr_long.wav")],
+                                       [("state_1001", 100, [(1, [(0, 1001)])]), ("state_1008", 100, [(1, [(0, 1008)])]),
+                                        ("seq_2001", 100, [(2, [(0, 2001)])]), ("seq_2000", 100, [(2, [(0, 2000)])]),
+                                        ("both", 200, [(1, [(0, 1002)]), (2, [(100, 2001)])]),
+                                        ("stream_play", 100, [(3, [(0, 0)])]), ("stream_unloop", 100, [(3, [(0, 2)])]),
+                                        ("stream_stop", 100, [(3, [(0, 1)])])])
     out["cr_head.3do"] = F.model3do_text("cr_head.3do", [("body", F.box(0.3, 0.3, 0.5)), ("head", F.box(0.9, 0.15, 0.15))],
                                          HEAD_NODES, materials=["cr_grey.mat", "cr_white.mat"],
                                          faces={0: [(0, f) for f in DRAW_FACES], 1: [(1, f) for f in DRAW_FACES]},
