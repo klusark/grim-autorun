@@ -812,6 +812,9 @@ def compare_with(reference, engine, crashed, only=None):
 VISIBLE = os.environ.get("CR_VISIBLE") == "1"
 RENDER_EVERY = os.environ.get("CR_RENDER_EVERY", "")
 OFFSCREEN = os.path.join(HERE, "run", "offscreen.exe")
+# (the games of a run start in threads of their own: one of them builds offscreen.exe, the others wait for it, instead of all
+# building it at once and starting it while another gcc still writes it, WinError 32)
+OFFSCREEN_LOCK = threading.Lock()
 
 
 def offscreen(cmd):
@@ -819,10 +822,11 @@ def offscreen(cmd):
     if VISIBLE or os.name != "nt":
         return cmd
     src = os.path.join(HERE, "tools", "offscreen.c")
-    if not newer(OFFSCREEN, [src]):
-        os.makedirs(os.path.dirname(OFFSCREEN), exist_ok=True)
-        subprocess.run(["gcc", "-O2", "-o", OFFSCREEN, src, "-lole32"], check=True)
-        print("built %s" % OFFSCREEN)
+    with OFFSCREEN_LOCK:
+        if not newer(OFFSCREEN, [src]):
+            os.makedirs(os.path.dirname(OFFSCREEN), exist_ok=True)
+            subprocess.run(["gcc", "-O2", "-o", OFFSCREEN, src, "-lole32"], check=True)
+            print("built %s" % OFFSCREEN)
     return [OFFSCREEN] + cmd
 
 
