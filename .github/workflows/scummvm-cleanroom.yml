@@ -6,7 +6,7 @@
 # The job fails when a test differs without a cr_scummvm_differs mark, or crashes ScummVM without one.
 # The job "coverage" runs the same tests (both games and the Remastered mode, every renderer, all at once) on a gcov build of the same ScummVM and writes the
 # coverage of engines/grim and graphics/tinygl (autorun/tools/covreport.py --all) to the run's summary, with the pages of
-# every file as the artifact "coverage". It does not fail the run.
+# every file as the artifact "coverage". It never fails (every step continues on an error), so it never holds up a pull request.
 name: ScummVM clean-room tests
 
 on:
@@ -182,16 +182,21 @@ jobs:
   coverage:
     runs-on: windows-latest
     timeout-minutes: 340
+    # (a report only: it must never fail, so that it never holds up a pull request)
+    continue-on-error: true
     steps:
       - name: LF line ends
+        continue-on-error: true
         run: git config --global core.autocrlf false
 
       - name: Check out grim_tools
+        continue-on-error: true
         uses: actions/checkout@v4
         with:
           path: grim_tools
 
       - name: Check out ScummVM
+        continue-on-error: true
         uses: actions/checkout@v4
         with:
           repository: ${{ env.SCUMMVM_REPO }}
@@ -199,6 +204,7 @@ jobs:
           path: scummvm
 
       - name: MSYS2 packages
+        continue-on-error: true
         uses: msys2/setup-msys2@v2
         with:
           msystem: UCRT64
@@ -210,6 +216,7 @@ jobs:
             libvorbis:p flac:p libmad:p faad2:p a52dec:p libmpeg2:p libtheora:p fribidi:p mesa:p
 
       - name: ccache
+        continue-on-error: true
         uses: actions/cache@v4
         with:
           path: ccache
@@ -218,6 +225,7 @@ jobs:
 
       # (gcov, -O0; -DCR_GCOV: the test patch writes the counters in Exit() and every 200 tests, see cleanroom/README.md)
       - name: Build ScummVM with gcov
+        continue-on-error: true
         shell: msys2 {0}
         env:
           CCACHE_DIR: ${{ github.workspace }}\ccache
@@ -238,10 +246,12 @@ jobs:
       # (Mesa's software OpenGL, llvmpipe: the runner has no GPU. Its opengl32.dll goes next to scummvm.exe, which Windows
       # searches before System32; the rest, libgallium_wgl.dll and LLVM, load from ucrt64\bin, which run.py puts on PATH)
       - name: Mesa llvmpipe
+        continue-on-error: true
         shell: pwsh
         run: Copy-Item C:\msys64\ucrt64\bin\opengl32.dll scummvm\build\
 
       - uses: actions/setup-python@v5
+        continue-on-error: true
         with:
           python-version: "3.12"
 
@@ -266,6 +276,7 @@ jobs:
           exit 0
 
       - name: Report
+        continue-on-error: true
         if: always()
         shell: pwsh
         run: |
@@ -278,6 +289,7 @@ jobs:
           Add-Content $env:GITHUB_STEP_SUMMARY "Each file with the lines never run: the artifact ``coverage`` (index.html)."
 
       - name: Coverage pages
+        continue-on-error: true
         if: always()
         uses: actions/upload-artifact@v4
         with:
