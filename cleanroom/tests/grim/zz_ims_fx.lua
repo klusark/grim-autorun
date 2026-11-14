@@ -28,7 +28,7 @@ cr_t_ims_voice_fx = function()
 	cr_log("off", ImSetVoiceEffect("OFF"))
 	cr_fx_line("plain_v01", a, "/imsv01/")
 end
-cr_test("ims_voice_fx", cr_t_ims_voice_fx)
+cr_scummvm_differs("ims_voice_fx") cr_test("ims_voice_fx", cr_t_ims_voice_fx)
 
 -- the name's case; a name the preset file does not have; "off" in lower case
 cr_t_ims_voice_fx_names = function()
@@ -43,7 +43,7 @@ cr_t_ims_voice_fx_names = function()
 	cr_log("empty", ImSetVoiceEffect(""))
 	cr_log("again_off", ImSetVoiceEffect("OFF"))
 end
-cr_test("ims_voice_fx_names", cr_t_ims_voice_fx_names)
+cr_scummvm_differs("ims_voice_fx_names") cr_test("ims_voice_fx_names", cr_t_ims_voice_fx_names)
 
 -- the effect switched while the line plays, and the line cut short with the effect on
 cr_t_ims_voice_fx_switch = function()
@@ -100,4 +100,10 @@ cr_t_ims_voice_fx_change = function()
 	cr_log("chain_mid_line", f < 900, IsMessageGoing())
 	ImSetVoiceEffect("OFF")
 end
-cr_test("ims_voice_fx_change", cr_t_ims_voice_fx_change)
+cr_scummvm_differs("ims_voice_fx_change") cr_test("ims_voice_fx_change", cr_t_ims_voice_fx_change)
+
+-- (ScummVM differs: tools/mark_known.py)
+cr_scummvm_differs("ims_voice_fx_cr_chain")
+cr_scummvm_differs("ims_voice_fx_cr_phasor")
+cr_scummvm_differs("ims_voice_fx_cr_reverb_mono")
+cr_scummvm_differs("ims_voice_fx_cr_reverb_stereo")
