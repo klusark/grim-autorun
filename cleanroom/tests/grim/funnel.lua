@@ -11,7 +11,7 @@ cr_t_funnel_types = function()
 	cr_point("outside", 0, 3, 0)
 	cr_log("rect_active", IsSectorActive("fn_rect"))
 end
-cr_test("funnel_types", cr_t_funnel_types)
+cr_scummvm_differs("funnel_types") cr_test("funnel_types", cr_t_funnel_types)
 
 cr_fn_walk = function(key, x0, y0, x1, y1, rate)
 	local a = cr_actor_global("cr_funnel.set")
@@ -39,40 +39,40 @@ end
 cr_t_funnel_walk_in = function()
 	cr_fn_walk("in", 0, -1, 0, 1.5)
 end
-cr_test("funnel_walk_in", cr_t_funnel_walk_in)
+cr_scummvm_differs("funnel_walk_in") cr_test("funnel_walk_in", cr_t_funnel_walk_in)
 
 cr_t_funnel_walk_slanted = function()
 	cr_fn_walk("slanted", -1.5, -1, 0.3, 1.8)
 end
-cr_test("funnel_walk_slanted", cr_t_funnel_walk_slanted)
+cr_scummvm_differs("funnel_walk_slanted") cr_test("funnel_walk_slanted", cr_t_funnel_walk_slanted)
 
 cr_t_funnel_walk_out = function()
 	cr_fn_walk("out", 0, 1.5, 1.5, -1)
 end
-cr_test("funnel_walk_out", cr_t_funnel_walk_out)
+cr_scummvm_differs("funnel_walk_out") cr_test("funnel_walk_out", cr_t_funnel_walk_out)
 
 cr_t_funnel_walk_across = function()
 	cr_fn_walk("across", -0.4, 1, 0.4, 1.2)
 end
-cr_test("funnel_walk_across", cr_t_funnel_walk_across)
+cr_scummvm_differs("funnel_walk_across") cr_test("funnel_walk_across", cr_t_funnel_walk_across)
 
 -- past its far end (outside every sector): where the actor stops
 cr_t_funnel_walk_past = function()
 	cr_fn_walk("past", 0, 0.5, 0, 3)
 end
-cr_test("funnel_walk_past", cr_t_funnel_walk_past)
+cr_scummvm_differs("funnel_walk_past") cr_test("funnel_walk_past", cr_t_funnel_walk_past)
 
 -- the trapezoid: into its narrow end
 cr_t_funnel_walk_trap = function()
 	cr_fn_walk("trap", 1, -1, 3.4, -1)
 end
-cr_test("funnel_walk_trap", cr_t_funnel_walk_trap)
+cr_scummvm_differs("funnel_walk_trap") cr_test("funnel_walk_trap", cr_t_funnel_walk_trap)
 
 -- the triangle (a walk sector now)
 cr_t_funnel_walk_tri = function()
 	cr_fn_walk("tri", -1, -1, -1.8, -2.2)
 end
-cr_test("funnel_walk_tri", cr_t_funnel_walk_tri)
+cr_scummvm_differs("funnel_walk_tri") cr_test("funnel_walk_tri", cr_t_funnel_walk_tri)
 
 -- with the funnel off
 cr_t_funnel_off = function()
@@ -81,7 +81,7 @@ cr_t_funnel_off = function()
 	cr_fn_walk("off", 0, -1, 0, 1.5)
 	MakeSectorActive("fn_rect", TRUE)
 end
-cr_test("funnel_off", cr_t_funnel_off)
+cr_scummvm_differs("funnel_off") cr_test("funnel_off", cr_t_funnel_off)
 
 -- walking with the keys (WalkActorForward in a direction) into the funnel at an angle
 cr_t_funnel_forward = function()
@@ -102,4 +102,4 @@ cr_t_funnel_forward = function()
 	local p, y, r = GetActorRot(a)
 	cr_log("fwd_rot", p, y, r)
 end
-cr_test("funnel_forward", cr_t_funnel_forward)
+cr_scummvm_differs("funnel_forward") cr_test("funnel_forward", cr_t_funnel_forward)

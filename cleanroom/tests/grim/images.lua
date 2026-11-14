@@ -70,7 +70,7 @@ cr_t_image_write_again = function()
 	cr_im_file("second", "cr_im_a2.gif")
 	cr_im_file("other", "cr_im_a3.gif")
 end
-cr_test("image_write_again", cr_t_image_write_again)
+cr_scummvm_differs("image_write_again") cr_test("image_write_again", cr_t_image_write_again)
 
 -- an empty screen (only the background) in the run-length formats
 cr_t_image_write_plain = function()
@@ -84,7 +84,7 @@ cr_t_image_write_plain = function()
 	cr_im_file("lbm", "cr_im_p.lbm")
 	cr_im_file("gif", "cr_im_p.gif")
 end
-cr_test("image_write_plain", cr_t_image_write_plain)
+cr_scummvm_differs("image_write_plain") cr_test("image_write_plain", cr_t_image_write_plain)
 
 -- the extension in upper case; an extension no writer knows (nothing is written)
 cr_t_image_write_ext = function()
@@ -94,7 +94,7 @@ cr_t_image_write_ext = function()
 	cr_im_file("unknown", "cr_im_w.xyz")
 	cr_log("read_unknown", type(GetImage("cr_im_w.xyz")))
 end
-cr_test("image_write_ext", cr_t_image_write_ext)
+cr_scummvm_differs("image_write_ext") cr_test("image_write_ext", cr_t_image_write_ext)
 
 -- the 24-bit formats read back (GetImage, then FreeImage: the bitmap is not drawn)
 local readable = { "bmp", "bm", "zbm" }
@@ -113,3 +113,14 @@ while readable[i] do
 	end)
 	i = i + 1
 end
+
+-- (ScummVM differs: tools/mark_known.py)
+cr_scummvm_differs("image_read_bm")
+cr_scummvm_differs("image_read_bmp")
+cr_scummvm_differs("image_read_zbm")
+cr_scummvm_differs("image_write_bm")
+cr_scummvm_differs("image_write_bmp")
+cr_scummvm_differs("image_write_gif")
+cr_scummvm_differs("image_write_lbm")
+cr_scummvm_differs("image_write_pcx")
+cr_scummvm_differs("image_write_zbm")
