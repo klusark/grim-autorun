@@ -1,8 +1,8 @@
 # The coverage of the clean-room tests (cleanroom/, see its README) in ScummVM: builds the same ScummVM as
 # scummvm-cleanroom.yml with gcov, runs the same tests on it (both games and the Remastered mode, every renderer, all at
 # once) and writes the coverage of engines/grim and graphics/tinygl (autorun/tools/covreport.py --all) to the run's
-# summary, with the pages of every file as the artifact "coverage". A report: it does not fail. It runs on main only (its
-# pushes, the nightly run, by hand), not on other branches or pull requests.
+# summary, with the pages of every file as the artifact "coverage". A report: it does not fail. It runs on pushes to main only
+# (and by hand), not on other branches, pull requests or a schedule.
 name: ScummVM clean-room coverage
 
 on:
@@ -21,8 +21,6 @@ on:
       renderers:
         description: Renderers, for Grim and EMI (comma separated)
         default: opengl,opengl_shaders,software
-  schedule:
-    - cron: "23 5 * * *"
   push:
     branches: [main]
     paths:
