@@ -477,6 +477,32 @@ PRESET_LIBRARY = ("[LIBRARY]\r\n"
                   "Description  =  cr_band_pass\r\n"
                   "Flags  =  0\r\n"
                   "Effect0000  =  2300, 0, 1, -1, 1026.00, 1000.00, 900.00, 600.00\r\n"
+                  "\r\n"
+                  # (zz_ims_fx.lua) the other two effects iMUSE's effect library has: Reverb 1 (2101: the longest delay,
+                  # the pre-delay and the delay in ms, dry, wet), mono and stereo (the routing, 1 or 2), the Phasor (2375:
+                  # feedback, sweep, depth, frequency, dry, wet), and a chain of two effects. (The delay lines come from
+                  # iMUSE's 150000-byte effects heap: four of 400 ms do not fit, and a preset that fails to load leaves
+                  # the library without any, the band-pass too)
+                  "[PRESET0001]\r\n"
+                  "Description  =  cr_reverb_mono\r\n"
+                  "Flags  =  0\r\n"
+                  "Effect0000  =  2101, 0, 1, -1, 100.00, 20.00, 60.00, 0.60, 0.40\r\n"
+                  "\r\n"
+                  "[PRESET0002]\r\n"
+                  "Description  =  cr_reverb_stereo\r\n"
+                  "Flags  =  0\r\n"
+                  "Effect0000  =  2101, 0, 2, -1, 100.00, 20.00, 60.00, 0.60, 0.40\r\n"
+                  "\r\n"
+                  "[PRESET0003]\r\n"
+                  "Description  =  cr_phasor\r\n"
+                  "Flags  =  0\r\n"
+                  "Effect0000  =  2375, 0, 1, -1, 0.50, 1.50, 0.80, 800.00, 0.70, 0.30\r\n"
+                  "\r\n"
+                  "[PRESET0004]\r\n"
+                  "Description  =  cr_chain\r\n"
+                  "Flags  =  0\r\n"
+                  "Effect0000  =  2300, 0, 1, -1, 1026.00, 1000.00, 900.00, 600.00\r\n"
+                  "Effect0001  =  2101, 0, 2, -1, 80.00, 10.00, 40.00, 0.50, 0.50\r\n"
                   "\r\n").encode("ascii")
 
 
