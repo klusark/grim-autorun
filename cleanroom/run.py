@@ -40,7 +40,7 @@ C:\\GOG Games\\GRIMDATA), CR_VISIBLE=1 (the engines' windows on the screen; othe
 tools/offscreen.c), CR_VERBOSE=1 (or --verbose: each game's command line, its tests as they begin and end, how it ended),
 EMI_INSTALL (the same for Monkey4.exe, default C:\\GOG Games\\Escape from Monkey Island), CR_STALL
 (seconds without a new line in the engine's log before a run counts as hung and is killed, default 2; CR_STARTUP, default 30, until the first line),
-CR_MSYS2 (the root of MSYS2, whose gcc builds offscreen.exe and the original's tools; default the MSYS2 of PATH, else C:\\msys64),
+PATH (MSYS2's ucrt64\\bin: gcc and g++, and the DLLs of the ScummVM build; mingw32\\bin for the original: i686-w64-mingw32-gcc),
 GRIM_DECOMP (the folder of the rebuilt grimfandango.exe and its three DLLs, default C:\\Users\\Joel\\grim-decomp\\build\\run)."""
 import argparse
 import os
@@ -58,7 +58,6 @@ import assets  # noqa: E402
 import assets_emi  # noqa: E402
 import formats  # noqa: E402
 import compare  # noqa: E402
-import msys2  # noqa: E402
 import snaps  # noqa: E402
 import testfiles  # noqa: E402
 
@@ -553,7 +552,7 @@ class ScummvmEngine(Engine):
     def command(self, d):
         cmd = [SCUMMVM, "--config=" + os.path.join(d, "scummvm.ini"), "--savepath=" + os.path.join(d, "saves"),
                "--debugflags=scripts", "--logfile=" + self.log(d), "--engine-speed=0", "cleanroom"]
-        return cmd, msys2.path_with("ucrt64")
+        return cmd, dict(os.environ)
 
     def kill(self, d):
         pass
@@ -822,8 +821,7 @@ def offscreen(cmd):
     src = os.path.join(HERE, "tools", "offscreen.c")
     if not newer(OFFSCREEN, [src]):
         os.makedirs(os.path.dirname(OFFSCREEN), exist_ok=True)
-        subprocess.run([msys2.tool("ucrt64", "gcc"), "-O2", "-o", OFFSCREEN, src, "-lole32"], check=True,
-                       env=msys2.path_with("ucrt64"))
+        subprocess.run(["gcc", "-O2", "-o", OFFSCREEN, src, "-lole32"], check=True)
         print("built %s" % OFFSCREEN)
     return [OFFSCREEN] + cmd
 
@@ -870,14 +868,13 @@ def prepare_tools(d):
     dll_src = [os.path.join(pdir, "patch.c"), os.path.join(pdir, "config.c")]
     dll = os.path.join(tools, "patch.dll")
     if not newer(dll, dll_src):
-        subprocess.run([msys2.tool("mingw32", "gcc"), "-shared", "-O2", "-static-libgcc", "-o", dll] + dll_src +
-                       ["-luser32", "-lgdi32", "-lwinmm"], check=True, env=msys2.path_with("mingw32"))
+        subprocess.run(["i686-w64-mingw32-gcc", "-shared", "-O2", "-static-libgcc", "-o", dll] + dll_src +
+                       ["-luser32", "-lgdi32", "-lwinmm"], check=True)
         print("original: built patch.dll")
     launcher_src = [os.path.join(pdir, "grimlaunch.cpp")]
     launcher = os.path.join(tools, "grimlaunch.exe")
     if not newer(launcher, launcher_src):
-        subprocess.run([msys2.tool("ucrt64", "g++"), "-O2", "-static", "-o", launcher] + launcher_src, check=True,
-                       env=msys2.path_with("ucrt64"))
+        subprocess.run(["g++", "-O2", "-static", "-o", launcher] + launcher_src, check=True)
         print("original: built grimlaunch.exe")
     for src in (dll, launcher):
         dst = os.path.join(d, os.path.basename(src))

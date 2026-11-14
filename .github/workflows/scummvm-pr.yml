@@ -124,10 +124,10 @@ jobs:
             toolchain:p ccache:p SDL2:p zlib:p libpng:p libjpeg-turbo:p freetype:p
             libvorbis:p flac:p libmad:p faad2:p a52dec:p libmpeg2:p libtheora:p fribidi:p mesa:p
 
-      # (run.py and its tools find MSYS2 by CR_MSYS2 (cleanroom/tools/msys2.py): where this step put it, for the steps after)
-      - name: MSYS2 location
+      # (MSYS2's ucrt64\bin on PATH for the steps after: run.py's gcc and g++, crashstack.py's binutils, the DLLs of the build)
+      - name: MSYS2 on PATH
         shell: pwsh
-        run: Add-Content $env:GITHUB_ENV "CR_MSYS2=${{ steps.msys2.outputs.msys2-location }}"
+        run: Add-Content $env:GITHUB_PATH "${{ steps.msys2.outputs.msys2-location }}\ucrt64\bin"
 
       - name: ccache
         uses: actions/cache@v4
@@ -167,7 +167,7 @@ jobs:
       # (Mesa's software OpenGL, llvmpipe: the runner has no GPU)
       - name: Mesa llvmpipe
         shell: pwsh
-        run: Copy-Item "$env:CR_MSYS2\ucrt64\bin\opengl32.dll" scummvm\build\
+        run: Copy-Item "${{ steps.msys2.outputs.msys2-location }}\ucrt64\bin\opengl32.dll" scummvm\build\
 
       - uses: actions/setup-python@v5
         with:
