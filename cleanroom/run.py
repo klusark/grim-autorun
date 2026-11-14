@@ -513,14 +513,25 @@ class DecompEngine(Engine):
     def command(self, d):
         log = self.log(d)
         env = dict(os.environ,
-                   GRIM_INI=os.path.join(d, "grim.ini"),   # config: grim.ini, not the registry (whose GrimDataDir is the real game)
-                   GRIM_DEBUGLOG=log,                      # debuglog, and the CRSNAP: screenshots
+                   GRIM_INI=winpath(os.path.join(d, "grim.ini")),   # config: grim.ini, not the registry (whose GrimDataDir is the real game)
+                   GRIM_DEBUGLOG=winpath(log),             # debuglog, and the CRSNAP: screenshots
                    GRIM_SIMTIME="17",                      # simtime: every frame is 17 ms, iMUSE on game time too
                    GRIM_MULTI="%s_%s" % (DECOMP_TAG, os.path.basename(d)))   # (its own window title: games side by side)
         for k in ("GRIM_NOMOVIE", "GRIM_LUA_FILE", "GRIM_DISPLAY_DEVICE", "GRIM_MODS", "GRIM_WALK_SCALE", "GRIM_IMUSE_REALTIME"):
             env.pop(k, None)   # (knobs that change the run)
         # (-w: windowed, like the original's windowed patch; the rebuilt exe makes its window a window from the start)
-        return [os.path.join(d, "GRIMFANDANGO.exe"), "-w"], env
+        # (elsewhere than Windows: under Wine, WINE=wine by default; WINEDEBUG=-all unless set: Wine's own messages are not wanted)
+        wine = [] if os.name == "nt" else [os.environ.get("WINE", "wine")]
+        if wine:
+            env.setdefault("WINEDEBUG", "-all")
+        return wine + [os.path.join(d, "GRIMFANDANGO.exe"), "-w"], env
+
+    def kill(self, d):
+        if os.name == "nt":
+            return kill_own_original(d)
+        # (killing wine's start-up process leaves the game's own process running under wineserver)
+        exe = winpath(os.path.join(d, "GRIMFANDANGO.exe"))
+        subprocess.run(["pkill", "-9", "-f", "--", re.escape(exe)], capture_output=True)
 
 
 class ScummvmEngine(Engine):
@@ -902,13 +913,19 @@ def prepare_original(d):
     copy_data(d)
 
 
+def winpath(p):
+    """A path as the Windows programs see it: itself on Windows; elsewhere the rebuilt exe runs under Wine (WINE, default
+    wine), whose drive Z: is the root of the file system."""
+    return p if os.name == "nt" else "Z:" + os.path.abspath(p).replace("/", "\\")
+
+
 def write_grim_ini(d):
     """grim.ini (the game's registry, the config patch) as a new game finds it: pointing at the folder itself. good_times skips
     the CD check (Grim_Init); the display values are the ones the install uses."""
     with open(os.path.join(d, "grim.ini"), "w", newline="\r\n") as f:
         f.write("[Grim]\nGrimDataDir=%s\\\ngood_times=TRUE\nTextAllowed=true\nExperimentalDisplay=0\n"
                 "Last3DDevice=hex:00000000000000000000000000000000\n"
-                "LastDisplayDevice=hex:009fa692fa13d11197c000a024293005\n" % d)
+                "LastDisplayDevice=hex:009fa692fa13d11197c000a024293005\n" % winpath(d))
 
 
 def prepare_emi(d):
@@ -972,7 +989,7 @@ def prepare_decomp(d):
     with open(os.path.join(d, "grim.ini"), "w", newline="\r\n") as f:
         f.write("[Grim]\nGrimDataDir=%s\\\ngood_times=TRUE\nTextAllowed=true\nExperimentalDisplay=0\n"
                 "Last3DDevice=hex:00000000000000000000000000000000\n"
-                "LastDisplayDevice=hex:009fa692fa13d11197c000a024293005\n" % d)
+                "LastDisplayDevice=hex:009fa692fa13d11197c000a024293005\n" % winpath(d))
     copy_data(d)
 
 

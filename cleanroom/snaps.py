@@ -78,7 +78,12 @@ def resolve(lines, folder):
             out.append(m.group(1) + "missing")
             continue
         mode = m.group(3)[1:] if m.group(3) else None
-        box = bright_box(path, None if mode == "seen" else mode)
+        try:
+            box = bright_box(path, None if mode == "seen" else mode)
+        except (ValueError, struct.error, IndexError):
+            # (a picture cut short, by a game that crashed while it wrote it: a value of its own, not the end of the run)
+            out.append(m.group(1) + "unreadable")
+            continue
         if mode == "seen":
             out.append(m.group(1) + ("none" if box is None else '"bright"'))
             continue
