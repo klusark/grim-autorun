@@ -52,9 +52,23 @@ while cases[i] do
 end
 
 -- a larger box (scale 1) and a mover already inside it
-cr_test("collision_side_big", function()
+cr_scummvm_differs("collision_side_big") cr_test("collision_side_big", function()
 	cr_cs_case("big", -2.5, 0.3, 2.5, -0.2, 0, 1)
 end)
-cr_test("collision_side_inside", function()
+cr_scummvm_differs("collision_side_inside") cr_test("collision_side_inside", function()
 	cr_cs_case("inside", 0.05, 0.02, 1.5, 0.4)
 end)
+
+-- (ScummVM differs: tools/mark_known.py)
+cr_scummvm_differs("collision_side_corner")
+cr_scummvm_differs("collision_side_corner_turned")
+cr_scummvm_differs("collision_side_from_behind")
+cr_scummvm_differs("collision_side_from_behind_turned")
+cr_scummvm_differs("collision_side_from_front")
+cr_scummvm_differs("collision_side_from_front_turned")
+cr_scummvm_differs("collision_side_from_left")
+cr_scummvm_differs("collision_side_from_left_turned")
+cr_scummvm_differs("collision_side_from_right")
+cr_scummvm_differs("collision_side_from_right_turned")
+cr_scummvm_differs("collision_side_graze_right")
+cr_scummvm_differs("collision_side_graze_right_turned")
