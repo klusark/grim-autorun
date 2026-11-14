@@ -370,10 +370,10 @@ the fixes in progress make the same is "fixed" there (its mark stays until upstr
 
 Both games run with every renderer (`opengl`, `opengl_shaders`, `software`), the renderers of a game at once
 (`tools/parallel.sh`, each step in its own `CR_PARALLEL_DIR`, llvmpipe with one thread per engine: `LP_NUM_THREADS=1`).
-A second job, `coverage`, builds the same ScummVM with gcov (as below), runs both games and the Remastered mode with
+A workflow of its own, `.github/workflows/scummvm-coverage.yml` (on main only: its pushes, the nightly run, by hand), builds the same ScummVM with gcov (as below), runs both games and the Remastered mode with
 every renderer on it, all nine at once, and writes the coverage of engines/grim and
 graphics/tinygl (`covreport.py --all`, every part with its total) to the run's summary; the page of each file, with the
-lines never run, is the artifact `coverage` (`index.html`). Its results are not compared and it never fails the run.
+lines never run, is the artifact `coverage` (`index.html`). Its results are not compared and it never fails.
 
 ## Coverage of ScummVM
 
