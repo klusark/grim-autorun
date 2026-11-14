@@ -6,7 +6,7 @@
 # The job fails when a test differs without a cr_scummvm_differs mark, or crashes ScummVM without one.
 # The job "coverage" runs the same tests (both games and the Remastered mode, every renderer, all at once) on a gcov build of the same ScummVM and writes the
 # coverage of engines/grim and graphics/tinygl (autorun/tools/covreport.py --all) to the run's summary, with the pages of
-# every file as the artifact "coverage". It does not fail the run.
+# every file as the artifact "coverage". It does not fail the run, and it runs on main only.
 name: ScummVM clean-room tests
 
 on:
@@ -180,6 +180,8 @@ jobs:
           }
 
   coverage:
+    # (on main only: not on other branches or pull requests)
+    if: github.ref == 'refs/heads/main'
     runs-on: windows-latest
     timeout-minutes: 340
     steps:
