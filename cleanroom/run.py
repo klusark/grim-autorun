@@ -43,6 +43,8 @@ EMI_INSTALL (the same for Monkey4.exe, default C:\\GOG Games\\Escape from Monkey
 PATH (MSYS2's ucrt64\\bin: gcc and g++, and the DLLs of the ScummVM build; mingw32\\bin for the original: i686-w64-mingw32-gcc),
 GRIM_DECOMP (the folder of the rebuilt grimfandango.exe and its three DLLs, default C:\\Users\\Joel\\grim-decomp\\build\\run)."""
 import argparse
+import glob
+import hashlib
 import os
 import re
 import shutil
@@ -134,6 +136,7 @@ def test_files():
 
 
 MANIFEST = "cr_manifest.txt"
+BUILD_KEY = "cr_build_key.txt"   # (the build_key of the build, in the build and in each run folder it was copied to)
 MARKER = "grimtestdata.txt"
 LUA31 = os.path.join(ROOT, "autorun", "tools", "lua31")
 
@@ -177,9 +180,35 @@ def cr_tests_lua(only=None, skip=(), start=None, fails=0, file=None):
                                            for t in test_files()))
 
 
+def build_key():
+    """What a build is made from: the suite's Python (the assets and formats, and run.py's _cr_tests.lua), the test files
+    and lua/, and the game and mode. The same sources give the same build, byte for byte."""
+    h = hashlib.sha1(("%s %s\n" % (GAME, SVM_REMASTERED)).encode())
+    paths = sorted(glob.glob(os.path.join(HERE, "*.py")))
+    for folder in ("tests", "lua"):
+        for root, _, names in os.walk(os.path.join(HERE, folder)):
+            paths += sorted(os.path.join(root, n) for n in names)
+    for p in paths:
+        h.update(os.path.relpath(p, HERE).replace("\\", "/").encode() + b"\n")
+        with open(p, "rb") as f:
+            h.update(f.read())
+    return h.hexdigest()
+
+
 def build(only=None, skip=(), start=None, fails=0):
     """Writes the data as loose files into build/ (no archive: both engines read loose files from the game folder);
-    returns the build folder. build/cr_manifest.txt lists them, so that a run folder can drop files of an older build."""
+    returns the build folder. build/cr_manifest.txt lists them, so that a run folder can drop files of an older build.
+    The build is made again only when its sources changed (build_key, in build/cr_build_key.txt): every engine and renderer
+    of every run uses the same one, and only _cr_tests.lua, the run's own, is written again. (The tests write only files of
+    their own in a run folder, never one of the build's.)"""
+    key = build_key()
+    stamp = os.path.join(BUILD, BUILD_KEY)
+    # (EMI is made again every time, a second or two: each of its games gets the archive made again from the files, put_tests)
+    if GAME != "emi" and os.path.exists(stamp) and open(stamp).read() == key:
+        with open(os.path.join(BUILD, "_cr_tests.lua"), "wb") as f:
+            f.write(cr_tests_lua(only, skip, start, fails))
+        print("build %s is up to date (%s)" % (BUILD, GAME))
+        return BUILD
     # (Windows may hold a file of the folder for a moment after an engine that crashed: retry for a few seconds)
     for attempt in range(20):
         try:
@@ -219,7 +248,9 @@ def build(only=None, skip=(), start=None, fails=0):
         if SVM_REMASTERED:
             files["grim.en.tab"] = formats.text_table_remastered(assets.TEXT)
             files["commentary_def.txt"] = formats.commentary_def(assets.COMMENTARY)
-    files[MANIFEST] = ("\n".join(sorted(files) + [MANIFEST]) + "\n").encode("ascii")
+    files[MANIFEST] = ("\n".join(sorted(files) + [BUILD_KEY, MANIFEST]) + "\n").encode("ascii")
+    # (the key last: a build that stopped half way is not taken for a whole one)
+    files[BUILD_KEY] = key.encode("ascii")
     for name, data in files.items():
         os.makedirs(os.path.dirname(os.path.join(BUILD, name)), exist_ok=True)
         with open(os.path.join(BUILD, name), "wb") as f:
@@ -229,19 +260,29 @@ def build(only=None, skip=(), start=None, fails=0):
 
 
 def copy_data(dest):
-    """Copies the build into a run folder, removing first the files of the build copied there before."""
+    """Copies the build into a run folder, removing first the files of the build copied there before. A folder that has
+    this build already (its cr_build_key.txt) is left as it is."""
     os.makedirs(dest, exist_ok=True)
+    have, want = os.path.join(dest, BUILD_KEY), os.path.join(BUILD, BUILD_KEY)
+    if os.path.exists(have) and os.path.exists(want) and open(have).read() == open(want).read():
+        return
     old = os.path.join(dest, MANIFEST)
     if os.path.exists(old):
         for name in open(old).read().splitlines():
             p = os.path.join(dest, name)
             if os.path.isfile(p):
                 os.remove(p)
+    if os.path.exists(have):
+        os.remove(have)
     for root, _, names in os.walk(BUILD):
         sub = os.path.relpath(root, BUILD)
         os.makedirs(os.path.join(dest, sub), exist_ok=True)
         for f in names:
-            shutil.copyfile(os.path.join(root, f), os.path.join(dest, sub, f))
+            if f != BUILD_KEY or sub != ".":
+                shutil.copyfile(os.path.join(root, f), os.path.join(dest, sub, f))
+    # (the key last: a folder whose copy stopped half way is copied again)
+    if os.path.exists(want):
+        shutil.copyfile(want, have)
 
 
 CRASHERS = os.path.join(HERE, "expected", "crashers.txt")
