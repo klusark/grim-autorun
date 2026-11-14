@@ -334,3 +334,6 @@ movie_mode1
 movie_mode7
 movie_mode1s
 movie_mode7s
+costume_smush
+costume_imuse_state
+costume_stream

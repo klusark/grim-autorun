@@ -1,4 +1,4 @@
-START 5390 tests
+START 5457 tests
 BEGIN boot_state
 V boot_state|movie_playing|nil
 V boot_state|fullscreen_movie_playing|nil
@@ -505,6 +505,146 @@ V cm_forward_s1_m2_w2|cm_forward_s1_m2_w2_f80|-0.307920 -1.642603 0.000000
 V cm_forward_s1_m2_w2|cm_forward_s1_m2_w2_end|-0.485548 -1.603952 0.000000
 V cm_forward_s1_m2_w2|cm_forward_s1_m2_w2_walking|nil
 END cm_forward_s1_m2_w2
+BEGIN collision_side_from_left
+V collision_side_from_left|from_left_f0|-1.500000 0.200000 0.000000
+V collision_side_from_left|from_left_f15|-1.248453 0.158172 0.000000
+V collision_side_from_left|from_left_f30|-0.996910 0.116330 0.000000
+V collision_side_from_left|from_left_f45|-0.745368 0.074476 0.000000
+V collision_side_from_left|from_left_f60|-0.493826 0.032621 0.000000
+V collision_side_from_left|from_left_f75|-0.503108 -0.182231 0.000000
+V collision_side_from_left|from_left_end|-0.565015 -0.429602 0.000000
+V collision_side_from_left|from_left_walking|1.000000
+END collision_side_from_left
+BEGIN collision_side_from_left_turned
+V collision_side_from_left_turned|from_left_f0|-1.500000 0.200000 0.000000
+V collision_side_from_left_turned|from_left_f15|-1.248453 0.158172 0.000000
+V collision_side_from_left_turned|from_left_f30|-0.996910 0.116330 0.000000
+V collision_side_from_left_turned|from_left_f45|-0.745368 0.074476 0.000000
+V collision_side_from_left_turned|from_left_f60|-0.551331 -0.041760 0.000000
+V collision_side_from_left_turned|from_left_f75|-0.435991 -0.269184 0.000000
+V collision_side_from_left_turned|from_left_end|-0.320689 -0.496627 0.000000
+V collision_side_from_left_turned|from_left_walking|1.000000
+END collision_side_from_left_turned
+BEGIN collision_side_from_right
+V collision_side_from_right|from_right_f0|1.500000 -0.200000 0.000000
+V collision_side_from_right|from_right_f15|1.248453 -0.158172 0.000000
+V collision_side_from_right|from_right_f30|0.996910 -0.116330 0.000000
+V collision_side_from_right|from_right_f45|0.745368 -0.074476 0.000000
+V collision_side_from_right|from_right_f60|0.493826 -0.032621 0.000000
+V collision_side_from_right|from_right_f75|0.503108 0.182232 0.000000
+V collision_side_from_right|from_right_end|0.565015 0.429603 0.000000
+V collision_side_from_right|from_right_walking|1.000000
+END collision_side_from_right
+BEGIN collision_side_from_right_turned
+V collision_side_from_right_turned|from_right_f0|1.500000 -0.200000 0.000000
+V collision_side_from_right_turned|from_right_f15|1.248453 -0.158172 0.000000
+V collision_side_from_right_turned|from_right_f30|0.996910 -0.116330 0.000000
+V collision_side_from_right_turned|from_right_f45|0.745368 -0.074476 0.000000
+V collision_side_from_right_turned|from_right_f60|0.551331 0.041760 0.000000
+V collision_side_from_right_turned|from_right_f75|0.435991 0.269184 0.000000
+V collision_side_from_right_turned|from_right_end|0.320689 0.496627 0.000000
+V collision_side_from_right_turned|from_right_walking|1.000000
+END collision_side_from_right_turned
+BEGIN collision_side_from_behind
+V collision_side_from_behind|from_behind_f0|-0.200000 1.500000 0.000000
+V collision_side_from_behind|from_behind_f15|-0.158076 1.248470 0.000000
+V collision_side_from_behind|from_behind_f30|-0.116151 0.996939 0.000000
+V collision_side_from_behind|from_behind_f45|-0.074227 0.745409 0.000000
+V collision_side_from_behind|from_behind_f60|-0.032302 0.493878 0.000000
+V collision_side_from_behind|from_behind_f75|0.168683 0.466873 0.000000
+V collision_side_from_behind|from_behind_end|0.419622 0.512200 0.000000
+V collision_side_from_behind|from_behind_walking|1.000000
+END collision_side_from_behind
+BEGIN collision_side_from_behind_turned
+V collision_side_from_behind_turned|from_behind_f0|-0.200000 1.500000 0.000000
+V collision_side_from_behind_turned|from_behind_f15|-0.158076 1.248470 0.000000
+V collision_side_from_behind_turned|from_behind_f30|-0.116151 0.996939 0.000000
+V collision_side_from_behind_turned|from_behind_f45|-0.074227 0.745409 0.000000
+V collision_side_from_behind_turned|from_behind_f60|-0.043898 0.498575 0.000000
+V collision_side_from_behind_turned|from_behind_f75|-0.274332 0.386013 0.000000
+V collision_side_from_behind_turned|from_behind_end|-0.498959 0.265317 0.000000
+V collision_side_from_behind_turned|from_behind_walking|1.000000
+END collision_side_from_behind_turned
+BEGIN collision_side_from_front
+V collision_side_from_front|from_front_f0|0.200000 -1.500000 0.000000
+V collision_side_from_front|from_front_f15|0.158076 -1.248470 0.000000
+V collision_side_from_front|from_front_f30|0.116151 -0.996939 0.000000
+V collision_side_from_front|from_front_f45|0.074227 -0.745409 0.000000
+V collision_side_from_front|from_front_f60|0.032302 -0.493878 0.000000
+V collision_side_from_front|from_front_f75|-0.168683 -0.466873 0.000000
+V collision_side_from_front|from_front_end|-0.419622 -0.512200 0.000000
+V collision_side_from_front|from_front_walking|1.000000
+END collision_side_from_front
+BEGIN collision_side_from_front_turned
+V collision_side_from_front_turned|from_front_f0|0.200000 -1.500000 0.000000
+V collision_side_from_front_turned|from_front_f15|0.158076 -1.248470 0.000000
+V collision_side_from_front_turned|from_front_f30|0.116151 -0.996939 0.000000
+V collision_side_from_front_turned|from_front_f45|0.074227 -0.745409 0.000000
+V collision_side_from_front_turned|from_front_f60|0.043898 -0.498575 0.000000
+V collision_side_from_front_turned|from_front_f75|0.274333 -0.386013 0.000000
+V collision_side_from_front_turned|from_front_end|0.498960 -0.265317 0.000000
+V collision_side_from_front_turned|from_front_walking|1.000000
+END collision_side_from_front_turned
+BEGIN collision_side_corner
+V collision_side_corner|corner_f0|-1.200000 -1.200000 0.000000
+V collision_side_corner|corner_f15|-1.012378 -1.027307 0.000000
+V collision_side_corner|corner_f30|-0.824755 -0.854614 0.000000
+V collision_side_corner|corner_f45|-0.637133 -0.681921 0.000000
+V collision_side_corner|corner_f60|-0.449511 -0.509228 0.000000
+V collision_side_corner|corner_f75|-0.224898 -0.449173 0.000000
+V collision_side_corner|corner_end|0.028430 -0.478327 0.000000
+V collision_side_corner|corner_walking|1.000000
+END collision_side_corner
+BEGIN collision_side_corner_turned
+V collision_side_corner_turned|corner_f0|-1.200000 -1.200000 0.000000
+V collision_side_corner_turned|corner_f15|-1.012378 -1.027307 0.000000
+V collision_side_corner_turned|corner_f30|-0.824755 -0.854614 0.000000
+V collision_side_corner_turned|corner_f45|-0.637133 -0.681921 0.000000
+V collision_side_corner_turned|corner_f60|-0.449511 -0.509228 0.000000
+V collision_side_corner_turned|corner_f75|-0.335948 -0.339780 0.000000
+V collision_side_corner_turned|corner_end|-0.519713 -0.162987 0.000000
+V collision_side_corner_turned|corner_walking|1.000000
+END collision_side_corner_turned
+BEGIN collision_side_graze_right
+V collision_side_graze_right|graze_right_f0|1.500000 0.450000 0.000000
+V collision_side_graze_right|graze_right_f15|1.245142 0.441505 0.000000
+V collision_side_graze_right|graze_right_f30|0.990284 0.433009 0.000000
+V collision_side_graze_right|graze_right_f45|0.735426 0.424514 0.000000
+V collision_side_graze_right|graze_right_f60|0.480567 0.416018 0.000000
+V collision_side_graze_right|graze_right_f75|0.559775 0.540498 0.000000
+V collision_side_graze_right|graze_right_end|0.305860 0.517006 0.000000
+V collision_side_graze_right|graze_right_walking|1.000000
+END collision_side_graze_right
+BEGIN collision_side_graze_right_turned
+V collision_side_graze_right_turned|graze_right_f0|1.500000 0.450000 0.000000
+V collision_side_graze_right_turned|graze_right_f15|1.245142 0.441505 0.000000
+V collision_side_graze_right_turned|graze_right_f30|0.990284 0.433009 0.000000
+V collision_side_graze_right_turned|graze_right_f45|0.735426 0.424514 0.000000
+V collision_side_graze_right_turned|graze_right_f60|0.480567 0.416018 0.000000
+V collision_side_graze_right_turned|graze_right_f75|0.262440 0.453730 0.000000
+V collision_side_graze_right_turned|graze_right_end|0.197016 0.700195 0.000000
+V collision_side_graze_right_turned|graze_right_walking|1.000000
+END collision_side_graze_right_turned
+BEGIN collision_side_big
+V collision_side_big|big_f0|-2.000000 0.300000 0.000000
+V collision_side_big|big_f15|-1.746957 0.268467 0.000000
+V collision_side_big|big_f30|-1.493915 0.236925 0.000000
+V collision_side_big|big_f45|-1.240875 0.205366 0.000000
+V collision_side_big|big_f60|-1.136198 0.044688 0.000000
+V collision_side_big|big_f75|-1.140165 -0.210281 0.000000
+V collision_side_big|big_end|-1.144133 -0.465250 0.000000
+V collision_side_big|big_walking|1.000000
+END collision_side_big
+BEGIN collision_side_inside
+V collision_side_inside|inside_f0|0.050000 0.020000 0.000000
+V collision_side_inside|inside_f15|0.687383 0.105422 0.000000
+V collision_side_inside|inside_f30|0.927117 0.192328 0.000000
+V collision_side_inside|inside_f45|1.166851 0.279234 0.000000
+V collision_side_inside|inside_f60|1.406585 0.366140 0.000000
+V collision_side_inside|inside_f75|1.500000 0.400000 0.000000
+V collision_side_inside|inside_end|1.500000 0.400000 0.000000
+V collision_side_inside|inside_walking|nil
+END collision_side_inside
 BEGIN numbers
 V numbers|arith|3.500000 1024.000000 -2.333333 1.#INF00
 V numbers|tostring|"0.333333" "100" "1e+015" "-0.5"
@@ -999,6 +1139,42 @@ V builtins|fn_vfx|"function"
 V builtins|fn_write|"function"
 V builtins|fn_writeto|"function"
 END builtins
+BEGIN costume_smush
+V costume_smush|before|nil
+V costume_smush|played|1.000000 0.000000
+V costume_smush|after_1s|1.000000
+V costume_smush|snap|0.000000 0.000000 370.000000 267.000000
+V costume_smush|stopped|nil
+V costume_smush|key_1|nil
+END costume_smush
+BEGIN costume_imuse_state
+V costume_imuse_state|state_1001_1|"0 0 -4 -4 -4 -4"
+V costume_imuse_state|state_1001_2|"0 0 -4 -4 -4 -4"
+V costume_imuse_state|state_1001_3|"0 0 -4 -4 -4 -4"
+V costume_imuse_state|state_1001_4|"0 0 -4 -4 -4 -4"
+V costume_imuse_state|state_1008_1|"0 0 -4 -4 -4 -4"
+V costume_imuse_state|state_1008_2|"0 0 -4 -4 -4 -4"
+V costume_imuse_state|state_1008_3|"0 0 -4 -4 -4 -4"
+V costume_imuse_state|state_1008_4|"0 0 -4 -4 -4 -4"
+V costume_imuse_state|seq_2001_1|"0 0 -4 -4 -4 -4"
+V costume_imuse_state|seq_2001_2|"0 0 -4 -4 -4 -4"
+V costume_imuse_state|seq_2001_3|"0 0 -4 -4 -4 -4"
+V costume_imuse_state|seq_2001_4|"0 0 -4 -4 -4 -4"
+V costume_imuse_state|seq_2000_1|"0 0 -4 -4 -4 -4"
+V costume_imuse_state|seq_2000_2|"0 0 -4 -4 -4 -4"
+V costume_imuse_state|seq_2000_3|"0 0 -4 -4 -4 -4"
+V costume_imuse_state|seq_2000_4|"0 0 -4 -4 -4 -4"
+V costume_imuse_state|both_1|"0 0 -4 -4 -4 -4"
+V costume_imuse_state|both_2|"0 0 -4 -4 -4 -4"
+V costume_imuse_state|both_3|"0 0 -4 -4 -4 -4"
+V costume_imuse_state|both_4|"0 0 -4 -4 -4 -4"
+END costume_imuse_state
+BEGIN costume_stream
+V costume_stream|before|"0 0 -4 -4 -4 -4"
+V costume_stream|playing|"0 0 -4 -4 -4 -4"
+V costume_stream|unlooped|"0 0 -4 -4 -4 -4"
+V costume_stream|stopped|"0 0 -4 -4 -4 -4"
+END costume_stream
 BEGIN draw_at_centre
 V draw_at_centre|at_centre_box|270.000000 207.000000 370.000000 267.000000
 V draw_at_centre|at_centre_rect|270.000000 207.000000 101.000000 61.000000
@@ -3556,6 +3732,206 @@ V registry_kinds|number|"string" "12"
 V registry_kinds|other_case|"string" "string"
 V registry_kinds|empty|"string" ""
 END registry_kinds
+BEGIN render_g1
+V render_g1|snap|297.000000 172.000000 418.000000 281.000000 8.000000 248.000000
+V render_g1|flat|299.000000 172.000000 400.000000 249.000000 9.000000 248.000000
+END render_g1
+BEGIN render_g2
+V render_g2|snap|297.000000 172.000000 418.000000 281.000000 911.000000 248.000000
+V render_g2|flat|299.000000 172.000000 400.000000 249.000000 647.000000 248.000000
+END render_g2
+BEGIN render_g3_l0_y0
+V render_g3_l0_y0|snap|298.000000 173.000000 418.000000 281.000000 7292.000000 248.000000
+V render_g3_l0_y0|flat|300.000000 187.000000 400.000000 249.000000 6269.000000 248.000000
+END render_g3_l0_y0
+BEGIN render_g3_l0_y2
+V render_g3_l0_y2|snap|none
+V render_g3_l0_y2|flat|none
+END render_g3_l0_y2
+BEGIN render_g3_l1_y0
+V render_g3_l1_y0|snap|none
+V render_g3_l1_y0|flat|none
+END render_g3_l1_y0
+BEGIN render_g3_l1_y2
+V render_g3_l1_y2|snap|none
+V render_g3_l1_y2|flat|none
+END render_g3_l1_y2
+BEGIN render_g3_l2_y0
+V render_g3_l2_y0|snap|298.000000 173.000000 418.000000 281.000000 6743.000000 76.300000
+V render_g3_l2_y0|flat|300.000000 187.000000 400.000000 245.000000 5887.000000 121.300000
+END render_g3_l2_y0
+BEGIN render_g3_l2_y2
+V render_g3_l2_y2|snap|none
+V render_g3_l2_y2|flat|none
+END render_g3_l2_y2
+BEGIN render_g3_l3_y0
+V render_g3_l3_y0|snap|298.000000 173.000000 418.000000 281.000000 7292.000000 248.000000
+V render_g3_l3_y0|flat|300.000000 187.000000 400.000000 249.000000 6269.000000 248.000000
+END render_g3_l3_y0
+BEGIN render_g3_l3_y2
+V render_g3_l3_y2|snap|none
+V render_g3_l3_y2|flat|none
+END render_g3_l3_y2
+BEGIN render_g4_l0_t0_y0_w
+V render_g4_l0_t0_y0_w|snap|298.000000 173.000000 418.000000 281.000000 7292.000000 248.000000
+V render_g4_l0_t0_y0_w|flat|300.000000 187.000000 400.000000 249.000000 6269.000000 248.000000
+END render_g4_l0_t0_y0_w
+BEGIN render_g4_l0_t0_y0_f
+V render_g4_l0_t0_y0_f|snap|298.000000 173.000000 418.000000 281.000000 7292.000000 248.000000
+V render_g4_l0_t0_y0_f|flat|300.000000 187.000000 400.000000 249.000000 6269.000000 248.000000
+END render_g4_l0_t0_y0_f
+BEGIN render_g4_l0_t0_y0_k
+V render_g4_l0_t0_y0_k|snap|none
+V render_g4_l0_t0_y0_k|flat|none
+END render_g4_l0_t0_y0_k
+BEGIN render_g4_l0_t0_y2_w
+V render_g4_l0_t0_y2_w|snap|none
+V render_g4_l0_t0_y2_w|flat|none
+END render_g4_l0_t0_y2_w
+BEGIN render_g4_l0_t0_y2_f
+V render_g4_l0_t0_y2_f|snap|none
+V render_g4_l0_t0_y2_f|flat|none
+END render_g4_l0_t0_y2_f
+BEGIN render_g4_l0_t0_y2_k
+V render_g4_l0_t0_y2_k|snap|none
+V render_g4_l0_t0_y2_k|flat|none
+END render_g4_l0_t0_y2_k
+BEGIN render_g4_l0_t1_y0_w
+V render_g4_l0_t1_y0_w|snap|298.000000 173.000000 418.000000 281.000000 7292.000000 248.000000
+V render_g4_l0_t1_y0_w|flat|300.000000 187.000000 400.000000 249.000000 6269.000000 248.000000
+END render_g4_l0_t1_y0_w
+BEGIN render_g4_l0_t1_y0_f
+V render_g4_l0_t1_y0_f|snap|298.000000 173.000000 418.000000 281.000000 7292.000000 248.000000
+V render_g4_l0_t1_y0_f|flat|300.000000 187.000000 400.000000 249.000000 6269.000000 248.000000
+END render_g4_l0_t1_y0_f
+BEGIN render_g4_l0_t1_y0_k
+V render_g4_l0_t1_y0_k|snap|none
+V render_g4_l0_t1_y0_k|flat|none
+END render_g4_l0_t1_y0_k
+BEGIN render_g4_l0_t1_y2_w
+V render_g4_l0_t1_y2_w|snap|none
+V render_g4_l0_t1_y2_w|flat|none
+END render_g4_l0_t1_y2_w
+BEGIN render_g4_l0_t1_y2_f
+V render_g4_l0_t1_y2_f|snap|none
+V render_g4_l0_t1_y2_f|flat|none
+END render_g4_l0_t1_y2_f
+BEGIN render_g4_l0_t1_y2_k
+V render_g4_l0_t1_y2_k|snap|none
+V render_g4_l0_t1_y2_k|flat|none
+END render_g4_l0_t1_y2_k
+BEGIN render_g4_l1_t0_y0_w
+V render_g4_l1_t0_y0_w|snap|none
+V render_g4_l1_t0_y0_w|flat|none
+END render_g4_l1_t0_y0_w
+BEGIN render_g4_l1_t0_y0_f
+V render_g4_l1_t0_y0_f|snap|none
+V render_g4_l1_t0_y0_f|flat|none
+END render_g4_l1_t0_y0_f
+BEGIN render_g4_l1_t0_y0_k
+V render_g4_l1_t0_y0_k|snap|none
+V render_g4_l1_t0_y0_k|flat|none
+END render_g4_l1_t0_y0_k
+BEGIN render_g4_l1_t0_y2_k
+V render_g4_l1_t0_y2_k|snap|none
+V render_g4_l1_t0_y2_k|flat|none
+END render_g4_l1_t0_y2_k
+BEGIN render_g4_l1_t1_y0_w
+V render_g4_l1_t1_y0_w|snap|none
+V render_g4_l1_t1_y0_w|flat|none
+END render_g4_l1_t1_y0_w
+BEGIN render_g4_l1_t1_y0_f
+V render_g4_l1_t1_y0_f|snap|none
+V render_g4_l1_t1_y0_f|flat|none
+END render_g4_l1_t1_y0_f
+BEGIN render_g4_l1_t1_y0_k
+V render_g4_l1_t1_y0_k|snap|none
+V render_g4_l1_t1_y0_k|flat|none
+END render_g4_l1_t1_y0_k
+BEGIN render_g4_l1_t1_y2_k
+V render_g4_l1_t1_y2_k|snap|none
+V render_g4_l1_t1_y2_k|flat|none
+END render_g4_l1_t1_y2_k
+BEGIN render_g4_l2_t0_y0_w
+V render_g4_l2_t0_y0_w|snap|298.000000 173.000000 418.000000 281.000000 6743.000000 76.300000
+V render_g4_l2_t0_y0_w|flat|300.000000 187.000000 400.000000 245.000000 5887.000000 121.300000
+END render_g4_l2_t0_y0_w
+BEGIN render_g4_l2_t0_y0_f
+V render_g4_l2_t0_y0_f|snap|298.000000 173.000000 418.000000 281.000000 6743.000000 76.300000
+V render_g4_l2_t0_y0_f|flat|300.000000 187.000000 400.000000 245.000000 5887.000000 121.300000
+END render_g4_l2_t0_y0_f
+BEGIN render_g4_l2_t0_y0_k
+V render_g4_l2_t0_y0_k|snap|none
+V render_g4_l2_t0_y0_k|flat|none
+END render_g4_l2_t0_y0_k
+BEGIN render_g4_l2_t0_y2_k
+V render_g4_l2_t0_y2_k|snap|none
+V render_g4_l2_t0_y2_k|flat|none
+END render_g4_l2_t0_y2_k
+BEGIN render_g4_l2_t1_y0_w
+V render_g4_l2_t1_y0_w|snap|298.000000 173.000000 418.000000 281.000000 6743.000000 76.400000
+V render_g4_l2_t1_y0_w|flat|300.000000 187.000000 400.000000 245.000000 5887.000000 121.300000
+END render_g4_l2_t1_y0_w
+BEGIN render_g4_l2_t1_y0_f
+V render_g4_l2_t1_y0_f|snap|298.000000 173.000000 418.000000 281.000000 6743.000000 76.400000
+V render_g4_l2_t1_y0_f|flat|300.000000 187.000000 400.000000 245.000000 5887.000000 121.300000
+END render_g4_l2_t1_y0_f
+BEGIN render_g4_l2_t1_y0_k
+V render_g4_l2_t1_y0_k|snap|none
+V render_g4_l2_t1_y0_k|flat|none
+END render_g4_l2_t1_y0_k
+BEGIN render_g4_l2_t1_y2_k
+V render_g4_l2_t1_y2_k|snap|none
+V render_g4_l2_t1_y2_k|flat|none
+END render_g4_l2_t1_y2_k
+BEGIN render_g4_l3_t0_y0_w
+V render_g4_l3_t0_y0_w|snap|298.000000 173.000000 418.000000 281.000000 7292.000000 248.000000
+V render_g4_l3_t0_y0_w|flat|300.000000 187.000000 400.000000 249.000000 6269.000000 248.000000
+END render_g4_l3_t0_y0_w
+BEGIN render_g4_l3_t0_y0_f
+V render_g4_l3_t0_y0_f|snap|298.000000 173.000000 418.000000 281.000000 7292.000000 248.000000
+V render_g4_l3_t0_y0_f|flat|300.000000 187.000000 400.000000 249.000000 6269.000000 248.000000
+END render_g4_l3_t0_y0_f
+BEGIN render_g4_l3_t0_y0_k
+V render_g4_l3_t0_y0_k|snap|none
+V render_g4_l3_t0_y0_k|flat|none
+END render_g4_l3_t0_y0_k
+BEGIN render_g4_l3_t0_y2_w
+V render_g4_l3_t0_y2_w|snap|none
+V render_g4_l3_t0_y2_w|flat|none
+END render_g4_l3_t0_y2_w
+BEGIN render_g4_l3_t0_y2_f
+V render_g4_l3_t0_y2_f|snap|none
+V render_g4_l3_t0_y2_f|flat|none
+END render_g4_l3_t0_y2_f
+BEGIN render_g4_l3_t0_y2_k
+V render_g4_l3_t0_y2_k|snap|none
+V render_g4_l3_t0_y2_k|flat|none
+END render_g4_l3_t0_y2_k
+BEGIN render_g4_l3_t1_y0_w
+V render_g4_l3_t1_y0_w|snap|298.000000 173.000000 418.000000 281.000000 7292.000000 248.000000
+V render_g4_l3_t1_y0_w|flat|300.000000 187.000000 400.000000 249.000000 6269.000000 248.000000
+END render_g4_l3_t1_y0_w
+BEGIN render_g4_l3_t1_y0_f
+V render_g4_l3_t1_y0_f|snap|298.000000 173.000000 418.000000 281.000000 7292.000000 248.000000
+V render_g4_l3_t1_y0_f|flat|300.000000 187.000000 400.000000 249.000000 6269.000000 248.000000
+END render_g4_l3_t1_y0_f
+BEGIN render_g4_l3_t1_y0_k
+V render_g4_l3_t1_y0_k|snap|none
+V render_g4_l3_t1_y0_k|flat|none
+END render_g4_l3_t1_y0_k
+BEGIN render_g4_l3_t1_y2_w
+V render_g4_l3_t1_y2_w|snap|none
+V render_g4_l3_t1_y2_w|flat|none
+END render_g4_l3_t1_y2_w
+BEGIN render_g4_l3_t1_y2_f
+V render_g4_l3_t1_y2_f|snap|none
+V render_g4_l3_t1_y2_f|flat|none
+END render_g4_l3_t1_y2_f
+BEGIN render_g4_l3_t1_y2_k
+V render_g4_l3_t1_y2_k|snap|none
+V render_g4_l3_t1_y2_k|flat|none
+END render_g4_l3_t1_y2_k
 BEGIN save_load
 V save_load|callback|1.000000
 V save_load|data|"table"
@@ -19641,4 +20017,4 @@ END zbuffer_post
 BEGIN zbuffer_bar
 V zbuffer_bar|bar_box|458.000000 207.000000 571.000000 267.000000 6601.000000
 END zbuffer_bar
-SUMMARY 5390 tests, 257 failed
+SUMMARY 5457 tests, 257 failed
