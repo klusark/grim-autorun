@@ -1,4 +1,4 @@
-START 5327 tests
+START 5390 tests
 BEGIN boot_state
 V boot_state|movie_playing|nil
 V boot_state|fullscreen_movie_playing|nil
@@ -1314,6 +1314,113 @@ V registry|string|"hello"
 V registry|number|"42"
 V registry|float|"1.5"
 END registry
+BEGIN funnel_types
+V funnel_types|floor|0.000000 "fn_floor" 4096.000000
+V funnel_types|rect|1.000000 "fn_rect" 4352.000000
+V funnel_types|trap|2.000000 "fn_trap" 4352.000000
+V funnel_types|tri|3.000000 "fn_tri" 4096.000000
+V funnel_types|outside|nil
+V funnel_types|rect_active|1.000000
+END funnel_types
+BEGIN funnel_walk_in
+V funnel_walk_in|in_start_sector|0.000000
+V funnel_walk_in|in_f5|0.000000 -0.796000 0.000000
+V funnel_walk_in|in_f10|0.000000 -0.626000 0.000000
+V funnel_walk_in|in_f15|0.000000 -0.456000 0.000000
+V funnel_walk_in|in_f20|0.000000 -0.286000 0.000000
+V funnel_walk_in|in_frames|52.000000
+V funnel_walk_in|in_end|0.000000 1.534000 0.000000
+V funnel_walk_in|in_sector|1.000000
+V funnel_walk_in|in_rot|0.000000 0.000000 0.000000
+END funnel_walk_in
+BEGIN funnel_walk_slanted
+V funnel_walk_slanted|slanted_start_sector|0.000000
+V funnel_walk_slanted|slanted_f5|-1.317549 -0.908744 0.000000
+V funnel_walk_slanted|slanted_f10|-1.165506 -0.832698 0.000000
+V funnel_walk_slanted|slanted_f15|-1.013464 -0.756652 0.000000
+V funnel_walk_slanted|slanted_f20|-0.861421 -0.680606 0.000000
+V funnel_walk_slanted|slanted_frames|98.000000
+V funnel_walk_slanted|slanted_end|0.297628 1.833917 0.000000
+V funnel_walk_slanted|slanted_sector|1.000000
+V funnel_walk_slanted|slanted_rot|0.000000 4.015415 0.000000
+END funnel_walk_slanted
+BEGIN funnel_walk_out
+V funnel_walk_out|out_start_sector|1.000000
+V funnel_walk_out|out_f5|0.000000 1.500000 0.000000
+V funnel_walk_out|out_f10|0.000000 1.500000 0.000000
+V funnel_walk_out|out_f15|0.000000 1.500000 0.000000
+V funnel_walk_out|out_f20|0.000000 1.500000 0.000000
+V funnel_walk_out|out_frames|0.000000
+V funnel_walk_out|out_end|0.000000 1.500000 0.000000
+V funnel_walk_out|out_sector|1.000000
+V funnel_walk_out|out_rot|0.000000 0.000000 0.000000
+END funnel_walk_out
+BEGIN funnel_walk_across
+V funnel_walk_across|across_start_sector|1.000000
+V funnel_walk_across|across_f5|-0.202092 1.049482 0.000000
+V funnel_walk_across|across_f10|-0.037169 1.090717 0.000000
+V funnel_walk_across|across_f15|0.127754 1.131952 0.000000
+V funnel_walk_across|across_f20|0.292678 1.173187 0.000000
+V funnel_walk_across|across_frames|4.000000
+V funnel_walk_across|across_end|0.433287 1.206929 0.000000
+V funnel_walk_across|across_sector|1.000000
+V funnel_walk_across|across_rot|0.000000 -78.242767 0.000000
+END funnel_walk_across
+BEGIN funnel_walk_past
+V funnel_walk_past|past_start_sector|1.000000
+V funnel_walk_past|past_f5|0.000000 0.704000 0.000000
+V funnel_walk_past|past_f10|0.000000 0.874000 0.000000
+V funnel_walk_past|past_f15|0.000000 1.044000 0.000000
+V funnel_walk_past|past_f20|0.000000 1.214000 0.000000
+V funnel_walk_past|past_frames|23.000000
+V funnel_walk_past|past_end|-0.034000 2.000000 0.000000
+V funnel_walk_past|past_sector|1.000000
+V funnel_walk_past|past_rot|0.000000 11.105497 0.000000
+END funnel_walk_past
+BEGIN funnel_walk_trap
+V funnel_walk_trap|trap_start_sector|0.000000
+V funnel_walk_trap|trap_f5|1.204000 -1.000000 0.000000
+V funnel_walk_trap|trap_f10|1.374000 -1.000000 0.000000
+V funnel_walk_trap|trap_f15|1.544001 -1.000000 0.000000
+V funnel_walk_trap|trap_f20|1.714001 -1.000000 0.000000
+V funnel_walk_trap|trap_frames|49.000000
+V funnel_walk_trap|trap_end|3.433973 -1.001348 0.000000
+V funnel_walk_trap|trap_sector|2.000000
+V funnel_walk_trap|trap_rot|0.000000 -92.273132 0.000000
+END funnel_walk_trap
+BEGIN funnel_walk_tri
+V funnel_walk_tri|tri_start_sector|0.000000
+V funnel_walk_tri|tri_f5|-1.113141 -1.169750 0.000000
+V funnel_walk_tri|tri_f10|-1.207426 -1.311209 0.000000
+V funnel_walk_tri|tri_f15|-1.301710 -1.452667 0.000000
+V funnel_walk_tri|tri_f20|-1.395995 -1.594126 0.000000
+V funnel_walk_tri|tri_frames|21.000000
+V funnel_walk_tri|tri_end|-1.819966 -2.227520 0.000000
+V funnel_walk_tri|tri_sector|3.000000
+V funnel_walk_tri|tri_rot|0.000000 144.023224 0.000000
+END funnel_walk_tri
+BEGIN funnel_off
+V funnel_off|off_start_sector|0.000000
+V funnel_off|off_f5|0.000000 -0.796000 0.000000
+V funnel_off|off_f10|0.000000 -0.626000 0.000000
+V funnel_off|off_f15|0.000000 -0.456000 0.000000
+V funnel_off|off_f20|0.000000 -0.286000 0.000000
+V funnel_off|off_frames|9.000000
+V funnel_off|off_end|0.000000 0.000000 0.000000
+V funnel_off|off_sector|0.000000
+V funnel_off|off_rot|0.000000 0.000000 0.000000
+END funnel_off
+BEGIN funnel_forward
+V funnel_forward|fwd_f10|0.291177 -0.433019 0.000000
+V funnel_forward|fwd_sector_f10|0.000000
+V funnel_forward|fwd_f20|0.308921 -0.367832 0.000000
+V funnel_forward|fwd_sector_f20|0.000000
+V funnel_forward|fwd_f30|0.350476 -0.314563 0.000000
+V funnel_forward|fwd_sector_f30|0.000000
+V funnel_forward|fwd_f40|0.409386 -0.281489 0.000000
+V funnel_forward|fwd_sector_f40|0.000000
+V funnel_forward|fwd_rot|0.000000 -70.920341 0.000000
+END funnel_forward
 BEGIN shrink_pos
 V shrink_pos|flat_centre|0.000000 0.000000 0.000000
 V shrink_pos|flat_near_edge|1.700061 0.000000 0.000000
@@ -1430,6 +1537,51 @@ BEGIN head_actor
 V head_actor|actor|265.000000 161.000000 350.000000 243.000000
 V head_actor|actor_node|-0.084575 0.230169 0.965767
 END head_actor
+BEGIN image_write_bmp
+V image_write_bmp|file_head|5.000000 "66 77 54 16 14 "
+END image_write_bmp
+BEGIN image_write_gif
+V image_write_gif|file_head|11.000000 "71 73 70 56 57 97 128 2 224 1 247 "
+END image_write_gif
+BEGIN image_write_pcx
+V image_write_pcx|file_head|4.000000 "10 5 1 8 "
+END image_write_pcx
+BEGIN image_write_lbm
+V image_write_lbm|file_head|4.000000 "70 79 82 77 "
+END image_write_lbm
+BEGIN image_write_bm
+V image_write_bm|file_head|5.000000 "66 77 32 32 70 "
+END image_write_bm
+BEGIN image_write_zbm
+V image_write_zbm|file_head|5.000000 "66 77 32 32 70 "
+END image_write_zbm
+BEGIN image_write_again
+V image_write_again|first_head|11.000000 "71 73 70 56 57 97 128 2 224 1 247 "
+V image_write_again|second_head|11.000000 "71 73 70 56 57 97 128 2 224 1 247 "
+V image_write_again|other_head|11.000000 "71 73 70 56 57 97 128 2 224 1 247 "
+END image_write_again
+BEGIN image_write_plain
+V image_write_plain|pcx_head|4.000000 "10 5 1 8 "
+V image_write_plain|lbm_head|4.000000 "70 79 82 77 "
+V image_write_plain|gif_head|11.000000 "71 73 70 56 57 97 128 2 224 1 247 "
+END image_write_plain
+BEGIN image_write_ext
+V image_write_ext|upper_head|4.000000 "10 5 1 8 "
+V image_write_ext|unknown_file|nil
+V image_write_ext|read_unknown|"nil"
+END image_write_ext
+BEGIN image_read_bmp
+V image_read_bmp|image|"userdata"
+V image_read_bmp|ok|1.000000
+END image_read_bmp
+BEGIN image_read_bm
+V image_read_bm|image|"userdata"
+V image_read_bm|ok|1.000000
+END image_read_bm
+BEGIN image_read_zbm
+V image_read_zbm|image|"userdata"
+V image_read_zbm|ok|1.000000
+END image_read_zbm
 BEGIN iris_none
 V iris_none|open|0.000000 0.000000 639.000000 479.000000
 END iris_none
@@ -2247,6 +2399,133 @@ V lex_tags|rawget_number|nil
 V lex_tags|rawset|nil 1.000000
 V lex_tags|error_nil|nil
 END lex_tags
+BEGIN lua6_format
+V lua6_format|char|"Gri"
+V lua6_format|width|"[   42][42   ][00042][+42]"
+V lua6_format|octal_hex|"777 ff FF 0xff"
+V lua6_format|exp|"1.234568e+004|1.230e-004|1.000000E+020"
+V lua6_format|fixed|"      3.14|2.5       |3"
+V lua6_format|general|"100000|1e+007|0.0001|1E-010"
+V lua6_format|string|"[abc][     right][left  ][cu]"
+V lua6_format|percent|"100% done"
+V lua6_format|quoted|""a \"quoted\" line\
+V lua6_format|quoted_plain|""plain""
+V lua6_format|many|"1 two 3 four 5"
+V lua6_format|number_as_string|"12.5"
+V lua6_format|string_as_number|"17"
+END lua6_format
+BEGIN lua6_tonumber_base
+V lua6_tonumber_base|hex|255.000000 255.000000 2147483648.000000
+V lua6_tonumber_base|octal|511.000000
+V lua6_tonumber_base|binary|5.000000
+V lua6_tonumber_base|base36|35.000000 1295.000000
+V lua6_tonumber_base|base10|123.000000
+V lua6_tonumber_base|spaces|255.000000
+V lua6_tonumber_base|empty|0.000000
+V lua6_tonumber_base|number_base|16.000000
+END lua6_tonumber_base
+BEGIN lua6_classes
+V lua6_classes|find_1|1.000000
+V lua6_classes|find_2|9.000000
+V lua6_classes|find_3|5.000000
+V lua6_classes|find_4|1.000000
+V lua6_classes|find_5|7.000000
+V lua6_classes|find_6|3.000000
+V lua6_classes|find_7|4.000000
+V lua6_classes|find_8|1.000000
+V lua6_classes|find_9|11.000000
+V lua6_classes|find_10|3.000000
+V lua6_classes|find_11|1.000000
+V lua6_classes|find_12|1.000000
+V lua6_classes|find_13|3.000000
+V lua6_classes|find_14|1.000000
+V lua6_classes|find_15|1.000000
+V lua6_classes|find_16|1.000000
+V lua6_classes|find_17|3.000000
+V lua6_classes|find_18|nil
+V lua6_classes|find_19|1.000000
+V lua6_classes|find_20|3.000000
+V lua6_classes|find_21|1.000000
+V lua6_classes|find_22|3.000000
+V lua6_classes|find_23|7.000000
+V lua6_classes|find_24|nil
+V lua6_classes|find_25|nil
+V lua6_classes|all_digits|"a#b#c#"
+V lua6_classes|all_upper|"a_c_e_"
+V lua6_classes|not_space|"x x	x
+V lua6_classes|anchored|nil
+V lua6_classes|optional|7.000000
+V lua6_classes|minimal|1.000000
+V lua6_classes|balanced_like|2.000000
+END lua6_classes
+BEGIN lua6_gsub_repl
+V lua6_gsub_repl|captures|"world hello"
+V lua6_gsub_repl|percent|"50%%"
+V lua6_gsub_repl|function|"one two"
+V lua6_gsub_repl|function_nil|"one two"
+V lua6_gsub_repl|limit|"bbba"
+V lua6_gsub_repl|limit_zero|"aaaa"
+V lua6_gsub_repl|empty_match|"-a-b-c-"
+V lua6_gsub_repl|nested|"val=key; v2=k2"
+END lua6_gsub_repl
+BEGIN lua6_gsub_whole
+ERROR lua6_gsub_whole invalid capture index
+FAILED lua6_gsub_whole
+BEGIN lua6_fallback_arith
+V lua6_fallback_arith|old|"function"
+V lua6_fallback_arith|result|"arith:add"
+V lua6_fallback_arith|put_back|1.000000
+END lua6_fallback_arith
+BEGIN lua6_fallback_order
+V lua6_fallback_order|old|"function"
+V lua6_fallback_order|result|1.000000
+V lua6_fallback_order|put_back|1.000000
+END lua6_fallback_order
+BEGIN lua6_fallback_concat
+V lua6_fallback_concat|old|"function"
+V lua6_fallback_concat|result|"concat"
+V lua6_fallback_concat|put_back|1.000000
+END lua6_fallback_concat
+BEGIN lua6_fallback_gettable
+V lua6_fallback_gettable|old|"function"
+V lua6_fallback_gettable|result|"gettable:field"
+V lua6_fallback_gettable|put_back|1.000000
+END lua6_fallback_gettable
+BEGIN lua6_fallback_settable
+V lua6_fallback_settable|old|"function"
+V lua6_fallback_settable|result|"field=7"
+V lua6_fallback_settable|put_back|1.000000
+END lua6_fallback_settable
+BEGIN lua6_fallback_getglobal
+V lua6_fallback_getglobal|old|"function"
+V lua6_fallback_getglobal|result|"global:cr_lua6_no_such_global"
+V lua6_fallback_getglobal|put_back|1.000000
+END lua6_fallback_getglobal
+BEGIN lua6_tag_methods
+V lua6_tag_methods|gettable|"tm_get:a" "tm_get:b"
+V lua6_tag_methods|settable|40.000000
+V lua6_tag_methods|setglobal|"CR_LUA6_G:table->3" 3.000000
+V lua6_tag_methods|getglobal|"tm_global:CR_LUA6_G"
+V lua6_tag_methods|getglobal_off|"table"
+V lua6_tag_methods|getglobal_nil|"tm_global:cr_lua6_undefined_one"
+V lua6_tag_methods|getglobal_nil_off|nil
+END lua6_tag_methods
+BEGIN lua6_setlocale
+V lua6_setlocale|all|"C"
+V lua6_setlocale|category_0|"C"
+V lua6_setlocale|category_1|"C"
+V lua6_setlocale|category_2|"C"
+V lua6_setlocale|category_3|"C"
+V lua6_setlocale|category_4|"C"
+V lua6_setlocale|category_5|"C"
+ERROR lua6_setlocale bad argument #2 to function `setlocale' (invalid option)
+FAILED lua6_setlocale
+BEGIN lua6_deep
+V lua6_deep|depth_50|86.000000
+V lua6_deep|depth_150|186.000000
+V lua6_deep|unpacked|"1"
+V lua6_deep|strrep|10000.000000
+END lua6_deep
 BEGIN model_costume
 V model_costume|costume|"cr_box.cos"
 V model_costume|keys_trace|"0 1 1 1 1 1 2 2 2 2 2 2 2 2 2 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 "
@@ -2993,6 +3272,26 @@ V movie_mode2|start|1.000000
 V movie_mode2|playing|1.000000
 V movie_mode2|snap|78.000000 74.000000 527.000000 167.000000 726.000000
 END movie_mode2
+BEGIN movie_mode1
+V movie_mode1|start|1.000000
+V movie_mode1|playing|1.000000
+V movie_mode1|snap|0.000000 0.000000 639.000000 479.000000
+END movie_mode1
+BEGIN movie_mode7
+V movie_mode7|start|1.000000
+V movie_mode7|playing|1.000000
+V movie_mode7|snap|0.000000 0.000000 639.000000 479.000000
+END movie_mode7
+BEGIN movie_mode1s
+V movie_mode1s|start|1.000000
+V movie_mode1s|playing|1.000000
+V movie_mode1s|snap|0.000000 0.000000 638.000000 479.000000 230400.000000 164.300000
+END movie_mode1s
+BEGIN movie_mode7s
+V movie_mode7s|start|1.000000
+V movie_mode7s|playing|1.000000
+V movie_mode7s|snap|0.000000 0.000000 638.000000 479.000000 230400.000000 164.300000
+END movie_mode7s
 BEGIN music_states
 V music_states|before_1|"0 0 -4 -4 -4 -4"
 V music_states|before_2|"0 0 -4 -4 -4 -4"
@@ -3531,6 +3830,62 @@ END shadow_second_slot
 BEGIN shadow_moved
 V shadow_moved|moved_dark|none
 END shadow_moved
+BEGIN shadow_mesh_none
+V shadow_mesh_none|none_dark|none
+V shadow_mesh_none|none_box|270.000000 207.000000 370.000000 267.000000
+END shadow_mesh_none
+BEGIN shadow_mesh_point_above
+V shadow_mesh_point_above|point_above_dark|272.000000 267.000000 368.000000 268.000000
+V shadow_mesh_point_above|point_above_box|270.000000 207.000000 370.000000 267.000000
+END shadow_mesh_point_above
+BEGIN shadow_mesh_point_left
+V shadow_mesh_point_left|point_left_dark|279.000000 208.000000 447.000000 273.000000
+V shadow_mesh_point_left|point_left_box|270.000000 207.000000 370.000000 267.000000
+END shadow_mesh_point_left
+BEGIN shadow_mesh_point_right
+V shadow_mesh_point_right|point_right_dark|193.000000 208.000000 361.000000 273.000000
+V shadow_mesh_point_right|point_right_box|270.000000 207.000000 370.000000 267.000000
+END shadow_mesh_point_right
+BEGIN shadow_mesh_point_front
+V shadow_mesh_point_front|point_front_dark|258.000000 249.000000 382.000000 400.000000
+V shadow_mesh_point_front|point_front_box|270.000000 207.000000 370.000000 267.000000
+END shadow_mesh_point_front
+BEGIN shadow_mesh_point_back
+V shadow_mesh_point_back|point_back_dark|260.000000 88.000000 380.000000 269.000000
+V shadow_mesh_point_back|point_back_box|270.000000 207.000000 370.000000 267.000000
+END shadow_mesh_point_back
+BEGIN shadow_mesh_point_low
+V shadow_mesh_point_low|point_low_dark|34.000000 216.000000 365.000000 479.000000
+V shadow_mesh_point_low|point_low_box|270.000000 207.000000 370.000000 267.000000
+END shadow_mesh_point_low
+BEGIN shadow_mesh_point_far
+V shadow_mesh_point_far|point_far_dark|274.000000 267.000000 368.000000 269.000000
+V shadow_mesh_point_far|point_far_box|270.000000 207.000000 370.000000 267.000000
+END shadow_mesh_point_far
+BEGIN shadow_mesh_point_below_top
+V shadow_mesh_point_below_top|point_below_top_dark|45.000000 214.000000 270.000000 266.000000
+END shadow_mesh_point_below_top
+BEGIN shadow_mesh_clipped
+V shadow_mesh_clipped|clipped_dark|275.000000 169.000000 599.000000 313.000000
+END shadow_mesh_clipped
+BEGIN shadow_mesh_two_planes
+V shadow_mesh_two_planes|two_planes_dark|275.000000 169.000000 599.000000 313.000000
+END shadow_mesh_two_planes
+BEGIN shadow_mesh_floor_only
+V shadow_mesh_floor_only|floor_only_dark|275.000000 169.000000 505.000000 313.000000
+END shadow_mesh_floor_only
+BEGIN shadow_mesh_moved
+V shadow_mesh_moved|moved_dark|360.000000 288.000000 488.000000 401.000000
+V shadow_mesh_moved|moved_box|359.000000 286.000000 480.000000 389.000000
+END shadow_mesh_moved
+BEGIN shadow_mesh_deactivated
+V shadow_mesh_deactivated|deactivated_on|279.000000 208.000000 447.000000 273.000000
+V shadow_mesh_deactivated|deactivated_off|279.000000 208.000000 447.000000 273.000000
+END shadow_mesh_deactivated
+BEGIN shadow_mesh_distance
+V shadow_mesh_distance|distance_dist|0.010000
+V shadow_mesh_distance|distance_dist_moved|0.010000
+END shadow_mesh_distance
 BEGIN sight_visible
 V sight_visible|ahead|""
 V sight_visible|turned|""
@@ -18783,6 +19138,100 @@ END ims_save
 BEGIN ims_save_voice
 V ims_save_voice|loaded|nil
 END ims_save_voice
+BEGIN ims_voice_fx
+V ims_voice_fx|set|nil
+V ims_voice_fx|fx_v01_going|1.000000 2.000000
+V ims_voice_fx|fx_v01_1s|1.000000 4.000000
+V ims_voice_fx|fx_v01_ended|1.000000
+V ims_voice_fx|fx_v02_going|1.000000 7.000000
+V ims_voice_fx|fx_v02_1s|1.000000 2.000000
+V ims_voice_fx|fx_v02_ended|1.000000
+V ims_voice_fx|off|nil
+V ims_voice_fx|plain_v01_going|1.000000 2.000000
+V ims_voice_fx|plain_v01_1s|1.000000 4.000000
+V ims_voice_fx|plain_v01_ended|1.000000
+END ims_voice_fx
+BEGIN ims_voice_fx_names
+V ims_voice_fx_names|upper|nil
+V ims_voice_fx_names|upper_going|1.000000 2.000000
+V ims_voice_fx_names|upper_1s|1.000000 4.000000
+V ims_voice_fx_names|upper_ended|1.000000
+V ims_voice_fx_names|unknown|nil
+V ims_voice_fx_names|unknown_going|1.000000 2.000000
+V ims_voice_fx_names|unknown_1s|1.000000 4.000000
+V ims_voice_fx_names|unknown_ended|1.000000
+V ims_voice_fx_names|lower_off|nil
+V ims_voice_fx_names|empty|nil
+V ims_voice_fx_names|again_off|nil
+END ims_voice_fx_names
+BEGIN ims_voice_fx_switch
+V ims_voice_fx_switch|on_mid_line|nil
+V ims_voice_fx_switch|going|1.000000
+V ims_voice_fx_switch|shut_up|nil
+V ims_voice_fx_switch|off_mid_line|nil
+V ims_voice_fx_switch|ended|1.000000
+END ims_voice_fx_switch
+BEGIN ims_voice_fx_cr_reverb_mono
+V ims_voice_fx_cr_reverb_mono|set|nil
+V ims_voice_fx_cr_reverb_mono|v01_going|1.000000 2.000000
+V ims_voice_fx_cr_reverb_mono|v01_1s|1.000000 4.000000
+V ims_voice_fx_cr_reverb_mono|v01_ended|1.000000
+V ims_voice_fx_cr_reverb_mono|v02_going|1.000000 7.000000
+V ims_voice_fx_cr_reverb_mono|v02_1s|1.000000 2.000000
+V ims_voice_fx_cr_reverb_mono|v02_ended|1.000000
+V ims_voice_fx_cr_reverb_mono|off|nil
+V ims_voice_fx_cr_reverb_mono|plain_going|1.000000 2.000000
+V ims_voice_fx_cr_reverb_mono|plain_1s|1.000000 4.000000
+V ims_voice_fx_cr_reverb_mono|plain_ended|1.000000
+END ims_voice_fx_cr_reverb_mono
+BEGIN ims_voice_fx_cr_reverb_stereo
+V ims_voice_fx_cr_reverb_stereo|set|nil
+V ims_voice_fx_cr_reverb_stereo|v01_going|1.000000 2.000000
+V ims_voice_fx_cr_reverb_stereo|v01_1s|1.000000 4.000000
+V ims_voice_fx_cr_reverb_stereo|v01_ended|1.000000
+V ims_voice_fx_cr_reverb_stereo|v02_going|1.000000 7.000000
+V ims_voice_fx_cr_reverb_stereo|v02_1s|1.000000 2.000000
+V ims_voice_fx_cr_reverb_stereo|v02_ended|1.000000
+V ims_voice_fx_cr_reverb_stereo|off|nil
+V ims_voice_fx_cr_reverb_stereo|plain_going|1.000000 2.000000
+V ims_voice_fx_cr_reverb_stereo|plain_1s|1.000000 4.000000
+V ims_voice_fx_cr_reverb_stereo|plain_ended|1.000000
+END ims_voice_fx_cr_reverb_stereo
+BEGIN ims_voice_fx_cr_phasor
+V ims_voice_fx_cr_phasor|set|nil
+V ims_voice_fx_cr_phasor|v01_going|1.000000 2.000000
+V ims_voice_fx_cr_phasor|v01_1s|1.000000 4.000000
+V ims_voice_fx_cr_phasor|v01_ended|1.000000
+V ims_voice_fx_cr_phasor|v02_going|1.000000 7.000000
+V ims_voice_fx_cr_phasor|v02_1s|1.000000 2.000000
+V ims_voice_fx_cr_phasor|v02_ended|1.000000
+V ims_voice_fx_cr_phasor|off|nil
+V ims_voice_fx_cr_phasor|plain_going|1.000000 2.000000
+V ims_voice_fx_cr_phasor|plain_1s|1.000000 4.000000
+V ims_voice_fx_cr_phasor|plain_ended|1.000000
+END ims_voice_fx_cr_phasor
+BEGIN ims_voice_fx_cr_chain
+V ims_voice_fx_cr_chain|set|nil
+V ims_voice_fx_cr_chain|v01_going|1.000000 2.000000
+V ims_voice_fx_cr_chain|v01_1s|1.000000 4.000000
+V ims_voice_fx_cr_chain|v01_ended|1.000000
+V ims_voice_fx_cr_chain|v02_going|1.000000 7.000000
+V ims_voice_fx_cr_chain|v02_1s|1.000000 2.000000
+V ims_voice_fx_cr_chain|v02_ended|1.000000
+V ims_voice_fx_cr_chain|off|nil
+V ims_voice_fx_cr_chain|plain_going|1.000000 2.000000
+V ims_voice_fx_cr_chain|plain_1s|1.000000 4.000000
+V ims_voice_fx_cr_chain|plain_ended|1.000000
+END ims_voice_fx_cr_chain
+BEGIN ims_voice_fx_change
+V ims_voice_fx_change|reverb_going|1.000000 2.000000
+V ims_voice_fx_change|reverb_1s|1.000000 4.000000
+V ims_voice_fx_change|reverb_ended|1.000000
+V ims_voice_fx_change|phasor_going|1.000000 2.000000
+V ims_voice_fx_change|phasor_1s|1.000000 4.000000
+V ims_voice_fx_change|phasor_ended|1.000000
+V ims_voice_fx_change|chain_mid_line|1.000000
+END ims_voice_fx_change
 BEGIN lit_none
 V lit_none|snap|270.000000 207.000000 370.000000 267.000000 6123.000000 248.000000
 END lit_none
@@ -19192,4 +19641,4 @@ END zbuffer_post
 BEGIN zbuffer_bar
 V zbuffer_bar|bar_box|458.000000 207.000000 571.000000 267.000000 6601.000000
 END zbuffer_bar
-SUMMARY 5327 tests, 255 failed
+SUMMARY 5390 tests, 257 failed
