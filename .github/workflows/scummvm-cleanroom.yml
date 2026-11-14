@@ -1,6 +1,6 @@
 # The clean-room engine tests (cleanroom/, see its README) against ScummVM: builds upstream master of scummvm/scummvm with
 # cleanroom/scummvm/grim-test-data.patch applied (nothing else: the reference the expected crasher lists are made with) and
-# runs `run.py scummvm` for Grim and for EMI (cleanroom/tools/parallel.sh: the renderers of a game at once), compared with
+# runs `run.py scummvm` for Grim and for EMI (cleanroom/tools/parallel.sh --sequential: the renderers of a game one after another), compared with
 # the expected logs of the originals (cleanroom/expected/). Another repository or branch can be given by hand; one that
 # already has the test patch (as klusark/scummvm cleanroom) is run with "apply_patch" off. The originals themselves are
 # not run here (no game files on the runner).
@@ -117,7 +117,8 @@ jobs:
         with:
           python-version: "3.12"
 
-      # (each game's renderers at once: tools/parallel.sh, a run.py --work of its own for each, under
+      # (each game's renderers one after another: tools/parallel.sh --sequential, a run.py --work of its own for each (every
+      # run.py already plays one game per processor; three at once only crowded the runner's cores), under
       # $RUNNER_TEMP/parallel_grim/ and parallel_emi/: the checkout's path would make the game folders too long; grim.txt and emi.txt are their outputs one after the other)
       - name: Grim
         id: grim
@@ -134,7 +135,7 @@ jobs:
         run: |
           export SCUMMVM="$GITHUB_WORKSPACE\\scummvm\\build\\scummvm.exe"
           rc=0
-          CR_PARALLEL_DIR="$(cygpath -u "$RUNNER_TEMP")/parallel_grim" bash grim_tools/cleanroom/tools/parallel.sh --games grim --renderers "$CR_RENDERERS" || rc=$?
+          CR_PARALLEL_DIR="$(cygpath -u "$RUNNER_TEMP")/parallel_grim" bash grim_tools/cleanroom/tools/parallel.sh --sequential --games grim --renderers "$CR_RENDERERS" || rc=$?
           cat "$(cygpath -u "$RUNNER_TEMP")"/parallel_grim/grim_*.txt > grim.txt
           exit $rc
 
@@ -151,7 +152,7 @@ jobs:
         run: |
           export SCUMMVM="$GITHUB_WORKSPACE\\scummvm\\build\\scummvm.exe"
           rc=0
-          CR_PARALLEL_DIR="$(cygpath -u "$RUNNER_TEMP")/parallel_emi" bash grim_tools/cleanroom/tools/parallel.sh --games emi --renderers "$CR_RENDERERS" || rc=$?
+          CR_PARALLEL_DIR="$(cygpath -u "$RUNNER_TEMP")/parallel_emi" bash grim_tools/cleanroom/tools/parallel.sh --sequential --games emi --renderers "$CR_RENDERERS" || rc=$?
           cat "$(cygpath -u "$RUNNER_TEMP")"/parallel_emi/emi_*.txt > emi.txt
           exit $rc
 

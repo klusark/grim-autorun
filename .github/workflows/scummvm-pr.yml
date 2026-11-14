@@ -185,7 +185,7 @@ jobs:
           CR_STARTUP: "180"
         run: |
           export SCUMMVM="$GITHUB_WORKSPACE\\scummvm\\build\\scummvm.exe"
-          CR_PARALLEL_DIR="$(cygpath -u "$RUNNER_TEMP")/parallel_grim" bash grim_tools/cleanroom/tools/parallel.sh --games grim --renderers "$CR_RENDERERS" || true
+          CR_PARALLEL_DIR="$(cygpath -u "$RUNNER_TEMP")/parallel_grim" bash grim_tools/cleanroom/tools/parallel.sh --sequential --games grim --renderers "$CR_RENDERERS" || true
           cat "$(cygpath -u "$RUNNER_TEMP")"/parallel_grim/grim_*.txt > grim.txt
 
       - name: EMI
@@ -199,7 +199,7 @@ jobs:
           CR_STARTUP: "180"
         run: |
           export SCUMMVM="$GITHUB_WORKSPACE\\scummvm\\build\\scummvm.exe"
-          CR_PARALLEL_DIR="$(cygpath -u "$RUNNER_TEMP")/parallel_emi" bash grim_tools/cleanroom/tools/parallel.sh --games emi --renderers "$CR_RENDERERS" || true
+          CR_PARALLEL_DIR="$(cygpath -u "$RUNNER_TEMP")/parallel_emi" bash grim_tools/cleanroom/tools/parallel.sh --sequential --games emi --renderers "$CR_RENDERERS" || true
           cat "$(cygpath -u "$RUNNER_TEMP")"/parallel_emi/emi_*.txt > emi.txt
 
       - name: Logs

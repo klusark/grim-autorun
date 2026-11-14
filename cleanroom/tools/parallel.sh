@@ -7,6 +7,8 @@
 #   tools/parallel.sh --coverage [build dir] [...]
 #       the coverage: the gcov build (default ~/scummvm-cleanroom/build-cov, README.md "Coverage of ScummVM"), its counters
 #       cleared first, every game by default, then autorun/tools/covreport.py --all into reports/coverage/
+#   tools/parallel.sh --sequential [...]
+#       the same runs one after another (each run.py already plays one game per processor): the same folders and output
 #   (other options go to every run.py: --only T1,T2, --fresh, --visible)
 #   CR_PARALLEL_DIR: the folder of the runs (default run/parallel, relative to cleanroom/; emptied first)
 #   CR_COV_OUT, CR_COV_TITLE: the report's folder and title (--coverage); CR_STALL_COV: CR_STALL of a coverage run (60)
@@ -18,6 +20,7 @@ HERE=$(cd "$(dirname "$0")/.." && pwd)
 GAMES=grim,emi
 RENDERERS=opengl,opengl_shaders,software
 COV=
+SEQ=
 GAMES_SET=
 ARGS=()
 while [ $# -gt 0 ]; do
@@ -25,6 +28,7 @@ while [ $# -gt 0 ]; do
 		--coverage)
 			COV=$HOME/scummvm-cleanroom/build-cov
 			if [ -n "$2" ] && [ "${2#--}" = "$2" ]; then COV=$2; shift; fi ;;
+		--sequential) SEQ=1 ;;
 		--games) GAMES=$2; GAMES_SET=1; shift ;;
 		--renderers) RENDERERS=$2; shift ;;
 		*) ARGS+=("$1") ;;
@@ -45,6 +49,7 @@ mkdir -p "$WORK"
 start=$(date +%s)
 PIDS=()
 NAMES=()
+declare -A RC
 for game in ${GAMES//,/ }; do
 	case $game in
 		grim) opt=() ;;
@@ -57,14 +62,21 @@ for game in ${GAMES//,/ }; do
 			> "$WORK/${game}_$r.txt" 2>&1 &
 		PIDS+=($!)
 		NAMES+=("${game}_$r")
+		# (--sequential: this run ends before the next starts)
+		if [ -n "$SEQ" ]; then
+			wait "${PIDS[-1]}"
+			RC[${game}_$r]=$?
+			echo "${game}_$r: $(( $(date +%s) - start )) s"
+		fi
 	done
 done
 # (each run's exit code: run.py fails on a regression and on a new crasher without a mark)
-declare -A RC
-for i in "${!PIDS[@]}"; do
-	wait "${PIDS[$i]}"
-	RC[${NAMES[$i]}]=$?
-done
+if [ -z "$SEQ" ]; then
+	for i in "${!PIDS[@]}"; do
+		wait "${PIDS[$i]}"
+		RC[${NAMES[$i]}]=$?
+	done
+fi
 echo "ran in $(( $(date +%s) - start )) s"
 rc=0
 for name in "${NAMES[@]}"; do

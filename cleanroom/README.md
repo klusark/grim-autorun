@@ -63,7 +63,8 @@ expected/. `run.py ... --work DIR` gives a run its own build/, run/ and logs/ in
 crashers it finds are reported only), so runs with different DIRs go at once. `tools/parallel.sh` runs Grim and EMI with
 every renderer that way, six at once, in about 3 minutes (`--games grim,emi,remastered`, `--renderers`, and run.py's
 options such as `--only`; the results in run/parallel/; exit 1 on a regression). It sets `CR_STALL=15`, since six engines at
-once keep the machine busy. `--coverage` is the coverage run (below). `tools/mark_known.py` takes its logs as arguments
+once keep the machine busy. `--sequential` runs them one after another instead (each `run.py` already plays one game per
+processor), in the same folders and with the same output. `--coverage` is the coverage run (below). `tools/mark_known.py` takes its logs as arguments
 (`run/parallel/grim_<renderer>/logs/scummvm_<renderer>.log`, one per renderer). A new crasher is not kept: run `run.py scummvm` itself for that.
 
 ## What is needed
@@ -385,8 +386,8 @@ compared with the expected logs here; the originals are not run there. The job f
 a mark; the summary lists them and the logs are kept as an artifact. The marks follow upstream master: a test that only
 the fixes in progress make the same is "fixed" there (its mark stays until upstream has the fix).
 
-Both games run with every renderer (`opengl`, `opengl_shaders`, `software`), the renderers of a game at once
-(`tools/parallel.sh`, each step in its own `CR_PARALLEL_DIR`, llvmpipe with one thread per engine: `LP_NUM_THREADS=1`).
+Both games run with every renderer (`opengl`, `opengl_shaders`, `software`), the renderers of a game one after
+another (`tools/parallel.sh --sequential`, each step in its own `CR_PARALLEL_DIR`, llvmpipe with one thread per engine: `LP_NUM_THREADS=1`).
 A workflow of its own, `.github/workflows/scummvm-coverage.yml` (on main only: its pushes, the nightly run, by hand), builds the same ScummVM with gcov (as below), runs both games and the Remastered mode with
 every renderer on it, all nine at once, and writes the coverage of engines/grim and
 graphics/tinygl (`covreport.py --all`, every part with its total) to the run's summary; the page of each file, with the
