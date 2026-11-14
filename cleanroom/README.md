@@ -340,6 +340,9 @@ any background (a shadow), `cr_snap(key, "lit")` the box of the others (what an 
 the frame drawn before the call, ScummVM's the scene as it is at the call: a picture right after a change in the same frame
 differs for that reason alone, so the tests let a frame pass first.
 
+A test that is not in `expected/original.log` fails every comparison (EXTRA, for ScummVM, the decomp and the Remastered
+alike): record the original's values with `run.py original --save` in the same change that adds the test.
+
 `compare.py` puts a test in one of three classes. `same`: equal within 1e-6. `close`: all differing values are numbers
 within 1e-3 (`--close`). `DIFF`: anything else.
 
@@ -847,6 +850,8 @@ files read back with Lua's io, `GetImage` of the 24-bit formats), `funnel.lua` (
 0x1100) and `zz_ims_fx.lua` (voices through the `cr_band_pass` voice effect) were written to cover code of the decomp no
 test reached (grim-decomp `tools/coverage.sh`). They ran only on the decomp there, so `expected/original.log` has none of
 their values: `compare.py` lists them as EXTRA until `run.py original --save` is run on the original. Not tried on ScummVM.
+(Since 2026-11-15 an EXTRA test fails the comparison, for ScummVM and the decomp alike: a new test is added with the
+original's values, `run.py original --save`.)
 `GetImage` of a .gif, .pcx or .lbm, and `BlastImage` of an image read from a screenshot, are left out: GetImage treats
 every image as 16-bit (an 8-bit one is overrun) and the screenshot is 24-bit (BlastImage copies rows wider than the screen).
 Later, also only on the decomp: `shadow_mesh.lua` (a model whose mesh casts a shadow, `shadow.mat` / `shadow.cmp`),
