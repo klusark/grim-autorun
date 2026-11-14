@@ -69,6 +69,14 @@ SETS = {
         ("ell_b", "walk", True, 0.0, rect(0, -2, 2, 0)),
         ("ell_c", "walk", True, 0.0, rect(0, 0, 2, 2)),
     ]),
+    # funnel sectors (type 0x1100: WalkPlane_SetType 0x4a6790 takes the long axis of a 4-corner one; with another number
+    # of corners the type becomes walk, 0x1000): a floor, a 1 x 2 m funnel north of it, a trapezoid one east, a triangle
+    "cr_funnel": (((90, 90, 40), (120, 120, 60)), [
+        ("fn_floor", "walk", True, 0.0, rect(-2, -2, 2, 0)),
+        ("fn_rect", "funnel", True, 0.0, rect(-0.5, 0, 0.5, 2)),
+        ("fn_trap", "funnel", True, 0.0, [(2, -2, 0), (3.5, -1.5, 0), (3.5, -0.5, 0), (2, 0, 0)]),
+        ("fn_tri", "funnel", True, 0.0, [(-2, -2, 0), (-2, -3, 0), (-1, -2, 0)]),
+    ]),
 }
 
 
