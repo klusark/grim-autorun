@@ -849,3 +849,9 @@ test reached (grim-decomp `tools/coverage.sh`). They ran only on the decomp ther
 their values: `compare.py` lists them as EXTRA until `run.py original --save` is run on the original. Not tried on ScummVM.
 `GetImage` of a .gif, .pcx or .lbm, and `BlastImage` of an image read from a screenshot, are left out: GetImage treats
 every image as 16-bit (an 8-bit one is overrun) and the screenshot is 24-bit (BlastImage copies rows wider than the screen).
+Later, also only on the decomp: `shadow_mesh.lua` (a model whose mesh casts a shadow, `shadow.mat` / `shadow.cmp`),
+`movie_modes.lua`'s modes 1 and 7, more presets in `zz_ims_fx.lua` (Reverb 1 mono and stereo, the Phasor, a chain) and
+`lua6.lua` (format, tonumber with a base, pattern classes, gsub, fallbacks, tag methods, setlocale, deep calls). Left out
+of lua6.lua: `setfallback("function", f)` and then calling a number hangs the decomp (from Lua code and through `call`);
+its luaD_call goes back to the same stack slot after the tag method, as the original's decompilation does
+(grim-decomp `src/LUA.DLL/ldo.c`, the `#if 0` luaD_call), so the original may hang too. Try it there before adding it.
