@@ -29,6 +29,7 @@ on:
   schedule:
     - cron: "23 5 * * *"
   push:
+    branches: [main]
     paths:
       - "cleanroom/**"
       - ".github/workflows/scummvm-cleanroom.yml"

@@ -364,7 +364,7 @@ DestroyAllUIButtonsImmediately, CacheCurrentWalkVector and RemoveBorders as buil
 ## On GitHub
 
 `.github/workflows/scummvm-cleanroom.yml` runs `run.py scummvm` for Grim and EMI on a Windows runner every night, on a
-push that changes `cleanroom/`, and by hand (Actions, "Run workflow": another repository or branch of ScummVM, other
+push to main that changes `cleanroom/` (not on other branches or pull requests), and by hand (Actions, "Run workflow": another repository or branch of ScummVM, other
 renderers). It builds the branch `cleanroom` of klusark/scummvm: the test patch as a commit of its own and, after it, the
 fixes in progress of `~/scummvm-cleanroom` (push the worktree's work there to test it). For a branch without the test
 patch (upstream master), "apply_patch" applies `scummvm/grim-test-data.patch`. The build is in the runner's MSYS2 (UCRT64,
