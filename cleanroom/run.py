@@ -40,6 +40,7 @@ C:\\GOG Games\\GRIMDATA), CR_VISIBLE=1 (the engines' windows on the screen; othe
 tools/offscreen.c), CR_VERBOSE=1 (or --verbose: each game's command line, its tests as they begin and end, how it ended),
 EMI_INSTALL (the same for Monkey4.exe, default C:\\GOG Games\\Escape from Monkey Island), CR_STALL
 (seconds without a new line in the engine's log before a run counts as hung and is killed, default 2; CR_STARTUP, default 30, until the first line),
+PATH (MSYS2's ucrt64\\bin: gcc and g++, and the DLLs of the ScummVM build; mingw32\\bin for the original: i686-w64-mingw32-gcc),
 GRIM_DECOMP (the folder of the rebuilt grimfandango.exe and its three DLLs, default C:\\Users\\Joel\\grim-decomp\\build\\run)."""
 import argparse
 import os
@@ -130,10 +131,6 @@ def set_game(game):
 def test_files():
     """The test files of the current game (their paths), in the order they run."""
     return testfiles.files(GAME)
-
-
-MINGW32 = r"C:\msys64\mingw32\bin"
-UCRT64 = r"C:\msys64\ucrt64\bin"
 
 
 MANIFEST = "cr_manifest.txt"
@@ -566,7 +563,7 @@ class ScummvmEngine(Engine):
     def command(self, d):
         cmd = [SCUMMVM, "--config=" + os.path.join(d, "scummvm.ini"), "--savepath=" + os.path.join(d, "saves"),
                "--debugflags=scripts", "--logfile=" + self.log(d), "--engine-speed=0", "cleanroom"]
-        return cmd, dict(os.environ, PATH=UCRT64 + os.pathsep + os.environ.get("PATH", ""))
+        return cmd, dict(os.environ)
 
     def kill(self, d):
         pass
@@ -826,6 +823,9 @@ def compare_with(reference, engine, crashed, only=None):
 VISIBLE = os.environ.get("CR_VISIBLE") == "1"
 RENDER_EVERY = os.environ.get("CR_RENDER_EVERY", "")
 OFFSCREEN = os.path.join(HERE, "run", "offscreen.exe")
+# (the games of a run start in threads of their own: one of them builds offscreen.exe, the others wait for it, instead of all
+# building it at once and starting it while another gcc still writes it, WinError 32)
+OFFSCREEN_LOCK = threading.Lock()
 
 
 def offscreen(cmd):
@@ -833,11 +833,11 @@ def offscreen(cmd):
     if VISIBLE or os.name != "nt":
         return cmd
     src = os.path.join(HERE, "tools", "offscreen.c")
-    if not newer(OFFSCREEN, [src]):
-        os.makedirs(os.path.dirname(OFFSCREEN), exist_ok=True)
-        env = dict(os.environ, PATH=UCRT64 + os.pathsep + os.environ.get("PATH", ""))
-        subprocess.run([os.path.join(UCRT64, "gcc.exe"), "-O2", "-o", OFFSCREEN, src, "-lole32"], check=True, env=env)
-        print("built %s" % OFFSCREEN)
+    with OFFSCREEN_LOCK:
+        if not newer(OFFSCREEN, [src]):
+            os.makedirs(os.path.dirname(OFFSCREEN), exist_ok=True)
+            subprocess.run(["gcc", "-O2", "-o", OFFSCREEN, src, "-lole32"], check=True)
+            print("built %s" % OFFSCREEN)
     return [OFFSCREEN] + cmd
 
 
@@ -883,15 +883,13 @@ def prepare_tools(d):
     dll_src = [os.path.join(pdir, "patch.c"), os.path.join(pdir, "config.c")]
     dll = os.path.join(tools, "patch.dll")
     if not newer(dll, dll_src):
-        env = dict(os.environ, PATH=MINGW32 + os.pathsep + os.environ.get("PATH", ""))
-        subprocess.run([os.path.join(MINGW32, "gcc.exe"), "-shared", "-O2", "-static-libgcc", "-o", dll] + dll_src +
-                       ["-luser32", "-lgdi32", "-lwinmm"], check=True, env=env)
+        subprocess.run(["i686-w64-mingw32-gcc", "-shared", "-O2", "-static-libgcc", "-o", dll] + dll_src +
+                       ["-luser32", "-lgdi32", "-lwinmm"], check=True)
         print("original: built patch.dll")
     launcher_src = [os.path.join(pdir, "grimlaunch.cpp")]
     launcher = os.path.join(tools, "grimlaunch.exe")
     if not newer(launcher, launcher_src):
-        env = dict(os.environ, PATH=UCRT64 + os.pathsep + os.environ.get("PATH", ""))
-        subprocess.run([os.path.join(UCRT64, "g++.exe"), "-O2", "-static", "-o", launcher] + launcher_src, check=True, env=env)
+        subprocess.run(["g++", "-O2", "-static", "-o", launcher] + launcher_src, check=True)
         print("original: built grimlaunch.exe")
     for src in (dll, launcher):
         dst = os.path.join(d, os.path.basename(src))
