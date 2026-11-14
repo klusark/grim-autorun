@@ -44,6 +44,8 @@ jobs:
         with:
           msystem: UCRT64
           update: true
+          # (release: false: the runner's own MSYS2 in C:\msys64, where run.py looks for the gcc that builds offscreen.exe)
+          release: false
           # (as grim-decomp's build.yml: UCRT64 gcc compiles the i386 objects (-m32), the i686 toolchain links them)
           install: >-
             make
@@ -73,12 +75,14 @@ jobs:
         with:
           python-version: "3.12"
 
-      # (CR_VISIBLE: the window on the runner's desktop, no offscreen.exe to build; the runner is slower than a desk machine)
+      # (no CR_VISIBLE: the game runs on offscreen.exe's desktop of its own, as on a desk machine. On the runner's desktop it
+      # lost and got back the focus now and then, and WM_ACTIVATEAPP calls sputRender_ForceRefresh: the whole screen drawn
+      # again, which wiped what the tests that read the back buffer's leftovers expect (gco_text_keys, rnd_objstate) and
+      # failed them at random. The runner is slower than a desk machine: CR_STALL, CR_STARTUP)
       - name: Clean-room tests
         shell: pwsh
         env:
           GRIM_DECOMP: ${{ github.workspace }}\decomp
-          CR_VISIBLE: "1"
           CR_STALL: "30"
           CR_STARTUP: "180"
         run: |
