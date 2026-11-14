@@ -5,6 +5,8 @@ The reference is normally the original's run (expected/original.log). Per test i
   close     the values that differ are numbers within --close (default 1e-3) of the reference: counted apart, not a failure
   DIFF      a value differs, a key is missing or extra, or the test ended differently (END / FAILED)
   MISSING   the test is not in the other log
+  EXTRA     the test is not in the reference: a failure too (a new test needs the original's values first:
+            run.py original --save), with --only and --known as well
 A Lua error message (ERROR lines) is engine-specific text, so only the fact that a test raised one is compared.
 (a test that is the same with no value to compare is not listed, only counted)
 --only: the other log is a partial run (run.py --only): the tests it does not have are left out, not MISSING.
@@ -14,7 +16,8 @@ Keys a test marks with cr_unstable (U lines) in either log are not compared eith
   known     it differs, as the mark says: not a failure
   FIXED     it is the same now: the mark should go (not a failure either)
   and a test that differs without the mark is a regression.
-Exit status 1 when anything differs (with --known: a test that differs without the mark, or is missing)."""
+Exit status 1 when anything differs (with --known: a test that differs without the mark, or is missing), and when the
+other log has a test the reference does not (EXTRA)."""
 import os
 import re
 import sys
@@ -201,11 +204,13 @@ def main(argv):
     n_known = []
     n_absent = 0
     fixed = []
+    extra = []
     print("reference %s\nother     %s" % tuple(files))
     for name in order_a + [n for n in order_b if n not in ta]:
         a, b = ta.get(name), tb.get(name)
         if a is None:
             print("%-26s EXTRA (not in the reference)" % name)
+            extra.append(name)
             continue
         if partial and (b is None or b["status"] == "skipped"):
             n_absent += 1
@@ -251,7 +256,10 @@ def main(argv):
             print("fixed, take the mark out: %s" % ", ".join(fixed))
     else:
         print("%d of %d tests differ, %d are close (within %g), %d the same" % (bad, total, near, close, same))
-    return 1 if bad else 0
+    if extra:
+        print("%d tests are not in the reference (EXTRA: run.py original --save records them): %s" %
+              (len(extra), ", ".join(extra)))
+    return 1 if bad or extra else 0
 
 
 if __name__ == "__main__":
