@@ -524,14 +524,16 @@ def model3do(name, meshes, nodes, header=None):
 
 
 def model3do_text(name, meshes, nodes, radius=None, insert=(0.0, 0.0, 0.0), materials=(), faces=None, lighting=3,
-                  vertex_light=1.0):
+                  vertex_light=1.0, shadow=0):
     """The same model as model3do, in the text .3do format (the one the original's rdModel3_LoadEntryText parses when a file
     does not start with LDOM). It has no bounding box or centre, only a radius (by default the one the original works out:
     it replaces the one of the file in rdModel3_LoadPostProcess, as it does a binary header's).
     materials: the .mat names; faces: {mesh index: [(material index, [vertex indices])]}, each face with the texture
     vertices of the corners of the texture; lighting: the lighting mode of every mesh and face (0: none, the colours of
     the texture as they are; 3: lit); vertex_light: the light level of every vertex (the 5th number of a vertex line: what
-    the original's rdLight_CalcVertexIntensities starts each vertex from, zz_lit.lua)."""
+    the original's rdLight_CalcVertexIntensities starts each vertex from, zz_lit.lua); shadow: the "shadow" value of every
+    mesh (not 0: the mesh casts a shadow, the 16 corners of its box projected onto the shadow plane, sputCostume_DrawMeshShadow
+    0x494940, drawn with shadow.mat through shadow.cmp; shadow_mesh.lua)."""
     g = lambda v: "%.6f" % v
     faces = faces or {}
     out = ["section: header", "3do 2.1", "section: modelresource", "materials %d" % len(materials)]
@@ -543,7 +545,7 @@ def model3do_text(name, meshes, nodes, radius=None, insert=(0.0, 0.0, 0.0), mate
     for i, (mname, verts) in enumerate(meshes):
         mr = max([sum(c * c for c in v) ** 0.5 for v in verts] or [0.0])
         mf = faces.get(i, [])
-        out += ["mesh %d" % i, "name " + mname, "radius " + g(mr), "shadow 0", "geometrymode 4",
+        out += ["mesh %d" % i, "name " + mname, "radius " + g(mr), "shadow %d" % shadow, "geometrymode 4",
                 "lightingmode %d" % lighting, "texturemode 0", "vertices %d" % len(verts)]
         out += ["%d: %s %s" % (k, " ".join(g(c) for c in v), "1.0" if vertex_light == 1.0 else g(vertex_light))
                 for k, v in enumerate(verts)]
@@ -727,7 +729,8 @@ def snm(width, height, colours, frame_us=66667, rate=22050, fill=None):
     samples = rate * frame_us // 1000000
     wave = struct.pack(">i", samples) + bytes(3 + samples)
     frames = []
-    # (a frame is a colour, raw, or (mode, colour): Blocky16 mode 6 indexes the 256-colour table at +40 of the header with
+    # (a frame is a colour, raw, or (mode, colour): Blocky16 mode 1 (7) is every second row of half the pixels, 16-bit
+    # (indexes of the table at +40), the rest averaged; mode 6 indexes the 256-colour table at +40 of the header with
     # a byte a pixel; 8 the same with the bytes BOMP coded (bomp); 5 the 16-bit pixels BOMP coded, their size at +36; 3 and 4
     # copy a delta buffer, which keeps the colour at +32 of frame 0 when no frame swaps the buffers)
     # Mode 2 (blocky2): (2, (data, swap, params, table)): the block codes, the buffer swap at +19 (1: the frame becomes delta
@@ -757,7 +760,7 @@ def snm(width, height, colours, frame_us=66667, rate=22050, fill=None):
         head[18] = mode
         head[19] = 0                                  # (no buffer swap)
         struct.pack_into("<H", head, 32, fill)        # (the colour the delta buffers start with)
-        pixels = struct.pack("<H", c) * (width * height)
+        pixels = struct.pack("<H", c) * (width * height) if isinstance(c, int) else b""
         if mode == 0:
             data = pixels
         elif mode in (6, 8):
@@ -768,6 +771,17 @@ def snm(width, height, colours, frame_us=66667, rate=22050, fill=None):
             data = bomp(pixels)
         elif mode in (3, 4):
             data = b""
+        elif mode in (1, 7):
+            # (half rows, Blocky16_DecodeHalfRows16 0x4cd300 / ...8 0x4cd450: (height + 1) / 2 rows of 1 + (width - 1) / 2
+            # values, each widened to two pixels (the second the average of its neighbours), the rows between averaged; 7
+            # takes bytes through the table at +40. c: a colour, or two that alternate from value to value)
+            a, b = (c, c) if isinstance(c, int) else c
+            n = ((height + 1) // 2) * (1 + (width - 1) // 2)
+            if mode == 1:
+                data = b"".join(struct.pack("<H", b if k & 1 else a) for k in range(n))
+            else:
+                struct.pack_into("<HH", head, 40, a, b)
+                data = bytes(k & 1 for k in range(n))
         else:
             raise ValueError("mode %d" % mode)
         frames.append(chunk(b"FRME", chunk(b"Bl16", bytes(head) + data) + chunk(b"Wave", wave)))
