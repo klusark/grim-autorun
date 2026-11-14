@@ -13,9 +13,9 @@ import struct
 import subprocess
 import sys
 
+import msys2
+
 CRASHDUMPS = os.path.join(os.environ.get("LOCALAPPDATA", ""), "CrashDumps")
-NM = r"C:\msys64\ucrt64\bin\nm.exe"
-CPPFILT = r"C:\msys64\ucrt64\bin\c++filt.exe"
 EXIT_MARK = 0xE0455849   # patch.dll's made-up exception code for "the process is ending itself"
 CODES = {0xC0000005: "access violation", 0xC00000FD: "stack overflow", 0xC0000094: "integer divide by zero",
          0xC000001D: "illegal instruction", 0xC0000374: "heap corruption", 0xC0000409: "stack buffer overrun (fast fail)",
@@ -133,8 +133,8 @@ class Symbols:
         if not exe or not os.path.exists(exe):
             return
         try:
-            out = subprocess.run([NM, "-n", "--defined-only", exe], capture_output=True, text=True, timeout=120).stdout
-        except (OSError, subprocess.TimeoutExpired):
+            out = subprocess.run([msys2.tool("ucrt64", "nm"), "-n", "--defined-only", exe], capture_output=True, text=True, timeout=120).stdout
+        except (OSError, RuntimeError, subprocess.TimeoutExpired):
             return
         for line in out.splitlines():
             p = line.split(None, 2)
@@ -143,11 +143,11 @@ class Symbols:
                 self.names.append(p[2])
         self.image_base = 0
         try:
-            hdr = subprocess.run([r"C:\msys64\ucrt64\bin\objdump.exe", "-p", exe], capture_output=True, text=True, timeout=60).stdout
+            hdr = subprocess.run([msys2.tool("ucrt64", "objdump"), "-p", exe], capture_output=True, text=True, timeout=60).stdout
             for line in hdr.splitlines():
                 if line.startswith("ImageBase"):
                     self.image_base = int(line.split()[1], 16)
-        except (OSError, subprocess.TimeoutExpired):
+        except (OSError, RuntimeError, subprocess.TimeoutExpired):
             pass
 
     def lookup(self, rva):
@@ -159,8 +159,8 @@ class Symbols:
             return None
         name = self.names[i]
         try:
-            name = subprocess.run([CPPFILT], input=name, capture_output=True, text=True, timeout=30).stdout.strip() or name
-        except (OSError, subprocess.TimeoutExpired):
+            name = subprocess.run([msys2.tool("ucrt64", "c++filt")], input=name, capture_output=True, text=True, timeout=30).stdout.strip() or name
+        except (OSError, RuntimeError, subprocess.TimeoutExpired):
             pass
         off = self.image_base + rva - self.addrs[i]
         return None if off > 0x8000 else "%s+0x%x" % (name, off)   # (further from its symbol than any function is long: data)

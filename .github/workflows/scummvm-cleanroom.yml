@@ -63,8 +63,9 @@ jobs:
           ref: ${{ env.SCUMMVM_REF }}
           path: scummvm
 
-      # (the runner's own MSYS2 at C:\msys64, the path run.py and its tools use)
+      # (the runner's own MSYS2 (release: false), its packages not updated: quicker than a fresh one)
       - name: MSYS2 packages
+        id: msys2
         uses: msys2/setup-msys2@v2
         with:
           msystem: UCRT64
@@ -74,6 +75,11 @@ jobs:
           pacboy: >-
             toolchain:p ccache:p SDL2:p zlib:p libpng:p libjpeg-turbo:p freetype:p
             libvorbis:p flac:p libmad:p faad2:p a52dec:p libmpeg2:p libtheora:p fribidi:p mesa:p
+
+      # (run.py and its tools find MSYS2 by CR_MSYS2 (cleanroom/tools/msys2.py): where this step put it, for the steps after)
+      - name: MSYS2 location
+        shell: pwsh
+        run: Add-Content $env:GITHUB_ENV "CR_MSYS2=${{ steps.msys2.outputs.msys2-location }}"
 
       - name: ccache
         uses: actions/cache@v4
@@ -101,7 +107,7 @@ jobs:
       # searches before System32; the rest, libgallium_wgl.dll and LLVM, load from ucrt64\bin, which run.py puts on PATH)
       - name: Mesa llvmpipe
         shell: pwsh
-        run: Copy-Item C:\msys64\ucrt64\bin\opengl32.dll scummvm\build\
+        run: Copy-Item "$env:CR_MSYS2\ucrt64\bin\opengl32.dll" scummvm\build\
 
       - uses: actions/setup-python@v5
         with:
