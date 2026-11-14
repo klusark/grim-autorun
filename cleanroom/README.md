@@ -8,7 +8,8 @@ original's, value by value.
 Run it with the MSYS2 venv (`~/venv/bin/python.exe`, UCRT Python 3.14). Beyond the standard library it needs numpy, which
 `snaps.py` reads the screenshots with: PyPI has none for MSYS2's Python, so install MSYS2's (`pacman -S
 mingw-w64-ucrt-x86_64-python-numpy`) and make the venv with `--system-site-packages` (or set `include-system-site-packages =
-true` in its `pyvenv.cfg`). Elsewhere `pip install numpy`, as the workflows do.
+true` in its `pyvenv.cfg`). The workflows run it with the same: MSYS2's `python` and `python-numpy`. Elsewhere `pip install
+numpy`.
 
 ```sh
 python run.py original --save    # run the original 3 times (--repeat N), keep it as expected/original.log
