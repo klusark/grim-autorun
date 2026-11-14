@@ -552,7 +552,12 @@ class ScummvmEngine(Engine):
                     # (no first-run question about update checks: it would wait for a click)
                     "updates_check=0\n"
                     # (no waiting for the screen's refresh at each picture drawn: with it a run takes 5 times as long)
-                    "vsync=false\n\n"
+                    "vsync=false\n"
+                    # (no anti-aliasing: with it 0 the backend does not probe the levels, a window and an OpenGL context for
+                    # each of 2 to 32 samples at every start, grim-test-data.patch)
+                    "antialiasing=0\n"
+                    # (no joystick: with -1 the backend does not start SDL's joystick subsystem and look for one at every start)
+                    "joystick_num=-1\n\n"
                     "[cleanroom]\ngameid=%s\nengineid=grim\ndescription=%s engine test data, renderer %s\nextra=Test data\n"
                     "path=%s%s\nlanguage=en\nplatform=windows\ncheck_gamedata=false\nfullscreen=false\n"
                     "speech_mute=true\nsim_frame_ms=17\nrenderer=%s\n%s" % ("monkey4" if GAME == "emi" else "grim",
