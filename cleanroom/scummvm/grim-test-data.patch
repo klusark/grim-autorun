@@ -109,6 +109,27 @@ index d6ff2de96c0..9668921bac5 100644
  	/**
  	 * Set the internal 'is ready' flag of the mixer.
  	 * Backends should invoke Mixer::setReady(true) once initialisation of
+diff --git a/backends/platform/sdl/sdl.cpp b/backends/platform/sdl/sdl.cpp
+index f2c4e5149d1..430eedbf9e8 100644
+--- a/backends/platform/sdl/sdl.cpp
++++ b/backends/platform/sdl/sdl.cpp
+@@ -303,8 +303,14 @@ void OSystem_SDL::initBackend() {
+ #if defined(USE_OPENGL_GAME) || defined(USE_OPENGL_SHADERS)
+ 	debug(2, "SDL Video Detecting OpenGL Features...");
+ 	detectOpenGLFeaturesSupport();
+-	debug(2, "SDL Video Detecting Anti-aliasing Support...");
+-	detectAntiAliasingSupport();
++	// (antialiasing=0 in the configuration: no anti-aliasing is wanted, so the levels are not probed; the probe makes a window
++	// and an OpenGL context for each level, which is most of what starting the backend costs)
++	if (ConfMan.hasKey("antialiasing") && ConfMan.getInt("antialiasing") == 0) {
++		debug(2, "SDL Video Anti-aliasing disabled by the configuration, not probed");
++	} else {
++		debug(2, "SDL Video Detecting Anti-aliasing Support...");
++		detectAntiAliasingSupport();
++	}
+ 	debug(2, "SDL Video OpenGL Feature Detection Complete");
+ #endif
+ 
 diff --git a/engines/grim/actor.cpp b/engines/grim/actor.cpp
 index 7656e2541f9..bf5c3640b76 100644
 --- a/engines/grim/actor.cpp
