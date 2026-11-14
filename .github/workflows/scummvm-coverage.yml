@@ -109,6 +109,9 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+      # (the clean room's snaps.py reads the screenshots with numpy)
+      - name: numpy
+        run: python -m pip install numpy
 
       # (the results do not matter here, only what ran: a failing game does not stop the other or the report)
       # (every game and renderer at once, tools/parallel.sh: the processes add their counters to the same .gcda files when

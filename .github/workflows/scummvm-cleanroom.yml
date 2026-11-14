@@ -116,6 +116,9 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+      # (the clean room's snaps.py reads the screenshots with numpy)
+      - name: numpy
+        run: python -m pip install numpy
 
       # (each game's renderers at once: tools/parallel.sh, a run.py --work of its own for each, under
       # $RUNNER_TEMP/parallel_grim/ and parallel_emi/: the checkout's path would make the game folders too long; grim.txt and emi.txt are their outputs one after the other)
