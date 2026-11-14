@@ -15,6 +15,7 @@ args_DimRegion_none
 args_DimRegion_num
 args_DimRegion_str
 args_DimRegion_tab
+args_GetCameraLookVector_num
 args_GetCurrentSetup_num
 args_GetCurrentSetup_str
 args_GetSoundVolume_fn
@@ -172,11 +173,13 @@ args_ToggleDrawSectors_none
 args_ToggleDrawSectors_num
 args_ToggleDrawSectors_str
 args_ToggleDrawSectors_tab
+args_TurnLightOn_num
 args_YawCamera_fn
 args_YawCamera_nil
 args_YawCamera_none
 args_YawCamera_str
 args_YawCamera_tab
+args_tostring_none
 awk_e_fwd_cross
 ea_unloaded_in
 ea_unloaded_out
@@ -198,3 +201,5 @@ esn_setvolume
 esn_soundfrom
 eso_from
 eso_group_volumes
+rnd_e_alpha
+rnd_e_overworld
