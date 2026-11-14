@@ -267,4 +267,3 @@ end, function()
 end)
 
 -- (ScummVM differs: tools/mark_known.py)
-cr_scummvm_differs("asv_shadow")

@@ -1,5 +1,25 @@
 # tests that crash or hang ScummVM (opengl_shaders renderer; found by run.py); skipped, run.py --fresh tries them again
+amc_shadow_below
+asv_costume_stack
+asv_shadow
+atk_expire
+atk_movie
 gl1_movie_short_name
+gl1_prim_change_layer
 gl1_prim_offset
 gl1_prim_rect_end
+ims_save
+iris_none
+mf_cr_rot_wall_sphere
 movie_missing
+movie_mode6
+prim_rect_filled
+rnd_blast_edges
+save_data_empty
+save_image_blast_user
+save_image_dim
+save_walking
+smv_flood
+tp_medium_left_edge
+tp_spot_centre
+walk_rates

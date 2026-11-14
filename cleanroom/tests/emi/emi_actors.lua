@@ -209,11 +209,11 @@ cr_t_ea_unloaded_out = function()
 	UnloadActor(a)
 	cr_log("r", PutActorInSet(a, nil))
 end
-cr_scummvm_differs("ea_unloaded_out") cr_test("ea_unloaded_out", cr_t_ea_unloaded_out)
+cr_test("ea_unloaded_out", cr_t_ea_unloaded_out)
 
 cr_t_ea_unloaded_in = function()
 	local a = cr_ea_actor("cr_flat.set")
 	UnloadActor(a)
 	cr_log("r", PutActorInSet(a, "cr_flat.set"))
 end
-cr_scummvm_differs("ea_unloaded_in") cr_test("ea_unloaded_in", cr_t_ea_unloaded_in)
+cr_test("ea_unloaded_in", cr_t_ea_unloaded_in)

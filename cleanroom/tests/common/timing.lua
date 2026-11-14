@@ -24,7 +24,7 @@ cr_t_frame_time = function()
 	MakeCurrentSet("cr_flat.set")
 	cr_log("after_back", cr_dt_trace(4))
 end
-cr_scummvm_differs("frame_time", nil, "grim") cr_test("frame_time", cr_t_frame_time)
+cr_scummvm_differs("frame_time", nil, "emi") cr_test("frame_time", cr_t_frame_time)
 
 cr_t_sleep_for = function()
 	local f = 0

@@ -55,3 +55,6 @@ cr_cf_test("float_mover", "cr_float.cos", "cr_box.cos")
 cr_cf_test("float_wall_half", "cr_box.cos", "cr_float.cos", 0.5)
 cr_cf_test("ctrx_wall", "cr_box.cos", "cr_ctrx.cos")
 cr_cf_test("ctrx_mover", "cr_ctrx.cos", "cr_box.cos")
+
+-- (ScummVM differs: tools/mark_known.py)
+cr_scummvm_differs("floor_float_wall")

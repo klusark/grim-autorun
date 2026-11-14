@@ -1,4 +1,4 @@
-START 5327 tests
+START 5329 tests
 BEGIN boot_state
 V boot_state|movie_playing|nil
 V boot_state|fullscreen_movie_playing|nil
@@ -3623,6 +3623,15 @@ END text_objects
 BEGIN text_no_font
 V text_no_font|no_font|12.000000 6.000000
 END text_no_font
+BEGIN text_high_chars
+V text_high_chars|high|30.000000 12.000000
+V text_high_chars|high_only|24.000000 12.000000
+V text_high_chars|high_wrapped|30.000000 48.000000
+V text_high_chars|high_fe_break|24.000000 36.000000
+END text_high_chars
+BEGIN text_high_drawn
+V text_high_drawn|high_drawn|100.000000 97.000000 140.000000 106.000000
+END text_high_drawn
 BEGIN text_change
 V text_change|longer|36.000000 12.000000
 V text_change|moved|36.000000 12.000000
@@ -19192,4 +19201,4 @@ END zbuffer_post
 BEGIN zbuffer_bar
 V zbuffer_bar|bar_box|458.000000 207.000000 571.000000 267.000000 6601.000000
 END zbuffer_bar
-SUMMARY 5327 tests, 255 failed
+SUMMARY 5329 tests, 255 failed

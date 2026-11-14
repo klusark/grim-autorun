@@ -5,4 +5,5 @@ gl1_prim_offset
 gl1_prim_rect_end
 movie_missing
 movie_mode6
+movie_play
 smv_stereo

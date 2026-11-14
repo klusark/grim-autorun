@@ -183,3 +183,6 @@ end)
 -- (the shader and software renderers count 48 white pixels fewer in the BOMP frames than the original and OpenGL)
 cr_scummvm_differs("smv_bomp8", "the shader and software renderers count 48 white pixels fewer")
 cr_scummvm_differs("smv_bomp5", "the shader and software renderers count 48 white pixels fewer")
+
+-- (ScummVM differs: tools/mark_known.py)
+cr_scummvm_differs("smv_stereo")
