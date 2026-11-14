@@ -89,3 +89,6 @@ cr_emi_movie_test("missing", function()
 	cr_log("second", StartMovie("cr_steps"))
 	cr_log("ended", cr_emi_movie_wait(10))
 end)
+
+-- (ScummVM differs: tools/mark_known.py)
+cr_scummvm_differs("emi_movie_extension")

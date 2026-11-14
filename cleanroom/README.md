@@ -80,7 +80,11 @@ once keep the machine busy. `--coverage` is the coverage run (below). `tools/mar
   flag `GF_TESTDATA`: no `gfupd101.exe`, no `grim-patch.lab`, no md5 check, loose files and the folder's own LABs;
   `PrintDebug("CRSNAP:<file>")` saves a picture of the screen; an `error()` ends ScummVM at once, with its message in the
   log, instead of opening the debugger and waiting there; `sim_frame_ms` in the ini makes every frame that long, like the
-  original's simtime patch, and then only one frame in 8 is drawn, and those of a change of setup, mode or set).
+  original's simtime patch, and then only one frame in 8 is drawn, and those of a change of setup, mode or set;
+  `sim_render_every` (`CR_RENDER_EVERY=` in run.py) changes the 8, 0 draws only those that must be. A frame not drawn
+  still does the draw path's updates (movie time, spoken-line text placement, text objects), so the logs are the same.
+  In Grim the mixer, iMUSE, SMUSH and the movie decoders also run by that game time instead of the wall clock, through
+  small hooks in `audio/mixer` and `video/video_decoder`. Test data also skips the 0.6 s ScummVM logo).
   The patch applies to upstream `master` and needs nothing from another branch. `scummvm/build.sh` builds it in the
   worktree `~/scummvm-cleanroom` (`git worktree add --detach ../scummvm-cleanroom master` and `git apply` the patch
   first). `SCUMMVM=` selects another exe.
@@ -92,6 +96,7 @@ once keep the machine busy. `--coverage` is the coverage run (below). `tools/mar
   Direct3D except `GammaEnabled` (1 against nil: what the hardware can do), which is marked unstable. `CR_VISIBLE=1` shows
   them all. They are also muted there: `offscreen.exe` mutes the audio sessions of the job's processes as they open (the
   volume mixer's mute; the games' own volumes are unchanged) and unmutes them at the end; a visible run is not muted.
+  On Linux, ScummVM runs with `SDL_VIDEODRIVER=offscreen` (hidden windows, OpenGL through EGL), unless `CR_VISIBLE=1`.
 
 ## Escape from Monkey Island
 

@@ -267,4 +267,12 @@ end, function()
 end)
 
 -- (ScummVM differs: tools/mark_known.py)
-cr_scummvm_differs("asv_shadow")
+cr_scummvm_differs("asv_costume_stack_top")
+cr_scummvm_differs("asv_talk_lip")
+cr_scummvm_differs("asv_talk_mumble")
+
+-- (crashes or hangs ScummVM now and then: on the skip list)
+cr_scummvm_differs("asv_shadow_other_set", "crashes or hangs ScummVM now and then: on the skip list")
+
+-- (crashes or hangs ScummVM now and then: on the skip list)
+cr_scummvm_differs("asv_shadow", "crashes or hangs ScummVM now and then: on the skip list")

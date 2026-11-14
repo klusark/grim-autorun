@@ -183,3 +183,21 @@ end)
 -- (the shader and software renderers count 48 white pixels fewer in the BOMP frames than the original and OpenGL)
 cr_scummvm_differs("smv_bomp8", "the shader and software renderers count 48 white pixels fewer")
 cr_scummvm_differs("smv_bomp5", "the shader and software renderers count 48 white pixels fewer")
+
+-- (ScummVM differs: tools/mark_known.py)
+cr_scummvm_differs("smv_stereo_fullscreen")
+
+-- (crashes or hangs ScummVM now and then: on the skip list)
+cr_scummvm_differs("smv_stereo", "crashes or hangs ScummVM now and then: on the skip list")
+
+-- (crashes or hangs ScummVM now and then: on the skip list)
+cr_scummvm_differs("smv_short", "crashes or hangs ScummVM now and then: on the skip list")
+
+-- (crashes or hangs ScummVM now and then: on the skip list)
+cr_scummvm_differs("smv_flood", "crashes or hangs ScummVM now and then: on the skip list")
+
+-- (crashes or hangs ScummVM now and then: on the skip list)
+cr_scummvm_differs("smv_track", "crashes or hangs ScummVM now and then: on the skip list")
+
+-- (crashes or hangs ScummVM now and then: on the skip list)
+cr_scummvm_differs("smv_more", "crashes or hangs ScummVM now and then: on the skip list")

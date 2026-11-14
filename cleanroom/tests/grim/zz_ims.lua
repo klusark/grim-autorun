@@ -74,7 +74,7 @@ cr_t_ims_formats = function()
 	end
 	ims_reset()
 end
-cr_test("ims_formats", cr_t_ims_formats)
+cr_scummvm_differs("ims_formats", "crashes or hangs ScummVM now and then: on the skip list") cr_test("ims_formats", cr_t_ims_formats)
 
 IMS_LIVE = { { "ims_8m.wav", "ims_16s.wav", "ims_8s.wav", "ims_44k.wav", "ims_11k.wav", "ims_list.wav" },
 	{ "ims_loop.imu", "ims_mark.imu", "ims_le.imu", "ims_st.imu", "ims_8.imu", "ims_12.imu", "ims_once.imu" } }
@@ -122,7 +122,7 @@ cr_t_ims_formats_live = function()
 	ims_live_group(2)
 	cr_log("after", cr_im("ims_loop.imu"), cr_im("ims_16s.wav"))
 end
-cr_test("ims_formats_live", cr_t_ims_formats_live)
+cr_scummvm_differs("ims_formats_live", "crashes or hangs ScummVM now and then: on the skip list") cr_test("ims_formats_live", cr_t_ims_formats_live)
 
 -- iMUS files with broken maps: another tag than MAP, data that does not follow the map, a map whose blocks run past
 -- its end, a map too big, an unknown block, no STOP
@@ -369,7 +369,7 @@ cr_t_ims_component = function()
 	PutActorInSet(a, nil)
 	ims_reset()
 end
-cr_test("ims_component", cr_t_ims_component)
+cr_scummvm_differs("ims_component") cr_test("ims_component", cr_t_ims_component)
 
 -- (music for n seconds of the clock, the set changed and back while it plays)
 ims_music_wait = function(n)

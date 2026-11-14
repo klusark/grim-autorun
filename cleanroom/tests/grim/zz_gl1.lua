@@ -273,7 +273,7 @@ gl1_nocos_test("look_at", function(a)
 end)
 
 -- SetActorTalkChore with a costume the actor does not wear
-cr_test("gl1_talk_chore_other_costume", function()
+cr_scummvm_differs("gl1_talk_chore_other_costume") cr_test("gl1_talk_chore_other_costume", function()
 	local a = cr_actor("cr_flat.set")
 	SetActorCostume(a, "cr_talk.cos")
 	cr_log("r", SetActorTalkChore(a, 1, 2, "cr_luav.cos"))
@@ -419,3 +419,9 @@ cr_scummvm_differs("gl1_text_y_above", "a text above the screen is drawn at y 0 
 cr_scummvm_differs("gl1_text_font13", "a font 13 high is drawn 6 pixels up (textobject.cpp:368); the original 3")
 cr_scummvm_differs("gl1_text_layer", "text 3 pixels lower than on the original")
 cr_scummvm_differs("gl1_say_function_after", "SayLine with a function after the message says it; the original says nothing (lua_v1_text.cpp:299)")
+
+-- (ScummVM differs: tools/mark_known.py)
+cr_scummvm_differs("gl1_prim_change_layer")
+
+-- (crashes or hangs ScummVM now and then: on the skip list)
+cr_scummvm_differs("gl1_prim_killed_twice", "crashes or hangs ScummVM now and then: on the skip list")

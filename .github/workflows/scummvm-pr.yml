@@ -2,11 +2,11 @@
 # Started by hand (Actions > ScummVM PR clean-room tests > Run workflow, or `gh workflow run scummvm-pr.yml -f pr=1234`).
 #
 # The PR is tested as GitHub merges it into master (refs/pull/<n>/merge; the PR's head on its merge base when it does
-# not merge), with the branch cleanroom of klusark/scummvm merged in: the test patch and the fixes the clean room's marks
-# expect (upstream alone differs from the original's logs or crashes in tests without a mark). A PR that conflicts with
-# that branch fails at the build. The job "compare" (.github/scripts/cleanroom_pr_compare.py) then fails on a test that
+# not merge), with cleanroom/scummvm/grim-test-data.patch of tests_ref applied (nothing else: the expected crasher lists
+# are made on upstream master with only the patch). A PR the patch does not apply to fails at the build. A branch to merge
+# in instead of the patch (as klusark/scummvm cleanroom, the fixes in progress) can be given by hand. The job "compare" (.github/scripts/cleanroom_pr_compare.py) then fails on a test that
 # differs from the original without a cr_scummvm_differs mark, or crashes ScummVM without one, as run.py does.
-# With compare_base, the PR's base (master, with the same branch merged in) is built and run the same way too, and the
+# With compare_base, the PR's base (master, with the test patch or the same branch) is built and run the same way too, and the
 # PR is judged against it instead: only what the PR breaks fails; what it fixes and every value it changes are listed.
 name: ScummVM PR clean-room tests
 
@@ -20,11 +20,11 @@ on:
         description: Branch of this repository whose clean room runs
         default: knowngood
       merge_repo:
-        description: ScummVM repository whose branch is merged into the PR (the test patch and the clean room's fixes)
+        description: ScummVM repository whose branch is merged into the PR instead of the test patch (with merge_branch)
         default: klusark/scummvm
       merge_branch:
-        description: "The branch of it (empty: none, cleanroom/scummvm/grim-test-data.patch is applied instead)"
-        default: cleanroom
+        description: "The branch of it (empty: none, cleanroom/scummvm/grim-test-data.patch is applied)"
+        default: ""
       renderers:
         description: Renderers, for Grim and EMI (comma separated)
         default: opengl,opengl_shaders,software
@@ -179,8 +179,8 @@ jobs:
           CR_STARTUP: "180"
         run: |
           export SCUMMVM="$GITHUB_WORKSPACE\\scummvm\\build\\scummvm.exe"
-          CR_PARALLEL_DIR=run/parallel_grim bash grim_tools/cleanroom/tools/parallel.sh --games grim --renderers "$CR_RENDERERS" || true
-          cat grim_tools/cleanroom/run/parallel_grim/grim_*.txt > grim.txt
+          CR_PARALLEL_DIR="$(cygpath -u "$RUNNER_TEMP")/parallel_grim" bash grim_tools/cleanroom/tools/parallel.sh --games grim --renderers "$CR_RENDERERS" || true
+          cat "$(cygpath -u "$RUNNER_TEMP")"/parallel_grim/grim_*.txt > grim.txt
 
       - name: EMI
         continue-on-error: true
@@ -193,8 +193,8 @@ jobs:
           CR_STARTUP: "180"
         run: |
           export SCUMMVM="$GITHUB_WORKSPACE\\scummvm\\build\\scummvm.exe"
-          CR_PARALLEL_DIR=run/parallel_emi bash grim_tools/cleanroom/tools/parallel.sh --games emi --renderers "$CR_RENDERERS" || true
-          cat grim_tools/cleanroom/run/parallel_emi/emi_*.txt > emi.txt
+          CR_PARALLEL_DIR="$(cygpath -u "$RUNNER_TEMP")/parallel_emi" bash grim_tools/cleanroom/tools/parallel.sh --games emi --renderers "$CR_RENDERERS" || true
+          cat "$(cygpath -u "$RUNNER_TEMP")"/parallel_emi/emi_*.txt > emi.txt
 
       - name: Logs
         if: always()
@@ -202,8 +202,8 @@ jobs:
         with:
           name: logs-${{ matrix.side }}
           path: |
-            grim_tools/cleanroom/run/parallel_*/*.txt
-            grim_tools/cleanroom/run/parallel_*/*/logs/
+            ${{ runner.temp }}/parallel_*/*.txt
+            ${{ runner.temp }}/parallel_*/*/logs/
           if-no-files-found: ignore
 
   compare:

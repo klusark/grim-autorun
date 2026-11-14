@@ -26,3 +26,7 @@ cr_mode_test(4)
 -- at an offset of its own or of the motion table), colours, smaller blocks, blocks cut by the interpolation table's edges:
 -- the box of the white pixels and how many there are
 cr_mode_test(2, "count")
+
+-- (ScummVM differs: tools/mark_known.py)
+cr_scummvm_differs("movie_mode6")
+cr_scummvm_differs("movie_mode8")

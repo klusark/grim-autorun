@@ -234,8 +234,13 @@ def main():
                     "\tlocal r1, r2, r3, r4 = %s(%s)" % (name, args),
                     # (the marks go on lines that are there anyway: a mark does not move the lines after it)
                     "\t" + ('cr_unstable("r") ' if name in UNSTABLE and (UNSTABLE[name] is None or key in UNSTABLE[name])
-                            else "") + 'cr_log("r", r1, r2, r3, r4)',
-                    "end",
+                            else "") + 'cr_log("r", r1, r2, r3, r4)']
+            if name == "NewObjectState":
+                # (the state goes again: one without a bitmap that loads stays in the set otherwise, and ScummVM crashes on
+                # it in the next NewObjectState (Set::findState reads its bitmap's name), so run.py blamed each call after
+                # it in turn. The original returns a state for every call)
+                out.append('\tif type(r1) == "userdata" then FreeObjectState(r1) end')
+            out += ["end",
                     ('cr_scummvm_differs("args_%s_%s") ' % (name, key) if "args_%s_%s" % (name, key) in differs else "")
                     + 'cr_test("args_%s_%s", %s)' % (name, key, fn)]
     if EMI:

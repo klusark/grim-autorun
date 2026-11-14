@@ -122,8 +122,8 @@ jobs:
         run: |
           export SCUMMVM="$GITHUB_WORKSPACE\\scummvm\\build\\scummvm.exe"
           rc=0
-          CR_PARALLEL_DIR=run/parallel_cov bash grim_tools/cleanroom/tools/parallel.sh --games grim,emi,remastered --renderers "$CR_RENDERERS" || true
-          for g in grim emi remastered; do cat grim_tools/cleanroom/run/parallel_cov/${g}_*.txt > $g.txt; done
+          CR_PARALLEL_DIR="$(cygpath -u "$RUNNER_TEMP")/parallel_cov" bash grim_tools/cleanroom/tools/parallel.sh --games grim,emi,remastered --renderers "$CR_RENDERERS" || true
+          for g in grim emi remastered; do cat "$(cygpath -u "$RUNNER_TEMP")"/parallel_cov/${g}_*.txt > $g.txt; done
           exit 0
 
       - name: Report

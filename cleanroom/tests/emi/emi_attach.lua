@@ -19,7 +19,7 @@ cr_eat_pair = function()
 	return c, r
 end
 
-cr_test("eat_joint", function()
+cr_scummvm_differs("eat_joint") cr_test("eat_joint", function()
 	local c, r = cr_eat_pair()
 	AttachActor(r, c, "body")
 	cr_frames(2)

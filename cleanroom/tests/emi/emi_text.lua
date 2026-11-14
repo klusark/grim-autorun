@@ -24,7 +24,7 @@ cr_et_dims = function(key, text, opts)
 	cr_log(key, w, h)
 	KillTextObject(t)
 end
-cr_test("et_text_blank", function()
+cr_scummvm_differs("et_text_blank") cr_test("et_text_blank", function()
 	cr_et_dims("word", "x", { font = "cr_font.laf", x = 0, y = 0 })
 	cr_et_dims("space", " ", { font = "cr_font.laf", x = 0, y = 0 })
 	cr_et_dims("spaces", "   ", { font = "cr_font.laf", x = 0, y = 0 })
