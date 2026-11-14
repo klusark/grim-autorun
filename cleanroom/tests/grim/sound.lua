@@ -204,3 +204,6 @@ cr_t_sound_save = function()
 	end
 end
 cr_test("sound_save", cr_t_sound_save)
+
+-- (a memory error in ScummVM under valgrind: on the skip list)
+cr_scummvm_differs("sound_save", "a memory error in ScummVM under valgrind (uninitialised value or invalid access): on the skip list")

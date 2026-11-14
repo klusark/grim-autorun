@@ -211,3 +211,6 @@ cr_scummvm_differs("iris_down")
 cr_scummvm_differs("iris_long")
 cr_scummvm_differs("iris_reverse")
 cr_scummvm_differs("iris_up")
+
+-- (a memory error in ScummVM under valgrind: on the skip list)
+cr_scummvm_differs("iris_set_change", "a memory error in ScummVM under valgrind (uninitialised value or invalid access): on the skip list")
