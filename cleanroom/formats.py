@@ -421,7 +421,11 @@ COSTUME_TAGS = {"LUAV": ("luav", "int", "Lua Variable"), "MMDL": ("MMDL", "fs", 
                 "MODL": ("MODL", "fs", "RDroid Thing (.3DO)"), "KEYF": ("KEYF", "fs", "RDroid Keyframe (.KEY)"),
                 "CMAP": ("cmap", "fs", "RDroid Colormap"), "MESH": ("MESH", "fs", "RDroid Thing Mesh"),
                 "IMLS": ("imls", "fs", "iMuse Resident Sound FX"), "MAT ": ("MAT ", "fs", "RDroid Animated Material"),
-                "BKND": ("BKND", "fs", "General Bitmap"), "SPRT": ("sprt", "fs", "Sprite")}
+                "BKND": ("BKND", "fs", "General Bitmap"), "SPRT": ("sprt", "fs", "Sprite"),
+                # (costume_comp.lua; the tag as the game's costumes have it: the int sputCostume_Startup registers, its bytes
+                # in memory order)
+                "HSMS": ("HSMS", "fs", "Smush Movie"), "IMSS": ("imss", "fs", "iMuse Streamed Sound FX"),
+                "IMSE": ("imse", "int", "iMuse Sequence"), "IMST": ("imst", "int", "iMuse State")}
 
 
 def costume(components, chores):
