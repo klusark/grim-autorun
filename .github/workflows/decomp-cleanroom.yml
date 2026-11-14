@@ -45,6 +45,7 @@ jobs:
           path: grim-decomp
 
       - uses: msys2/setup-msys2@v2
+        id: msys2
         with:
           msystem: UCRT64
           update: true
@@ -56,6 +57,11 @@ jobs:
             mingw-w64-ucrt-x86_64-python
             mingw-w64-i686-gcc
             mingw-w64-i686-zlib
+
+      # (MSYS2's ucrt64\bin on PATH for the steps after: run.py's gcc and g++, crashstack.py's binutils, the DLLs of the build)
+      - name: MSYS2 on PATH
+        shell: pwsh
+        run: Add-Content $env:GITHUB_PATH "${{ steps.msys2.outputs.msys2-location }}\ucrt64\bin"
 
       - name: Build the decomp
         shell: msys2 {0}
@@ -77,12 +83,14 @@ jobs:
         with:
           python-version: "3.12"
 
-      # (CR_VISIBLE: the window on the runner's desktop, no offscreen.exe to build; the runner is slower than a desk machine)
+      # (no CR_VISIBLE: the game runs on offscreen.exe's desktop of its own, as on a desk machine. On the runner's desktop it
+      # lost and got back the focus now and then, and WM_ACTIVATEAPP calls sputRender_ForceRefresh: the whole screen drawn
+      # again, which wiped what the tests that read the back buffer's leftovers expect (gco_text_keys, rnd_objstate) and
+      # failed them at random. The runner is slower than a desk machine: CR_STALL, CR_STARTUP)
       - name: Clean-room tests
         shell: pwsh
         env:
           GRIM_DECOMP: ${{ github.workspace }}\decomp
-          CR_VISIBLE: "1"
           CR_STALL: "30"
           CR_STARTUP: "180"
         run: |
