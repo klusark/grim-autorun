@@ -340,6 +340,14 @@ def files():
     out["cr_head.cos"] = F.costume([("MMDL", -1, "cr_head.3do"), ("LUAV", -1, "CR_LV"), ("CMAP", 0, "cr_pal.cmp")],
                                    BOX_COSTUME[1])
     out["cr_dbox.cos"] = F.costume(DRAW_COMPONENTS, BOX_COSTUME[1])
+    # (shadow_mesh.lua) the white draw box with a mesh that casts a shadow, and the files the shadow is drawn with (the game
+    # loads shadow.mat and shadow.cmp by these names when the first shadow is drawn): index 20 of shadow.cmp is grey 12,
+    # darker than every background (snaps.DARK)
+    out["cr_sbox.3do"] = F.model3do_text("cr_sbox.3do", [("body", DRAW_BOX)], BOX_MODEL[2], materials=["cr_white.mat"],
+                                         faces={0: [(0, f) for f in DRAW_FACES]}, lighting=0, shadow=1)
+    out["cr_sbox.cos"] = F.costume([("MMDL", -1, "cr_sbox.3do")] + DRAW_COMPONENTS[1:], BOX_COSTUME[1])
+    out["shadow.mat"] = F.material(8, 8, 20)
+    out["shadow.cmp"] = F.colormap([(i * 3 // 5, i * 3 // 5, i * 3 // 5) for i in range(256)])
     # (draw_cmap.lua, bug #11818: the colormap of a costume stack sharing one model) the white box through cr_pal.cmp, through
     # cr_dim.cmp (index 255 is grey 85: not bright, not dark) and with no colormap of its own
     out["cr_dim.cmp"] = F.colormap([(i // 3, i // 3, i // 3) for i in range(256)])
@@ -366,8 +374,13 @@ def files():
     # earlier movie, which a smaller one would not cover), 2 grey frames, raw, then 45 white ones (3 s) in mode 6, 8, 5, 3 or
     # 4 (3 and 4 copy the delta buffers, which start white)
     grey, white = F.rgb565(60, 60, 60), F.rgb565(255, 255, 255)
-    for m in (6, 8, 5, 3, 4):
+    for m in (6, 8, 5, 3, 4, 1, 7):
         out["cr_mode%d.snm" % m] = F.snm(640, 480, [grey, grey] + [(m, white)] * 45, fill=white)
+    # (modes 1 and 7, half rows: white and black from stored value to value, so that the pixels between are their average;
+    # movie_modes.lua takes the mean of what is not dark)
+    black = F.rgb565(0, 0, 0)
+    for m in (1, 7):
+        out["cr_mode%ds.snm" % m] = F.snm(640, 480, [grey, grey] + [(m, (white, black))] * 45, fill=white)
     out["cr_mode2.snm"] = F.snm(640, 480, [grey, grey] + _mode2_frames(F, grey, white), fill=grey)
     # music (formats.imus): the files iMUSE's state and sequence tables name for ImSetState / ImSetSequence (the name and
     # ".IMC"). Two states that loop; the file of states 1002-1007 with a hook 8 jump in the middle; a sequence that plays once
