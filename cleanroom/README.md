@@ -97,6 +97,9 @@ once keep the machine busy. `--coverage` is the coverage run (below). `tools/mar
   them all. They are also muted there: `offscreen.exe` mutes the audio sessions of the job's processes as they open (the
   volume mixer's mute; the games' own volumes are unchanged) and unmutes them at the end; a visible run is not muted.
   On Linux, ScummVM runs with `SDL_VIDEODRIVER=offscreen` (hidden windows, OpenGL through EGL), unless `CR_VISIBLE=1`.
+- **Tools from PATH:** `run.py` builds `offscreen.exe` and `grimlaunch.exe` with the `gcc` and `g++` of PATH, and
+  `patch.dll` with `i686-w64-mingw32-gcc`; `crashstack.py` runs `nm`, `c++filt` and `objdump`. In a UCRT64 shell
+  `ucrt64\bin` is on PATH; `run.py original` also needs MSYS2's `mingw32\bin` there. ScummVM's DLLs are found the same way.
 
 **Valgrind (Linux).** `SCUMMVM=tools/valgrind_scummvm.sh CR_STALL=180 CR_STARTUP=600 python3 run.py scummvm` runs ScummVM
 (a `-g` build) under valgrind, which ends it at the first memory error: the test running then becomes a crasher, as if it
