@@ -365,7 +365,7 @@ def files():
     # darker than every background (snaps.DARK)
     # (render_modes.lua) the white draw box in each geometry, lighting and texture mode, opaque and translucent, with a
     # plain texture and with a masked one (texture flag 1; colour 0 in a checker: the masked rasterisers skip it), one
-    # model and costume each: RENDER_MODES
+    # model and costume each: RENDER_MODES; drawn through cr_rm_pal.cmp (a light table and a 16 bpp -> index table)
     out["cr_rm_pal.cmp"] = F.colormap([(i, i, i) for i in range(256)], light=lambda lvl, c: c * lvl // 255,
                                       rgb_index=_rgb565_grey)
     out["cr_rm_mask.mat"] = F.material(8, 8, tex_flags=1, pixels=lambda x, y: 255 if (x // 2 + y // 2) % 2 else 0)

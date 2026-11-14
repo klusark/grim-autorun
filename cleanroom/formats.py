@@ -224,9 +224,9 @@ def colormap(colors, light=None, rgb_index=None):
     colour) -> index, the 64 KB light-level table of rdColormap_LoadEntry 0x404420 (bit 1 of the second header word, the
     flags at +0x20 of the colormap: after the palette);
     rgb_index: a function (RGB565 value) -> index, the 64 KB table after it that v1.01 reads to +0x34c (the translucent
-    rasterisers' 16 bpp -> index lookup), then 64 KB it skips. Without them the flags are 0x1E and the file ends after the
-    palette (the tables are then null: the lit and translucent rasterisers read them from the set's colormap). The
-    flags are 4 (bit 4: the 16-bit light table built from the palette) or 5 with the tables."""
+    rasterisers' 16 bpp -> index lookup), then 64 KB it skips. Without them the file ends after the palette (the tables
+    are then null: the lit and translucent rasterisers read them from the set's colormap). The flags are 4 (the 16-bit
+    light table built from the palette) or 5 with the tables."""
     pal = bytearray(768)
     for i, (r, g, b) in enumerate(colors[:256]):
         pal[3 * i:3 * i + 3] = bytes((r, g, b))
