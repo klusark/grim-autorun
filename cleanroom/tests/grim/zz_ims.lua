@@ -531,7 +531,7 @@ cr_t_ims_save = function()
 		ims_reset()
 	end
 end
-cr_scummvm_differs("ims_save", "in the whole run ScummVM (OpenGL) ended with 0xC0000409 (a stack buffer overrun) in this Save, as gl1_save_nil and smv_save_movie") cr_test("ims_save", cr_t_ims_save)
+cr_scummvm_differs("ims_save", "ScummVM quits after the Load: \"Could not find colormap item.cmp!\" (error(), exit code 1): on the skip list") cr_test("ims_save", cr_t_ims_save)
 
 -- saved while a voice plays over the music, loaded
 cr_t_ims_save_voice = function()
@@ -564,4 +564,4 @@ cr_t_ims_save_voice = function()
 		ims_reset()
 	end
 end
-cr_scummvm_differs("ims_save_voice", "in the whole run, with the shader and software renderers, the voice is still loaded after the Load (nil on the original)") cr_test("ims_save_voice", cr_t_ims_save_voice)
+cr_scummvm_differs("ims_save_voice", "ScummVM quits after the Load: \"Could not find colormap item.cmp!\" (error(), exit code 1): on the skip list") cr_test("ims_save_voice", cr_t_ims_save_voice)
