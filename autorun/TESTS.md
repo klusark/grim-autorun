@@ -183,7 +183,8 @@ Lua 3.1 allows 32 locals in a function: the tier is split in functions (`ar_nt_t
 
 `sh synth/all.sh` (under a minute, needs only Lua 5.1: `pacman -S mingw-w64-ucrt-x86_64-lua51`, and Python): the planner and the follower of
 `ar_nav.lua` on small sets made for the purpose (`synth/sets/*.set`, the text format of the game's set files), with the Lua 3.1 of the game replaced by
-`synth/compat.lua`. No archive, no ScummVM, no game.
+`synth/compat.lua`. No archive, no ScummVM, no game. Every pull request and every push to main run it too (`.github/workflows/autorun-nav.yml`, the check
+"Navigation tests (no game data)"); `LUA=` picks the interpreter, luajit when there is no lua5.1.
 
 * `synth/run.lua` (`sh synth/run.sh [part of a name]`): the checks of `test_planner.lua` (rooms, islands, a gate that is off, a 12 cm neck, a ramp),
   `test_follow.lua` (a simulated Manny that turns, steps 2.5 cm and slides along walls follows the way; the rule that a turn is not cut over the void
