@@ -34,7 +34,7 @@ ar_go(sh.zw_door, zw)
 ar_wait_for_control()
 -- the game grinds a few more flowers by itself on arriving
 ar_wait_for(function() return zw.talked_flowers end, 20000)
-sleep_for(200)
+ar_wait_idle(200)
 ar_wait_for_control()
 
 -- the trail: Manny steps along it and uses the grinder every 40 cm, facing the way on

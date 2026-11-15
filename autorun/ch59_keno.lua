@@ -21,11 +21,13 @@ ar_check(br2 and system.buttonHandler == br2, "Brennis asks his keno question")
 local target = ly.keno_actor.current_number
 ar_log("the keno board shows " .. tostring(target))
 local taps = 0
+-- (each tap until the list has moved, at most the 330 ms that a tap took)
 while br2.current_line < target and taps < 80 do
+	AR_KENO_LINE = br2.current_line
 	ar_key_down("DIALOG_DOWN")
-	sleep_for(80)
+	ar_try_wait(function() return br2.current_line ~= AR_KENO_LINE end, 330)
 	ar_key_up("DIALOG_DOWN")
-	sleep_for(250)
+	break_here()
 	taps = taps + 1
 end
 ar_press_key(ar_real_key("DIALOG_CHOOSE"))

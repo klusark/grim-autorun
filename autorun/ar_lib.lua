@@ -394,8 +394,8 @@ end
 ar_wait_turn = function()
 	local t = 0
 	while manny:is_turning() and t < 8000 do
-		sleep_for(100)
-		t = t + 100
+		break_here()
+		t = t + system.frameTime
 	end
 	if t >= 8000 then
 		ar_log("TURN TIMEOUT: Manny is still turning")
@@ -405,11 +405,12 @@ end
 ar_try_wait = function(cond, timeout)
 	local waited = 0
 	ar_log("Starting wait for " .. tostring(cond) .. " with timeout " .. tostring(timeout))
+	-- (every frame, as ar_wait_active)
 	while not cond() and waited < timeout do
-		sleep_for(100)
+		break_here()
 		-- (the movie of a cutscene plays in real time on both engines: with the game's clock fixed and fast its seconds are not the budget of the wait)
 		if not (cutSceneLevel > 0 and IsMoviePlaying and IsMoviePlaying()) then
-			waited = waited + 100
+			waited = waited + system.frameTime
 		end
 		AR_WAIT_STATE = "ar_try_wait " .. tostring(cond) .. " waited " .. tostring(waited) .. " of " .. tostring(timeout)
 		-- a set the game passes through while the wait goes on (a cutscene takes Manny through the room that the walk
@@ -456,10 +457,12 @@ ar_wait_active = function(cond, timeout)
 	local idle = 0
 	local last = manny:getpos()
 	ar_log("Starting wait for " .. tostring(cond) .. " with timeout " .. tostring(timeout))
+	-- (the condition is looked at every frame, not every 100 ms: a wait ended up to five frames after its condition, 736 of them in a speed run)
 	while not cond() and waited < timeout do
-		sleep_for(100)
+		break_here()
+		local ft = system.frameTime
 		if not (cutSceneLevel > 0 and IsMoviePlaying and IsMoviePlaying()) then
-			waited = waited + 100
+			waited = waited + ft
 		end
 		AR_WAIT_STATE = "ar_wait_active " .. tostring(cond) .. " waited " .. tostring(waited) .. " of " .. tostring(timeout) .. " idle " .. tostring(idle)
 		if AR_TARGET then
@@ -469,10 +472,10 @@ ar_wait_active = function(cond, timeout)
 		if cutSceneLevel > 0 or manny.is_driving or IsMessageGoing() or find_script(Sentence) or manny:is_moving() or manny:is_turning() or abs(p.x - last.x) + abs(p.y - last.y) > 0.001 then
 			idle = 0
 		else
-			idle = idle + 100
+			idle = idle + ft
 		end
 		last = p
-		if AR_TRACE and waited - floor(waited / 1000) * 1000 == 0 then
+		if AR_TRACE and floor(waited / 1000) ~= floor((waited - ft) / 1000) then
 			local mp = meche:getpos()
 			ar_log("  wait: manny " .. format("%.2f %.2f rate %s run %s", p.x, p.y, tostring(GetActorWalkRate(manny.hActor)), tostring(manny.is_running)) .. " meche " .. format("%.2f %.2f rate %s", mp.x, mp.y, tostring(GetActorWalkRate(meche.hActor))))
 		end
@@ -516,6 +519,13 @@ ar_skipper = function()
 			local now = ar_wall()
 			if not AR_MOVIE_START or now < AR_MOVIE_START then
 				AR_MOVIE_START = now
+				AR_MOVIE_NOTED = now
+			end
+			-- (a line every 5 s of a movie: it plays in real time and nothing else is logged meanwhile; the pearl sub's movie of chapter 38, which has no override, is 14 s,
+			-- and the stall watch of a speed run kills a run that logs nothing for 15)
+			if now - (AR_MOVIE_NOTED or now) >= 5 then
+				ar_log("a movie of a cutscene is playing (" .. tostring(now - AR_MOVIE_START) .. " s)")
+				AR_MOVIE_NOTED = now
 			end
 			if not AR_NOTIMEOUT and now - AR_MOVIE_START > (AR_REAL and 400 or 200) then
 				ar_log("a movie that does not end: stopped after " .. tostring(now - AR_MOVIE_START) .. " s")
@@ -871,7 +881,9 @@ ar_gaze_at = function(obj)
 	local tries = 0
 	while hot_object ~= obj and tries < 12 do
 		ar_press_key(ar_real_key("CHANGE_GAZE"))
-		sleep_for(100)
+		-- (until the gaze has moved, at most 100 ms as before)
+		AR_GAZE_WAS = hot_object
+		ar_try_wait(function() return hot_object ~= AR_GAZE_WAS end, 100)
 		tries = tries + 1
 	end
 	return hot_object == obj
@@ -950,6 +962,23 @@ end
 
 ar_offered = function()
 	return vlist and AR_OBJ and vlist[AR_OBJ]
+end
+
+-- Waits for the game to offer AR_OBJ, at most max_ms: the game makes its list of what Manny can use every frame (TrackManny, Find_Visible_Objects), so once he
+-- has stood still, turned and not moving, for 6 frames and it is not there it does not come (the waits of 1 and 1.2 s ran out 41 times in a speed run)
+ar_wait_offered = function(max_ms)
+	local t = 0
+	local still = 0
+	while not ar_offered() and t < max_ms and still < 6 do
+		break_here()
+		t = t + system.frameTime
+		if manny:is_turning() or manny:is_moving() or cutSceneLevel > 0 then
+			still = 0
+		else
+			still = still + 1
+		end
+	end
+	return ar_offered()
 end
 
 -- After some scenes (the jump off the conveyor of the Lamancha) the original keeps Manny's costume without its head
@@ -1120,9 +1149,8 @@ ar_approach = function(obj)
 	if obj.use_pnt_x and obj.use_rot_y and ar_dist2d(obj.use_pnt_x, obj.use_pnt_y) < 0.3 then
 		-- (at its use point already: the way the game itself stands before it)
 		ar_face_yaw(obj.use_rot_y)
-		sleep_for(100)
 		ar_wait_turn()
-		ar_try_wait(ar_offered, 1200)
+		ar_wait_offered(1200)
 	end
 	-- (not offered from there, within 30 cm of the use point: the heading of the use point is for standing on it. A player turns to the object itself)
 	-- (and only where the object is near: from three metres off a player does not turn to it and look all round for it, he walks up to it first; the scan in the lobby of
@@ -1132,10 +1160,9 @@ ar_approach = function(obj)
 	-- off for the verbs that need the time the look round takes: Meche in chapter 55 walks to Manny meanwhile)
 	if obj.obj_x and not ar_offered() and (AR_SCAN_FAR or not obj.use_pnt_x or (ar_dist2d(obj.use_pnt_x, obj.use_pnt_y) < 1.0 and (AR_SCAN_ALWAYS or not obj.range or not obj.obj_y or ar_dist2d(obj.obj_x, obj.obj_y) < obj.range + 0.2))) then
 		ar_face(obj)
-		sleep_for(100)
 		ar_wait_turn()
 		ar_fix_head()
-		ar_try_wait(ar_offered, 1200)
+		ar_wait_offered(1200)
 		-- (a player looks around if it is not there)
 		if not ar_offered() and not ar_set_changed() then
 			ar_scan_for(obj)
@@ -1176,7 +1203,6 @@ ar_approach = function(obj)
 		end
 		ar_wait_for_control()
 		ar_face(obj.interest_actor and { obj_x = obj.interest_actor:getpos().x, obj_y = obj.interest_actor:getpos().y, name = obj.name } or obj)
-		sleep_for(100)
 		ar_wait_turn()
 	elseif obj.use_pnt_x then
 		-- (a door's walk out starts from its use point: a player goes all the way to a door, and to where an item is used)
@@ -1199,7 +1225,6 @@ ar_approach = function(obj)
 		else
 			ar_face(obj)
 		end
-		sleep_for(100)
 		ar_wait_turn()
 		if AR_TRACE then
 			sleep_for(500)
@@ -1212,7 +1237,7 @@ ar_approach = function(obj)
 		-- pushes the stick toward it, which also goes through a door
 		if AR_TRACE then ar_state("approach faced") end
 		ar_fix_head()
-		ar_try_wait(ar_offered, 1000)
+		ar_wait_offered(1000)
 		if AR_TRACE then ar_state("approach not offered") end
 		if not ar_offered() and not ar_set_changed() then
 			ar_face(obj)
@@ -1433,15 +1458,24 @@ ar_do = function(verb, noun1, noun2)
 			return nil
 		end
 		AR_KEYS_USED = AR_KEYS_USED + 1
+		AR_DO_SENT = TRUE
 	end
-	sleep_for(300)
+	-- (ar_send_verb has seen the code start; an item used on its own, with no check of that, waits for a sentence, the code or a cutscene to begin: was 300 ms
+	-- after every verb)
+	if not AR_DO_SENT then
+		AR_DO_CODE = code
+		ar_try_wait(function() return find_script(Sentence) or find_script(AR_DO_CODE) or cutSceneLevel > 0 or not ar_handler_normal() end, 300)
+		-- (and through the sentence, which runs the code after it: the mouthpiece of chapter 6 was checked before its code had begun)
+		ar_try_wait(function() return not find_script(Sentence) end, 60000)
+	end
+	AR_DO_SENT = nil
 	-- (the game's code for the verb: it can be a script that never ends, a flight that does not arrive; the time of a movie of a cutscene, which plays in
 	-- real time, is not counted)
 	local ran = 0
 	while find_script(code) and ran < ((AR_NOTIMEOUT and 1000000000000) or AR_CODE_TIMEOUT or 300000) do
-		sleep_for(100)
+		break_here()
 		if not (cutSceneLevel > 0 and IsMoviePlaying and IsMoviePlaying()) then
-			ran = ran + 100
+			ran = ran + system.frameTime
 		end
 		AR_WAIT_STATE = "ar_do code " .. tostring(code) .. " ran " .. tostring(ran)
 	end
@@ -1462,6 +1496,13 @@ ar_do = function(verb, noun1, noun2)
 	return TRUE
 end
 
+-- After the choose key: until the dialog has taken the line (its handler is no longer the one waiting for a choice, or a line is spoken), at most the 300 ms
+-- that were waited after every choice
+ar_line_taken = function(dlg)
+	AR_LT_DLG = dlg
+	ar_try_wait(function() return system.buttonHandler ~= AR_LT_DLG or IsMessageGoing() or cutSceneLevel > 0 end, 300)
+end
+
 -- Waits until the dialog is waiting for a choice
 ar_dialog_ready = function(dlg, timeout)
 	local waited = 0
@@ -1471,12 +1512,12 @@ ar_dialog_ready = function(dlg, timeout)
 		timeout = 1000000000000
 	end
 	while system.buttonHandler ~= dlg and waited < timeout and idle < 4000 do
-		sleep_for(100)
-		waited = waited + 100
+		break_here()
+		waited = waited + system.frameTime
 		-- The conversation can end by itself (the game hands over what it was for and goes on): once the game
 		-- has had its normal controls back for a few seconds, nothing is coming
 		if ar_handler_normal() and cutSceneLevel == 0 and not IsMessageGoing() then
-			idle = idle + 100
+			idle = idle + system.frameTime
 		else
 			idle = 0
 		end
@@ -1494,11 +1535,11 @@ ar_wait_line_done = function(dlg)
 		if system.buttonHandler == dlg or ar_handler_normal() then
 			done = TRUE
 		else
-			sleep_for(100)
-			waited = waited + 100
+			break_here()
+			waited = waited + system.frameTime
 		end
 	end
-	sleep_for(100)
+	break_here()
 end
 
 -- A frame a little after a line of a dialog was chosen, when its text is on the screen (AR_FRAMES): the same moment in both engines
@@ -1565,7 +1606,7 @@ ar_choose_line = function(dlg, line)
 				presses = presses + 1
 			end
 			ar_press_key(ar_real_key("DIALOG_CHOOSE"))
-			sleep_for(300)
+			ar_line_taken(dlg)
 			ar_wait_line_done(dlg)
 			if not ar_dialog_ready(dlg) then
 				ar_log("choose: the dialog ended while saying the lines before " .. tostring(line.text))
@@ -1583,7 +1624,7 @@ ar_choose_line = function(dlg, line)
 			presses = presses + 1
 		end
 		ar_press_key(ar_real_key("DIALOG_CHOOSE"))
-		sleep_for(300)
+		ar_line_taken(dlg)
 		ar_wait_line_done(dlg)
 	end
 end
@@ -1668,10 +1709,10 @@ ar_wait_normal = function()
 		if cutSceneLevel == 0 and ar_handler_normal() then
 			return TRUE
 		end
-		sleep_for(100)
-		waited = waited + 100
+		break_here()
+		waited = waited + system.frameTime
 		if cutSceneLevel == 0 and system.buttonHandler == last then
-			same = same + 100
+			same = same + system.frameTime
 		else
 			same = 0
 			last = system.buttonHandler
@@ -1814,6 +1855,35 @@ ar_settle_door = function()
 	ar_try_wait(function() return ar_target_reached() or find_script(Sentence) or cutSceneLevel > 0 end, 1000)
 end
 
+-- Until the game is idle (no cutscene, no sentence, no line, Manny neither moving nor turning, two frames running) or a cutscene begins, at most max_ms: what the fixed
+-- sleeps after an action waited for. A cutscene that begins is left to ar_wait_for_control
+ar_wait_idle = function(max_ms)
+	local t = 0
+	local calm = 0
+	while t < max_ms and calm < 2 do
+		if cutSceneLevel > 0 then
+			return TRUE
+		end
+		if find_script(Sentence) or IsMessageGoing() or manny:is_moving() or manny:is_turning() then
+			calm = 0
+		else
+			calm = calm + 1
+		end
+		if calm < 2 then
+			break_here()
+			t = t + system.frameTime
+		end
+	end
+	return calm >= 2
+end
+
+-- After the step on a door's trigger (the elevator door opens when Manny is near): until the game takes him through, starts a cutscene or the sentence of the
+-- door, at most the 1.5 s that were always waited
+ar_door_trigger_wait = function()
+	local ok = ar_try_wait(function() return ar_target_reached() or ar_set_changed() or cutSceneLevel > 0 or find_script(Sentence) end, 1500)
+	ar_log("door: the step on its trigger, " .. (ok and "the game took over" or "nothing happened in 1.5 s"))
+end
+
 -- After a door the game walks Manny in from the door by itself, in a cutscene that starts a moment after the set changes:
 -- wait for it to start and end before the next step
 ar_settle_arrival = function()
@@ -1849,7 +1919,7 @@ ar_go = function(door, target, vx, vy, vz)
 		-- some doors need a step on a trigger first (the elevator door opens when Manny is near)
 		if vx then
 			ar_walk_to(vx, vy, vz, ar_target_reached)
-			sleep_for(1500)
+			ar_door_trigger_wait()
 			ar_wait_for_control()
 			-- (and on through the door from there: the trigger opens it only for as long as Manny goes on)
 			if not ar_target_reached() and ar_nav_enter_door then
@@ -1941,7 +2011,7 @@ ar_go = function(door, target, vx, vy, vz)
 		local p0 = manny:getpos()
 		local tries = 0
 		ar_walk_to(vx, vy, vz, ar_target_reached)
-		sleep_for(1500)
+		ar_door_trigger_wait()
 		ar_wait_for_control()
 		-- a trigger that does not fire (a cutscene was running when Manny stepped in) leaves him
 		-- standing by the point: go back and step in again
@@ -1952,7 +2022,7 @@ ar_go = function(door, target, vx, vy, vz)
 			local len = sqrt(dx * dx + dy * dy)
 			ar_walk_to(pn.x - dx / len * 2.5, pn.y - dy / len * 2.5, pn.z, ar_target_reached)
 			ar_walk_to(vx, vy, vz, ar_target_reached)
-			sleep_for(1500)
+			ar_door_trigger_wait()
 			ar_wait_for_control()
 			pn = manny:getpos()
 			tries = tries + 1
