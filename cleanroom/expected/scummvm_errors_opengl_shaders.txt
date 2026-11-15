@@ -67,6 +67,7 @@ atk_plain
 atk_talk_range
 control_out_of_range
 costume_stack
+cov_save_comp_stack
 font_missing
 gl1_talk_chore_other_costume
 ims_save

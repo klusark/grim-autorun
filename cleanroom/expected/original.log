@@ -1,4 +1,4 @@
-START 5499 tests
+START 5508 tests
 BEGIN boot_state
 V boot_state|movie_playing|nil
 V boot_state|fullscreen_movie_playing|nil
@@ -1038,6 +1038,13 @@ V builtins|fn_ceil|"function"
 V builtins|fn_collectgarbage|"function"
 V builtins|fn_copytagmethods|"function"
 V builtins|fn_cos|"function"
+V builtins|fn_cov_cs_actor|"function"
+V builtins|fn_cov_cs_rect|"function"
+V builtins|fn_cov_cs_save_test|"function"
+V builtins|fn_cov_cs_stack_after|"function"
+V builtins|fn_cov_cs_stack_change|"function"
+V builtins|fn_cov_cs_stack_look|"function"
+V builtins|fn_cov_cs_stack_setup|"function"
 V builtins|fn_date|"function"
 V builtins|fn_debug|"function"
 V builtins|fn_deg|"function"
@@ -1175,6 +1182,21 @@ V costume_stream|playing|"0 0 -4 -4 -4 -4"
 V costume_stream|unlooped|"0 0 -4 -4 -4 -4"
 V costume_stream|stopped|"0 0 -4 -4 -4 -4"
 END costume_stream
+BEGIN cov_camera_actor
+V cov_camera_actor|type|"actor"
+V cov_camera_actor|same|nil
+END cov_camera_actor
+BEGIN cov_gamma
+V cov_gamma|num|nil
+V cov_gamma|str|nil
+V cov_gamma|none|nil
+V cov_gamma|back|nil
+V cov_gamma|ok|1.000000
+END cov_gamma
+BEGIN cov_video_devices
+V cov_video_devices|set|nil
+V cov_video_devices|ok|1.000000
+END cov_video_devices
 BEGIN cov_objart
 V cov_objart|drawn|none
 V cov_objart|setup|nil
@@ -19122,6 +19144,59 @@ V lex_binary|short|nil
 ERROR lex_binary binary file cr_bin_old.lua too old: version=0x30; expected at least 0x31
 V lex_binary|old|nil
 END lex_binary
+BEGIN cov_save_comp_parts
+V cov_save_comp_parts|changed|1.000000
+V cov_save_comp_parts|pass|"loading"
+V cov_save_comp_parts|kept_costume|1.000000
+V cov_save_comp_parts|kept_rect|1.000000
+V cov_save_comp_parts|after|0.000000 0.000000 639.000000 479.000000 307200.000000 69.700000
+V cov_save_comp_parts|after_white|0.000000 0.000000 639.000000 479.000000 307200.000000 69.700000
+END cov_save_comp_parts
+BEGIN cov_save_comp_keyframe
+V cov_save_comp_keyframe|changed|1.000000
+V cov_save_comp_keyframe|pass|"loading"
+V cov_save_comp_keyframe|kept_choring|1.000000
+V cov_save_comp_keyframe|still_choring|1.000000
+END cov_save_comp_keyframe
+BEGIN cov_save_comp_stack
+V cov_save_comp_stack|changed|2.000000
+V cov_save_comp_stack|pass|"loading"
+V cov_save_comp_stack|kept_choring|1.000000
+V cov_save_comp_stack|kept_top|1.000000
+V cov_save_comp_stack|popped1|"cr_kbox.cos"
+V cov_save_comp_stack|popped2|"cr_box.cos"
+V cov_save_comp_stack|popped3|nil
+END cov_save_comp_stack
+BEGIN cov_save_comp_stack_cmap
+V cov_save_comp_stack_cmap|changed|2.000000
+V cov_save_comp_stack_cmap|pass|"loading"
+V cov_save_comp_stack_cmap|kept_choring|1.000000
+V cov_save_comp_stack_cmap|kept_top|1.000000
+V cov_save_comp_stack_cmap|popped1|"cr_kbox.cos"
+V cov_save_comp_stack_cmap|popped2|"cr_dbox.cos"
+V cov_save_comp_stack_cmap|popped3|nil
+END cov_save_comp_stack_cmap
+BEGIN cov_anim
+V cov_anim|start|none
+V cov_anim|art1_on_playing|nil
+V cov_anim|art1_on|none
+V cov_anim|art1_off_playing|nil
+V cov_anim|art1_off|none
+V cov_anim|art2_on_playing|nil
+V cov_anim|art2_on|none
+V cov_anim|both_on_playing|nil
+V cov_anim|both_on|none
+V cov_anim|art1_two_playing|nil
+V cov_anim|art1_two|none
+V cov_anim|no_costume|none
+V cov_anim|again|none
+V cov_anim|gone|none
+END cov_anim
+BEGIN cov_unknown_tag
+V cov_unknown_tag|costume|nil
+V cov_unknown_tag|lv|0.000000
+V cov_unknown_tag|rect|"nil nil nil nil"
+END cov_unknown_tag
 BEGIN gco_cos_sound
 V gco_cos_sound|before|"0 -4 -4 -4 -4"
 V gco_cos_sound|play_choring|0.000000
@@ -20478,4 +20553,4 @@ END zbuffer_post
 BEGIN zbuffer_bar
 V zbuffer_bar|bar_box|458.000000 207.000000 571.000000 267.000000 6601.000000
 END zbuffer_bar
-SUMMARY 5499 tests, 257 failed
+SUMMARY 5508 tests, 257 failed

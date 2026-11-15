@@ -432,7 +432,9 @@ COSTUME_TAGS = {"LUAV": ("luav", "int", "Lua Variable"), "MMDL": ("MMDL", "fs", 
                 # (costume_comp.lua; the tag as the game's costumes have it: the int sputCostume_Startup registers, its bytes
                 # in memory order)
                 "HSMS": ("HSMS", "fs", "Smush Movie"), "IMSS": ("imss", "fs", "iMuse Streamed Sound FX"),
-                "IMSE": ("imse", "int", "iMuse Sequence"), "IMST": ("imst", "int", "iMuse State")}
+                "IMSE": ("imse", "int", "iMuse Sequence"), "IMST": ("imst", "int", "iMuse State"),
+                # (cov_comp_save.lua: the demo's object state animation, and a tag no engine knows)
+                "ANIM": ("ANIM", "fs", "Object State Animation"), "XXXX": ("xxxx", "fs", "Unknown")}
 
 
 def costume(components, chores):
