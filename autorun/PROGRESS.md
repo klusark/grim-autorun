@@ -133,3 +133,11 @@ The whole game, new game to credits, is scripted (ch01 - ch65).
   look at the forklift, the crane and the dialog's line.
 - A line every 5 s while a cutscene's movie plays: the pearl sub's movie of chapter 38 (14 s, no override) left the stall watch (15 s) a margin of 0.75 s.
 - Speed run: 256,610 -> 248,920 frames (71:17 -> 69:09), passes, the same frame count twice.
+
+## Follower: goals far off (2026-11-15)
+- A frame by frame trace of the follower (AR_TRACE) in a speed run: of 75,504 frames 51,098 ran, 10,101 walked and 14,305 stood. A goal (kind g) was only walked to
+  within 15 degrees of it however far off it was, so he stood and turned on the spot from metres away (5,265 frames standing at goals); a goal more than 50 cm off
+  (AR_FAR_GOAL) now takes the 45 degrees of the other steps: 248,920 -> 248,197 frames.
+- What is left, and was tried: the turns of more than 75 degrees at the start of a walk (about 3,000 frames) are already at the run's turn rate, and AR_TURN_LIM = 88
+  (the walk's turn is faster once he moves) gained nothing; the walking with a good heading far from the point is mostly the slopes of the meadow, where a run
+  covers less of the map; about 1,600 frames stand pressed against walls (the "held up" of the follower) and 1,400 walk the last 12 cm to exact points.
