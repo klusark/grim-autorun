@@ -95,6 +95,7 @@ image_read_bmp
 image_read_zbm
 image_write_ext
 movie_fullscreen
+movie_loop
 movie_missing
 movie_pause
 movie_place

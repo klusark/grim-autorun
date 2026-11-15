@@ -1,4 +1,4 @@
-START 5490 tests
+START 5499 tests
 BEGIN boot_state
 V boot_state|movie_playing|nil
 V boot_state|fullscreen_movie_playing|nil
@@ -1175,6 +1175,29 @@ V costume_stream|playing|"0 0 -4 -4 -4 -4"
 V costume_stream|unlooped|"0 0 -4 -4 -4 -4"
 V costume_stream|stopped|"0 0 -4 -4 -4 -4"
 END costume_stream
+BEGIN cov_objart
+V cov_objart|drawn|none
+V cov_objart|setup|nil
+V cov_objart|other_set|none
+V cov_objart|again|none
+END cov_objart
+BEGIN cov_codec3_short
+V cov_codec3_short|image|"userdata"
+V cov_codec3_short|ok|1.000000
+END cov_codec3_short
+BEGIN ctk_keys
+V ctk_keys|made|46.000000 12.000000
+V ctk_keys|after_frames|46.000000 12.000000
+V ctk_keys|changed|46.000000 12.000000
+V ctk_keys|changed_strings|46.000000 12.000000
+END ctk_keys
+BEGIN ctk_concat
+V ctk_concat|color|"x"
+V ctk_concat|color_left|userdata
+V ctk_concat|nil_right|"x(nil)"
+V ctk_concat|actor_type|"string" "x"
+V ctk_concat|font|"x"
+END ctk_concat
 BEGIN draw_at_centre
 V draw_at_centre|at_centre_box|270.000000 207.000000 370.000000 267.000000
 V draw_at_centre|at_centre_rect|270.000000 207.000000 101.000000 61.000000
@@ -4975,6 +4998,39 @@ V walk_interrupted|moving_after_put|nil
 V walk_interrupted|moving_next|nil
 V walk_interrupted|after_10|-0.841573 -0.903444 0.000000
 END walk_interrupted
+BEGIN io_handles
+V io_handles|handle|"userdata" 1.000000
+V io_handles|same_again|"userdata"
+V io_handles|read|"line"
+V io_handles|closed|nil
+V io_handles|out|"userdata"
+V io_handles|out_again|"userdata"
+V io_handles|written|"ab"
+END io_handles
+BEGIN io_std
+V io_std|types|"userdata" "userdata" "userdata" "userdata"
+V io_std|same_tag|1.000000 1.000000
+END io_std
+BEGIN io_read_backup
+V io_read_backup|a_then_b|"aab"
+V io_read_backup|digits|"12"
+V io_read_backup|skip_space|"xyz"
+V io_read_backup|newline|1.000000
+V io_read_backup|word_num|"second3"
+V io_read_backup|rest|""
+V io_read_backup|eof|""
+END io_read_backup
+BEGIN io_read_errors
+V io_read_errors|open_brace|""
+V io_read_errors|close_brace|nil
+V io_read_errors|nested|nil
+V io_read_errors|after|"line1"
+END io_read_errors
+BEGIN io_write_values
+V io_write_values|table|nil
+V io_write_values|nil|userdata
+V io_write_values|line|"1 2.5 0.333333 0 1e+020"
+END io_write_values
 BEGIN io_write_read
 V io_write_read|writeto|"userdata"
 V io_write_read|readfrom|"userdata"
@@ -20422,4 +20478,4 @@ END zbuffer_post
 BEGIN zbuffer_bar
 V zbuffer_bar|bar_box|458.000000 207.000000 571.000000 267.000000 6601.000000
 END zbuffer_bar
-SUMMARY 5490 tests, 257 failed
+SUMMARY 5499 tests, 257 failed
