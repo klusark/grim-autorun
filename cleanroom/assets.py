@@ -69,6 +69,14 @@ SETS = {
         ("ell_b", "walk", True, 0.0, rect(0, -2, 2, 0)),
         ("ell_c", "walk", True, 0.0, rect(0, 0, 2, 2)),
     ]),
+    # funnel sectors (type 0x1100: WalkPlane_SetType 0x4a6790 takes the long axis of a 4-corner one; with another number
+    # of corners the type becomes walk, 0x1000): a floor, a 1 x 2 m funnel north of it, a trapezoid one east, a triangle
+    "cr_funnel": (((90, 90, 40), (120, 120, 60)), [
+        ("fn_floor", "walk", True, 0.0, rect(-2, -2, 2, 0)),
+        ("fn_rect", "funnel", True, 0.0, rect(-0.5, 0, 0.5, 2)),
+        ("fn_trap", "funnel", True, 0.0, [(2, -2, 0), (3.5, -1.5, 0), (3.5, -0.5, 0), (2, 0, 0)]),
+        ("fn_tri", "funnel", True, 0.0, [(-2, -2, 0), (-2, -3, 0), (-1, -2, 0)]),
+    ]),
 }
 
 
@@ -175,6 +183,26 @@ DRAW_BOX = F.box(1.0, 0.6, 0.5)
 # (the corners of F.box: x, then y, then z, each low then high: index = 4 * (x high) + 2 * (y high) + (z high))
 _q = lambda a, b, c, d: [[a, b, c, d], [d, c, b, a]]
 DRAW_FACES = _q(1, 5, 7, 3) + _q(0, 4, 5, 1) + _q(2, 3, 7, 6) + _q(0, 1, 3, 2) + _q(4, 6, 7, 5)
+
+
+# (render_modes.lua) name, modes of formats.model3do_text, material: geometry 1 and 2 (vertices, wireframe), 3 (solid) in
+# each lighting mode, opaque and translucent (type 2), and 4 (textured) in each lighting and texture mode, opaque and
+# translucent, with the plain white texture, the white one flagged masked and the masked checker
+RENDER_MODES = [("cr_rm_g%d" % g, dict(geo=g, light=0), "cr_white.mat") for g in (1, 2)]
+RENDER_MODES += [("cr_rm_g3_l%d_y%d" % (l, y), dict(geo=3, light=l, type=y), "cr_white.mat") for l in range(4) for y in (0, 2)]
+# (not translucent textured faces lit flat or diffuse, but masked: their 16 bpp span fillers look the colour up at colour *
+# 256 of the 64 KB 16 bpp -> index table, as the original's do (grim-decomp build/overrides_asm_q5.c, ...TFIT_16), and read
+# up to 16 MB past it: a crash or not, by what lies there)
+RENDER_MODES += [("cr_rm_g4_l%d_t%d_y%d_%s" % (l, t, y, m), dict(geo=4, light=l, tex=t, type=y), mat)
+                 for l in range(4) for t in (0, 1) for y in (0, 2)
+                 for m, mat in (("w", "cr_white.mat"), ("f", "cr_rm_tex1.mat"), ("k", "cr_rm_mask.mat"))
+                 if not (y == 2 and l in (1, 2) and m != "k")]
+
+
+def _rgb565_grey(v):
+    """The index of cr_rm_pal.cmp's grey ramp nearest a 16-bit RGB565 colour (its 16 bpp -> index table)."""
+    r, g, b = (v >> 11) & 31, (v >> 5) & 63, v & 31
+    return (r * 255 // 31 + g * 255 // 63 + b * 255 // 31) // 3
 
 
 def _draw_model(name, mat):
@@ -325,6 +353,18 @@ def files():
                                         materials=["cr_white.mat", "cr_two.mat"],
                                         faces={0: [(0, f) for f in DRAW_FACES], 1: [(1, f) for f in DRAW_FACES]}, lighting=0)
     out["cr_comp.cos"] = F.costume(COMP_COMPONENTS, COMP_CHORES)
+    # (costume_comp.lua) the components no other costume has: a SMUSH movie (a key of 0 plays it: SmushChanger), the iMUSE
+    # state and sequence (int keys: the state or sequence number) and a streamed iMUSE sound (keys as IMLS: 0 play,
+    # 2 stop looping, 1 stop)
+    out["cr_cc_smush.cos"] = F.costume([("MMDL", -1, "cr_dbox.3do"), ("LUAV", -1, "CR_LV"), ("HSMS", -1, "cr_white.snm")],
+                                       [("play", 200, [(2, [(0, 0)])]), ("other", 200, [(2, [(0, 1)])])])
+    out["cr_cc_imuse.cos"] = F.costume([("MMDL", -1, "cr_dbox.3do"), ("IMST", -1, "state"), ("IMSE", -1, "sequence"),
+                                        ("IMSS", -1, "cr_long.wav")],
+                                       [("state_1001", 100, [(1, [(0, 1001)])]), ("state_1008", 100, [(1, [(0, 1008)])]),
+                                        ("seq_2001", 100, [(2, [(0, 2001)])]), ("seq_2000", 100, [(2, [(0, 2000)])]),
+                                        ("both", 200, [(1, [(0, 1002)]), (2, [(100, 2001)])]),
+                                        ("stream_play", 100, [(3, [(0, 0)])]), ("stream_unloop", 100, [(3, [(0, 2)])]),
+                                        ("stream_stop", 100, [(3, [(0, 1)])])])
     out["cr_head.3do"] = F.model3do_text("cr_head.3do", [("body", F.box(0.3, 0.3, 0.5)), ("head", F.box(0.9, 0.15, 0.15))],
                                          HEAD_NODES, materials=["cr_grey.mat", "cr_white.mat"],
                                          faces={0: [(0, f) for f in DRAW_FACES], 1: [(1, f) for f in DRAW_FACES]},
@@ -332,6 +372,26 @@ def files():
     out["cr_head.cos"] = F.costume([("MMDL", -1, "cr_head.3do"), ("LUAV", -1, "CR_LV"), ("CMAP", 0, "cr_pal.cmp")],
                                    BOX_COSTUME[1])
     out["cr_dbox.cos"] = F.costume(DRAW_COMPONENTS, BOX_COSTUME[1])
+    # (shadow_mesh.lua) the white draw box with a mesh that casts a shadow, and the files the shadow is drawn with (the game
+    # loads shadow.mat and shadow.cmp by these names when the first shadow is drawn): index 20 of shadow.cmp is grey 12,
+    # darker than every background (snaps.DARK)
+    # (render_modes.lua) the white draw box in each geometry, lighting and texture mode, opaque and translucent, with a
+    # plain texture and with a masked one (texture flag 1; colour 0 in a checker: the masked rasterisers skip it), one
+    # model and costume each: RENDER_MODES; drawn through cr_rm_pal.cmp (a light table and a 16 bpp -> index table)
+    out["cr_rm_pal.cmp"] = F.colormap([(i, i, i) for i in range(256)], light=lambda lvl, c: c * lvl // 255,
+                                      rgb_index=_rgb565_grey)
+    out["cr_rm_mask.mat"] = F.material(8, 8, tex_flags=1, pixels=lambda x, y: 255 if (x // 2 + y // 2) % 2 else 0)
+    out["cr_rm_tex1.mat"] = F.material(8, 8, 255, tex_flags=1)
+    for name, md, mat in RENDER_MODES:
+        out[name + ".3do"] = F.model3do_text(name + ".3do", [("body", DRAW_BOX)], BOX_MODEL[2], materials=[mat],
+                                             faces={0: [(0, f) for f in DRAW_FACES]}, modes=md)
+        out[name + ".cos"] = F.costume([("MMDL", -1, name + ".3do"), ("LUAV", -1, "CR_LV"), ("CMAP", 0, "cr_rm_pal.cmp")],
+                                       BOX_COSTUME[1])
+    out["cr_sbox.3do"] = F.model3do_text("cr_sbox.3do", [("body", DRAW_BOX)], BOX_MODEL[2], materials=["cr_white.mat"],
+                                         faces={0: [(0, f) for f in DRAW_FACES]}, lighting=0, shadow=1)
+    out["cr_sbox.cos"] = F.costume([("MMDL", -1, "cr_sbox.3do")] + DRAW_COMPONENTS[1:], BOX_COSTUME[1])
+    out["shadow.mat"] = F.material(8, 8, 20)
+    out["shadow.cmp"] = F.colormap([(i * 3 // 5, i * 3 // 5, i * 3 // 5) for i in range(256)])
     # (draw_cmap.lua, bug #11818: the colormap of a costume stack sharing one model) the white box through cr_pal.cmp, through
     # cr_dim.cmp (index 255 is grey 85: not bright, not dark) and with no colormap of its own
     out["cr_dim.cmp"] = F.colormap([(i // 3, i // 3, i // 3) for i in range(256)])
@@ -358,8 +418,13 @@ def files():
     # earlier movie, which a smaller one would not cover), 2 grey frames, raw, then 45 white ones (3 s) in mode 6, 8, 5, 3 or
     # 4 (3 and 4 copy the delta buffers, which start white)
     grey, white = F.rgb565(60, 60, 60), F.rgb565(255, 255, 255)
-    for m in (6, 8, 5, 3, 4):
+    for m in (6, 8, 5, 3, 4, 1, 7):
         out["cr_mode%d.snm" % m] = F.snm(640, 480, [grey, grey] + [(m, white)] * 45, fill=white)
+    # (modes 1 and 7, half rows: white and black from stored value to value, so that the pixels between are their average;
+    # movie_modes.lua takes the mean of what is not dark)
+    black = F.rgb565(0, 0, 0)
+    for m in (1, 7):
+        out["cr_mode%ds.snm" % m] = F.snm(640, 480, [grey, grey] + [(m, (white, black))] * 45, fill=white)
     out["cr_mode2.snm"] = F.snm(640, 480, [grey, grey] + _mode2_frames(F, grey, white), fill=grey)
     # music (formats.imus): the files iMUSE's state and sequence tables name for ImSetState / ImSetSequence (the name and
     # ".IMC"). Two states that loop; the file of states 1002-1007 with a hook 8 jump in the middle; a sequence that plays once
@@ -399,6 +464,10 @@ def files():
     out["cr_lit.bm"] = F.bitmap(W, H, F.checker(W, H, 40, (0, 0, 0), (0, 0, 0)))
     out["cr_lit.set"] = F.set_file(["cr_pal.cmp"], [dict(CAMERA, name="cr_lit_0", background="cr_lit.bm", zbuffer="cr_open.zbm")],
                                    LIT_LIGHTS, SETS["cr_open"][1])
+    # (render_modes.lua) cr_lit with cr_rm_pal.cmp, the colormap with a light table and the 16-bit -> index table the
+    # lit and translucent rasterisers read from the set's colormap
+    out["cr_rm.set"] = F.set_file(["cr_rm_pal.cmp"], [dict(CAMERA, name="cr_rm_0", background="cr_lit.bm", zbuffer="cr_open.zbm")],
+                                  LIT_LIGHTS, SETS["cr_open"][1])
     # zz_zbuffer.lua: cr_open with a z-buffer that is far (0) but for thin parts in front of the box of draw.lua (at
     # 270..370 x 207..267 at the centre): a post 2 pixels wide (columns 320, 321), a bar 2 pixels high (rows 237, 238) and
     # the columns left of 290, all at 30000 (about 1.2 m from the camera, the box is at 6 m). The thin parts are the
@@ -456,6 +525,32 @@ PRESET_LIBRARY = ("[LIBRARY]\r\n"
                   "Description  =  cr_band_pass\r\n"
                   "Flags  =  0\r\n"
                   "Effect0000  =  2300, 0, 1, -1, 1026.00, 1000.00, 900.00, 600.00\r\n"
+                  "\r\n"
+                  # (zz_ims_fx.lua) the other two effects iMUSE's effect library has: Reverb 1 (2101: the longest delay,
+                  # the pre-delay and the delay in ms, dry, wet), mono and stereo (the routing, 1 or 2), the Phasor (2375:
+                  # feedback, sweep, depth, frequency, dry, wet), and a chain of two effects. (The delay lines come from
+                  # iMUSE's 150000-byte effects heap: four of 400 ms do not fit, and a preset that fails to load leaves
+                  # the library without any, the band-pass too)
+                  "[PRESET0001]\r\n"
+                  "Description  =  cr_reverb_mono\r\n"
+                  "Flags  =  0\r\n"
+                  "Effect0000  =  2101, 0, 1, -1, 100.00, 20.00, 60.00, 0.60, 0.40\r\n"
+                  "\r\n"
+                  "[PRESET0002]\r\n"
+                  "Description  =  cr_reverb_stereo\r\n"
+                  "Flags  =  0\r\n"
+                  "Effect0000  =  2101, 0, 2, -1, 100.00, 20.00, 60.00, 0.60, 0.40\r\n"
+                  "\r\n"
+                  "[PRESET0003]\r\n"
+                  "Description  =  cr_phasor\r\n"
+                  "Flags  =  0\r\n"
+                  "Effect0000  =  2375, 0, 1, -1, 0.50, 1.50, 0.80, 800.00, 0.70, 0.30\r\n"
+                  "\r\n"
+                  "[PRESET0004]\r\n"
+                  "Description  =  cr_chain\r\n"
+                  "Flags  =  0\r\n"
+                  "Effect0000  =  2300, 0, 1, -1, 1026.00, 1000.00, 900.00, 600.00\r\n"
+                  "Effect0001  =  2101, 0, 2, -1, 80.00, 10.00, 40.00, 0.50, 0.50\r\n"
                   "\r\n").encode("ascii")
 
 

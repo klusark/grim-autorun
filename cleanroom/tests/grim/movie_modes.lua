@@ -26,6 +26,16 @@ cr_mode_test(4)
 -- at an offset of its own or of the motion table), colours, smaller blocks, blocks cut by the interpolation table's edges:
 -- the box of the white pixels and how many there are
 cr_mode_test(2, "count")
+-- Modes 1 and 7 (half rows: every second row of half the pixels, the rest averaged; 7 through the colour table): white, and
+-- white and black alternating (the mean of the pixels that are not dark tells the averaging). ScummVM has neither mode.
+cr_mode_test(1)
+cr_mode_test(7)
+cr_mode_test("1s", "mean")
+cr_mode_test("7s", "mean")
+cr_scummvm_differs("movie_mode1", "ScummVM's Blocky16 has no mode 1")
+cr_scummvm_differs("movie_mode7", "ScummVM's Blocky16 has no mode 7")
+cr_scummvm_differs("movie_mode1s", "ScummVM's Blocky16 has no mode 1")
+cr_scummvm_differs("movie_mode7s", "ScummVM's Blocky16 has no mode 7")
 
 -- (ScummVM differs: tools/mark_known.py)
 cr_scummvm_differs("movie_mode6")

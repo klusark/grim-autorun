@@ -20,7 +20,7 @@ DETAIL_LINES = 8     # (of each failing test; the run's summary and its logs hav
 MAX_TESTS = 40       # (of each section: a comment is at most 65536 characters)
 MAX_CHARS = 60000
 
-TEST = re.compile(r"^(\S+)\s+(DIFF|REGRESSION) \((\d+)\)\s*$|^(\S+)\s+(MISSING)\s*$")
+TEST = re.compile(r"^(\S+)\s+(DIFF|REGRESSION) \((\d+)\)\s*$|^(\S+)\s+(MISSING|EXTRA)\b.*$")
 
 
 def parse(lines):
@@ -89,6 +89,11 @@ def job_md(name, result, paths):
                                         ": " + count if count else ""))
             if crashed:
                 md.append("- crashed or hung (%d): %s" % (len(crashed), code(crashed)))
+            extra = [n for n, status, _ in failed if status == "EXTRA"]
+            failed = [t for t in failed if t[1] != "EXTRA"]
+            if extra:
+                # (a test without the original's values: run.py original --save on the original records them)
+                md.append("- not in the reference, no values of the original yet (%d): %s" % (len(extra), code(extra)))
             if failed:
                 md.append("- differ from the original (%d): %s" % (len(failed), code([n for n, _, _ in failed])))
                 md.append("")

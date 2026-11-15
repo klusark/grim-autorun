@@ -219,13 +219,26 @@ def checker(width, height, cell, c0, c1):
     return [a if ((x // cell) + (y // cell)) % 2 == 0 else b for y in range(height) for x in range(width)]
 
 
-def colormap(colors):
-    """A .cmp: 'CMP ', the header words, and 256 RGB triples at 64."""
+def colormap(colors, light=None, rgb_index=None):
+    """A .cmp: 'CMP ', the header words, and 256 RGB triples at 64. light (render_modes.lua): a function (level 0..255,
+    colour) -> index, the 64 KB light-level table of rdColormap_LoadEntry 0x404420 (bit 1 of the second header word, the
+    flags at +0x20 of the colormap: after the palette);
+    rgb_index: a function (RGB565 value) -> index, the 64 KB table after it that v1.01 reads to +0x34c (the translucent
+    rasterisers' 16 bpp -> index lookup), then 64 KB it skips. Without them the file ends after the palette (the tables
+    are then null: the lit and translucent rasterisers read them from the set's colormap). The flags are 4 (the 16-bit
+    light table built from the palette) or 5 with the tables."""
     pal = bytearray(768)
     for i, (r, g, b) in enumerate(colors[:256]):
         pal[3 * i:3 * i + 3] = bytes((r, g, b))
-    h = b"CMP " + struct.pack("<II3f", 0x1E, 4, 1.0, 1.0, 1.0)
-    return h + b"\0" * (64 - len(h)) + bytes(pal)
+    tables = b""
+    flags = 4
+    if light is not None:
+        flags |= 1
+        tables = bytes(light(a, b) for a in range(256) for b in range(256))
+        tables += bytes(rgb_index(v) for v in range(0x10000)) if rgb_index else bytes(0x10000)
+        tables += bytes(0x10000)
+    h = b"CMP " + struct.pack("<II3f", 0x1E, flags, 1.0, 1.0, 1.0)
+    return h + b"\0" * (64 - len(h)) + bytes(pal) + tables
 
 
 def set_file(colormaps, setups, lights, sectors):
@@ -408,7 +421,11 @@ COSTUME_TAGS = {"LUAV": ("luav", "int", "Lua Variable"), "MMDL": ("MMDL", "fs", 
                 "MODL": ("MODL", "fs", "RDroid Thing (.3DO)"), "KEYF": ("KEYF", "fs", "RDroid Keyframe (.KEY)"),
                 "CMAP": ("cmap", "fs", "RDroid Colormap"), "MESH": ("MESH", "fs", "RDroid Thing Mesh"),
                 "IMLS": ("imls", "fs", "iMuse Resident Sound FX"), "MAT ": ("MAT ", "fs", "RDroid Animated Material"),
-                "BKND": ("BKND", "fs", "General Bitmap"), "SPRT": ("sprt", "fs", "Sprite")}
+                "BKND": ("BKND", "fs", "General Bitmap"), "SPRT": ("sprt", "fs", "Sprite"),
+                # (costume_comp.lua; the tag as the game's costumes have it: the int sputCostume_Startup registers, its bytes
+                # in memory order)
+                "HSMS": ("HSMS", "fs", "Smush Movie"), "IMSS": ("imss", "fs", "iMuse Streamed Sound FX"),
+                "IMSE": ("imse", "int", "iMuse Sequence"), "IMST": ("imst", "int", "iMuse State")}
 
 
 def costume(components, chores):
@@ -524,14 +541,19 @@ def model3do(name, meshes, nodes, header=None):
 
 
 def model3do_text(name, meshes, nodes, radius=None, insert=(0.0, 0.0, 0.0), materials=(), faces=None, lighting=3,
-                  vertex_light=1.0):
+                  vertex_light=1.0, shadow=0, modes=None):
     """The same model as model3do, in the text .3do format (the one the original's rdModel3_LoadEntryText parses when a file
     does not start with LDOM). It has no bounding box or centre, only a radius (by default the one the original works out:
     it replaces the one of the file in rdModel3_LoadPostProcess, as it does a binary header's).
     materials: the .mat names; faces: {mesh index: [(material index, [vertex indices])]}, each face with the texture
     vertices of the corners of the texture; lighting: the lighting mode of every mesh and face (0: none, the colours of
     the texture as they are; 3: lit); vertex_light: the light level of every vertex (the 5th number of a vertex line: what
-    the original's rdLight_CalcVertexIntensities starts each vertex from, zz_lit.lua)."""
+    the original's rdLight_CalcVertexIntensities starts each vertex from, zz_lit.lua); shadow: the "shadow" value of every
+    mesh (not 0: the mesh casts a shadow, the 16 corners of its box projected onto the shadow plane, sputCostume_DrawMeshShadow
+    0x494940, drawn with shadow.mat through shadow.cmp; shadow_mesh.lua); modes: dict(geo, light, tex, type, extralight) for
+    every mesh and face instead of geometry mode 4, lighting `lighting`, texture mode 0 (affine), type 0 and no extra light
+    (render_modes.lua: geometry 1 vertices, 2 wireframe, 3 solid, 4 textured; lighting 0 none, 1 flat, 2 diffuse, 3
+    gouraud; texture 1 perspective; type 2 translucent)."""
     g = lambda v: "%.6f" % v
     faces = faces or {}
     out = ["section: header", "3do 2.1", "section: modelresource", "materials %d" % len(materials)]
@@ -540,11 +562,13 @@ def model3do_text(name, meshes, nodes, radius=None, insert=(0.0, 0.0, 0.0), mate
            "radius " + g(model_bounds(meshes, nodes)[3] if radius is None else radius),
            "insert offset " + " ".join(g(v) for v in insert), "geosets 1", "geoset 0", "meshes %d" % len(meshes)]
     corners = [(0.0, 0.0), (1.0, 0.0), (1.0, 1.0), (0.0, 1.0)]
+    md = dict(geo=4, light=lighting, tex=0, type=0, extralight=0.0)
+    md.update(modes or {})
     for i, (mname, verts) in enumerate(meshes):
         mr = max([sum(c * c for c in v) ** 0.5 for v in verts] or [0.0])
         mf = faces.get(i, [])
-        out += ["mesh %d" % i, "name " + mname, "radius " + g(mr), "shadow 0", "geometrymode 4",
-                "lightingmode %d" % lighting, "texturemode 0", "vertices %d" % len(verts)]
+        out += ["mesh %d" % i, "name " + mname, "radius " + g(mr), "shadow %d" % shadow, "geometrymode %d" % md["geo"],
+                "lightingmode %d" % md["light"], "texturemode %d" % md["tex"], "vertices %d" % len(verts)]
         out += ["%d: %s %s" % (k, " ".join(g(c) for c in v), "1.0" if vertex_light == 1.0 else g(vertex_light))
                 for k, v in enumerate(verts)]
         out += ["texture vertices %d" % (len(corners) if mf else 0)]
@@ -553,8 +577,9 @@ def model3do_text(name, meshes, nodes, radius=None, insert=(0.0, 0.0, 0.0), mate
         out += ["%d: 0.0 0.0 1.0" % k for k in range(len(verts))]
         out += ["faces %d" % len(mf)]
         for k, (mat, vs) in enumerate(mf):
-            out.append("%d: %d 0x0000 4 %d 0 0.0000 %d %s" % (k, mat, lighting, len(vs),
-                                                            " ".join("%d, %d" % (v, j % 4) for j, v in enumerate(vs))))
+            out.append("%d: %d 0x%04x %d %d %d %.4f %d %s" % (k, mat, md["type"], md["geo"], md["light"], md["tex"],
+                                                             md["extralight"], len(vs),
+                                                             " ".join("%d, %d" % (v, j % 4) for j, v in enumerate(vs))))
         out += ["face normals"]
         out += ["%d: 0.0 0.0 1.0" % k for k in range(len(mf))]
     children = [[j for j, n in enumerate(nodes) if n[2] == i] for i in range(len(nodes))]
@@ -569,12 +594,14 @@ def model3do_text(name, meshes, nodes, radius=None, insert=(0.0, 0.0, 0.0), mate
     return ("\r\n".join(out) + "\r\n").encode("ascii")
 
 
-def material(width, height, index=255, cels=1, indices=None):
+def material(width, height, index=255, cels=1, indices=None, tex_flags=0, pixels=None):
     """A .mat of one 8-bit texture of colour index `index` (of the colormap the model is drawn with: cr_pal.cmp is a grey
     ramp, 255 white), `cels` cels on it. The layout of rdMaterial_LoadFile (and of what ScummVM reads, MaterialData::initGrim):
     'MAT ', 0x32, flags 2 (no palette), the cels, the textures, 14 words of the texture format (the first the bits a pixel);
     a cel: flags 8 (it has a texture), a colour, four 1.0, then 16 bytes, the fourth word the texture; a texture: width,
-    height, flags, two words, the mipmap levels (1), and its pixels."""
+    height, flags, two words, the mipmap levels (1), and its pixels. tex_flags: the texture's flags word (render_modes.lua:
+    bit 0 makes rdCache_DrawFace pick the rasteriser that skips colour 0); pixels: a function (x, y) -> index instead of
+    the one colour (every cel the same)."""
     u = lambda *v: struct.pack("<%dI" % len(v), *v)
     f = lambda *v: struct.pack("<%df" % len(v), *v)
     # (the first two words of the format go into each texture's surface description: the second is its bits a pixel, which
@@ -584,7 +611,8 @@ def material(width, height, index=255, cels=1, indices=None):
     for i, c in enumerate(indices):
         out += u(8, c) + f(1.0, 1.0, 1.0, 1.0) + u(0, 0, 0, i)
     for c in indices:
-        out += u(width, height, 0, 0, 0, 1) + bytes([c]) * (width * height)
+        body = bytes([c]) * (width * height) if pixels is None else bytes(pixels(x, y) for y in range(height) for x in range(width))
+        out += u(width, height, tex_flags, 0, 0, 1) + body
     return out
 
 
@@ -727,7 +755,8 @@ def snm(width, height, colours, frame_us=66667, rate=22050, fill=None):
     samples = rate * frame_us // 1000000
     wave = struct.pack(">i", samples) + bytes(3 + samples)
     frames = []
-    # (a frame is a colour, raw, or (mode, colour): Blocky16 mode 6 indexes the 256-colour table at +40 of the header with
+    # (a frame is a colour, raw, or (mode, colour): Blocky16 mode 1 (7) is every second row of half the pixels, 16-bit
+    # (indexes of the table at +40), the rest averaged; mode 6 indexes the 256-colour table at +40 of the header with
     # a byte a pixel; 8 the same with the bytes BOMP coded (bomp); 5 the 16-bit pixels BOMP coded, their size at +36; 3 and 4
     # copy a delta buffer, which keeps the colour at +32 of frame 0 when no frame swaps the buffers)
     # Mode 2 (blocky2): (2, (data, swap, params, table)): the block codes, the buffer swap at +19 (1: the frame becomes delta
@@ -757,7 +786,7 @@ def snm(width, height, colours, frame_us=66667, rate=22050, fill=None):
         head[18] = mode
         head[19] = 0                                  # (no buffer swap)
         struct.pack_into("<H", head, 32, fill)        # (the colour the delta buffers start with)
-        pixels = struct.pack("<H", c) * (width * height)
+        pixels = struct.pack("<H", c) * (width * height) if isinstance(c, int) else b""
         if mode == 0:
             data = pixels
         elif mode in (6, 8):
@@ -768,6 +797,17 @@ def snm(width, height, colours, frame_us=66667, rate=22050, fill=None):
             data = bomp(pixels)
         elif mode in (3, 4):
             data = b""
+        elif mode in (1, 7):
+            # (half rows, Blocky16_DecodeHalfRows16 0x4cd300 / ...8 0x4cd450: (height + 1) / 2 rows of 1 + (width - 1) / 2
+            # values, each widened to two pixels (the second the average of its neighbours), the rows between averaged; 7
+            # takes bytes through the table at +40. c: a colour, or two that alternate from value to value)
+            a, b = (c, c) if isinstance(c, int) else c
+            n = ((height + 1) // 2) * (1 + (width - 1) // 2)
+            if mode == 1:
+                data = b"".join(struct.pack("<H", b if k & 1 else a) for k in range(n))
+            else:
+                struct.pack_into("<HH", head, 40, a, b)
+                data = bytes(k & 1 for k in range(n))
         else:
             raise ValueError("mode %d" % mode)
         frames.append(chunk(b"FRME", chunk(b"Bl16", bytes(head) + data) + chunk(b"Wave", wave)))

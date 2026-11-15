@@ -65,9 +65,12 @@ jobs:
           release: false
           update: false
           install: make git
+          # (python and python-numpy: the Python that runs run.py, MSYS2's with its numpy, which snaps.py reads the
+          # screenshots with; the same as the MSYS2 venv the README runs it with)
           pacboy: >-
             toolchain:p ccache:p SDL2:p zlib:p libpng:p libjpeg-turbo:p freetype:p
             libvorbis:p flac:p libmad:p faad2:p a52dec:p libmpeg2:p libtheora:p fribidi:p mesa:p
+            python:p python-numpy:p
 
       # (MSYS2's ucrt64\bin on PATH for the steps after: run.py's gcc and g++, crashstack.py's binutils, the DLLs of the build)
       - name: MSYS2 on PATH
@@ -105,10 +108,6 @@ jobs:
       - name: Mesa llvmpipe
         shell: pwsh
         run: Copy-Item "${{ steps.msys2.outputs.msys2-location }}\ucrt64\bin\opengl32.dll" scummvm\build\
-
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
 
       # (the results do not matter here, only what ran: a failing game does not stop the other or the report)
       # (every game and renderer at once, tools/parallel.sh: the processes add their counters to the same .gcda files when

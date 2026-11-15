@@ -109,6 +109,27 @@ index d6ff2de96c0..9668921bac5 100644
  	/**
  	 * Set the internal 'is ready' flag of the mixer.
  	 * Backends should invoke Mixer::setReady(true) once initialisation of
+diff --git a/backends/platform/sdl/sdl.cpp b/backends/platform/sdl/sdl.cpp
+index f2c4e5149d1..430eedbf9e8 100644
+--- a/backends/platform/sdl/sdl.cpp
++++ b/backends/platform/sdl/sdl.cpp
+@@ -303,8 +303,14 @@ void OSystem_SDL::initBackend() {
+ #if defined(USE_OPENGL_GAME) || defined(USE_OPENGL_SHADERS)
+ 	debug(2, "SDL Video Detecting OpenGL Features...");
+ 	detectOpenGLFeaturesSupport();
+-	debug(2, "SDL Video Detecting Anti-aliasing Support...");
+-	detectAntiAliasingSupport();
++	// (antialiasing=0 in the configuration: no anti-aliasing is wanted, so the levels are not probed; the probe makes a window
++	// and an OpenGL context for each level, which is most of what starting the backend costs)
++	if (ConfMan.hasKey("antialiasing") && ConfMan.getInt("antialiasing") == 0) {
++		debug(2, "SDL Video Anti-aliasing disabled by the configuration, not probed");
++	} else {
++		debug(2, "SDL Video Detecting Anti-aliasing Support...");
++		detectAntiAliasingSupport();
++	}
+ 	debug(2, "SDL Video OpenGL Feature Detection Complete");
+ #endif
+ 
 diff --git a/engines/grim/actor.cpp b/engines/grim/actor.cpp
 index 7656e2541f9..bf5c3640b76 100644
 --- a/engines/grim/actor.cpp
@@ -329,7 +350,7 @@ index d495a79df1c..fcdf0cd0b87 100644
  			_numMusicStates = 126;
  			_musicTable = musicTable;
 diff --git a/engines/grim/grim.cpp b/engines/grim/grim.cpp
-index 549a38870d2..1139b4f9625 100644
+index 549a38870d2..92c8f2cb8e5 100644
 --- a/engines/grim/grim.cpp
 +++ b/engines/grim/grim.cpp
 @@ -49,6 +49,9 @@
@@ -446,19 +467,16 @@ index 549a38870d2..1139b4f9625 100644
  		_frameTime = 0;
  	}
  
-@@ -916,6 +967,38 @@ void GrimEngine::updateDrawMode() {
+@@ -916,6 +967,33 @@ void GrimEngine::updateDrawMode() {
  	_movieTime = 0;
  }
  
 +// Test data, a frame that is not drawn: what updateDisplayScene would have changed besides the picture. The movie time the
-+// scripts get is taken there, the text of a line an actor says is placed when the actor is drawn, and a text's time
-+// counts from its first drawing.
++// scripts get is taken there, and the text of a line an actor says is placed when the actor is drawn.
 +void GrimEngine::updateUndrawnFrame() {
 +	if (_mode == SmushMode) {
 +		if (g_movie->isPlaying())
 +			_movieTime = g_movie->getMovieTime();
-+		if (_movieSubtitle)
-+			_movieSubtitle->create();
 +	} else if (_mode == NormalMode || _mode == OverworldMode) {
 +		if (!_currSet || !_flipEnable)
 +			return;
@@ -475,8 +493,6 @@ index 549a38870d2..1139b4f9625 100644
 +			if (a->isVisible())
 +				a->placeTalkText();
 +		}
-+		for (TextObject *t : TextObject::getPool())
-+			t->create();
 +	} else if (_mode == DrawMode) {
 +		updateDrawMode();
 +	}
@@ -485,7 +501,7 @@ index 549a38870d2..1139b4f9625 100644
  void GrimEngine::drawNormalMode() {
  	_prevSmushFrame = 0;
  	_movieTime = 0;
-@@ -987,6 +1070,25 @@ void GrimEngine::drawNormalMode() {
+@@ -987,6 +1065,25 @@ void GrimEngine::drawNormalMode() {
  	_currSet->drawBitmaps(ObjectState::OBJSTATE_OVERLAY);
  }
  
@@ -511,7 +527,7 @@ index 549a38870d2..1139b4f9625 100644
  void GrimEngine::doFlip() {
  	_frameCounter++;
  	// When possible, flip the buffer
-@@ -1154,7 +1256,21 @@ void GrimEngine::mainLoop() {
+@@ -1154,7 +1251,21 @@ void GrimEngine::mainLoop() {
  			}
  		}
  
@@ -534,7 +550,7 @@ index 549a38870d2..1139b4f9625 100644
  			// Draw the display scene before doing the luaUpdate.
  			// This give a large performance boost as OpenGL stores commands
  			// in a queue on the gpu to be rendered later. When doFlip is
-@@ -1162,9 +1278,14 @@ void GrimEngine::mainLoop() {
+@@ -1162,9 +1273,14 @@ void GrimEngine::mainLoop() {
  			// Now, it will queue all the OpenGL commands and draw them on the
  			// GPU while the CPU is busy updating the game world.
  			updateDisplayScene();
@@ -925,51 +941,6 @@ index 3fe51625f63..8c92c1eadd6 100644
  		error("%s", "Cannot find game data - check configuration file");
  
  	// Load labs
-diff --git a/engines/grim/textobject.cpp b/engines/grim/textobject.cpp
-index bb2ce6d9e8b..1d4aa24e920 100644
---- a/engines/grim/textobject.cpp
-+++ b/engines/grim/textobject.cpp
-@@ -383,10 +383,7 @@ void TextObject::draw() {
- 	if (!_lines)
- 		return;
- 
--	if (!_created) {
--		g_driver->createTextObject(this);
--		_created = true;
--	}
-+	create();
- 
- 	if (_justify > 3 || _justify < 0)
- 		warning("TextObject::draw: Unknown justification code (%d)", _justify);
-@@ -394,6 +391,16 @@ void TextObject::draw() {
- 	g_driver->drawTextObject(this);
- }
- 
-+// The renderer's copy of the text is made the first time it is drawn, and the time it is shown counts from then (update).
-+// The test data's frames that are not drawn make it too, so that the time does not wait for a drawn frame.
-+void TextObject::create() {
-+	if (!_lines || _created)
-+		return;
-+
-+	g_driver->createTextObject(this);
-+	_created = true;
-+}
-+
- void TextObject::update() {
- 	if (!_duration || !_created) {
- 		return;
-diff --git a/engines/grim/textobject.h b/engines/grim/textobject.h
-index 52e7aa7e283..1a00da3b692 100644
---- a/engines/grim/textobject.h
-+++ b/engines/grim/textobject.h
-@@ -111,6 +111,7 @@ public:
- 
- 	const Common::String &getName() const { return _textID; }
- 	void draw();
-+	void create();
- 	void update();
- 
- 	void invalidate();
 diff --git a/video/video_decoder.cpp b/video/video_decoder.cpp
 index 1cca34ae20d..0f2eb334bc3 100644
 --- a/video/video_decoder.cpp

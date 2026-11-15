@@ -43,6 +43,8 @@ EMI_INSTALL (the same for Monkey4.exe, default C:\\GOG Games\\Escape from Monkey
 PATH (MSYS2's ucrt64\\bin: gcc and g++, and the DLLs of the ScummVM build; mingw32\\bin for the original: i686-w64-mingw32-gcc),
 GRIM_DECOMP (the folder of the rebuilt grimfandango.exe and its three DLLs, default C:\\Users\\Joel\\grim-decomp\\build\\run)."""
 import argparse
+import glob
+import hashlib
 import os
 import re
 import shutil
@@ -134,6 +136,7 @@ def test_files():
 
 
 MANIFEST = "cr_manifest.txt"
+BUILD_KEY = "cr_build_key.txt"   # (the build_key of the build, in the build and in each run folder it was copied to)
 MARKER = "grimtestdata.txt"
 LUA31 = os.path.join(ROOT, "autorun", "tools", "lua31")
 
@@ -177,9 +180,35 @@ def cr_tests_lua(only=None, skip=(), start=None, fails=0, file=None):
                                            for t in test_files()))
 
 
+def build_key():
+    """What a build is made from: the suite's Python (the assets and formats, and run.py's _cr_tests.lua), the test files
+    and lua/, and the game and mode. The same sources give the same build, byte for byte."""
+    h = hashlib.sha1(("%s %s\n" % (GAME, SVM_REMASTERED)).encode())
+    paths = sorted(glob.glob(os.path.join(HERE, "*.py")))
+    for folder in ("tests", "lua"):
+        for root, _, names in os.walk(os.path.join(HERE, folder)):
+            paths += sorted(os.path.join(root, n) for n in names)
+    for p in paths:
+        h.update(os.path.relpath(p, HERE).replace("\\", "/").encode() + b"\n")
+        with open(p, "rb") as f:
+            h.update(f.read())
+    return h.hexdigest()
+
+
 def build(only=None, skip=(), start=None, fails=0):
     """Writes the data as loose files into build/ (no archive: both engines read loose files from the game folder);
-    returns the build folder. build/cr_manifest.txt lists them, so that a run folder can drop files of an older build."""
+    returns the build folder. build/cr_manifest.txt lists them, so that a run folder can drop files of an older build.
+    The build is made again only when its sources changed (build_key, in build/cr_build_key.txt): every engine and renderer
+    of every run uses the same one, and only _cr_tests.lua, the run's own, is written again. (The tests write only files of
+    their own in a run folder, never one of the build's.)"""
+    key = build_key()
+    stamp = os.path.join(BUILD, BUILD_KEY)
+    # (EMI is made again every time, a second or two: each of its games gets the archive made again from the files, put_tests)
+    if GAME != "emi" and os.path.exists(stamp) and open(stamp).read() == key:
+        with open(os.path.join(BUILD, "_cr_tests.lua"), "wb") as f:
+            f.write(cr_tests_lua(only, skip, start, fails))
+        print("build %s is up to date (%s)" % (BUILD, GAME))
+        return BUILD
     # (Windows may hold a file of the folder for a moment after an engine that crashed: retry for a few seconds)
     for attempt in range(20):
         try:
@@ -219,7 +248,9 @@ def build(only=None, skip=(), start=None, fails=0):
         if SVM_REMASTERED:
             files["grim.en.tab"] = formats.text_table_remastered(assets.TEXT)
             files["commentary_def.txt"] = formats.commentary_def(assets.COMMENTARY)
-    files[MANIFEST] = ("\n".join(sorted(files) + [MANIFEST]) + "\n").encode("ascii")
+    files[MANIFEST] = ("\n".join(sorted(files) + [BUILD_KEY, MANIFEST]) + "\n").encode("ascii")
+    # (the key last: a build that stopped half way is not taken for a whole one)
+    files[BUILD_KEY] = key.encode("ascii")
     for name, data in files.items():
         os.makedirs(os.path.dirname(os.path.join(BUILD, name)), exist_ok=True)
         with open(os.path.join(BUILD, name), "wb") as f:
@@ -229,19 +260,29 @@ def build(only=None, skip=(), start=None, fails=0):
 
 
 def copy_data(dest):
-    """Copies the build into a run folder, removing first the files of the build copied there before."""
+    """Copies the build into a run folder, removing first the files of the build copied there before. A folder that has
+    this build already (its cr_build_key.txt) is left as it is."""
     os.makedirs(dest, exist_ok=True)
+    have, want = os.path.join(dest, BUILD_KEY), os.path.join(BUILD, BUILD_KEY)
+    if os.path.exists(have) and os.path.exists(want) and open(have).read() == open(want).read():
+        return
     old = os.path.join(dest, MANIFEST)
     if os.path.exists(old):
         for name in open(old).read().splitlines():
             p = os.path.join(dest, name)
             if os.path.isfile(p):
                 os.remove(p)
+    if os.path.exists(have):
+        os.remove(have)
     for root, _, names in os.walk(BUILD):
         sub = os.path.relpath(root, BUILD)
         os.makedirs(os.path.join(dest, sub), exist_ok=True)
         for f in names:
-            shutil.copyfile(os.path.join(root, f), os.path.join(dest, sub, f))
+            if f != BUILD_KEY or sub != ".":
+                shutil.copyfile(os.path.join(root, f), os.path.join(dest, sub, f))
+    # (the key last: a folder whose copy stopped half way is copied again)
+    if os.path.exists(want):
+        shutil.copyfile(want, have)
 
 
 CRASHERS = os.path.join(HERE, "expected", "crashers.txt")
@@ -513,14 +554,25 @@ class DecompEngine(Engine):
     def command(self, d):
         log = self.log(d)
         env = dict(os.environ,
-                   GRIM_INI=os.path.join(d, "grim.ini"),   # config: grim.ini, not the registry (whose GrimDataDir is the real game)
-                   GRIM_DEBUGLOG=log,                      # debuglog, and the CRSNAP: screenshots
+                   GRIM_INI=winpath(os.path.join(d, "grim.ini")),   # config: grim.ini, not the registry (whose GrimDataDir is the real game)
+                   GRIM_DEBUGLOG=winpath(log),             # debuglog, and the CRSNAP: screenshots
                    GRIM_SIMTIME="17",                      # simtime: every frame is 17 ms, iMUSE on game time too
                    GRIM_MULTI="%s_%s" % (DECOMP_TAG, os.path.basename(d)))   # (its own window title: games side by side)
         for k in ("GRIM_NOMOVIE", "GRIM_LUA_FILE", "GRIM_DISPLAY_DEVICE", "GRIM_MODS", "GRIM_WALK_SCALE", "GRIM_IMUSE_REALTIME"):
             env.pop(k, None)   # (knobs that change the run)
         # (-w: windowed, like the original's windowed patch; the rebuilt exe makes its window a window from the start)
-        return [os.path.join(d, "GRIMFANDANGO.exe"), "-w"], env
+        # (elsewhere than Windows: under Wine, WINE=wine by default; WINEDEBUG=-all unless set: Wine's own messages are not wanted)
+        wine = [] if os.name == "nt" else [os.environ.get("WINE", "wine")]
+        if wine:
+            env.setdefault("WINEDEBUG", "-all")
+        return wine + [os.path.join(d, "GRIMFANDANGO.exe"), "-w"], env
+
+    def kill(self, d):
+        if os.name == "nt":
+            return kill_own_original(d)
+        # (killing wine's start-up process leaves the game's own process running under wineserver)
+        exe = winpath(os.path.join(d, "GRIMFANDANGO.exe"))
+        subprocess.run(["pkill", "-9", "-f", "--", re.escape(exe)], capture_output=True)
 
 
 class ScummvmEngine(Engine):
@@ -541,7 +593,12 @@ class ScummvmEngine(Engine):
                     # (no first-run question about update checks: it would wait for a click)
                     "updates_check=0\n"
                     # (no waiting for the screen's refresh at each picture drawn: with it a run takes 5 times as long)
-                    "vsync=false\n\n"
+                    "vsync=false\n"
+                    # (no anti-aliasing: with it 0 the backend does not probe the levels, a window and an OpenGL context for
+                    # each of 2 to 32 samples at every start, grim-test-data.patch)
+                    "antialiasing=0\n"
+                    # (no joystick: with -1 the backend does not start SDL's joystick subsystem and look for one at every start)
+                    "joystick_num=-1\n\n"
                     "[cleanroom]\ngameid=%s\nengineid=grim\ndescription=%s engine test data, renderer %s\nextra=Test data\n"
                     "path=%s%s\nlanguage=en\nplatform=windows\ncheck_gamedata=false\nfullscreen=false\n"
                     "speech_mute=true\nsim_frame_ms=17\nrenderer=%s\n%s" % ("monkey4" if GAME == "emi" else "grim",
@@ -902,13 +959,19 @@ def prepare_original(d):
     copy_data(d)
 
 
+def winpath(p):
+    """A path as the Windows programs see it: itself on Windows; elsewhere the rebuilt exe runs under Wine (WINE, default
+    wine), whose drive Z: is the root of the file system."""
+    return p if os.name == "nt" else "Z:" + os.path.abspath(p).replace("/", "\\")
+
+
 def write_grim_ini(d):
     """grim.ini (the game's registry, the config patch) as a new game finds it: pointing at the folder itself. good_times skips
     the CD check (Grim_Init); the display values are the ones the install uses."""
     with open(os.path.join(d, "grim.ini"), "w", newline="\r\n") as f:
         f.write("[Grim]\nGrimDataDir=%s\\\ngood_times=TRUE\nTextAllowed=true\nExperimentalDisplay=0\n"
                 "Last3DDevice=hex:00000000000000000000000000000000\n"
-                "LastDisplayDevice=hex:009fa692fa13d11197c000a024293005\n" % d)
+                "LastDisplayDevice=hex:009fa692fa13d11197c000a024293005\n" % winpath(d))
 
 
 def prepare_emi(d):
@@ -972,7 +1035,7 @@ def prepare_decomp(d):
     with open(os.path.join(d, "grim.ini"), "w", newline="\r\n") as f:
         f.write("[Grim]\nGrimDataDir=%s\\\ngood_times=TRUE\nTextAllowed=true\nExperimentalDisplay=0\n"
                 "Last3DDevice=hex:00000000000000000000000000000000\n"
-                "LastDisplayDevice=hex:009fa692fa13d11197c000a024293005\n" % d)
+                "LastDisplayDevice=hex:009fa692fa13d11197c000a024293005\n" % winpath(d))
     copy_data(d)
 
 

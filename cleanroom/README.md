@@ -5,7 +5,11 @@ only data made here (Lua, sets, bitmaps, a colormap, a text table, costumes). Th
 not assert anything; it logs what it observes (`cr_log`), and `compare.py` checks ScummVM's values against the
 original's, value by value.
 
-Run it with the MSYS2 venv (`~/venv/bin/python.exe`, UCRT Python 3.14); nothing beyond the standard library is needed.
+Run it with the MSYS2 venv (`~/venv/bin/python.exe`, UCRT Python 3.14). Beyond the standard library it needs numpy, which
+`snaps.py` reads the screenshots with: PyPI has none for MSYS2's Python, so install MSYS2's (`pacman -S
+mingw-w64-ucrt-x86_64-python-numpy`) and make the venv with `--system-site-packages` (or set `include-system-site-packages =
+true` in its `pyvenv.cfg`). The workflows run it with the same: MSYS2's `python` and `python-numpy`. Elsewhere `pip install
+numpy`.
 
 ```sh
 python run.py original --save    # run the original 3 times (--repeat N), keep it as expected/original.log
@@ -28,6 +32,15 @@ original's bytes at fixed addresses. The rebuilt exe is started directly with it
 - `GRIM_DEBUGLOG`: the PrintDebug log and the `CRSNAP:` screenshots.
 - `GRIM_SIMTIME=17`: every frame is 17 ms.
 - `GRIM_MULTI=cleanroom`: its own window title.
+
+**The decomp on Linux.** Elsewhere than Windows `run.py decomp` starts the exe under Wine (`WINE`, default `wine`;
+`WINEDEBUG=-all` unless set), with the paths it hands the game (`GRIM_INI`, `GRIM_DEBUGLOG`, `GrimDataDir`) as Wine sees them
+(`Z:\...`). It needs a 32-bit Wine prefix, an X display (`Xvfb :99`, `DISPLAY=:99`) and a sound device: without
+DirectSound the game stops at start with "could not initialize your hardware" (a PulseAudio null sink is enough:
+`pulseaudio --start; pactl load-module module-null-sink`). Turn off Wine's crash dialog (`wine reg add
+'HKCU\Software\Wine\WineDbg' /v ShowCrashDialog /t REG_DWORD /d 0`), or each crash waits for `CR_STALL`. On 2026-11-14
+all 5327 tests were the same as the original's this way, 95 s for the suite (4 games at a time). The exe is built with the
+mingw-w64 cross compiler there (grim-decomp `tools/coverage.sh`, which also measures the decomp's line coverage).
 
 Its crashes are bugs of the rebuild. They are reported and fail the run, but are not kept in a list. A crash leaves
 `grim_crash_cleanroom.txt` (exception, registers, stack) in `logs/crashes/decomp_exe_<test>.log`.
@@ -330,6 +343,9 @@ TinyGL it presents the frame first, as only one in 8 is). `cr_snap(key, "dark")`
 any background (a shadow), `cr_snap(key, "lit")` the box of the others (what an iris leaves open). The original's picture is
 the frame drawn before the call, ScummVM's the scene as it is at the call: a picture right after a change in the same frame
 differs for that reason alone, so the tests let a frame pass first.
+
+A test that is not in `expected/original.log` fails every comparison (EXTRA, for ScummVM, the decomp and the Remastered
+alike): record the original's values with `run.py original --save` in the same change that adds the test.
 
 `compare.py` puts a test in one of three classes. `same`: equal within 1e-6. `close`: all differing values are numbers
 within 1e-3 (`--close`). `DIFF`: anything else.
@@ -832,3 +848,19 @@ EMI's movies are Bink with fill blocks only (no DCT, motion or sound) and its mu
 Keyframes are text or binary (`formats.keyframe_binary`, `keyframe_bin.lua`: each engine plays the binary slide as the
 text one; a binary file's fps does not change a chore's length on either). Bitmaps are raw or codec 3 (`formats.codec3`: `cr_obj.bm` and `cr_cams.bm`; both
 engines decode them to the same pixels, so every test that draws them is unchanged).
+
+**Added on Linux, not yet in the reference (2026-11-14).** `images.lua` (the screenshot writers for every extension, their
+files read back with Lua's io, `GetImage` of the 24-bit formats), `funnel.lua` (`cr_funnel.set`: funnel sectors, type
+0x1100) and `zz_ims_fx.lua` (voices through the `cr_band_pass` voice effect) were written to cover code of the decomp no
+test reached (grim-decomp `tools/coverage.sh`). They ran only on the decomp there, so `expected/original.log` has none of
+their values: `compare.py` lists them as EXTRA until `run.py original --save` is run on the original. Not tried on ScummVM.
+(Since 2026-11-15 an EXTRA test fails the comparison, for ScummVM and the decomp alike: a new test is added with the
+original's values, `run.py original --save`.)
+`GetImage` of a .gif, .pcx or .lbm, and `BlastImage` of an image read from a screenshot, are left out: GetImage treats
+every image as 16-bit (an 8-bit one is overrun) and the screenshot is 24-bit (BlastImage copies rows wider than the screen).
+Later, also only on the decomp: `shadow_mesh.lua` (a model whose mesh casts a shadow, `shadow.mat` / `shadow.cmp`),
+`movie_modes.lua`'s modes 1 and 7, more presets in `zz_ims_fx.lua` (Reverb 1 mono and stereo, the Phasor, a chain) and
+`lua6.lua` (format, tonumber with a base, pattern classes, gsub, fallbacks, tag methods, setlocale, deep calls). Left out
+of lua6.lua: `setfallback("function", f)` and then calling a number hangs the decomp (from Lua code and through `call`);
+its luaD_call goes back to the same stack slot after the tag method, as the original's decompilation does
+(grim-decomp `src/LUA.DLL/ldo.c`, the `#if 0` luaD_call), so the original may hang too. Try it there before adding it.

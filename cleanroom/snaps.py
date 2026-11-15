@@ -14,6 +14,8 @@ import os
 import re
 import struct
 
+import numpy as np
+
 BRIGHT = 180  # (the backgrounds are at most 120 in any channel; ScummVM's screenshot is grey)
 
 SNAP = re.compile(r'^(V [^|]*\|[^|]*\|)"snap:([A-Za-z0-9_.]+)(:dark|:lit|:count|:mean|:seen)?"$')
@@ -21,7 +23,7 @@ DARK = 30  # (cr_snap(key, "dark"): the box of the pixels darker than any backgr
 
 
 def read_bmp(path):
-    """(width, height, rows of (r, g, b)) of an uncompressed 24- or 32-bit .bmp."""
+    """The pixels of an uncompressed 24- or 32-bit .bmp: an array of rows from the top, each of (r, g, b) (numpy, uint8)."""
     d = open(path, "rb").read()
     if d[:2] != b"BM":
         raise ValueError("%s: not a .bmp" % path)
@@ -31,32 +33,32 @@ def read_bmp(path):
         raise ValueError("%s: %d bits, compression %d" % (path, bpp, comp))
     step = bpp // 8
     pitch = (w * step + 3) & ~3
-    rows = []
-    for y in range(abs(h)):
-        src = (abs(h) - 1 - y) if h > 0 else y
-        p = off + src * pitch
-        rows.append([(d[p + x * step + 2], d[p + x * step + 1], d[p + x * step]) for x in range(w)])
-    return w, abs(h), rows
+    # (a picture cut short raises ValueError here: fewer bytes than its rows)
+    rows = np.frombuffer(d, np.uint8, abs(h) * pitch, off).reshape(abs(h), pitch)[:, :w * step].reshape(abs(h), w, step)
+    if h > 0:
+        rows = rows[::-1]   # (bottom-up in the file)
+    return rows[:, :, 2::-1]   # (b, g, r[, a] in the file)
 
 
 def bright_box(path, mode=None):
     """mode None: the bright pixels; "dark": the darker than any background; "lit": the others."""
-    w, h, rows = read_bmp(path)
-    xs, ys, total = [], [], 0
-    for y, row in enumerate(rows):
-        for x, (r, g, b) in enumerate(row):
-            dark = r < DARK and g < DARK and b < DARK
-            if dark if mode == "dark" else not dark if mode in ("lit", "mean") else (r >= BRIGHT and g >= BRIGHT and b >= BRIGHT):
-                xs.append(x)
-                ys.append(y)
-                total += r + g + b
-    if not xs:
+    px = read_bmp(path)
+    r, g, b = px[:, :, 0], px[:, :, 1], px[:, :, 2]
+    if mode in ("dark", "lit", "mean"):
+        dark = (r < DARK) & (g < DARK) & (b < DARK)
+        sel = dark if mode == "dark" else ~dark
+    else:
+        sel = (r >= BRIGHT) & (g >= BRIGHT) & (b >= BRIGHT)
+    ys, xs = np.nonzero(sel)
+    if not len(xs):
         return None
+    box = (int(xs.min()), int(ys.min()), int(xs.max()), int(ys.max()))
     if mode == "mean":
-        return min(xs), min(ys), max(xs), max(ys), len(xs), round(total / 3.0 / len(xs), 1)
+        total = int(r[sel].sum(dtype=np.int64)) + int(g[sel].sum(dtype=np.int64)) + int(b[sel].sum(dtype=np.int64))
+        return box + (len(xs), round(total / 3.0 / len(xs), 1))
     if mode == "count":
-        return min(xs), min(ys), max(xs), max(ys), len(xs)
-    return min(xs), min(ys), max(xs), max(ys)
+        return box + (len(xs),)
+    return box
 
 
 def clear(folder):
@@ -78,7 +80,12 @@ def resolve(lines, folder):
             out.append(m.group(1) + "missing")
             continue
         mode = m.group(3)[1:] if m.group(3) else None
-        box = bright_box(path, None if mode == "seen" else mode)
+        try:
+            box = bright_box(path, None if mode == "seen" else mode)
+        except (ValueError, struct.error, IndexError):
+            # (a picture cut short, by a game that crashed while it wrote it: a value of its own, not the end of the run)
+            out.append(m.group(1) + "unreadable")
+            continue
         if mode == "seen":
             out.append(m.group(1) + ("none" if box is None else '"bright"'))
             continue
