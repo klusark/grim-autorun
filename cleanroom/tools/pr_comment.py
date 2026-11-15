@@ -24,16 +24,17 @@ TEST = re.compile(r"^(\S+)\s+(DIFF|REGRESSION) \((\d+)\)\s*$|^(\S+)\s+(MISSING|E
 
 
 def parse(lines):
-    """The sections of an output: [(label or None, failed [(name, status, detail lines)], crashed [names], count line)]."""
+    """The sections of an output: [(label or None, failed [(name, status, detail lines)], crashed [names], count line,
+    error() quits [names])]."""
     sections = []
-    cur = [None, [], [], None]
+    cur = [None, [], [], None, []]
     test = None
     for l in lines:
         if l.startswith("==== "):
             m = re.match(r"^==== \S+, renderer (\S+)", l)
-            if cur[1] or cur[2] or cur[3]:
+            if cur[1] or cur[2] or cur[3] or cur[4]:
                 sections.append(tuple(cur))
-            cur = [m.group(1) if m else None, [], [], None]
+            cur = [m.group(1) if m else None, [], [], None, []]
             test = None
             continue
         m = TEST.match(l)
@@ -50,9 +51,11 @@ def parse(lines):
         elif l.startswith("crashed or hung ScummVM") and "; not marked: " in l:
             # (only the ones without a cr_scummvm_differs mark fail the run)
             cur[2] += [n.strip() for n in l.split("; not marked: ", 1)[1].split(",") if n.strip()]
+        elif l.startswith("quit ScummVM through error()") and "; not marked: " in l:
+            cur[4] += [n.strip() for n in l.split("; not marked: ", 1)[1].split(",") if n.strip()]
         elif re.match(r"^\d+ of \d+ tests differ", l):
             cur[3] = l.strip()
-    if cur[1] or cur[2] or cur[3]:
+    if cur[1] or cur[2] or cur[3] or cur[4]:
         sections.append(tuple(cur))
     return sections
 
@@ -80,8 +83,8 @@ def job_md(name, result, paths):
         return md
     found = False
     for path, lines in outputs:
-        for label, failed, crashed, count in parse(lines):
-            if not failed and not crashed:
+        for label, failed, crashed, count, errors in parse(lines):
+            if not failed and not crashed and not errors:
                 continue
             found = True
             where = os.path.splitext(os.path.basename(path))[0]
@@ -89,6 +92,8 @@ def job_md(name, result, paths):
                                         ": " + count if count else ""))
             if crashed:
                 md.append("- crashed or hung (%d): %s" % (len(crashed), code(crashed)))
+            if errors:
+                md.append("- quit through error() (%d): %s" % (len(errors), code(errors)))
             extra = [n for n, status, _ in failed if status == "EXTRA"]
             failed = [t for t in failed if t[1] != "EXTRA"]
             if extra:
