@@ -41,7 +41,7 @@ AUTORUN lines tell what happened and the last steps are shown in the top left of
 | ch21_jacket | 36 | the card to Lupe, jacket, slip of paper | 37 |
 | ch29_naranja | 37 | one trip to the ship: sailor out, dog tags, the paper to Toto: photo finish, the ticket printer set to race 6 day 2 week 2 | 45 |
 | ch34_blackmail | 45 | photo window, blackmail photo, Nick: the strike | 50 |
-| ch35_velasco_done | 50 | Velasco is told everything is done | 51 |
+| ch35_morgue | 50 | Velasco is told everything is done | 51 |
 | ch36_byeruba | 51 | the roulette panel breaks the house: end of Rubacava | 52 |
 | ch37_lola_start | 52 | Year 3: down the ladder to the engine room, anchors hooked, ship torn from the pier, hydrofoil | 53 |
 | ch38_chepito | 53 | the sunken Lola: stop Chepito, bait lantern, hand him to Glottis (Pearl cutscene) | 54 |
@@ -162,3 +162,16 @@ The whole game, new game to credits, is scripted (ch01 - ch65).
   window of the ledge 380 -> 154. ar_blam_skip.txt: spots left alone, the beavers' extinguisher (cut short, the beaver is not frozen and the fight never ends).
   ar_blam_after.lua: the rope to the ledge and the bondo, typed 10 frames after the push (the game pushes the costume a second time). 50 spots typed:
   240,150 -> 239,119 frames (66:25), passes twice.
+
+## Rubacava against the record (2026-11-15)
+- The record of the original (54:23, ScummVM 2.7, its video) laid against ours room by room: most of its lead in Rubacava is the ticket printer warp (a glitch:
+  it reaches the lighthouse without Carla's skeleton key, so no cigarette case and no second visit to Carla); not done here.
+- Without tricks: Velasco need not be told the vacancy, the union card and the strike. Bogen is back in the casino once the three are done
+  (cn.bogens_in_the_house_again, cf.lua and cn.lua), which is what the roulette panel of chapter 36 waits for. Chapter 35 (now ch35_morgue) ends at the elevator
+  station after the morgue; the walk to Limbo Dock and Velasco's talk are only in the 100% modes. 2,569 frames less in chapters 35 and 36.
+- The vault door: the tumblers' noise (Tumbler.make_noise) spins without yielding when every sound track is taken; the engine's sim_busy_calls rule gets
+  it through in 29 frames of game time but in a minute of the wall clock, and the stall watch (15 s) killed the run once the random numbers fell that way
+  (chapter 45 with blam, chapter 46 with two runs at once). In the vault door's set a wait for a sound that did not start yields a frame (ar_lib.lua,
+  AR_NO_VD_SOUND_YIELD for the old spin).
+- Speed run: 248,197 -> 245,520 frames (68:12), TRICKS=blam 239,119 -> 235,531 (65:25), each passes twice with the same count.
+

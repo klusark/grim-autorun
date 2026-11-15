@@ -964,6 +964,22 @@ ar_offered = function()
 	return vlist and AR_OBJ and vlist[AR_OBJ]
 end
 
+-- The vault door of Year 3 (vd): each tumbler's noise (Tumbler.make_noise, vd.lua) starts a sound and waits for it, and when every track is taken the sound
+-- never starts, wait_for_sound returns at once and the loop spins without yielding. The engine moves the sound clock on a frame every sim_busy_calls calls (a
+-- simulated run has no wall clock for it), but with the tumblers' sounds holding the tracks that was a minute of the wall clock for 29 frames, and the stall
+-- watch (15 s) killed the run (chapters 45 and 46, as the game's random numbers fell). There a wait for a sound that did not start yields a frame instead.
+-- AR_NO_VD_SOUND_YIELD = TRUE for the old spin
+if not AR_WFS_OLD and wait_for_sound then
+	AR_WFS_OLD = wait_for_sound
+	wait_for_sound = function(name)
+		if not AR_NO_VD_SOUND_YIELD and vd and system.currentSet == vd and ImGetParam(name, IM_SOUND_PLAY_COUNT) <= 0 then
+			break_here()
+			return
+		end
+		return AR_WFS_OLD(name)
+	end
+end
+
 -- Waits for the game to offer AR_OBJ, at most max_ms: the game makes its list of what Manny can use every frame (TrackManny, Find_Visible_Objects), so once he
 -- has stood still, turned and not moving, for 6 frames and it is not there it does not come (the waits of 1 and 1.2 s ran out 41 times in a speed run)
 ar_wait_offered = function(max_ms)

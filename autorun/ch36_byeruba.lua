@@ -6,9 +6,12 @@ ar_load(35)
 AR_NEW = TRUE
 ar_log("start in " .. ar_set_name())
 ar_wait_for_control()
-ar_go(lm.hb_door, hb)
-ar_go(hb.bw_door, bw)
-ar_go(bw.ev_door, ev, -2.49, -2.35, 0.2)
+-- (from Limbo Dock where chapter 35 told Velasco, in the 100% modes; from the elevator station by the morgue otherwise)
+if system.currentSet == lm then
+	ar_go(lm.hb_door, hb)
+	ar_go(hb.bw_door, bw)
+	ar_go(bw.ev_door, ev, -2.49, -2.35, 0.2)
+end
 ar_go(ev.ce_door, ce, -0.5, -0.85, 0.05)
 ar_go(ce.cc_door, cc)
 ar_wait_idle(200)
