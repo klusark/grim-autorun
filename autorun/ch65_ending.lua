@@ -24,7 +24,9 @@ sleep_for(800)
 AR_NO_WALK_APPROACH = TRUE
 -- (the skipper of the run is off: it would skip the cutscene the moment it begins, and the credits, and the game would end before the run says its result)
 AR_NO_SKIP = TRUE
+AR_DO_NO_CONTROL = TRUE
 ar_do("use", d, me.gun)
+AR_DO_NO_CONTROL = nil
 AR_NO_WALK_APPROACH = nil
 -- the hothouse blows up and the last cutscene (byebye) begins. A run that plays everything (the recording, AR_REAL) goes on through the cutscene and the
 -- credits until the game ends by itself; the speed run ends here, the cutscene and the credits are not sat through (a skip of the movie takes the game to the

@@ -1,10 +1,10 @@
--- Chapter 58 (Year 4): the florist's shop (fp, fi). Bowlsley is raving mad because of the bell taped to the door; the
+-- Chapter 57 (Year 4): the florist's shop (fp, fi). Bowlsley is raving mad because of the bell taped to the door; the
 -- scythe cuts the tape (puzzle state 50), Manny leaves and comes back, and Bowlsley, happy now, gives Manny the gun and
--- the can of Sproutella (puzzle state 54). Checkpoint in slot 74.
+-- the can of Sproutella (puzzle state 54). Checkpoint in slot 73.
 
 AR_NEW = TRUE
 AR_CONTROL_TIMEOUT = 300000
-ar_load(58)
+ar_load(57)
 ar_log("start in " .. ar_set_name())
 ar_wait_for_control()
 -- the florist's hatch is a hot sector on the ground in front of the ladder
@@ -32,5 +32,5 @@ ar_wait_for_control()
 ar_check(cur_puzzle_state[54], "Bowlsley gave Manny the gun and the Sproutella (puzzle state 54)")
 ar_check(fi.gun.owner == manny and fi.sproutella.owner == manny, "Manny has the gun and the Sproutella")
 AR_CONTROL_TIMEOUT = nil
-ar_state("end of chapter 58")
-ar_checkpoint(59)
+ar_state("end of chapter 57")
+ar_checkpoint(58)

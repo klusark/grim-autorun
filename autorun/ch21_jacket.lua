@@ -17,7 +17,7 @@ ar_go(bw.ev_door, ev, -2.49, -2.35, 0.2)
 ar_go(ev.ce_door, ce, -0.5, -0.85, 0.05)
 ar_go(ce.cc_door, cc)
 -- Lupe, who has something to tell Manny about the kiss, grabs him on arrival
-sleep_for(3000)
+sleep_for(200)
 ar_wait_for_control()
 ar_do("use", cc.lupe_obj, lx.lengua)
 ar_wait_for(function() return cc.jacket.owner == manny end, 300000)

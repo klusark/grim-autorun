@@ -1,12 +1,12 @@
--- Chapter 42: Meche's ashtray room. Twisting the ashtray while Meche flicks her ash sets her stockings
--- alight; they are thrown into the wastebasket and Manny takes the remains. Checkpoint in slot 58.
+-- Chapter 41: Meche's ashtray room, on the way back from the foreman's office with the hammer (as the speed run guides go: the hammer and the
+-- stockings are both taken to Chepito in one trip, chapter 43, one walk to the miners and back less). Twisting the ashtray while Meche flicks her ash
+-- sets her stockings alight; they are thrown into the wastebasket and Manny takes the remains. Checkpoint in slot 57.
 
-ar_load(41)
+ar_load(40)
 AR_NEW = TRUE
 ar_log("start in " .. ar_set_name())
 ar_wait_for_control()
-ar_go(mn.ea_door, ea)
-ar_go(ea.fh_door, fh)
+ar_go(fo.fh_door, fh)
 ar_go(fh.vd_door, vd)
 ar_go(vd.ar_door, ar)
 ar_wait_for_control()
@@ -325,5 +325,5 @@ ar_do("lookAt", ar.wastebasket)
 ar_wait_for(function() return ar.stockings.owner == manny end, 120000)
 ar_wait_for_control()
 ar_check(ar.stockings.owner == manny, "Manny has the stockings")
-ar_state("end of chapter 42")
-ar_checkpoint(42)
+ar_state("end of chapter 41")
+ar_checkpoint(41)

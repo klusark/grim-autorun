@@ -59,9 +59,11 @@ ar_do("use", co.computer)
 ar_wait_for(function() return co.computer.interface_active end, 20000)
 ar_check(co.computer.interface_active, "the computer interface is up")
 -- the computer takes the keys itself: down four times to the fifth answer, then USE
+-- (each press waits for the selection to move, not a fixed 1.2 s: a press the interface does not take yet is made again by the loop)
 while co.computer.selection < 4 do
+	AR_COPAL_SEL = co.computer.selection
 	ar_press("down")
-	sleep_for(1200)
+	ar_try_wait(function() return co.computer.selection ~= AR_COPAL_SEL end, 1200)
 end
 ar_press("use")
 ar_wait_for(function() return not co.computer.interface_active end, 60000)
