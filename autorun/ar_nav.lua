@@ -2430,7 +2430,7 @@ ar_follow_frame0 = function(nav, w, path, n, cum, i)
 	end
 	-- (the first second of a walk: he faces the way he came to rest, the door he came out of, and turning to the way at a degree a frame stood him still for as long as
 	-- the turn is; he walks while he turns, AR_NO_START_WALK = TRUE for the old stand)
-	if not AR_NO_START_WALK and (kind == "p" or kind == "x") and AR_FOLLOW_SPENT < 1500 then
+	if not AR_NO_START_WALK and (kind == "p" or kind == "x") and (AR_FOLLOW_SPENT or 0) < 1500 then
 		corner = TRUE
 	end
 	if kind == "s" and AR_IN_CONS then

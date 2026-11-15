@@ -1,0 +1,35 @@
+# The autorun's tests that need no game data (autorun/synth/all.sh): the planner and the follower on the synthetic sets of
+# autorun/synth/sets, 200 random sets (fuzz.lua), the dialog walker of the 100% modes (test_talk.lua) and the python tools.
+# Lua 5.1 stands in for the game's Lua 3.1 (synth/compat.lua). About a minute, on every pull request and on main.
+name: Autorun navigation tests
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+concurrency:
+  group: autorun-nav-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  synth:
+    name: Navigation tests (no game data)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Lua 5.1
+        run: sudo apt-get update -q && sudo apt-get install -y -q lua5.1
+
+      # (all.sh runs the tools with `python`)
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: autorun/synth/all.sh
+        run: sh autorun/synth/all.sh

@@ -1,3 +1,15 @@
+-- the game's in(item, table) (_system.lua): `in` is a word of Lua 5.1, so the data-free tests (synth/test_talk.lua) could not load this file with it
+ar_in_list = function(item, list)
+	local k, v = next(list, nil)
+	while k do
+		if v == item then
+			return TRUE
+		end
+		k, v = next(list, k)
+	end
+	return nil
+end
+
 -- The 100% modes (speed100, full100: AR_FULL, see MODES_PLAN.md): helpers that do everything there is to do in a place, and ar_extra, the hook the chapters call
 -- where a 100% run has more to do. In the other modes ar_extra does nothing, so those runs are not changed by a frame.
 -- Lua 3.1: no for loops, no # operator, no local functions.
@@ -355,7 +367,7 @@ ar_items_on = function(obj)
 		local item = inv[i]
 		-- (not the scythe where the game keeps it put away, no_scythe_sets of _sets.lua: Domino's office has code for it that no player can reach)
 		if item.owner == manny and obj[ "use_" .. trim_header(item.string_name) ]
-			and not (item == mo.scythe and system.currentSet.setFile and in(system.currentSet.setFile, no_scythe_sets)) then
+			and not (item == mo.scythe and system.currentSet.setFile and ar_in_list(system.currentSet.setFile, no_scythe_sets)) then
 			ar_do("use", obj, item)
 		end
 		i = i + 1
