@@ -96,6 +96,7 @@ image_read_zbm
 image_write_ext
 movie_fullscreen
 movie_missing
+movie_pause
 movie_place
 smv_stereo_fullscreen
 smv_track
