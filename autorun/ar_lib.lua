@@ -142,7 +142,7 @@ end
 
 ar_finish = function()
 	ar_log("verbs given through the keys: " .. AR_KEYS_USED)
-	ar_log("frames: " .. tostring(AR_FRAME) .. ", under the autorun control: " .. tostring(AR_FRAME_CTL or 0))
+	ar_log("frames: " .. tostring(AR_FRAME) .. ", under the autorun control: " .. tostring(AR_FRAME_CTL or 0) .. (AR_MENU_FRAMES and (", in the game menu: " .. AR_MENU_FRAMES) or ""))
 	if AR_FAILED then
 		ar_log("RESULT FAILED")
 	else
