@@ -2440,7 +2440,8 @@ ar_follow_frame0 = function(nav, w, path, n, cum, i)
 		limit = AR_TURN_LIM or 75
 	elseif kind ~= "p" then
 		limit = 15
-		if kind ~= "g" and togo > (AR_FAR_STEP or 0.3) then
+		-- (a goal far off too: he stood and turned to 15 degrees of it from metres away, 5,265 frames of a speed run; the last 50 cm, AR_FAR_GOAL, keep the 15)
+		if (kind ~= "g" and togo > (AR_FAR_STEP or 0.3)) or (kind == "g" and togo > (AR_FAR_GOAL or 0.5)) then
 			limit = 45
 		end
 	elseif w.x0 and ar_w_pen_at(nav, w, p.x, p.y, p.z) == 0 then
