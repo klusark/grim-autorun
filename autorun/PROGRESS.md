@@ -141,3 +141,19 @@ The whole game, new game to credits, is scripted (ch01 - ch65).
 - What is left, and was tried: the turns of more than 75 degrees at the start of a walk (about 3,000 frames) are already at the run's turn rate, and AR_TURN_LIM = 88
   (the walk's turn is faster once he moves) gained nothing; the walking with a good heading far from the point is mostly the slopes of the meadow, where a run
   covers less of the map; about 1,600 frames stand pressed against walls (the "held up" of the follower) and 1,400 walk the last 12 cm to exact points.
+
+## Tricks: TRICKS=blam (2026-11-15)
+- Tricks of the speed runners are settings, off unless named: `TRICKS=blam sh run_all.sh` (mode.sh; ar_tricks.lua is only loaded then, a run without it is not
+  changed by a frame). The log says "tricks: blam".
+- blam: the easter egg of the game (stopKeyDown, est_test in _system.lua): typing b, l, a, m pushes est.cos on Manny and pops the costume on top of his stack 3 s
+  later. Typed a few frames before the game pushes a costume of its own (a climb, a search, a pick-up), that costume is the one popped: the chore the game waits
+  for goes with it and the scene goes on; the game's own pop takes est.cos off. The runners of the original (54:23 on ScummVM) type it many times a minute.
+- Where: anchors (a verb sent, a change of set, the start of a cutscene) keyed by chapter, kind and count; a learning run (BLAMLEARN=1) logs every costume pushed
+  onto Manny with its anchor and the frames since it, and every pop; `python tools/blam_spots.py logs/<learn>.log ar_blam_spots.lua` keeps the pushes that start
+  and end inside a cutscene and are held 240 frames or more, one per anchor. The trick types the word 3 frames before each (AR_BLAM_LEAD), only to the game's own
+  button handler, and only in a cutscene or with nothing held or looked at (the a is the second pick-up key), up to the frame before the push, never after.
+- 56 spots, 46 typed; the other 10 (the red tube, the window and ropes of the ledge, the bondo, the beavers' extinguisher, the jacket, the jump off the wagon) push
+  their costume in the frame their cutscene starts, with an item in Manny's hand or an object in front of him: not typed. The forum's way for the jacket (typed
+  during the search) works by another mechanism, not tried yet.
+- Speed run with TRICKS=blam: 240,150 frames (66:43), passes twice; without it 248,197 as before.
+- After a chapter changes, the spots of that chapter are learned again: `BLAMLEARN=1 LOG=blam_learn sh run_all.sh`, then blam_spots.py.
