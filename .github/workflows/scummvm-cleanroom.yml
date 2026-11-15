@@ -104,6 +104,7 @@ jobs:
           cd scummvm
           echo "ScummVM $SCUMMVM_REPO $SCUMMVM_REF: $(git rev-parse HEAD) $(git log -1 --format=%s)" | tee -a "$GITHUB_STEP_SUMMARY"
           if [ -n "$APPLY_PATCH" ]; then git apply ../grim_tools/cleanroom/scummvm/grim-test-data.patch; fi
+          bash ../grim_tools/.github/scripts/scummvm_upstream_fixes.sh
           mkdir build && cd build
           CXX="ccache g++" CC="ccache gcc" ../configure --disable-all-engines --enable-engines=grim,monkey4 --enable-release \
             --disable-libcurl --disable-sdlnet --disable-cloud --disable-updates --disable-tts

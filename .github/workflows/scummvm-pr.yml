@@ -161,6 +161,7 @@ jobs:
             git apply ../grim_tools/cleanroom/scummvm/grim-test-data.patch || {
               echo "**The test patch does not apply to the ${{ matrix.side }}**" | tee -a "$GITHUB_STEP_SUMMARY"; exit 1; }
           fi
+          bash ../grim_tools/.github/scripts/scummvm_upstream_fixes.sh
           mkdir build && cd build
           CXX="ccache g++" CC="ccache gcc" ../configure --disable-all-engines --enable-engines=grim,monkey4 --enable-release \
             --disable-libcurl --disable-sdlnet --disable-cloud --disable-updates --disable-tts
