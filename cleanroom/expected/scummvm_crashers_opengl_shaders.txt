@@ -82,6 +82,7 @@ args_SetActorShadowPoint_p4_tab
 costume_imuse_state
 costume_smush
 costume_stream
+cov_unknown_tag
 gco_set_states
 gco_text_keys
 gl1_camera_actor_none
@@ -97,7 +98,5 @@ movie_missing
 text_char_pos_killed
 text_char_pos_past_end
 text_dims_killed
-text_high_chars
-text_high_drawn
 text_no_font
 walk_vector

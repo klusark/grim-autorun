@@ -82,6 +82,7 @@ args_SetActorShadowPoint_p4_tab
 costume_imuse_state
 costume_smush
 costume_stream
+cov_unknown_tag
 gco_set_states
 gco_text_keys
 gl1_camera_actor_none
@@ -94,18 +95,11 @@ image_read_bmp
 image_read_zbm
 image_write_ext
 movie_fullscreen
-movie_loop
 movie_missing
-movie_pause
 movie_place
-movie_replace
-movie_short
 smv_stereo_fullscreen
-smv_track
 text_char_pos_killed
 text_char_pos_past_end
 text_dims_killed
-text_high_chars
-text_high_drawn
 text_no_font
 walk_vector

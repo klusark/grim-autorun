@@ -424,7 +424,10 @@ cd ~/grim_tools/cleanroom && tools/parallel.sh --coverage   # every game and ren
 
 `tools/parallel.sh --coverage` runs Grim, EMI and Grim in the Remastered mode, each with every renderer: nine `run.py
 scummvm` at once, each with `--work` (its own build/, run/ and logs/ under run/parallel/, nothing written to expected/),
-then `autorun/tools/covreport.py --all` into reports/coverage/. That takes about 4 minutes, against 15 one after the other. The
+then `autorun/tools/covreport.py --all` into reports/coverage/. Each run has 4 games at a time (`CR_GAMES`): with one
+per processor, over a hundred OpenGL games start at once and the last ones get `GL_OUT_OF_MEMORY` and crash before
+their first test, so their tests are missing from the coverage (2026-11-15: 20 to 33 test files of each Grim run). The
+run takes about 11 minutes on 16 processors. The
 nine add their counters to the same .gcda files when they end, and libgcov locks each file while it adds to it (on Windows
 too, with `_locking`). `-fprofile-update=atomic` makes the counters safe between ScummVM's own threads (audio, timers):
 without it two threads can lose each other's counts, the counts no longer add up, and the ones gcov works out from the

@@ -773,6 +773,8 @@ def run_test_file(engine, path, slots, skip, only):
             if not cur:
                 say("%s: %s: the game ended without SUMMARY and no test was running (exit code %s)" %
                     (engine.name, name, "none (killed)" if g.exit is None else "0x%X" % (g.exit & 0xFFFFFFFF)))
+                # (its log too, as of a test named after the file: at the start or the end of the game, not in a test)
+                keep_crash_log(engine.name, "file_" + name, g)
                 out += lines
                 break
             err = quit_by_error(engine.name, g)

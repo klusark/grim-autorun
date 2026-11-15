@@ -9,7 +9,8 @@
 #       cleared first, every game by default, then autorun/tools/covreport.py --all into reports/coverage/
 #   (other options go to every run.py: --only T1,T2, --fresh, --visible)
 #   CR_PARALLEL_DIR: the folder of the runs (default run/parallel, relative to cleanroom/; emptied first)
-#   CR_COV_OUT, CR_COV_TITLE: the report's folder and title (--coverage); CR_STALL_COV: CR_STALL of a coverage run (60)
+#   CR_COV_OUT, CR_COV_TITLE: the report's folder and title (--coverage); CR_STALL_COV: CR_STALL of a coverage run (60);
+#   CR_GAMES: games at a time in each run (--coverage: 4, otherwise one per processor)
 #
 # Each run's output: run/parallel/<game>_<renderer>.txt, its logs in run/parallel/<game>_<renderer>/logs/. Exits 1 when a
 # Grim or EMI run fails: a regression, or a crash of a test without a mark (the Remastered mode is a report only). CR_STALL defaults to 15 here (2 in run.py): nine
@@ -37,7 +38,9 @@ cd "$HERE" || exit 1
 export CR_STALL=${CR_STALL:-15}
 if [ -n "$COV" ]; then
 	COV=$(cd "$COV" && pwd) || exit 1
-	export SCUMMVM="$(cygpath -w "$COV/scummvm.exe")" CR_STALL=${CR_STALL_COV:-60} CR_STARTUP=${CR_STARTUP:-120}
+	# (CR_GAMES 4: nine runs of one game per processor are over a hundred OpenGL games at once, and the ones that start
+	# last get GL_OUT_OF_MEMORY and crash before their first test: their tests are missing from the coverage)
+	export SCUMMVM="$(cygpath -w "$COV/scummvm.exe")" CR_STALL=${CR_STALL_COV:-60} CR_STARTUP=${CR_STARTUP:-120} CR_GAMES=${CR_GAMES:-4}
 	find "$COV" -name '*.gcda' -delete
 fi
 rm -rf "$WORK"
