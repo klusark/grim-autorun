@@ -242,3 +242,9 @@ the first 9060 lines of the whole game after the normalising, and has to be the 
 * At most 60 pictures a second are drawn, by the clock of the run (the simulated one when there is one; checked with `--sim-fps=240`: 60 in any second, 16 or 17 ms apart).
   A loop with a speed limit is held to 17 ms a loop (58 a second), not 16 ms (62).
 * The whole game: 1:56 of cpu time and 128 s, was 2:12 and 144 s; with `SAVE=1` 2:06. Two runs without saves are the same line for line.
+
+## Tricks (TRICKS=blam)
+`TRICKS=blam sh run_all.sh` plays the speed run with the BLAM easter egg at the spots of `ar_blam_spots.lua` (240,150 frames instead of 248,197). The spots are
+learned from a run: `BLAMLEARN=1 LOG=blam_learn sh run_all.sh`, then `python tools/blam_spots.py logs/blam_learn.log ar_blam_spots.lua`. Learn them again when a
+chapter changes; a spot whose timing has moved is not typed after the push it was for (the log says "BLAM not typed").
+

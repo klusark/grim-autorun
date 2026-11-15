@@ -31,6 +31,19 @@ AR_USE_KNOWN = TRUE"
 # SCAN=1: Manny turns on the spot, 24 degrees at a time, when the game does not offer an object (ar_scan_for); off by default, it never found one in a speed run
 [ -n "$SCAN" ] && MODE_LUA="$MODE_LUA
 AR_SCAN = TRUE"
+# TRICKS=<name>[,<name>...]: tricks of the speed runners, each off unless named (ar_tricks.lua): blam (the easter egg that cuts Manny's animations short, at the spots of
+# ar_blam_spots.lua). BLAMLEARN=1: the log that tools/blam_spots.py makes those spots from. The log names the tricks that were on
+if [ -n "$TRICKS" ] || [ -n "$BLAMLEARN" ]; then
+	MODE_LUA="$MODE_LUA
+AR_TRICKS = { }"
+	for _t in $(echo "$TRICKS" | tr ',' ' '); do
+		MODE_LUA="$MODE_LUA
+AR_TRICKS[\"$_t\"] = TRUE"
+	done
+	[ -n "$BLAMLEARN" ] && MODE_LUA="$MODE_LUA
+AR_BLAM_LEARN = TRUE"
+	TRICKS_LIB=1
+fi
 # NAVDEBUG=1: the nav is drawn on the screen (ar_navdebug.lua)
 [ -n "$NAVDEBUG" ] && MODE_LUA="$MODE_LUA
 AR_NAVDEBUG = TRUE"

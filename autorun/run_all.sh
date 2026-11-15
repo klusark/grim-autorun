@@ -58,6 +58,8 @@ mkdir -p "$AR/logs" "$AR/saves_new" "${SAVES:-$AR/saves}"
 			cat "$AR/$lib" "$AR/ar_nav.lua" "$AR/nav_setfile.lua" "$AR/ar_nav_known.lua"
 			cat "$AR/ar_helpers.lua" "$AR/ar_rng.lua" "$AR/ar_full.lua"
 			{ [ -n "$NAVDEBUG" ] || [ -n "$SPEEDLOG" ]; } && cat "$AR/ar_navdebug.lua"
+			# (TRICKS=, BLAMLEARN=: the spots and the tricks, mode.sh)
+			[ -n "$TRICKS_LIB" ] && { [ -f "$AR/ar_blam_spots.lua" ] && cat "$AR/ar_blam_spots.lua"; cat "$AR/ar_tricks.lua"; echo 'ar_log("tricks: '"${TRICKS:-none}"'")'; }
 			[ -n "$FULL" ] && cat "$AR"/ex*.lua
 			cur="$lib"
 		fi
