@@ -29,6 +29,10 @@ mkdir -p "$AR/logs" "$AR/saves_new" "${SAVES:-$AR/saves}"
 	[ -z "$SAVE" ] && echo 'AR_NOSAVE = TRUE'
 	# REAL=1: nothing is skipped and the voices are on; FRAMES=<ms>: ScummVM writes a frame that often (to DUMPDIR)
 	echo "$MODE_LUA"
+	# SKIPMS=<ms>: a cutscene is skipped that long after its override was set (default 17, the first frame, as a player who holds the key: 3,400 frames less than
+	# 100 ms in a speed run, and 100 ms 1,150 less than 500. 500 where the lines are not skipped, the modes the frames of the two engines are compared in, and
+	# in the original's script, build_original.sh: ar_lib.lua's default)
+	echo "AR_SKIP_MS = ${SKIPMS:-$([ -n "$NOSKIPLINES" ] && echo 500 || echo 17)}"
 	[ -n "$FRAMES" ] && echo "AR_FRAMES = $FRAMES"
 	# (the autorun's own watchdog fails a run after this much game time: 10 hours, none in real time)
 	if [ -n "$REALTIME" ]; then echo 'AR_TIMEOUT = 1000000000000'; else echo 'AR_TIMEOUT = 36000000'; fi

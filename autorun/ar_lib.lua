@@ -1441,6 +1441,11 @@ ar_do = function(verb, noun1, noun2)
 		end
 		return ar_fail("the code of the game for " .. tostring(verb) .. " " .. tostring(noun1 and noun1.name) .. " does not end")
 	end
+	-- (AR_DO_NO_CONTROL: the caller waits for what comes next itself. The last verb of the game goes straight into the last cutscene, whose movie plays in real time
+	-- with nothing logged: waiting for the control there, which never comes back, tripped the stall watch)
+	if AR_DO_NO_CONTROL then
+		return TRUE
+	end
 	ar_wait_for_control()
 	wait_for_message()
 	return TRUE
@@ -2333,7 +2338,7 @@ ar_ov_after_cutscene = function(f)
 	return nq and f == nq.esc_from_camera
 end
 ar_skip_timer = function(serial)
-	sleep_for(500)
+	sleep_for(AR_SKIP_MS or 500)
 	while serial == AR_OV_SERIAL and cutSceneLevel > 0 and system.override and system.override.is_active and ar_ov_after_cutscene(system.override.override_func) do
 		break_here()
 	end

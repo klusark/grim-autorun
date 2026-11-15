@@ -41,10 +41,10 @@ ar_wait_for_control()
 
 -- the logbook to Celso: Manny gets the job, and the next year begins
 ar_go(re.ri_door, ri)
-AR_NO_SKIP = TRUE
+-- (the Year 2 movie, yr2intro.snm, is skipped like the other cutscenes: its override is cut_scene.skip_year2int, which sets up the cafe balcony as the
+-- end of the movie does. It used to be watched to its end, 46 s)
 ar_do("use", ri.celso_obj, re.logbook)
 ar_wait_for(function() return system.currentSet == cb end, 600000)
 ar_wait_for_control()
-AR_NO_SKIP = nil
 ar_state("end of chapter 13")
 ar_checkpoint(13)

@@ -1,15 +1,15 @@
--- Chapter 55 (Year 4): the Le Mans lobby (ly), reached from the theater sewer now Manny looks like a
--- Thunderboy. The unicycle man (Charlie's agent) is talked to twice, Meche twice (she gives Manny her sheet),
+-- Chapter 58 (Year 4): back from the florist through the sewer hub and the theater sewer to the Le Mans lobby (ly), which lets Manny in as he looks
+-- like a Thunderboy. The unicycle man (Charlie's agent) is talked to twice, Meche twice (she gives Manny her sheet),
 -- the sheet is thrown over Chowchilla Charlie at his slot machine, and while he struggles the agent is asked
 -- again: he climbs into Charlie's machine for the jackpot and Charlie is taken away by Meche
--- (puzzle state 56). Checkpoint in slot 71.
+-- (puzzle state 56). Checkpoint in slot 74.
 
 AR_NEW = TRUE
 AR_CONTROL_TIMEOUT = 300000
-ar_load(55)
+ar_load(58)
 ar_log("start in " .. ar_set_name())
 ar_wait_for_control()
-ar_go(th.te_door, te)
+ar_go(sh.te_door, te)
 ar_wait_for_control()
 ar_climb(nil, nil, 40000)
 ar_wait_for_control()
@@ -69,5 +69,5 @@ ar_wait_for(function() return cur_puzzle_state[56] end, 300000)
 ar_wait_for_control()
 ar_check(cur_puzzle_state[56], "Charlie is gone (puzzle state 56)")
 AR_CONTROL_TIMEOUT = nil
-ar_state("end of chapter 55")
-ar_checkpoint(56)
+ar_state("end of chapter 58")
+ar_checkpoint(59)
