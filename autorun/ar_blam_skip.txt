@@ -1,0 +1,3 @@
+# Spots of the learning run that TRICKS=blam leaves alone (tools/blam_spots.py): a part of the key on each line. The game's puzzle runs by the length of these
+# animations, and cut short it does not go on.
+ch12_beavers|cut:Beaver Dam   # the fire extinguisher's spray: cut short, the beaver is not frozen and the fight never ends

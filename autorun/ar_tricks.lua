@@ -16,6 +16,8 @@
 
 AR_TRICKS = AR_TRICKS or { }
 AR_BLAM_SPOTS = AR_BLAM_SPOTS or { }
+-- (ar_blam_after.lua: spots where the word is typed that many frames after the push instead of before it)
+AR_BLAM_AFTER = AR_BLAM_AFTER or { }
 AR_BLAM_LEAD = AR_BLAM_LEAD or 3
 AR_TR_COUNT = { }
 AR_TR_CH = nil
@@ -33,12 +35,18 @@ ar_tr_anchor = function(kind, what)
 	AR_TR_FRAME = AR_FRAME
 	if AR_TRICKS.blam and AR_BLAM_SPOTS[AR_TR_KEY] then
 		local spot = AR_BLAM_SPOTS[AR_TR_KEY]
-		start_script(ar_blam_task, AR_FRAME + spot.off - AR_BLAM_LEAD, spot, AR_TR_KEY)
+		if AR_BLAM_AFTER[AR_TR_KEY] then
+			start_script(ar_blam_task, AR_FRAME + spot.off + AR_BLAM_AFTER[AR_TR_KEY], spot, AR_TR_KEY, TRUE)
+		else
+			start_script(ar_blam_task, AR_FRAME + spot.off - (spot.lead or AR_BLAM_LEAD), spot, AR_TR_KEY)
+		end
 	end
 end
 
--- the word, typed at frame `at` (the spot's costume is pushed AR_BLAM_LEAD frames later)
-ar_blam_task = function(at, spot, key)
+-- the word, typed at the first quiet frame from `at` on (the spot's costume is pushed spot.lead frames later: the earlier the word, the sooner its pop comes after the
+-- push; with after, it was pushed before, and the word is for the chores the game
+-- plays after it: est.cos on top has none of them)
+ar_blam_task = function(at, spot, key, after)
 	while AR_FRAME < at do
 		break_here()
 	end
@@ -46,7 +54,10 @@ ar_blam_task = function(at, spot, key)
 	-- or alt held. Where it is not quiet yet, every frame up to the one before the push: the cutscene often begins two or three frames before the game pushes
 	-- its costume. After the push it is not typed at all: the word would pop the next costume instead)
 	local quiet = nil
-	local last = at + AR_BLAM_LEAD - 1
+	local last = at + (spot.lead or AR_BLAM_LEAD) - 1
+	if after then
+		last = at + 30
+	end
 	local looking = TRUE
 	while looking do
 		quiet = system.buttonHandler == SampleButtonHandler and (cutSceneLevel > 0 or (not hot_object and not manny.is_holding))
@@ -57,7 +68,7 @@ ar_blam_task = function(at, spot, key)
 		end
 	end
 	if quiet then
-		ar_log("BLAM for " .. tostring(spot.cos) .. " (" .. tostring(key) .. ", held " .. tostring(spot.held) .. " frames in the learning run)")
+		ar_log("BLAM for " .. tostring(spot.cos) .. " (" .. tostring(key) .. ", held " .. tostring(spot.held) .. " frames in the learning run" .. (after and (", " .. tostring(AR_BLAM_AFTER[key]) .. " frames after its push") or "") .. ")")
 		AR_BLAM_N = (AR_BLAM_N or 0) + 1
 		ar_press_key(BKEY)
 		ar_press_key(LKEY)

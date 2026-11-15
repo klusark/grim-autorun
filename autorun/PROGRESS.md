@@ -157,3 +157,8 @@ The whole game, new game to credits, is scripted (ch01 - ch65).
   during the search) works by another mechanism, not tried yet.
 - Speed run with TRICKS=blam: 240,150 frames (66:43), passes twice; without it 248,197 as before.
 - After a chapter changes, the spots of that chapter are learned again: `BLAMLEARN=1 LOG=blam_learn sh run_all.sh`, then blam_spots.py.
+- Later the same day: the word is typed as early as the spot allows (lead in ar_blam_spots.lua: up to 175 frames before the push, not before the anchor nor
+  before Manny's last costume event), so that its pop comes just after the game's push instead of 3 s after it; the jacket's search 864 -> 40 frames, the
+  window of the ledge 380 -> 154. ar_blam_skip.txt: spots left alone, the beavers' extinguisher (cut short, the beaver is not frozen and the fight never ends).
+  ar_blam_after.lua: the rope to the ledge and the bondo, typed 10 frames after the push (the game pushes the costume a second time). 50 spots typed:
+  240,150 -> 239,119 frames (66:25), passes twice.
