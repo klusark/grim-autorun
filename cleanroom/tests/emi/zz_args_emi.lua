@@ -12416,7 +12416,7 @@ cr_t_args_2061 = function()
 	local r1, r2, r3, r4 = random(1.5)
 	cr_log("r", r1, r2, r3, r4)
 end
-cr_test("args_random_num", cr_t_args_2061)
+cr_scummvm_differs("args_random_num") cr_test("args_random_num", cr_t_args_2061)
 cr_t_args_2062 = function()
 	cr_args_for("random")
 	local r1, r2, r3, r4 = random({ })
