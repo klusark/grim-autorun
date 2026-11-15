@@ -34,7 +34,7 @@ def material_pixels(width, height, pixels, alpha):
     transparent index) and its third word (ScummVM's Texture::_hasAlpha) set to `alpha`."""
     u = lambda *v: struct.pack("<%dI" % len(v), *v)
     f = lambda *v: struct.pack("<%df" % len(v), *v)
-    out = b"MAT " + u(0x32, 2, 1, 1) + u(8, 8) + b"\0" * 48
+    out = b"MAT " + u(0x32, 2, 1, 1) + u(0, 8) + b"\0" * 48
     out += u(8, 255) + f(1.0, 1.0, 1.0, 1.0) + u(0, 0, 0, 0)
     out += u(width, height, alpha, 0, 0, 1) + bytes(pixels)
     return out

@@ -606,7 +606,9 @@ def model3do_text(name, meshes, nodes, radius=None, insert=(0.0, 0.0, 0.0), mate
 def material(width, height, index=255, cels=1, indices=None, tex_flags=0, pixels=None):
     """A .mat of one 8-bit texture of colour index `index` (of the colormap the model is drawn with: cr_pal.cmp is a grey
     ramp, 255 white), `cels` cels on it. The layout of rdMaterial_LoadFile (and of what ScummVM reads, MaterialData::initGrim):
-    'MAT ', 0x32, flags 2 (no palette), the cels, the textures, 14 words of the texture format (the first the bits a pixel);
+    'MAT ', 0x32, flags 2 (no palette), the cels, the textures, 14 words of the texture format (a ColorFormat: the colour
+    mode, 0 = indexed, as in every .mat of the game, then the bits a pixel, 8; the game's own .mat files have leftover bytes
+    in the other words, which nothing reads);
     a cel: flags 8 (it has a texture), a colour, four 1.0, then 16 bytes, the fourth word the texture; a texture: width,
     height, flags, two words, the mipmap levels (1), and its pixels. tex_flags: the texture's flags word (render_modes.lua:
     bit 0 makes rdCache_DrawFace pick the rasteriser that skips colour 0); pixels: a function (x, y) -> index instead of
@@ -614,9 +616,10 @@ def material(width, height, index=255, cels=1, indices=None, tex_flags=0, pixels
     u = lambda *v: struct.pack("<%dI" % len(v), *v)
     f = lambda *v: struct.pack("<%df" % len(v), *v)
     # (the first two words of the format go into each texture's surface description: the second is its bits a pixel, which
-    # the original divides by)
+    # the original divides by; the first, the colour mode, decides how the Direct3D renderer converts the texture:
+    # std3D_AddToTextureCache uploads mode 0 through the palette and skips any mode other than 0..2, a black texture)
     indices = list(indices or [index] * cels)
-    out = b"MAT " + u(0x32, 2, len(indices), len(indices)) + u(8, 8) + b"\0" * 48
+    out = b"MAT " + u(0x32, 2, len(indices), len(indices)) + u(0, 8) + b"\0" * 48
     for i, c in enumerate(indices):
         out += u(8, c) + f(1.0, 1.0, 1.0, 1.0) + u(0, 0, 0, i)
     for c in indices:
