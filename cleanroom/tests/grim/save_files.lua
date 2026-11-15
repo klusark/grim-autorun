@@ -67,7 +67,7 @@ cr_t_save_find_dir = function()
 	cr_log("grim", s)
 	cr_log("any", n > 0)
 end
-cr_scummvm_differs("save_find_dir", "crashes or hangs ScummVM now and then: on the skip list") cr_test("save_find_dir", cr_t_save_find_dir)
+cr_test("save_find_dir", cr_t_save_find_dir)
 
 -- the other .gsv files of the folder (the saves of save.lua): the original lists every one
 cr_t_save_find_others = function()
@@ -76,7 +76,7 @@ cr_t_save_find_others = function()
 	local s, other = cr_sf_grim(t)
 	cr_log("others", other > 0)
 end
-cr_scummvm_differs("save_find_others", "ScummVM lists only grim##.gsv for *.gsv") cr_test("save_find_others", cr_t_save_find_others)
+cr_test("save_find_others", cr_t_save_find_others)
 
 -- no folder: the original looks in the root of the drive
 cr_t_save_find_nodir = function()
@@ -234,15 +234,3 @@ cr_t_save_image_dim = function()
 	cr_frames(2)
 end
 cr_scummvm_differs("save_image_dim", "ScummVM's thumbnail: almost black (OpenGL) or darker") cr_test("save_image_dim", cr_t_save_image_dim)
-
--- (a memory error in ScummVM under valgrind: on the skip list)
-cr_scummvm_differs("save_find_end", "a memory error in ScummVM under valgrind (uninitialised value or invalid access): on the skip list")
-
--- (a memory error in ScummVM under valgrind: on the skip list)
-cr_scummvm_differs("save_find_one", "a memory error in ScummVM under valgrind (uninitialised value or invalid access): on the skip list")
-
--- (a memory error in ScummVM under valgrind: on the skip list)
-cr_scummvm_differs("save_find_restart", "a memory error in ScummVM under valgrind (uninitialised value or invalid access): on the skip list")
-
--- (a memory error in ScummVM under valgrind: on the skip list)
-cr_scummvm_differs("save_image", "a memory error in ScummVM under valgrind (uninitialised value or invalid access): on the skip list")

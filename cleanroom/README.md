@@ -379,7 +379,8 @@ for the marker `grimremasteredtestdata.txt` (with `ADGF_REMASTERED`), and the da
 (`grim.en.tab`, `formats.text_table_remastered`) and commentary list (`commentary_def.txt`, `formats.commentary_def`,
 `assets.COMMENTARY`). It builds into `build_remastered/` and runs in `run/remastered_scummvm/`; the reference is
 `logs/remastered.log` (the last `run.py remastered`) when there is one, else the original's. This is a report too and never
-fails (the marks are for the original); its crashers are `expected/remastered_scummvm_crashers_<renderer>.txt`.
+fails (the marks are for the original); its crashers are `expected/remastered_scummvm_crashers_<renderer>.txt` and its
+`error()` quits `expected/remastered_scummvm_errors_<renderer>.txt`.
 `tests/grim/zz_remastered.lua` calls the Remastered's own builtins (`rem_*`; "missing" on the original and Grim mode).
 
 Found this way (fixed on `cleanroom`): EnableCommentary, ShowCursor, AddHotspot / QueryActiveHotspots and Save (the
@@ -464,7 +465,15 @@ comparison.
 A test that crashes or hangs an engine is found by `run.py`. A run that ends without SUMMARY, or writes nothing for 15 s
 (`CR_STALL`), is stopped. The test without an END is run again, and only when the run dies in it a second time is it
 skipped (`CR_SKIP`) and the whole run repeated. The original's crashers go to `expected/crashers.txt` and are skipped on both
-engines (there is no reference). ScummVM's are reported as bugs (`logs/scummvm_crashers.txt`). A crash that moves to
+engines (there is no reference). ScummVM's are reported as bugs (`logs/scummvm_crashers_<renderer>.txt`) and kept in
+`expected/scummvm_crashers_<renderer>.txt`. A test where ScummVM quits through `error()` is kept apart from them, in
+`expected/scummvm_errors_<renderer>.txt` (and `logs/scummvm_errors_<renderer>.txt`). An `error()` is a deliberate stop: a file
+that is not there, an argument it does not support, a case it does not implement. It logs its message, closes the log
+and exits with 1. `run.py` tells it from a crash by that exit code after a closed log. A crash or a failed assert ends
+without closing the log (an access violation, or abort's 0xC0000409), and a hang is killed. Its `logs/crashes/` file starts
+with the `error()` message instead of a backtrace. Both lists are skipped the same way, `--fresh` tries both again, and an
+unmarked test on either fails the run. A crash always needs a fix. An `error()` needs one only where the original
+accepts the case. A crash that moves to
 the next test after each skip is a test that leaves the engine in a bad state. Look for it before trusting the list
 (the object-state bitmap above was found that way).
 

@@ -55,10 +55,14 @@ def has_tests(compare, log):
 
 
 def crashers(logs, renderer):
-    p = os.path.join(logs, "scummvm_crashers_%s.txt" % renderer)
-    if not os.path.exists(p):
-        return set()
-    return {l.strip() for l in open(p) if l.strip() and not l.startswith("#")}
+    """The tests that ended ScummVM: its crashers and hangs, and the tests where it quit through error() (run.py keeps them
+    apart; here both are tests without values)."""
+    out = set()
+    for kind in ("crashers", "errors"):
+        p = os.path.join(logs, "scummvm_%s_%s.txt" % (kind, renderer))
+        if os.path.exists(p):
+            out |= {l.strip() for l in open(p) if l.strip() and not l.startswith("#")}
+    return out
 
 
 def names(items, limit=30):

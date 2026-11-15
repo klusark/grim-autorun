@@ -1,7 +1,7 @@
 -- A save made while a movie plays (cr_white.snm of assets.py: 90 white frames, 6 s, at 100, 50), then loaded after the
 -- movie was stopped: does the movie play again after the Load, where, and does it end? (cr_save is save.lua's; the Lua
 -- goes on after the Save a second time, after the Load: the registry's SmvSavePass tells the two apart)
-cr_scummvm_differs("smv_save_movie", "in the whole run ScummVM ends with 0xC0000409 (a stack buffer overrun) in this save while a movie plays") cr_test("smv_save_movie", function()
+cr_test("smv_save_movie", function()
 	cr_allow_frames(1000000000)
 	MakeCurrentSet("cr_flat.set")
 	cr_frames(2)

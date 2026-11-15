@@ -314,10 +314,11 @@ RENDERERS = [r for r in os.environ.get("CR_RENDERERS", "opengl,opengl_shaders,so
 RENDERER = RENDERERS[0]
 
 
-def svm_known():
-    """The tests that crashed or hung ScummVM with the current renderer."""
+def svm_known(kind="crashers"):
+    """The tests that crashed or hung ScummVM with the current renderer (kind "errors": the tests where it quit through
+    error(), on purpose)."""
     prefix = "emi_" if GAME == "emi" else "remastered_" if SVM_REMASTERED else ""
-    return os.path.join(HERE, "expected", "%sscummvm_crashers_%s.txt" % (prefix, RENDERER))
+    return os.path.join(HERE, "expected", "%sscummvm_%s_%s.txt" % (prefix, kind, RENDERER))
 
 
 REM_CRASHERS = os.path.join(HERE, "expected", "remastered_crashers.txt")
@@ -347,14 +348,36 @@ def write_rem_known(names):
         f.write("".join(n + "\n" for n in sorted(names)))
 
 
-def write_known(names):
-    """Keeps ScummVM's crashers in expected/ (committed: they are not found again on each machine)."""
+def write_known(names, errors):
+    """Keeps ScummVM's crashers and the tests where it quit through error() in expected/ (committed: they are not found again
+    on each machine)."""
     if READ_ONLY:
         return
     os.makedirs(os.path.dirname(svm_known()), exist_ok=True)
     with open_expected(svm_known()) as f:
         f.write("# tests that crash or hang ScummVM (%s renderer; found by run.py); skipped, run.py --fresh tries them again\n" % RENDERER)
         f.write("".join(n + "\n" for n in sorted(names)))
+    with open_expected(svm_known("errors")) as f:
+        f.write("# tests where ScummVM quits through error(), on purpose: a case it refuses, not a crash (%s renderer;"
+                " found by run.py); skipped, run.py --fresh tries them again\n" % RENDERER)
+        f.write("".join(n + "\n" for n in sorted(errors)))
+
+
+def quit_by_error(engine, game):
+    """ScummVM gave up on purpose: error() logs its message, closes the log (OSystem_SDL::fatalError) and exits with 1. A crash
+    or an assert ends without closing the log (an access violation, abort's 0xC0000409); a hang is killed."""
+    if engine != "scummvm" or game.killed or game.exit != 1:
+        return False
+    return game.raw.rstrip().endswith("--- Log closed successfully.")
+
+
+def error_message(game):
+    """The message of the error() that ended game: its last log line before the log was closed, without the time."""
+    for l in reversed(game.raw.rstrip().splitlines()[:-1]):
+        l = re.sub(r"^\[[^]]*\] ", "", l.strip())
+        if l and not l.startswith("Debug: "):
+            return l
+    return "?"
 
 
 ARCHIVE_FILES = {}   # EMI: the files of the archive of the last build (each game gets the archive with its own _cr_tests.lua)
@@ -365,6 +388,8 @@ def crash_backtrace(engine, game):
     exe = SCUMMVM if engine == "scummvm" else "Monkey4.exe" if GAME == "emi" else "GrimFandango.exe" if engine == "remastered" else "GRIMFANDANGO.exe"
     code = "?" if game.exit is None else "0x%X" % (game.exit & 0xFFFFFFFF)
     import crashstack
+    if quit_by_error(engine, game):
+        return "quit through error(), on purpose (exit code 1, the log closed): %s" % error_message(game)
     if game.killed:
         return "hung: %s wrote nothing to its log for %g s and was killed by run.py (no crash, so no dump or backtrace)" % (os.path.basename(exe), game.killed)
     if engine == "decomp":
@@ -732,10 +757,10 @@ def run_test_file(engine, path, slots, skip, only):
     name = os.path.basename(path)
     folder = slots.get()
     try:
-        out, crashed, raws, total = [], [], [], 0
+        out, crashed, errors, raws, total = [], [], [], [], 0
         start = None
         for _ in range(500):
-            g = game_run(engine, folder, cr_tests_lua(only, skip | set(crashed), start, 0, name), name, start)
+            g = game_run(engine, folder, cr_tests_lua(only, skip | set(crashed) | set(errors), start, 0, name), name, start)
             raws.append(g.raw)
             for l in g.lines:
                 if l.startswith("START "):
@@ -750,21 +775,24 @@ def run_test_file(engine, path, slots, skip, only):
                     (engine.name, name, "none (killed)" if g.exit is None else "0x%X" % (g.exit & 0xFFFFFFFF)))
                 out += lines
                 break
-            say("%s: %s %s the game; skipped, %s goes on after it" % (engine.name, cur, "hung" if g.killed else "crashed", name))
+            err = quit_by_error(engine.name, g)
+            say("%s: %s %s the game; skipped, %s goes on after it" % (
+                engine.name, cur, "hung" if g.killed else "quit through error() in" if err else "crashed", name))
             keep_crash_log(engine.name, cur, g)
-            crashed += crash_group(cur)
+            (errors if err else crashed).extend(crash_group(cur))
             # (what ran before the test is kept; the next game starts at the test, which it writes as SKIP)
             cut = max(i for i, l in enumerate(lines) if l == "BEGIN " + cur)
             out += lines[:cut]
             start = cur
-        return out, total, crashed, raws
+        return out, total, crashed, errors, raws
     finally:
         slots.put(folder)
 
 
 def run_parallel(engine, only, skip):
     """Runs every test file (with only: the files of those tests) in games of engine side by side. Writes
-    logs/<engine>_raw.log (the games' logs, file by file); returns (the result lines, the tests that crashed or hung)."""
+    logs/<engine>_raw.log (the games' logs, file by file); returns (the result lines, the tests that crashed or hung, the tests
+    where ScummVM quit through error())."""
     import concurrent.futures
     import queue
     build(only, skip)
@@ -800,38 +828,46 @@ def run_parallel(engine, only, skip):
         futures = {ex.submit(run_test_file, engine, t, slots, skip, only): t for t in order}
         for f in concurrent.futures.as_completed(futures):
             results[futures[f]] = f.result()
-    body, raw, new, total = [], [], [], 0
+    body, raw, new, new_err, total = [], [], [], [], 0
     for t in files:
-        out, tot, crashed, raws = results[t]
+        out, tot, crashed, errors, raws = results[t]
         body += out
         new += crashed
+        new_err += errors
         total = max(total, tot)
         raw += ["---- %s, game %d of %d\n%s" % (os.path.basename(t), i + 1, len(raws), r) for i, r in enumerate(raws)]
     fails = sum(1 for l in body if l.startswith("FAILED "))
     lines = ["START %d tests" % total] + body + ["SUMMARY %d tests, %d failed" % (total, fails)]
     say("%s: %.1f s for %d test files%s" % (engine.name, time.time() - t0, len(files),
-                                           "; crashed or hung: " + ", ".join(new) if new else ""))
+                                           ("; crashed or hung: " + ", ".join(new) if new else "") +
+                                           ("; quit through error(): " + ", ".join(new_err) if new_err else "")))
     os.makedirs(LOGS, exist_ok=True)
     with open(os.path.join(LOGS, engine.name + "_raw.log"), "w", newline="\n", encoding="latin-1") as f:
         f.write("\n".join(raw))
-    return lines, new
+    return lines, new, new_err
 
 
 def run_engine(engine, only=None, fresh=False):
     """Runs an engine's test files side by side (run_parallel): a test that crashes or hangs it is skipped. The original's
     crashers are kept in expected/crashers.txt (every engine skips them: there is no reference); ScummVM's and the Remastered's
-    in their own lists (bugs, skipped on the next runs). Writes logs/<engine>.log; returns (lines, ScummVM's or the rebuilt exe's
-    crashers)."""
+    in their own lists (bugs, skipped on the next runs), and apart from them ScummVM's error() quits (on purpose: a case it
+    refuses, not a crash). Writes logs/<engine>.log; returns (lines, ScummVM's or the rebuilt exe's crashers, ScummVM's error()
+    quits)."""
     # (--fresh: the original runs the tests that crashed it before again, too; the list is written again at the end)
     skip = set() if fresh and engine == "original" else read_names(CRASHERS)
     known = set() if fresh or engine not in ("scummvm", "remastered") else (read_names(svm_known()) if engine == "scummvm" else read_names(REM_CRASHERS)) - skip
-    skip |= known
+    known_err = set() if fresh or engine != "scummvm" else read_names(svm_known("errors")) - skip - known
+    skip |= known | known_err
     if engine == "original" and original_running():
         sys.exit("original: the %s of %s is running (maybe a game being played); not started" %
                  ("Monkey4.exe" if GAME == "emi" else "GRIMFANDANGO.exe", EMI_INSTALL if GAME == "emi" else GRIM_INSTALL))
-    lines, new = run_parallel(make_engine(engine), only, skip)
+    lines, new, new_err = run_parallel(make_engine(engine), only, skip)
+    if engine != "original":
+        # (crash_group skips a crashing args_<fn>_p0 with its other calls: the ones that crash the original are skipped anyway)
+        orig = read_names(CRASHERS)
+        new, new_err = [n for n in new if n not in orig], [n for n in new_err if n not in orig]
     if engine == "scummvm":
-        write_known(known | set(new))
+        write_known(known | set(new), known_err | set(new_err))
     elif engine == "remastered" and (new or fresh):
         write_rem_known(known | set(new))
     elif engine == "original" and (new or fresh) and not READ_ONLY:
@@ -843,20 +879,26 @@ def run_engine(engine, only=None, fresh=False):
     with open(out, "w", newline="\n") as f:
         f.write("\n".join(lines) + "\n")
     say("%s: %d result lines in %s" % (engine, len(lines), out))
-    return lines, (sorted(known) + new if engine == "scummvm" else new if engine == "decomp" else [])
+    return (lines, (sorted(known) + new if engine == "scummvm" else new if engine == "decomp" else []),
+            sorted(known_err) + new_err if engine == "scummvm" else [])
 
 
-def compare_with(reference, engine, crashed, only=None):
+def compare_with(reference, engine, crashed, errors=(), only=None):
     other = os.path.join(LOGS, engine + ".log")
     rc = compare.main([reference, other, "--unstable", UNSTABLE, "--known"] + (["--only"] if only else []))
-    with open(os.path.join(LOGS, "scummvm_crashers_%s.txt" % RENDERER), "w") as f:
-        f.write("".join(n + "\n" for n in crashed))
-    if crashed:
-        # (a crash of a test marked cr_scummvm_differs is a known one)
-        marks = compare.known(*[compare.parse(open(p, encoding="latin-1").read().splitlines())[1] for p in (reference, other)])
-        new = [n for n in crashed if n not in marks]
-        print("crashed or hung ScummVM (a bug): %s%s" % (", ".join(crashed), "; not marked: %s" % ", ".join(new) if new else
-                                                        "; all marked cr_scummvm_differs"))
+    marks = None
+    for kind, names, what in (("crashers", crashed, "crashed or hung ScummVM (a bug)"),
+                              ("errors", errors, "quit ScummVM through error() (on purpose: a case it refuses)")):
+        with open(os.path.join(LOGS, "scummvm_%s_%s.txt" % (kind, RENDERER)), "w") as f:
+            f.write("".join(n + "\n" for n in names))
+        if not names:
+            continue
+        # (a crash or an error() of a test marked cr_scummvm_differs is a known one)
+        if marks is None:
+            marks = compare.known(*[compare.parse(open(p, encoding="latin-1").read().splitlines())[1] for p in (reference, other)])
+        new = [n for n in names if n not in marks]
+        print("%s: %s%s" % (what, ", ".join(names), "; not marked: %s" % ", ".join(new) if new else
+                            "; all marked cr_scummvm_differs"))
         if new:
             rc = 1
     return rc
@@ -1059,12 +1101,12 @@ def run_scummvm_all(reference, only, fresh, renderers):
     for r in renderers:
         RENDERER = r
         print("==== scummvm, renderer %s" % r)
-        _, crashed = run_engine("scummvm", only, fresh)
+        _, crashed, errors = run_engine("scummvm", only, fresh)
         for suffix in (".log", "_raw.log"):
             src = os.path.join(LOGS, "scummvm" + suffix)
             if os.path.exists(src):
                 shutil.copyfile(src, os.path.join(LOGS, "scummvm_%s%s" % (r, suffix)))
-        rcs.append((r, compare_with(reference, "scummvm", crashed, only)))
+        rcs.append((r, compare_with(reference, "scummvm", crashed, errors, only)))
         # (what the reference has that this renderer gives differently, against the first renderer: a difference between
         # the renderers themselves)
         if r != renderers[0]:
@@ -1214,7 +1256,7 @@ def main():
         return compare.main([EXPECTED, os.path.join(LOGS, "remastered.log"), "--unstable", UNSTABLE] + (["--only"] if a.only else []))
     if a.what == "decomp":
         # (its crashes are bugs of the rebuild: reported, not kept; the original's crashers are skipped, there is no reference)
-        _, crashed = run_engine("decomp", a.only, fresh=a.fresh)
+        _, crashed, _ = run_engine("decomp", a.only, fresh=a.fresh)
         rc = compare.main([EXPECTED, os.path.join(LOGS, "decomp.log"), "--unstable", UNSTABLE] + (["--only"] if a.only else []))
         if crashed:
             print("crashed or hung the rebuilt exe: %s" % ", ".join(crashed))

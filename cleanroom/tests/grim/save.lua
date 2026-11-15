@@ -153,7 +153,7 @@ cr_t_save_data_none = function()
 	local d = GetSaveGameData("crsave_none.gsv")
 	cr_log("data", type(d), d and tostring(d[0]))
 end
-cr_scummvm_differs("save_data_none") cr_test("save_data_none", cr_t_save_data_none)
+cr_scummvm_differs("save_data_none", "ScummVM quits: \"Unable to find requested section of savegame!\" (error(), exit code 1): on the skip list") cr_test("save_data_none", cr_t_save_data_none)
 
 cr_t_save_data_empty = function()
 	MakeCurrentSet("cr_flat.set")
@@ -442,22 +442,10 @@ end, function()
 end)
 
 -- (ScummVM differs: tools/mark_known.py)
-cr_scummvm_differs("save_actor_attrs")
+cr_scummvm_differs("save_actor_attrs", "ScummVM quits: \"GetActorCostume: implement number Id!\" (error(), exit code 1): on the skip list")
 cr_scummvm_differs("save_primitives")
 cr_scummvm_differs("save_set")
 cr_scummvm_differs("save_setup")
 cr_scummvm_differs("save_text")
 cr_scummvm_differs("save_walking")
 cr_scummvm_differs("save_chore")
-
--- (a memory error in ScummVM under valgrind: on the skip list)
-cr_scummvm_differs("save_data_empty", "a memory error in ScummVM under valgrind (uninitialised value or invalid access): on the skip list")
-
--- (a memory error in ScummVM under valgrind: on the skip list)
-cr_scummvm_differs("save_data_three", "a memory error in ScummVM under valgrind (uninitialised value or invalid access): on the skip list")
-
--- (a memory error in ScummVM under valgrind: on the skip list)
-cr_scummvm_differs("save_lua", "a memory error in ScummVM under valgrind (uninitialised value or invalid access): on the skip list")
-
--- (a memory error in ScummVM under valgrind: on the skip list)
-cr_scummvm_differs("save_object_state", "a memory error in ScummVM under valgrind (uninitialised value or invalid access): on the skip list")
