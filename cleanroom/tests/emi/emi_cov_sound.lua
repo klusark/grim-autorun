@@ -1,0 +1,36 @@
+-- The valid calls of the sound tests that ScummVM ends with error() (esn_soundfrom, eso_from, esn_setvolume: on the
+-- skip lists, so what they do before the error never runs): PlaySoundFrom by name with a volume (EMISound::startSfxFrom),
+-- and SetSoundVolume with numbers out of range. (esn_state: emi_esn.lua)
+
+cr_t_ecs_soundfrom = function()
+	MakeCurrentSet("cr_flat.set")
+	PlaySoundFrom("cr_tone", 0, 0, 1, nil, 80)
+	cr_frames(2)
+	PlaySoundFrom("cr_long", 1, 0, 1, 100)
+	cr_frames(2)
+	PlaySoundFrom("esn_no_such_sound", 0, 0, 1, 100)
+	cr_frames(2)
+	PlaySoundFrom("cr_tone", -2, 0, 3, nil, 0)
+	cr_frames(2)
+	StopAllSounds()
+	cr_frames(2)
+	cr_log("ok", 1)
+end
+cr_test("ecs_soundfrom", cr_t_ecs_soundfrom)
+
+cr_t_ecs_setvolume = function()
+	local h = LoadSound("cr_long")
+	PlayLoadedSound(h, 1, 80)
+	cr_frames(2)
+	SetSoundVolume(h, 150)
+	cr_log("v150", esn_state(h))
+	SetSoundVolume(h, -5)
+	cr_log("minus5", esn_state(h))
+	SetSoundVolume(h, 33.7)
+	cr_log("v33_7", esn_state(h))
+	SetSoundVolume(h, 0)
+	cr_log("v0", esn_state(h))
+	StopSound(h)
+	FreeSound(h)
+end
+cr_scummvm_differs("ecs_setvolume", "SetSoundVolume: -5 wraps to 100 on ScummVM (an unsigned volume, lua_v2_sound.cpp:497), 0 on the original; 33.7 comes back 32 (the round trip to the mixer, lua_v2_sound.cpp:40-51)") cr_test("ecs_setvolume", cr_t_ecs_setvolume)

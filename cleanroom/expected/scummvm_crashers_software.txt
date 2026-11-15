@@ -79,7 +79,6 @@ args_SetActorShadowPoint_p4_nil
 args_SetActorShadowPoint_p4_num
 args_SetActorShadowPoint_p4_str
 args_SetActorShadowPoint_p4_tab
-blast_print
 costume_imuse_state
 costume_smush
 costume_stream
@@ -99,15 +98,14 @@ movie_loop
 movie_missing
 movie_pause
 movie_place
+movie_replace
+movie_short
 smv_stereo_fullscreen
 smv_track
-text_blank
-text_change
 text_char_pos_killed
 text_char_pos_past_end
 text_dims_killed
 text_high_chars
 text_high_drawn
 text_no_font
-text_objects
 walk_vector
