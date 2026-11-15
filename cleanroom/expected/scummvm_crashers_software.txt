@@ -252,6 +252,7 @@ lit_omni_side
 lit_spot
 lit_spot_away
 lit_spot_moved
+lua6_io_closed
 mf_cr_brad_wall_sphere
 mf_cr_tpiv_wall_sphere
 movie_fullscreen

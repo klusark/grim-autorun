@@ -1,2 +1,3 @@
 # tests that crash or hang ScummVM (opengl renderer; found by run.py); skipped, run.py --fresh tries them again
+lua6_io_closed
 text_dims_killed

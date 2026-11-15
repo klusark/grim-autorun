@@ -1,8 +1,8 @@
 # The coverage of the clean-room tests (cleanroom/, see its README) in ScummVM: builds the same ScummVM as
 # scummvm-cleanroom.yml with gcov, runs the same tests on it (both games and the Remastered mode, every renderer, all at
 # once) and writes the coverage of engines/grim and graphics/tinygl (autorun/tools/covreport.py --all) to the run's
-# summary, with the pages of every file as the artifact "coverage". A report: it does not fail. It runs on pushes to main only
-# (and by hand), not on other branches, pull requests or a schedule.
+# summary, with the pages of every file as the artifact "coverage". The tests of the skip lists run as well (--fresh). A
+# report: it does not fail. It runs on pushes to main only (and by hand), not on other branches, pull requests or a schedule.
 name: ScummVM clean-room coverage
 
 on:
@@ -111,6 +111,9 @@ jobs:
           python-version: "3.12"
 
       # (the results do not matter here, only what ran: a failing game does not stop the other or the report)
+      # (--fresh: the tests on ScummVM's skip lists run too. Most of them fail only under valgrind (save and load, iris,
+      # movies, lights, EMI's sounds) and run to the end here; before each of them the runner has the counters written
+      # (CR_GCOV_BEFORE, run.py), so one that still crashes loses only its own counts)
       # (every game and renderer at once, tools/parallel.sh: the processes add their counters to the same .gcda files when
       # they end, under libgcov's lock, and -fprofile-update=atomic keeps ScummVM's threads' counts. ScummVM's Remastered
       # mode is there for its own code: a report only)
@@ -126,7 +129,7 @@ jobs:
         run: |
           export SCUMMVM="$GITHUB_WORKSPACE\\scummvm\\build\\scummvm.exe"
           rc=0
-          CR_PARALLEL_DIR="$(cygpath -u "$RUNNER_TEMP")/parallel_cov" bash grim_tools/cleanroom/tools/parallel.sh --games grim,emi,remastered --renderers "$CR_RENDERERS" || true
+          CR_PARALLEL_DIR="$(cygpath -u "$RUNNER_TEMP")/parallel_cov" bash grim_tools/cleanroom/tools/parallel.sh --games grim,emi,remastered --renderers "$CR_RENDERERS" --fresh || true
           for g in grim emi remastered; do cat "$(cygpath -u "$RUNNER_TEMP")"/parallel_cov/${g}_*.txt > $g.txt; done
           exit 0
 

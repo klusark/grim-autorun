@@ -210,6 +210,14 @@ centre (not two boxes) and at least one texture set. Both engines play the keys 
 first frame of a chore (it started a chore one frame late, in Grim too: fixed on klusark's `cleanroom`); a chore handle
 is a number on the original and userdata on ScummVM, and a missing chore gives 2 against nil.
 
+More of them (`lua6.lua`, both games, from the lines the coverage run never reached): tables keyed by functions, C
+functions and tasks; arithmetic and indexing on what is not a number or a table, with tag methods and without; the opcodes
+only long code emits (PUSHSELF, SETTABLE, SETLISTW, ONTJMPW, ONFJMPW, SETLINEW); the string library's and the tags'
+errors; foreach and foreachvar that stop; the stack overflow; print_stack; the old error fallback; files through their
+handles. A handle used after `readfrom()` or `writeto()` closed its file crashes ScummVM (`lua6_io_closed`: the handle keeps
+its id, and the freed file is used); the original changes the handle's tag and gives an error. ScummVM's `dostring` takes no
+binary chunk (a string that starts with ESC is a parse error).
+
 The interpreter's corners (`lua5.lua`, both games, 2026-11-07): the lexer's pragmas (`$if`, `$ifnot`, `$else`, `$end`,
 `$debug`, `$endinput`) and their errors, escapes, number forms, the parser's scope errors, code longer than 255 bytes
 (the wide jumps, long table constructors, more than 255 names), string patterns, read patterns, tags: the same on both
@@ -427,6 +435,13 @@ the actor tests (`zz_actor_*.lua`, `emi_actor_*.lua`) 71.2%, 30643 of 43018 (gri
 294 lines never run to 54 (82.4% to 96.8%); after the second round of agents 75.5%, 32490 of 43018 (grim 75.5%,
 emi 89.5%, tinygl 60.0%, lua 87.8%, remastered 64.0%). What is left is mostly iMUSE's music (its state tables) and streaming, the shader renderer (the tests use `gfx_mode=opengl`),
 and the debugger.
+2026-11-14 (upstream master with the patch, CI): 69.7%, 30096 of 43163; the drop came from the skip lists, which since the
+valgrind runs hold the tests of saving and loading, the iris, the movies, the lights and EMI's sounds (lsave, lrestore
+and savegame.cpp never ran). Without valgrind nearly all of them run to the end: on Linux, `--fresh` with opengl crashed
+only 5 of Grim's (lua6_io_closed, movie_missing, gl1_prim_offset, gl1_prim_rect_end, gl1_movie_short_name) and none of EMI's,
+and Grim and EMI ran 2567 of the lines the CI never ran (at least 75.7%). The coverage workflow runs with `--fresh` since;
+with it, run.py has a coverage build write its counters before each test of the skip list (`CR_GCOV_BEFORE` in
+`_cr_tests.lua`), so that one that still crashes loses only its own counts.
 
 ## Wrong arguments and coverage
 

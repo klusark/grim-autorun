@@ -64,6 +64,9 @@ import testfiles  # noqa: E402
 ROOT = os.path.dirname(HERE)
 WORK = HERE   # (where build/, run/ and logs/ are: --work DIR moves them)
 READ_ONLY = False   # (--work: expected/ is not written)
+# (--fresh on ScummVM: the tests of its crasher list, run again; a gcov build writes its counters before each of them, so
+# that one that still crashes loses only its own counts)
+GCOV_BEFORE = set()
 BUILD = os.path.join(WORK, "build")
 RUN = os.path.join(WORK, "run")
 LOGS = os.path.join(WORK, "logs")
@@ -173,6 +176,8 @@ def cr_tests_lua(only=None, skip=(), start=None, fails=0, file=None):
     if file:
         head += 'CR_FILE = "%s"\n' % file
     head += "CR_SKIP = { }\n" + "".join('CR_SKIP["%s"] = 1\n' % n for n in sorted(skip))
+    if GCOV_BEFORE:
+        head += "CR_GCOV_BEFORE = { }\n" + "".join('CR_GCOV_BEFORE["%s"] = 1\n' % n for n in sorted(GCOV_BEFORE))
     return formats.lua_text(head + "".join('CR_LOADING = "%s"\ndofile("cr_%s")\n' % ((os.path.basename(t),) * 2)
                                            for t in test_files()))
 
@@ -769,6 +774,10 @@ def run_engine(engine, only=None, fresh=False):
     skip = set() if fresh and engine == "original" else read_names(CRASHERS)
     known = set() if fresh or engine not in ("scummvm", "remastered") else (read_names(svm_known()) if engine == "scummvm" else read_names(REM_CRASHERS)) - skip
     skip |= known
+    global GCOV_BEFORE
+    GCOV_BEFORE = set()
+    if fresh and engine in ("scummvm", "remastered"):
+        GCOV_BEFORE = read_names(svm_known() if engine == "scummvm" else REM_CRASHERS) - skip
     if engine == "original" and original_running():
         sys.exit("original: the %s of %s is running (maybe a game being played); not started" %
                  ("Monkey4.exe" if GAME == "emi" else "GRIMFANDANGO.exe", EMI_INSTALL if GAME == "emi" else GRIM_INSTALL))

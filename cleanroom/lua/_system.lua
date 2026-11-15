@@ -189,6 +189,10 @@ cr_main = function()
 				cr_out("DIFFERS " .. CR_CUR .. "|" .. CR_DIFFERS[CR_CUR])
 			end
 			CR_ALLOWED = nil
+			-- (a test that crashed ScummVM before, run again by --fresh: the counters of a coverage build so far first)
+			if CR_GCOV_BEFORE and CR_GCOV_BEFORE[CR_CUR] then
+				PrintDebug("CRGCOV")
+			end
 			id = start_script(cr_task, CR_TESTS[i].fn)
 			f = 0
 			while find_script(id) and f < (CR_ALLOWED or CR_MAX_FRAMES) do

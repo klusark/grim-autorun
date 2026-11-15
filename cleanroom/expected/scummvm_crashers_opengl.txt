@@ -209,6 +209,7 @@ ims_save
 ims_save_voice
 imuse_state
 iris_up
+lua6_io_closed
 mf_cr_brad_wall_sphere
 mf_cr_tpiv_wall_sphere
 movie_fullscreen
