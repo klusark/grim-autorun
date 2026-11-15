@@ -120,3 +120,16 @@ The whole game, new game to credits, is scripted (ch01 - ch65).
 - ch54: a run to 60 cm short of the theater sewer ladder's foot, the walk only from there (was 6 m at the walk's rate, 910 frames). ch55: the hops of the grinder
   trail are run, the last 20 cm walked (about 30 hops of 75 frames).
 - Tried and left: AR_RUN_OFF = 75 (495 frames, but runs closer to the walls). Speed run: 261,526 -> 256,610 frames (72:38 -> 71:17), passes.
+
+## Waits on the game's state, not on the clock (2026-11-15)
+- ar_try_wait, ar_wait_active, ar_wait_turn, ar_dialog_ready, ar_wait_line_done, ar_wait_normal and ar_do's wait for the code of a verb look at their condition every
+  frame (they slept 100 ms between looks: 736 waits ended up to five frames late).
+- ar_do: no 300 ms after a verb that ar_send_verb has seen start; an item used on its own waits for its sentence or code to begin and the sentence to end.
+- ar_wait_offered: the game makes its list of what Manny can use every frame (TrackManny), so a wait for an object to be offered ends when he has stood still
+  6 frames without it (the 1 and 1.2 s waits ran out 41 times). A dialog line waits until the dialog has taken it (ar_line_taken; was 300 ms), the gaze key until
+  the gaze moved.
+- The step on a door's trigger waits for the game to take over (ar_door_trigger_wait, was 1.5 s; 7 of 8 times it does); the 200 ms and 1 s sleeps before a wait for
+  the control are ar_wait_idle (until no cutscene, sentence, line or movement, or a cutscene begins); the forklift, crane and keno waits of chapters 19, 47a and 59
+  look at the forklift, the crane and the dialog's line.
+- A line every 5 s while a cutscene's movie plays: the pearl sub's movie of chapter 38 (14 s, no override) left the stall watch (15 s) a margin of 0.75 s.
+- Speed run: 256,610 -> 248,920 frames (71:17 -> 69:09), passes, the same frame count twice.

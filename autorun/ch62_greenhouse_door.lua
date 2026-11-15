@@ -18,10 +18,10 @@ ar_expect_set(mf, "shot in the flower meadow")
 local pressed = 0
 while manny.is_holding ~= si.nitrogen and pressed < 5 do
 	ar_press_key(KEY3)
-	sleep_for(200)
+	ar_wait_idle(200)
 	ar_wait_for_control()
 	ar_press("use")
-	sleep_for(200)
+	ar_wait_idle(200)
 	ar_wait_for_control()
 	pressed = pressed + 1
 end
@@ -29,7 +29,7 @@ ar_check(manny.is_holding == si.nitrogen, "Manny holds the liquid nitrogen")
 local tries = 0
 while not manny.healed and tries < 4 do
 	ar_press("use")
-	sleep_for(200)
+	ar_wait_idle(200)
 	ar_wait_for_control()
 	tries = tries + 1
 end

@@ -9,7 +9,7 @@ AR_NEW = TRUE
 ar_log("start in " .. ar_set_name())
 ar_wait_for_control()
 ar_go(lz.il_door, il)
-sleep_for(200)
+ar_wait_idle(200)
 ar_wait_for_control()
 -- down the ladder at the end of the deck, then across the lower deck, where the hit squad's trigger springs the ambush
 -- that ends in the engine room
@@ -27,7 +27,7 @@ local drive = function(control)
 	sleep_for(150)
 	ar_key_up(control)
 	ar_wait_for_control()
-	sleep_for(200)
+	ar_wait_idle(200)
 	ar_wait_for_control()
 end
 
@@ -45,7 +45,7 @@ ar_wait_for_control()
 local press = function(button)
 	ar_do("use", button)
 	ar_wait_for_control()
-	sleep_for(200)
+	ar_wait_idle(200)
 	ar_wait_for_control()
 end
 press(ei.dp_button)
