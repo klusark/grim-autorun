@@ -1,4 +1,4 @@
-START 2473 tests
+START 2476 tests
 BEGIN numbers
 V numbers|arith|3.500000 1024.000000 -2.333333 1.#INF00
 V numbers|tostring|"0.333333" "100" "1e+015" "-0.5"
@@ -760,6 +760,25 @@ BEGIN ec_sprite
 V ec_sprite|wear|9.000000 1.000000
 V ec_sprite|hidden|8.000000 1.000000 1.000000
 END ec_sprite
+BEGIN ecc_turn
+V ecc_turn|before|0.000000 0.000000 0.000000
+V ecc_turn|pitched|10.000001 0.000000 0.000000
+V ecc_turn|yawed|10.627585 19.683500 3.616442
+V ecc_turn|rolled|12.333694 18.687601 8.804682
+V ecc_turn|position|0.000000
+V ecc_turn|odd|-29.594942 -17.177887 -75.193520
+V ecc_turn|again|-29.594942 -17.177887 -75.193520
+END ecc_turn
+BEGIN ecc_cd
+V ecc_cd|cd1|1.000000
+V ecc_cd|cd2|nil
+V ecc_cd|cd3|nil
+V ecc_cd|cd0|nil
+V ecc_cd|active|2.000000
+END ecc_cd
+BEGIN ecc_shadow_slots
+V ecc_shadow_slots|ok|1.000000
+END ecc_shadow_slots
 BEGIN elu_gone_local_alpha
 V elu_gone_local_alpha|r|nil
 END elu_gone_local_alpha
@@ -8748,4 +8767,4 @@ V lex_binary|short|nil
 ERROR lex_binary binary file cr_bin_old.lua too old: version=0x30; expected at least 0x31
 V lex_binary|old|nil
 END lex_binary
-SUMMARY 2473 tests, 247 failed
+SUMMARY 2476 tests, 247 failed

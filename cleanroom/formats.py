@@ -242,7 +242,8 @@ def colormap(colors, light=None, rgb_index=None):
 
 
 def set_file(colormaps, setups, lights, sectors):
-    """A text .set. setups: dicts (name, background, zbuffer, position, interest, roll, fov, nclip, fclip);
+    """A text .set. setups: dicts (name, background, zbuffer, position, interest, roll, fov, nclip, fclip, object_art: a
+    list of (name, bitmap) or (name, bitmap, z name, z bitmap));
     lights: dicts (name, type, position, direction, intensity, umbra, penumbra, color); sectors: tuples
     (name, type, visible, height, [(x, y, z), ...]). Lines end with CR LF (the game's own files do)."""
     v3 = lambda p: "%f\t%f\t%f" % p
@@ -255,7 +256,13 @@ def set_file(colormaps, setups, lights, sectors):
             out += ["\tzbuffer\t\t%s" % s["zbuffer"]]
         out += ["\tposition\t%s" % v3(s["position"]), "\tinterest\t%s" % v3(s["interest"]),
                 "\troll\t\t%f" % s.get("roll", 0.0), "\tfov\t\t%f" % s.get("fov", 50.0),
-                "\tnclip\t\t%f" % s.get("nclip", 0.01), "\tfclip\t\t%f" % s.get("fclip", 100.0), ""]
+                "\tnclip\t\t%f" % s.get("nclip", 0.01), "\tfclip\t\t%f" % s.get("fclip", 100.0)]
+        # (the setup's background objects: object_art name bitmap, then maybe object_z name zbitmap, Set::Setup::load)
+        for art in s.get("object_art", ()):
+            out += ["\tobject_art\t%s\t%s" % art[:2]]
+            if len(art) > 2:
+                out += ["\tobject_z\t%s\t%s" % art[2:4]]
+        out += [""]
     out += ["", "section: lights", "\tnumlights\t%d" % len(lights), ""]
     for l in lights:
         out += ["\tlight\t\t%s" % l["name"], "\ttype\t\t%s" % l.get("type", "omni"),
