@@ -112,3 +112,11 @@ The whole game, new game to credits, is scripted (ch01 - ch65).
   rebuilt (SAVE=1 run_all.sh; the old ones are in saves_before_reorder). MODE=speed100 passes too (493,745 frames, 281 dialog lines, the same failures
   of its extras as before); its own saves (saves_speed100) are still of the old order.
 
+
+## Walking: turns with the run key held, fewer forced walks (2026-11-15)
+- The game's run sets Manny's turn rate to 140 degrees a second, the walk to 85 (manny.set_run): every turn on the spot (ar_steer, ar_face_precise) now holds the run
+  key, as a player does (ar_turn_run; AR_NO_RUN_TURN = TRUE for the old turn). The follower still steps at the walk when the heading is more than 45 degrees off:
+  a run from far off swings him wide (and stepping off at once from any heading was slower still: he hardly moves until he is within about 87 degrees).
+- ch54: a run to 60 cm short of the theater sewer ladder's foot, the walk only from there (was 6 m at the walk's rate, 910 frames). ch55: the hops of the grinder
+  trail are run, the last 20 cm walked (about 30 hops of 75 frames).
+- Tried and left: AR_RUN_OFF = 75 (495 frames, but runs closer to the walls). Speed run: 261,526 -> 256,610 frames (72:38 -> 71:17), passes.

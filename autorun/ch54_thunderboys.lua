@@ -15,6 +15,16 @@ ar_expect_set(te, "in the theater sewer")
 
 -- the ladder up: walking into its foot starts the climb, then the player holds "up"
 local b = te.th_ladder.base
+-- (a run to 60 cm short of its foot, the walk only from there: the 6 m along the sewer at the walk's rate were 910 frames)
+do
+	local p0 = manny:getpos()
+	local dx = b.use_pnt_x - p0.x
+	local dy = b.use_pnt_y - p0.y
+	local dl = sqrt(dx * dx + dy * dy)
+	if dl > 1.2 then
+		ar_walk_to(b.use_pnt_x - dx / dl * 0.6, b.use_pnt_y - dy / dl * 0.6, b.use_pnt_z)
+	end
+end
 AR_WALK = TRUE
 manny:set_run(FALSE)
 ar_walk_to(b.use_pnt_x, b.use_pnt_y, b.use_pnt_z, function() return manny.is_climbing end)

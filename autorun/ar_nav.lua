@@ -2407,7 +2407,8 @@ ar_follow_frame0 = function(nav, w, path, n, cum, i)
 	if kind == "p" then
 		runfrom = AR_RUN_P or 0.1
 	end
-	if not AR_WALK and togo > runfrom and abs(ar_heading_off(tx, ty, p.z)) < (AR_RUN_OFF or 45) then
+	local run_ok = not AR_WALK and togo > runfrom and abs(ar_heading_off(tx, ty, p.z)) < (AR_RUN_OFF or 45)
+	if run_ok then
 		manny:set_run(TRUE)
 	else
 		manny:set_run(FALSE)
@@ -2447,6 +2448,10 @@ ar_follow_frame0 = function(nav, w, path, n, cum, i)
 		limit = AR_TURN_LIM or 75
 	end
 	if off < limit then
+		-- (the turn on the spot may have held the run key, ar_turn_run: the step is the run or the walk decided above)
+		if not run_ok and manny.is_running then
+			manny:set_run(FALSE)
+		end
 		manny:walk_forward()
 	end
 	if AR_TRACE then

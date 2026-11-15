@@ -49,6 +49,13 @@ ar_hop = function(x, y)
 	local stuck = 0
 	manny:set_run(FALSE)
 	while ar_dist2d(x, y) > 0.06 and frames < 1500 and stuck < 100 do
+		-- (run, and walk the last 20 cm, so that he stops where the grinder is to be used: the hops were walked all the way, 75 frames each, about 30 of them)
+		local fast = ar_dist2d(x, y) > 0.2
+		if fast and not manny.is_running then
+			manny:set_run(TRUE)
+		elseif not fast and manny.is_running then
+			manny:set_run(FALSE)
+		end
 		-- turn toward the point, and walk on once he faces it
 		-- (within 15 cm the way to the point changes with every step: straight on from there)
 		if ar_dist2d(x, y) > 0.15 then
