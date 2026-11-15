@@ -121,3 +121,103 @@ if AR_BLAM_LEARN then
 		return AR_TR_POP(a)
 	end
 end
+
+-- menu: a movie of a cutscene that has no override (the Lola torn from the pier, the Pearl sub, the end of the world, ...) is stopped the way the speed
+-- runners do it, through the game's menu: the menu key, "View Cutscenes" (main_menu item 7), the first cutscene of the list, which cutscene_menu.view_cutscene
+-- starts with StopMovie() (the movie of the game is the one that stops), the override key for the cutscene that starts, and the override key twice back to the
+-- game. The cutscene that waited for its movie goes on. The menu pauses every task but the one that pressed its key (pause_scripts), this one, which drives it.
+-- AR_MENU_AFTER: frames of the movie before the menu (so that a movie of a frame or two is left alone); AR_MENU_SKIP["chapter|set"] = TRUE leaves a movie alone
+AR_MENU_AFTER = AR_MENU_AFTER or 6
+AR_MENU_SKIP = AR_MENU_SKIP or { }
+
+-- waits a frame at a time for cond, at most n frames; TRUE when it came
+ar_menu_wait = function(cond, n)
+	local k = 0
+	while not cond() and k < n do
+		break_here()
+		k = k + 1
+		-- (the frame counter of the run is a task the menu pauses too: the frames of the menu are counted here, a player's clock runs on through it)
+		if game_pauser.is_paused then
+			AR_FRAME = AR_FRAME + 1
+			AR_MENU_FRAMES = (AR_MENU_FRAMES or 0) + 1
+		end
+	end
+	return cond()
+end
+
+-- out of any menu and back to the game: the override key until the game is no longer paused (at most 10 presses)
+ar_menu_back = function()
+	local k = 0
+	while game_pauser.is_paused and k < 10 do
+		-- (the next press as soon as the handler of the keys has changed: the cutscene menu gives way to the main menu at once, the main menu to the
+		-- game a frame or two later)
+		AR_MENU_H = system.buttonHandler
+		ar_press_key(ar_real_key("OVERRIDE"))
+		ar_menu_wait(function() return not game_pauser.is_paused or system.buttonHandler ~= AR_MENU_H end, 20)
+		k = k + 1
+	end
+	if game_pauser.is_paused then
+		ar_log("MENU the game did not come back from the menu")
+	end
+end
+
+ar_menu_stop_movie = function(where)
+	ar_log("MENU stopping the movie in " .. where)
+	AR_MENU_N = (AR_MENU_N or 0) + 1
+	ar_press_key(ar_real_key("MENU"))
+	if not ar_menu_wait(function() return main_menu.is_active and main_menu.menu end, 30) then
+		ar_log("MENU the main menu did not open")
+		return
+	end
+	-- (View &Cutscenes: its hot key, the letter c, as the engine hands a typed letter to the menu's characterHandler. The arrow keys move the menu in a script
+	-- of their own while the key is held, a frame and 500 ms at a time)
+	if system.characterHandler and system.characterHandler.characterHandler then
+		system.characterHandler:characterHandler("c")
+	end
+	if not ar_menu_wait(function() return cutscene_menu.is_active and cutscene_menu.menu end, 30) then
+		ar_log("MENU the cutscene menu did not open (main menu " .. tostring(main_menu.is_active) .. ", cutscene menu " .. tostring(cutscene_menu.is_active) .. ", handler is main menu " .. tostring(system.buttonHandler == main_menu) .. "), back to the game")
+		ar_menu_back()
+		return
+	end
+	-- (the first cutscene of the list: the Home key puts the cursor there at once)
+	ar_press_key(ar_real_key("PAGE_HOME"))
+	ar_log("MENU cutscene menu item " .. tostring(cutscene_menu.menu.cur_item))
+	ar_press_key(ar_real_key("DIALOG_CHOOSE"))
+	-- (the chosen cutscene starts after view_cutscene stopped the game's movie: its key is the override)
+	if ar_menu_wait(function() return system.buttonHandler == cutscene_menu_view_button_handler end, 60) then
+		ar_menu_wait(function() return IsMoviePlaying() end, 30)
+		ar_press_key(ar_real_key("OVERRIDE"))
+		ar_menu_wait(function() return system.buttonHandler == cutscene_menu end, 120)
+	else
+		ar_log("MENU the cutscene did not start")
+	end
+	-- back: the cutscene menu to the main menu, the main menu to the game
+	ar_menu_back()
+end
+
+ar_menu_watch = function()
+	local f0 = nil
+	while TRUE do
+		local m = cutSceneLevel > 0 and IsMoviePlaying and IsMoviePlaying() and not (system.override and system.override.is_active) and not game_pauser.is_paused and system.buttonHandler == SampleButtonHandler
+		if m then
+			f0 = f0 or AR_FRAME
+		else
+			f0 = nil
+		end
+		if f0 and AR_FRAME - f0 >= AR_MENU_AFTER then
+			local where = tostring(AR_FRAME_CH or AR_CHAPTER) .. "|" .. tostring(system.currentSet and system.currentSet.name)
+			if not AR_MENU_SKIP[where] then
+				local m0 = AR_FRAME
+				ar_menu_stop_movie(where)
+				ar_log("MENU done in " .. (AR_FRAME - m0) .. " frames, the movie had played " .. AR_MENU_AFTER .. ", playing now " .. tostring(IsMoviePlaying()))
+			end
+			f0 = nil
+			-- (one movie a time: wait for this one to be over before the next is looked at)
+			ar_menu_wait(function() return not IsMoviePlaying() end, 600)
+		end
+		break_here()
+	end
+end
+if AR_TRICKS.menu then
+	AR_MENU_WATCH = start_script(ar_menu_watch)
+end

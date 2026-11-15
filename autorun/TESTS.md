@@ -247,4 +247,6 @@ the first 9060 lines of the whole game after the normalising, and has to be the 
 `TRICKS=blam sh run_all.sh` plays the speed run with the BLAM easter egg at the spots of `ar_blam_spots.lua` (240,150 frames instead of 248,197). The spots are
 learned from a run: `BLAMLEARN=1 LOG=blam_learn sh run_all.sh`, then `python tools/blam_spots.py logs/blam_learn.log ar_blam_spots.lua`. Learn them again when a
 chapter changes; a spot whose timing has moved is not typed after the push it was for (the log says "BLAM not typed").
+`TRICKS=menu` stops the movies of cutscenes that have no override through the game menu's View Cutscenes, as the record does; tricks combine,
+`TRICKS=blam,menu` (231,371 frames).
 

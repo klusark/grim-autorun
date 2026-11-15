@@ -32,7 +32,7 @@ AR_USE_KNOWN = TRUE"
 [ -n "$SCAN" ] && MODE_LUA="$MODE_LUA
 AR_SCAN = TRUE"
 # TRICKS=<name>[,<name>...]: tricks of the speed runners, each off unless named (ar_tricks.lua): blam (the easter egg that cuts Manny's animations short, at the spots of
-# ar_blam_spots.lua). BLAMLEARN=1: the log that tools/blam_spots.py makes those spots from. The log names the tricks that were on
+# ar_blam_spots.lua), menu (a movie of a cutscene that has no override stopped through the game menu's View Cutscenes). BLAMLEARN=1: the log that tools/blam_spots.py makes those spots from. The log names the tricks that were on
 if [ -n "$TRICKS" ] || [ -n "$BLAMLEARN" ]; then
 	MODE_LUA="$MODE_LUA
 AR_TRICKS = { }"

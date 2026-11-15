@@ -175,3 +175,18 @@ The whole game, new game to credits, is scripted (ch01 - ch65).
   AR_NO_VD_SOUND_YIELD for the old spin).
 - Speed run: 248,197 -> 245,520 frames (68:12), TRICKS=blam 239,119 -> 235,531 (65:25), each passes twice with the same count.
 
+## Tricks: TRICKS=menu, Years 3 and 4 against the record (2026-11-15)
+- The record (54:23) opens the game menu during movies that have no override. cutscene_menu.view_cutscene starts the cutscene picked in View Cutscenes
+  with StopMovie(), which stops the game's own movie, and the scene that waited for it goes on. TRICKS=menu (ar_tricks.lua): a movie of a cutscene with no
+  override, after AR_MENU_AFTER (6) frames: the menu key (F1), the menu's hot key c (View &Cutscenes, handed to the menu's characterHandler as the engine hands it
+  a typed letter), Home (PAGE_HOME) and Enter for the first cutscene, the override key for it, the override key back to the game. The menu pauses every task
+  but the one that pressed its key; that one drives it and counts its frames into the run's (AR_MENU_FRAMES, 2-3 a time, in the last line of the run).
+  AR_MENU_SKIP["chapter|set"] leaves a movie alone. 54 movies, 4,104 frames less: the Lola torn from the pier 2,142, Chepito 815, the neon ledge 455, the
+  beavers 350, the Pearl sub 293; most of the others are overlays the scene goes on beside.
+- Chapter 59: the keno board draws a number every 15 s and clears after its tenth; Brennis's dialog stops the draws, not the clock, so a question asked on
+  the tenth number lost its number under the answer (the run failed when the random numbers fell that way). On the tenth the clear is waited for, and the
+  list is moved to the number the board shows at each tap.
+- Years 3 and 4 against the record: the same order; the gaps were the Lola and the Pearl sub (the menu now), Albinizod and the florist (+32 s), the casino
+  (+39 s) and the end (+32 s).
+- Speed run 245,693 frames (68:15), TRICKS=blam 235,627, TRICKS=menu 241,589, TRICKS=blam,menu 231,371 (64:16); each passes.
+
