@@ -255,6 +255,7 @@ ar_steer = function(x, y, z, thr)
 			AR_STEER_TURNED = nil
 			return TRUE
 		end
+		ar_turn_run()
 		if d > 0 then
 			TurnActor(manny.hActor, 1)
 		else
@@ -265,6 +266,15 @@ ar_steer = function(x, y, z, thr)
 	end
 	AR_STEER_TURNED = nil
 	return nil
+end
+
+-- A turn on the spot with the run key held, as a player holds it: the game's run sets the turn rate to 140 degrees a second, the walk to 85 (manny.set_run), so
+-- the turns that stand Manny still take 0.6 of the time. Only standing: a run is not started by it (the follower decides walk or run for the step itself, a run with
+-- the heading far off swings him wide). AR_NO_RUN_TURN = TRUE for the old turn at the walk's rate
+ar_turn_run = function()
+	if not AR_WALK and not AR_NO_RUN_TURN and not manny.is_running and not manny.is_backward and not manny:is_moving() then
+		manny:set_run(TRUE)
+	end
 end
 
 -- Turns Manny until he faces the object to within tol degrees (the cone in which the game sees an object can be narrow:
@@ -279,6 +289,7 @@ ar_face_precise = function(obj, tol)
 		if abs(d) <= tol then
 			return TRUE
 		end
+		ar_turn_run()
 		if d > 0 then
 			TurnActor(manny.hActor, 1)
 		else
