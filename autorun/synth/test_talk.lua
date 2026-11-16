@@ -126,7 +126,7 @@ ar_talk_before(tdlg, tdlg[70])
 s = table.concat(said, " ")
 check(s == "/t10/", "no way back from sub: only the plain line (" .. s .. ")")
 
--- a dialog that a later chapter talks in (AR_DLG_LAST): an extra says nothing in it, the chapter's own talk still does
+-- a dialog that a later chapter talks in (AR_DLG_LAST): an extra talks in it too
 AR_DLG_LAST = { tdlg = "ch60_celso" }
 AR_FRAME_CH = "ch59_keno"
 said = { }
@@ -134,24 +134,50 @@ AR_SAID = { }
 tdlg = make()
 AR_IN_EXTRA = TRUE
 ar_talk_before(tdlg, nil)
-check(table.concat(said, " ") == "", "a dialog left to a later chapter: an extra says nothing in it")
+check(table.concat(said, " ") == "/t10/ /t70/", "a dialog a later chapter talks in: an extra talks in it too (" .. table.concat(said, " ") .. ")")
+AR_IN_EXTRA = nil
+AR_DLG_LAST = { }
+
+-- AR_NO_EXTRA_TALK: up to its chapter an extra says nothing in the dialog, the chapter's own talk still does; after it the extra talks
+AR_NO_EXTRA_TALK = { tdlg = "ch60_celso" }
+said = { }
+AR_SAID = { }
+tdlg = make()
+AR_IN_EXTRA = TRUE
+ar_talk_before(tdlg, nil)
+check(table.concat(said, " ") == "", "AR_NO_EXTRA_TALK: an extra says nothing in it before its chapter (" .. table.concat(said, " ") .. ")")
 AR_IN_EXTRA = nil
 ar_talk_before(tdlg, tdlg[70])
-check(table.concat(said, " ") == "/t10/", "a dialog left to a later chapter: the chapter's own talk says its lines (" .. table.concat(said, " ") .. ")")
+check(table.concat(said, " ") == "/t10/", "AR_NO_EXTRA_TALK: the chapter's own talk says its lines (" .. table.concat(said, " ") .. ")")
 AR_FRAME_CH = "ch60_celso"
 said = { }
 AR_SAID = { }
 tdlg = make()
 AR_IN_EXTRA = TRUE
 ar_talk_before(tdlg, nil)
-check(table.concat(said, " ") == "", "in the last chapter of the dialog an extra leaves it to the chapter too (" .. table.concat(said, " ") .. ")")
+check(table.concat(said, " ") == "", "AR_NO_EXTRA_TALK: in its chapter an extra leaves it to the chapter too (" .. table.concat(said, " ") .. ")")
 AR_FRAME_CH = "ch61_neon_ledge"
 said = { }
 ar_talk_before(tdlg, nil)
-check(table.concat(said, " ") == "/t10/ /t70/", "after the last chapter of the dialog an extra talks in it (" .. table.concat(said, " ") .. ")")
+check(table.concat(said, " ") == "/t10/ /t70/", "AR_NO_EXTRA_TALK: after its chapter an extra talks in it (" .. table.concat(said, " ") .. ")")
 AR_IN_EXTRA = nil
+AR_NO_EXTRA_TALK = { }
+
+-- AR_NO_TALK with AR_NO_TALK_UNTIL: blocked up to that chapter, for the chapter's own talk too; after it the dialog is talked in
+AR_NO_TALK = { tdlg = "why" }
+AR_NO_TALK_UNTIL = { tdlg = "ch60_celso" }
+AR_FRAME_CH = "ch60_celso"
+said = { }
+AR_SAID = { }
+tdlg = make()
+ar_talk_before(tdlg, tdlg[70])
+check(table.concat(said, " ") == "", "AR_NO_TALK_UNTIL: blocked in its chapter (" .. table.concat(said, " ") .. ")")
+AR_FRAME_CH = "ch61_neon_ledge"
+ar_talk_before(tdlg, tdlg[70])
+check(table.concat(said, " ") == "/t10/", "AR_NO_TALK_UNTIL: talked in after its chapter (" .. table.concat(said, " ") .. ")")
 AR_FRAME_CH = nil
-AR_DLG_LAST = { }
+AR_NO_TALK = { }
+AR_NO_TALK_UNTIL = { }
 
 -- a line that this chapter picks later (AR_DLG_PICKS) is left to that pick, also in a run of one chapter whose name has a tag after it
 AR_DLG_MOVE = { tdlg = { [20] = "sub", [30] = "dead", [50] = "n1" } }
