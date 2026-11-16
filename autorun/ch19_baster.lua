@@ -6,6 +6,8 @@ ar_load(18)
 AR_NEW = TRUE
 ar_log("start in " .. ar_set_name())
 ar_wait_for_control()
+-- (100% modes: Maximino in his office, mx1, through the door at the back of the lounge, which lets Manny in until Nick has gone)
+ar_side_trip(hl.mx_door, mx, mx.hl_door)
 -- the first time in the lounge: Nick right away (Manny has seen him kiss Lola), and Raoul in the kitchen
 ar_describe()
 ar_do("use", hl.virago_obj)
@@ -37,6 +39,14 @@ ar_wait_for_control()
 ar_check(hl.case.owner == manny, "Manny has the cigarette case")
 ar_go(hl.hk_door, hk)
 ar_wait_for_control()
+-- (100% modes: Aitor asleep in the high roller elevator, ai1, through the kitchen's elevator door. The first time in the kitchen he brings up the new cask
+-- and is downstairs after it (hk.put_up_new_cask); he is back in the elevator when Manny comes into the kitchen again from the lounge, until Raoul quits)
+if AR_FULL then
+	ar_go(hk.hl_door, hl)
+	ar_go(hl.hk_door, hk)
+	ar_wait_for_control()
+	ar_side_trip(hk.he_door, he, he.hk_door)
+end
 -- Raoul, who keeps going into the pantry now that Glottis gambles, is trapped there with the scythe (the dig for the detector, the only use of the scythe
 -- before it comes back at the end of chapter 26, is done)
 ar_hold(mo.scythe)

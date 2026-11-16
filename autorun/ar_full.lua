@@ -310,10 +310,27 @@ ar_look_all = function(set)
 	while i <= n and system.currentSet == set do
 		local o = list[i]
 		-- (a door is not looked at here: standing at it is standing in its door sector, and the game walks Manny out)
-		if o.touchable and not o.owner and o.range and o.range > 0 and not o.walkOut and not o.climbOut and not AR_NO_LOOK[o.string_name] and ar_has_verb(o, "lookAt") then
+		ar_talk_opened()
+		if system.currentSet == set and o.touchable and not o.owner and o.range and o.range > 0 and not o.walkOut and not o.climbOut and not AR_NO_LOOK[o.string_name] and ar_has_verb(o, "lookAt") then
 			ar_do("lookAt", o)
 		end
 		i = i + 1
+	end
+	ar_talk_opened()
+end
+
+-- A dialog the game opened by itself, a set's intro walked into (Maximino greets Manny as he steps in and talks, mx1): every line on offer and the end, as
+-- for a person talked to; nothing when no dialog has the keys
+ar_talk_opened = function()
+	ar_wait_for_control()
+	local dlg = system.buttonHandler
+	if type(dlg) == "table" and ar_dialog_name(dlg) ~= "?" then
+		ar_log("extra: the game opened the dialog " .. ar_dialog_name(dlg))
+		ar_talk_before(dlg, nil)
+		if system.buttonHandler == dlg then
+			ar_pick_exit(dlg)
+		end
+		ar_wait_for_control()
 	end
 end
 

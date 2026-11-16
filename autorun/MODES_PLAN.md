@@ -194,6 +194,16 @@ Then three more people to talk to:
   control back: tools/gen_dlg_skip.py no longer counts a response that walks Manny as one that only ends the talk.
 
 Whole game: passes, 427,048 frames (446,011 with SAVE=1), dialog lines 293 of 466 (was 277). The speed run is unchanged (245,693).
-Still never opened: Aitor (ai1, the high roller elevator, reached only with the dillopede elevator on its top floor) and Maximino (mx1, his door is
-untouchable until the story opens it).
+
+Then the two people never met, both in chapter 19 (100% modes only):
+
+* Maximino (mx1, 13 of 14 lines): a side trip from the high roller lounge through the door at its back, which is not in the gaze but lets Manny in until Nick
+  has gone. Maximino greets him as he steps in and the game opens the talk itself: ar_look_all and the side trip now talk through a dialog the game opened
+  (ar_talk_opened). The approach push of ar_do and the step out of a door sector stop when a dialog has the keys (they stepped Manny under it, a failure).
+* Aitor (ai1, 11 of 13 lines): a side trip from the kitchen through the elevator door. The first time in the kitchen he brings up the new cask and stays
+  downstairs (hk.put_up_new_cask); he is back in the elevator once Manny comes into the kitchen again from the lounge, so the trip goes out to the lounge and
+  back first.
+
+Whole game: passes, 432,496 frames (452,471 with SAVE=1), dialog lines 317 of 466, sets entered 99 of 120. The speed run is unchanged (245,693).
+Every dialog is opened now.
 

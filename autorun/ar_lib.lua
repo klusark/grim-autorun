@@ -1261,7 +1261,7 @@ ar_approach = function(obj)
 			if AR_TRACE then ar_state("approach push") end
 			local t = 0
 			AR_START_SET = AR_START_SET or system.currentSet
-			while not ar_offered() and not ar_set_changed() and t < 2500 do
+			while not ar_offered() and not ar_set_changed() and t < 2500 and not ar_walk_keys_taken() do
 				manny:walk_forward()
 				break_here()
 				t = t + system.frameTime
@@ -2016,7 +2016,7 @@ ar_go = function(door, target, vx, vy, vz)
 	-- could just as well leave through another door, such as the elevator)
 	if hname and (not AR_NEW or system.currentSet[hname] == door) then
 		local t = 0
-		while t < 1200 do
+		while t < 1200 and not ar_walk_keys_taken() do
 			manny:walk_forward()
 			break_here()
 			t = t + system.frameTime
