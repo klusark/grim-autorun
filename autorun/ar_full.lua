@@ -795,7 +795,8 @@ ar_talk_dist = function(name, dlg, home)
 			if not dist[x] then
 				local best = nil
 				y = exits[x]
-				if y and dist[y] and dlg.exit_lines and dlg.exit_lines[x] then
+				-- (an exit line the game sets when the node is shown counts too: Meche's n3, me2.delayed_n3_exit)
+				if y and dist[y] then
 					best = dist[y] + 1
 				end
 				y = aborts[x]
@@ -936,6 +937,73 @@ ar_talk_back = function(name, dlg, dist, cur)
 	return best, best_d
 end
 
+-- How many lines node `node` would show (the lines on offer and its exit line): with one or none the game runs the node's abort by itself
+-- (_dialog.lua, min_line), and Nick's aborts say the first line on offer, the one chapter 19 picks (150)
+ar_talk_shown = function(dlg, node)
+	local n = 0
+	if dlg.exit_lines and dlg.exit_lines[node] then
+		n = 1
+	end
+	local k, v = next(dlg, nil)
+	while k do
+		if type(k) == "number" and type(v) == "table" and v[node] and v.text and not v.off then
+			n = n + 1
+		end
+		k, v = next(dlg, k)
+	end
+	return n
+end
+
+-- Whether node `node` shows enough lines that the game does not act by itself: two or more, where the node has an abort (Mic's poem_node shows its exit
+-- line only, and has none)
+ar_talk_shown_ok = function(dlg, node)
+	return not (dlg.aborts and dlg.aborts[node]) or ar_talk_shown(dlg, node) >= 2
+end
+
+-- Whether the talk can end in node `node`: it has an exit line, or a line on offer that only ends the talk (not one a chapter picks later), or one that
+-- moves on to a node where it can (up to 4 nodes deep). Nick's best_node, once 220 is said (it turns itself off), has only the chapter's 200: the talk
+-- went in, could not end there, and the exit fell back on 200, which chapter 19 needs later
+ar_talk_endable = function(name, dlg, node, depth)
+	if (dlg.exit_lines and dlg.exit_lines[node]) or (AR_DLG_EXIT[name] and AR_DLG_EXIT[name][node]) then
+		return TRUE
+	end
+	if depth <= 0 then
+		return nil
+	end
+	local ends = (AR_DLG_END and AR_DLG_END[name]) or { }
+	local k, v = next(dlg, nil)
+	while k do
+		if type(k) == "number" and type(v) == "table" and v[node] and v.text and not v.off and not ar_picked_later(name, k) then
+			if ends[k] then
+				return TRUE
+			end
+			local to = ar_move_to(name, k, nil, node)
+			if to and to ~= node and ar_talk_endable(name, dlg, to, depth - 1) then
+				return TRUE
+			end
+		end
+		k, v = next(dlg, k)
+	end
+	return nil
+end
+
+-- Whether the talk may go into node `to` by line n, the talk being to end anyway: it can end there and it shows two lines or more (else the game
+-- runs the node's abort by itself); a line with several nodes, every one it may go to (Nick's 240 goes to trouble_node or threats_node)
+ar_talk_enterable = function(name, dlg, n, to)
+	local l = AR_DLG_MOVES and AR_DLG_MOVES[name] and AR_DLG_MOVES[name][n]
+	if not l then
+		return ar_talk_endable(name, dlg, to, 4) and ar_talk_shown_ok(dlg, to)
+	end
+	local j = 1
+	while l[j] do
+		if l[j] ~= dlg.node and not (ar_talk_endable(name, dlg, l[j], 4) and ar_talk_shown_ok(dlg, l[j])) then
+			return nil
+		end
+		j = j + 1
+	end
+	return TRUE
+end
+
 -- The talk is to end anyway, in a node with no way home or at home with nothing left (ending): a line into a node with no way home that has a line
 -- not said (one not said first, then a move that stays on into a node not entered on this visit), else a line not said that only ends the talk
 -- (AR_DLG_END); away from home also the exit line of the node, or a line that ends the talk said before. TRUE when a line was said
@@ -949,7 +1017,7 @@ ar_talk_dead_end = function(name, dlg, target, dist, entered, home)
 		local n = ar_line_number(dlg, c)
 		local to = n and ar_move_to(name, n, dist, cur)
 		if n and c ~= target and not ar_picked_later(name, n) then
-			if to and to ~= cur and to ~= home and not dist[to] and not entered[to] then
+			if to and to ~= cur and to ~= home and not dist[to] and not entered[to] and ar_talk_enterable(name, dlg, n, to) then
 				if not AR_SAID[c] then
 					into = into or c
 				elseif ar_talk_node_new(name, dlg, to, TRUE) then
@@ -994,7 +1062,12 @@ end
 
 -- Says one line (an extra of its own: what fails in it is logged, the story goes on)
 AR_TALK_N = AR_TALK_N or 0
+AR_TALK_NEW = AR_TALK_NEW or 0
 ar_talk_say = function(name, dlg, c, what)
+	-- (a line said for the first time, AR_TALK_NEW: what makes a person worth talking to again; 240 said again on each visit to Nick is not)
+	if not AR_SAID[c] then
+		AR_TALK_NEW = AR_TALK_NEW + 1
+	end
 	AR_SAID[c] = TRUE
 	AR_TALK_N = AR_TALK_N + 1
 	local n = ar_line_number(dlg, c)
@@ -1170,7 +1243,7 @@ ar_talk_one = function()
 	while again and visits < 8 and system.currentSet == obj.obj_set do
 		again = nil
 		visits = visits + 1
-		local before = AR_TALK_N
+		local before = AR_TALK_NEW
 		ar_do("use", obj)
 		-- (a talk that starts with a scene of its own: the dialog comes when it is over; Salvador peeks out and Manny walks to the window first)
 		ar_wait_dialog_or_control()
@@ -1182,7 +1255,7 @@ ar_talk_one = function()
 				ar_pick_exit(dlg)
 			end
 			-- (and only when the dialog has a line left to say: a use with nothing to talk about moved Membrillo, chapter 35, and the morgue had no way left)
-			if AR_TALK_N > before and ar_dialog_has_new(dlg) then
+			if AR_TALK_NEW > before and ar_dialog_has_new(dlg) then
 				again = TRUE
 			end
 		end

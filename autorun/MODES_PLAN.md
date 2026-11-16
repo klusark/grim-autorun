@@ -299,3 +299,24 @@ Then lines with several nodes, aborts, and the lines the game says itself:
 
 Whole game: passes, 487,899 frames (SAVE=1), dialog lines 355 of 466. The speed run is unchanged (245,693). Eva's first talk: 16 lines left -> 5
 (5, 70, 75, 95: one way through explain_node a game; 130: its node is spelled expain2_node, never offered).
+
+Then more of the talks, chapter by chapter:
+
+* gen_dlg_skip.py: a response that calls another line's, "vi1[190]:response()", does what that one does (Nick's 180 moves to best_node, and was
+  taken for a plain line: said before chapter 19's pick, it moved the talk on); an exit line set from another table ("me2.exit_lines.n3 =
+  me2.delayed_n3_exit", Meche's n3; "ev1.exit_lines.explain2_node = ev1.exit_lines.first_eva_node"); a line that only ends the talk may set fields of
+  its own dialog table (Nick's 210, vi1.joke_time).
+* The talk goes into a node with no way home only where it can end there (a line that ends the talk, an exit line, or a node further on where it
+  can: ar_talk_endable), and, in a node with an abort, only where the node shows two lines or more: with one the game runs the abort by itself, and
+  Nick's aborts say that line, the one chapter 19 picks. A line with several nodes, every one it may go to. Only lines said for the first time count
+  for talking to a person again (AR_TALK_NEW).
+* ex00_sweep.lua starts its tables empty: a chapter played from a save had the Lua state of the run that made it, blocks this file no longer has
+  included (Nick's).
+* Chapter 19: Nick is talked through after his first line (100), each talk ended in one of his nodes with no way back, back into trouble_node by
+  240, the chapter's own lines kept for it; his threats node once more before the kiss (290). Where a node is left with one line, the game says it
+  by itself (150, 280), and the chapter does not pick it again. 16 lines left -> 3 (110 needs Terry arrested; 160 and 230 one more way into good_node).
+* Chapter 13: Celso's talk is blocked until his 120 is picked, then the lines before 135 (which leaves him talked out): 7 left -> 3 (160 is in a
+  node named "first", never shown, and 170 comes after it; 130 is 120's other way).
+* Chapter 17: Charlie's talk is blocked until his 100 is picked, then the rest before the chapter's picks: 10 left -> 1 (110 is 100's other way).
+
+Whole game: passes, 491,407 frames (SAVE=1), dialog lines 381 of 466. The speed run is unchanged (245,693).

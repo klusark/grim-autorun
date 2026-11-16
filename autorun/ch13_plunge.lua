@@ -23,6 +23,11 @@ ar_do("use", ri.celso_obj)
 ar_wait_for(function() return ce1 end, 60000)
 ar_pick(ce1, 110)
 ar_pick(ce1, 120)
+-- (100% modes: his talk is blocked up to this chapter (ex00_sweep.lua: lines said before 110 and 120 broke their picks); with both said, the lines
+-- before 135 now, which gives the photo and leaves him talked out: 123, 125, 140, 150)
+if AR_FULL then
+	AR_NO_TALK["ce1"] = nil
+end
 ar_pick(ce1, 135)
 ar_wait_for(function() return ri.photo.owner == manny end, 120000)
 ar_check(ri.photo.owner == manny, "Manny has the photo")
