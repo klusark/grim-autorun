@@ -4,6 +4,10 @@
 ar_log("start in " .. ar_set_name())
 -- the new game starts here, once the intro is over: the save the other runs start from
 ar_wait_for_control()
+-- (100% modes: the game's menus, once)
+if AR_FULL then
+	ar_extra_run("menus", ar_menu_tour)
+end
 
 if system.currentSet == mo then
 	-- the cards on the desk, and a card from them punched at the hole punch in the hallway: chapter 4 needs the punched card,
