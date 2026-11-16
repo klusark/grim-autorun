@@ -475,19 +475,76 @@ ar_sweep = function()
 		return
 	end
 	local name = system.currentSet.name
+	local set = system.currentSet
 	if AR_VISITED[name] then
+		-- (the door trips again, each time the set would be swept: the first sweep can end out of the set, the heavy step of the kitchen took Manny to
+		-- the lounge)
+		ar_door_trips(set)
 		return
 	end
 	AR_VISITED[name] = TRUE
 	if AR_NO_SWEEP[name] then
 		ar_log("extra: no sweep of " .. tostring(name) .. " (" .. AR_NO_SWEEP[name] .. ")")
+	else
+		AR_VISIT_SET = set
+		ar_extra_run("visit " .. tostring(name), ar_visit_set)
+		-- (use, pick up and the items: as a step of its own, so that a set where it breaks the story loses only this)
+		if system.currentSet == AR_VISIT_SET and not AR_NO_HEAVY[name] then
+			ar_extra_run("heavy " .. tostring(name), ar_heavy_set)
+		end
+	end
+	-- (the doors to sets not entered yet: a trip of its own through each, and back; also from a set that is not swept)
+	if system.currentSet == set then
+		ar_door_trips(set)
+	end
+end
+
+-- The sets entered in this game (100% modes): the set is looked at every frame; the first time in a set is a COV set line for the coverage report
+-- (a set the story only passes through, in a cutscene or a script's move, has no camera notes)
+AR_ENTERED = AR_ENTERED or { }
+ar_set_watch = function()
+	local cur = nil
+	while TRUE do
+		if system.currentSet ~= cur then
+			cur = system.currentSet
+			if cur and cur.name and not AR_ENTERED[cur.name] then
+				AR_ENTERED[cur.name] = TRUE
+				ar_log("COV set | " .. cur.name)
+			end
+		end
+		break_here()
+	end
+end
+if AR_FULL and not AR_SET_WATCH then
+	AR_SET_WATCH = start_script(ar_set_watch)
+end
+
+-- Door trips (100% modes): from a set that is swept, through each of its doors (an object <set global>_door that is walked out of) to a set of AR_TRIP_TO
+-- (ex05_trips.lua: the story never goes there) not entered yet in this game, when that set has a door back (<this set's global>_door): the side trip of ar_side_trip_run, which looks at everything there, picks up and gives
+-- the items to the people and talks to them, and comes back. AR_NO_TRIP["<set global>.<door field>"] = "why" leaves a door alone (ex00_sweep.lua).
+AR_NO_TRIP = AR_NO_TRIP or { }
+AR_TRIP_TO = AR_TRIP_TO or { }
+ar_door_trips = function(set)
+	local sg = ar_set_global(set)
+	if not sg or AR_TRIP then
 		return
 	end
-	AR_VISIT_SET = system.currentSet
-	ar_extra_run("visit " .. tostring(name), ar_visit_set)
-	-- (use, pick up and the items: as a step of its own, so that a set where it breaks the story loses only this)
-	if system.currentSet == AR_VISIT_SET and not AR_NO_HEAVY[name] then
-		ar_extra_run("heavy " .. tostring(name), ar_heavy_set)
+	local k, v = next(set, nil)
+	while k and system.currentSet == set do
+		if type(k) == "string" and type(v) == "table" and v.walkOut and strlen(k) > 5 and strsub(k, strlen(k) - 4, strlen(k)) == "_door" then
+			local t = getglobal(strsub(k, 1, strlen(k) - 5))
+			local key = sg .. "." .. k
+			if type(t) == "table" and t ~= set and t.come_out_door and t.name and AR_TRIP_TO[t.name] and not AR_ENTERED[t.name] and type(t[sg .. "_door"]) == "table" then
+				if AR_NO_TRIP[key] then
+					ar_log("extra: no trip through " .. key .. " (" .. AR_NO_TRIP[key] .. ")")
+				else
+					AR_TRIP = { v, t, t[sg .. "_door"] }
+					ar_extra_run("trip " .. key, ar_side_trip_run)
+					AR_TRIP = nil
+				end
+			end
+		end
+		k, v = next(set, k)
 	end
 end
 if AR_FULL and not AR_GO_OLD then
@@ -878,6 +935,9 @@ ar_side_trip = function(door, target, back)
 	if not AR_FULL then
 		return
 	end
+	-- (the door trips of the set first: the kitchen of chapter 19 is left by its heavy step, and the side trip to Aitor is the next time Manny is
+	-- there with the control)
+	ar_door_trips(system.currentSet)
 	AR_TRIP = { door, target, back }
 	ar_extra_run("side trip " .. tostring(system.currentSet.name) .. " -> " .. tostring(target.name), ar_side_trip_run)
 	AR_TRIP = nil

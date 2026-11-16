@@ -8,7 +8,8 @@ the last extra before the failure."""
 import sys
 
 # notes of the extras: lines that do not start an extra (an extra starts with its tag and ends with "done <tag>")
-NOTES = ("no sweep of ", "given up after ", "Manny held ", "no talk to ", "not used: ", "nothing new to say", "the talk ended", "the set was left by ", "an item was taken by ")
+NOTES = ("no sweep of ", "given up after ", "Manny held ", "no talk to ", "not used: ", "nothing new to say", "the talk ended", "the set was left by ", "an item was taken by ",
+         "the side trip did not get to ", "the game opened the dialog ", "no trip through ")
 
 
 def block_of(who):
@@ -19,6 +20,9 @@ def block_of(who):
         kind, _, rest = who[1:-1].partition(" ")
         if kind in ("visit", "heavy"):
             return kind + ":" + rest
+        if kind == "trip":
+            # (a door trip: "<set global>.<door field>", AR_NO_TRIP)
+            return "trip:" + rest
         if kind == "talk":
             return "talk:" + rest.split()[0]
         if kind == "people":
@@ -67,6 +71,8 @@ for ln in open(sys.argv[1], errors="replace"):
                 last = "visit:" + t[6:]
             elif t.startswith("heavy "):
                 last = "heavy:" + t[6:]
+            elif t.startswith("trip "):
+                last = "trip:" + t[5:]
             elif t.startswith("talk "):
                 last = "talk:" + t.split()[1]
             elif t.startswith("people "):

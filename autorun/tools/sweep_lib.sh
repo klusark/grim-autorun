@@ -6,6 +6,7 @@ block() {
 	why=$(echo "$why" | tr -d '"')
 	case "$kind" in
 		heavy) var=AR_NO_HEAVY; text="use, pick up and items" ;;
+		trip) var=AR_NO_TRIP; text="the trip through this door" ;;
 		use) var=AR_NO_USE; text="the heavy step used it (it took Manny out of the set or took an item he carried)" ;;
 		people) var=AR_NO_PEOPLE; text="the people of it were talked to" ;;
 		talker) var=AR_NO_TALKER; text="this person was talked to"; [ -n "$2" ] && name="$name@$2" ;;
