@@ -259,3 +259,28 @@ setups no script and no camera sector names (tu_swicu, Hallway 1, 4 and 5, co_ds
 Whole game: passes, 474,548 frames (SAVE=1), dialog lines 320 of 466. The speed run is unchanged (245,693).
 Of the 146 lines left: 45 move to another node of the talk, 32 end it or start a cutscene (AR_NO_AUTO), 19 are the exit lines of nodes, 4 cannot be
 offered, and 46 come on only after a line of another node or later in the story.
+
+Then the talk itself (ar_talk_before):
+
+* Nodes at any depth: every line that moves to a node the talk comes back home from (ar_talk_dist: the steps home by the lines that move and the exit
+  lines), each line once, and a node entered again on the same visit only by a line not said yet; back home one step at a time. Before, one level of
+  sub-menus, each entered once a visit (Salvador's 110, 130, 140 and 150 all go to fold_node).
+* The dialog on screen first (ar_dialog_ready) before the talk before a chapter's pick: chapter 5 picks as soon as Salvador's talk starts, and the talk
+  found no lines yet, so his first menu was never talked in (the same for every chapter that picks at once).
+* ca2 (Carla's second talk, chapter 18) is blocked: a line said before the chapter's picks ended the run inside the talk.
+
+Whole game: passes, 474,861 frames (SAVE=1), dialog lines 324 of 466. The speed run is unchanged (245,693).
+
+Then talks held again while there are lines left:
+
+* ar_talk_one talks to a person again (up to 8 visits) while the dialog has a line the talk would say (not one a chapter picks later, nor one it never
+  says on its own) in a node it can still get to, off too in its start node (a later visit's intro turns lines on), and the last visit said something
+  new. A visit for a line it cannot say (Carla's 120, chapter 18) only said goodbye and the chapter hung.
+* When a visit is to end anyway, it goes into a node with no way home, at any depth, and ends there by a line that only ends the talk (AR_DLG_END), or
+  by the node's exit line (ar_talk_dead_end); a node with no exit line is ended the same way by ar_pick_exit.
+* A line that moves to the node it is in is a plain line (Salvador's 160). AR_DLG_KEEP (tools/gen_dlg_skip.py): a move that stays on when said may be
+  said by an extra though a chapter picks it later (Salvador's 220 into angry_node); a response that is a function of the dialog is read too (his 170).
+* Chapter 5: Salvador is talked to at the door before the chapter's own talk, five visits, each ended in the shop: 15 of his lines left -> 5, which the
+  game never offers (130 needs 120 marked said, which nothing does; 140 is only ever turned off; one of 300 to 330 per game, 155 turns itself off).
+
+Whole game: passes, 486,808 frames (SAVE=1), dialog lines 336 of 466. The speed run is unchanged (245,693).

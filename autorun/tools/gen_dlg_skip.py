@@ -6,6 +6,8 @@
   AR_DLG_EXIT[dialog][node] = node  where the exit line of a node goes, when it goes to one node only ("exit_dialog" ends the talk)
   AR_DLG_END[dialog][line] = TRUE   of the AR_NO_AUTO lines, the ones whose response does nothing but end the talk (no items, no story): said in place of
                                     the exit line when a chapter ends the talk anyway
+  AR_DLG_KEEP[dialog][line] = TRUE  of the moves, the ones that stay on when said (the response turns no line off): an extra may say one that a chapter
+                                    picks later, it is offered again (Salvador's 220 into angry_node, chapter 5)
 ar_talk_before (ar_full.lua) enters a sub-menu only when its exit line comes back to the node it was entered from.
   python tools/gen_dlg_skip.py [source dir]"""
 import re, glob, os, sys
@@ -14,6 +16,8 @@ line_def = re.compile(r'^([a-z_0-9]+)\[(\d+)\] = \{')
 resp_def = re.compile(r'^([a-z_0-9]+)\[(\d+)\]\.response = function')
 exit_def = re.compile(r'^([a-z_0-9]+)\.exit_lines\.([a-z_0-9]+)\.response = function')
 alias = re.compile(r'^([a-z_0-9]+)\[(\d+)\]\.response = ([a-z_0-9]+)\[(\d+)\]\.response')
+alias_func = re.compile(r'^([a-z_0-9]+)\[(\d+)\]\.response = ([a-z_0-9]+)\.([a-z_0-9]+)\s*$')
+fal = {}
 risky = re.compile(r'\.node\s*=|exit_dialog|START_CUT_SCENE|switch_to_set|cut_scene\.|\.outro|Dialog:|put_in_limbo|goto_|game_over|ChangeSet|load_game|save_game')
 # (what makes a line more than a move to a node: anything of risky but the node itself)
 story = re.compile(r'exit_dialog\(|START_CUT_SCENE|switch_to_set|cut_scene\.|\.outro|Dialog:|put_in_limbo|goto_|game_over|ChangeSet|load_game|save_game')
@@ -45,6 +49,10 @@ for f in sorted(glob.glob(os.path.join(src, "*.lua"))):
         m = alias.match(ln)
         if m:
             al[(m[1], int(m[2]))] = (m[3], int(m[4])); cur = None; continue
+        # (a response that is a function of the dialog, "sa1[170].response = sa1.back_in": its body; Salvador's 170 moves to fold_node that way)
+        m = alias_func.match(ln)
+        if m:
+            fal[(m[1], int(m[2]))] = (m[3], m[4]); cur = None; continue
         m = line_def.match(ln)
         if m:
             lines.add((m[1], int(m[2]))); cur = None; continue
@@ -74,14 +82,17 @@ def with_calls(text, d, depth=3):
     return text + ("\n" + "\n".join(extra) if extra else "")
 
 
-out, move, back, end = {}, {}, {}, {}
+out, move, back, end, keep = {}, {}, {}, {}, {}
+turns_off = re.compile(r"\.off\s*=\s*TRUE")
 for k in sorted(lines):
-    text = with_calls("\n".join(body.get(al.get(k, k), [])), k[0])
+    text = with_calls("\n".join(funcs.get(fal[k], []) if k in fal else body.get(al.get(k, k), [])), k[0])
     if risky.search(text):
         out.setdefault(k[0], []).append(k[1])
         nodes = set(node_set.findall(text))
         if len(nodes) == 1 and not story.search(text) and "exit_dialog" not in nodes:
             move.setdefault(k[0], {})[k[1]] = nodes.pop()
+            if not turns_off.search(text):
+                keep.setdefault(k[0], []).append(k[1])
         # (nor a walk of Manny's: Carla's line 120, ca1, ends the talk with a walk across the metal detector, whose scene then never gives control back)
         elif nodes == {"exit_dialog"} and not story.search(text) and not items.search(text) and not sets_state(text) and not manny_walk.search(text):
             end.setdefault(k[0], []).append(k[1])
@@ -93,7 +104,7 @@ with open("ex02_dialogs.lua", "w", newline=chr(10)) as f:
     f.write("-- made by tools/gen_dlg_skip.py from the dialog scripts: the lines that the 100% run does not say on its own (their response ends the dialog,\n"
             "-- starts a cutscene, changes the set or moves to a node), the moves to a node, where the exit line of each node goes, and the lines that only\n"
             "-- end the talk; do not edit\n"
-            "AR_NO_AUTO = AR_NO_AUTO or { }\nAR_DLG_MOVE = AR_DLG_MOVE or { }\nAR_DLG_EXIT = AR_DLG_EXIT or { }\nAR_DLG_END = AR_DLG_END or { }\n")
+            "AR_NO_AUTO = AR_NO_AUTO or { }\nAR_DLG_MOVE = AR_DLG_MOVE or { }\nAR_DLG_EXIT = AR_DLG_EXIT or { }\nAR_DLG_END = AR_DLG_END or { }\nAR_DLG_KEEP = AR_DLG_KEEP or { }\n")
     for d, ns in sorted(out.items()):
         f.write('AR_NO_AUTO["%s"] = { }\n' % d)
         for n in ns:
@@ -110,5 +121,9 @@ with open("ex02_dialogs.lua", "w", newline=chr(10)) as f:
         f.write('AR_DLG_END["%s"] = { }\n' % d)
         for n in ns:
             f.write('AR_DLG_END["%s"][%d] = TRUE\n' % (d, n))
+    for d, ns in sorted(keep.items()):
+        f.write('AR_DLG_KEEP["%s"] = { }\n' % d)
+        for n in ns:
+            f.write('AR_DLG_KEEP["%s"][%d] = TRUE\n' % (d, n))
 print(sum(len(v) for v in out.values()), "lines of", len(lines), "left to the extras;", sum(len(v) for v in move.values()), "of them move to a node,",
       sum(len(v) for v in end.values()), "only end the talk;", sum(len(v) for v in back.values()), "exit lines go to one node")
