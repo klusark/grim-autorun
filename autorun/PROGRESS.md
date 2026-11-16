@@ -190,3 +190,15 @@ The whole game, new game to credits, is scripted (ch01 - ch65).
   (+39 s) and the end (+32 s).
 - Speed run 245,693 frames (68:15), TRICKS=blam 235,627, TRICKS=menu 241,589, TRICKS=blam,menu 231,371 (64:16); each passes.
 
+## Tricks on the original exe (2026-11-15)
+- Only tricks that also work on the original are wanted. orig_launch_run.sh plays the autorun on the clean v1.01 exe through grimlaunch (new opt-in Grim
+  patches: f12, F12 runs grimpatch.bin without Backspace; nopause). build_original.sh now takes the libraries in run_all.sh's order, the tricks, UPTO,
+  NOSAVE, SKIPMS and OUTDIR.
+- BLAM works on the original: chapters 1-4, 23,752 frames without tricks, 23,028 with blam (ch02 -359, ch04 -365); to the start of chapter 8 42,698 against
+  40,822 (-1,876), every spot typed and every chapter passing. The original is not frame-exact between runs (ch01 4,053 or 4,085).
+- The menu trick does not: after View Cutscenes stopped the movie (Glottis coming out after the garage fountain; the tube room), the scene that waited for it
+  did not go on and the run hung, both times. Opening and closing the menu with nothing chosen at the same point leaves ch01 as it was (4,086 frames).
+  On the original the menu items are message ids (/sytx245/) and have no hot keys either. TRICKS=menu was taken out.
+- The speed route itself stops on the original in chapter 8 (the drive to the tree used its 30 s), with or without tricks: the spots after it are not
+  checked on the original yet.
+

@@ -31,3 +31,6 @@ remote/scummvm.ini
 *.png
 *.gsv
 *.htm
+
+# The run folder of orig_launch_run.sh
+origlaunch/

@@ -11,6 +11,8 @@
 //   imusetime  music and sounds (iMUSE) on game time: a heartbeat per 20 ms of game time, the play cursor moves with it,
 //              the sound is muted (patch.dll)                                                     (off)
 //   multi      more than one game at a time: the start-up look for another game's window is skipped               (off)
+//   f12        F12 runs lua_dofile("grimpatch.bin") (from the game's data folder) without Backspace held as well                (off)
+//   nopause    the game goes on when its window is not the active one (WM_ACTIVATE and WM_ACTIVATEAPP are not acted on)      (off)
 //   config     the game reads its settings from grim.ini next to the exe instead of the registry (patch.dll)
 //   windowed   the game runs in a window: its own -w switch is added to the command line unless you pass it (full screen
 //              at a high desktop resolution makes its software blitter overrun a heap buffer and crash), and it no longer goes to
@@ -438,6 +440,22 @@ static void patchMulti() {
 
 // EMI's multi: its WinMain (0x4063f0) creates a named mutex (0x406400) and, when GetLastError says it already exists (0xb7), returns
 // 0 and the game ends. The jump that goes on when it is new becomes unconditional.
+// Grim's window proc (0x402fd0) runs lua_dofile("grimpatch.bin") on F12 only when GetKeyState(VK_BACK) says Backspace is held too
+// (test ax,ax; je at 0x4031f7): the jump is taken out. A key posted to the window cannot make Backspace read as held.
+static void patchF12() {
+	expect(0x004031f7, bytes({0x0f, 0x84, 0xda, 0x01, 0x00, 0x00}), "the Backspace check of F12");
+	write(0x004031f7, bytes({0x90, 0x90, 0x90, 0x90, 0x90, 0x90}));
+}
+
+// Grim's window proc pauses the game on WM_ACTIVATE (cmp eax,6 at 0x402fe9) and WM_ACTIVATEAPP (je at 0x4030ac) when the window
+// is no longer the active one: the first compares with a message that never comes (0x7e), the second jump is taken out.
+static void patchNopause() {
+	expect(0x00402fe9, bytes({0x83, 0xf8, 0x06}), "the WM_ACTIVATE check");
+	expect(0x004030ac, bytes({0x74, 0x13}), "the WM_ACTIVATEAPP check");
+	write(0x00402feb, bytes({0x7e}));
+	write(0x004030ac, bytes({0x90, 0x90}));
+}
+
 static void patchEmiMulti() {
 	expect(0x0040641e, bytes({0x75, 0x09}), "the EMI check for another game's mutex");   // jne (a new one)
 	write(0x0040641e, bytes({0xeb, 0x09}));
@@ -833,6 +851,8 @@ static const struct { const char *name; void (*apply)(); bool def; int games; } 
 	{"smushtime", patchSmushtime, false, GRIM},   // (after simtime: they check its bytes)
 	{"imusetime", patchImusetime, false, GRIM},
 	{"multi", patchMulti, false, GRIM},
+	{"f12", patchF12, false, GRIM},
+	{"nopause", patchNopause, false, GRIM},
 	{"config", patchConfig, true, GRIM},
 	{"debuglog", patchEmiDebuglog, true, EMI},
 	{"datadir", patchEmiDatadir, true, EMI},
@@ -1021,7 +1041,7 @@ int main(int argc, char **argv) {
 			for (auto &p : PATCHES)
 				known |= n == p.name;
 			if (!known) {
-				fprintf(stderr, "no patch %s (Grim: debuglog, framelimit, simtime, smushtime, imusetime, multi, config, windowed; Remastered: debuglog, windowed, simtime; EMI: debuglog, datadir, nocd, debugmode, multi, simtime, taskclock, nopause, novsync, offscreen, f11, undo640, windowed)\n", n.c_str());
+				fprintf(stderr, "no patch %s (Grim: debuglog, framelimit, simtime, smushtime, imusetime, multi, f12, nopause, config, windowed; Remastered: debuglog, windowed, simtime; EMI: debuglog, datadir, nocd, debugmode, multi, simtime, taskclock, nopause, novsync, offscreen, f11, undo640, windowed)\n", n.c_str());
 				return 2;
 			}
 		}
