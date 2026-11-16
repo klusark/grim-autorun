@@ -502,14 +502,29 @@ end
 -- The sets entered in this game (100% modes): the set is looked at every frame; the first time in a set is a COV set line for the coverage report
 -- (a set the story only passes through, in a cutscene or a script's move, has no camera notes)
 AR_ENTERED = AR_ENTERED or { }
+-- The setups too: each new setup of a set is a COV setup line, whatever showed it (a walk, a cutscene, a script's move, a drift)
+AR_SETUP_SEEN = AR_SETUP_SEEN or { }
 ar_set_watch = function()
 	local cur = nil
+	local su = nil
 	while TRUE do
 		if system.currentSet ~= cur then
 			cur = system.currentSet
+			su = nil
 			if cur and cur.name and not AR_ENTERED[cur.name] then
 				AR_ENTERED[cur.name] = TRUE
 				ar_log("COV set | " .. cur.name)
+			end
+		end
+		if cur and cur.name and cur.current_setup then
+			local n = cur:current_setup()
+			if n ~= su then
+				su = n
+				local key = cur.name .. "|" .. tostring(n)
+				if n and not AR_SETUP_SEEN[key] then
+					AR_SETUP_SEEN[key] = TRUE
+					ar_log("COV setup | " .. cur.name .. " | " .. tostring(n))
+				end
 			end
 		end
 		break_here()
