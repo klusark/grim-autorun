@@ -32,6 +32,10 @@ def parse_logs(paths):
                         if sep:
                             sets.add(name)
                             setups.add((name, num.strip()))
+                    # (the engine's own note of a change of set, "Switching to set: <set name>.": the sets the story passes through in a cutscene too)
+                    j = ln.find("Switching to set: ")
+                    if j >= 0:
+                        sets.add(ln[j + 18:].strip().rstrip("."))
                     continue
                 parts = [x.strip() for x in ln[i + len(MARK):].rstrip("\r\n").split(" | ")]
                 k = parts[0].split(" |")[0].strip()

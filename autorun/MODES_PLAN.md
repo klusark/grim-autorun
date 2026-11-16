@@ -207,3 +207,20 @@ Then the two people never met, both in chapter 19 (100% modes only):
 Whole game: passes, 432,496 frames (452,471 with SAVE=1), dialog lines 317 of 466, sets entered 99 of 120. The speed run is unchanged (245,693).
 Every dialog is opened now.
 
+## Status (2026-11-16): sets entered, door trips
+
+* The coverage report counts a set as entered from the engine's own note too ("Switching to set: <name>."), and the 100% run logs `COV set` the first
+  time it is in a set (ar_set_watch): eight sets the story only passes through in a cutscene or a script's move (the anchor room, the florist, the end
+  of the world, ...) had no camera notes and counted as never entered. 99 -> 107 of 120 with that alone.
+* Door trips (ar_door_trips, ar_full.lua): when a set is swept (and each time it would be swept again, and before a side trip from it), a side trip through
+  each of its doors to a set of AR_TRIP_TO (ex05_trips.lua, the sets the story never enters) not entered yet, when that set has a door back: the ramp,
+  the cafe ledge, the blimp bridge, the police interior and the bridge on its side, the ocean porthole, the Mayan train station, the high roller pantry.
+  AR_NO_TRIP["<set global>.<door field>"] blocks one (tools/sweep_fix.sh: kind trip).
+* tools/sweep_blame.py: the notes "the side trip did not get to", "the game opened the dialog" and "no trip through" are not extras (they were counted as
+  ones, and a failure after them as inside one).
+
+Whole game: passes, 443,694 frames (463,906 with SAVE=1), sets entered 117 of 120. The speed run is unchanged (245,693).
+Left: Glottis hanging on the Lamancha (only in a cutscene the run skips); the crane track (its door is in the end of the world, which the run sees only in
+a cutscene movie); the photofinish (the photo looked at in hand, Ctrl and the look key, chapter 29: ScummVM re-creates its window for the set and the
+engine stops answering, so it is not done).
+
