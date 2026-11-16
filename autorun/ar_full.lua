@@ -696,8 +696,13 @@ ar_cur_chapter = function()
 end
 AR_NO_TALK_UNTIL = AR_NO_TALK_UNTIL or { }
 AR_NO_EXTRA_TALK = AR_NO_EXTRA_TALK or { }
+AR_DLG_HOME = AR_DLG_HOME or { }
 -- Whether this chapter or a later one picks line n of the dialog itself (AR_DLG_PICKS): such a line is left to that pick
 ar_picked_later = function(name, n)
+	-- (not a move that stays on when said, AR_DLG_KEEP, in an extra: it is offered again for the chapter's pick; Salvador's 220, chapter 5)
+	if AR_IN_EXTRA and AR_DLG_KEEP and AR_DLG_KEEP[name] and AR_DLG_KEEP[name][n] then
+		return nil
+	end
 	local by = AR_DLG_PICKS and AR_DLG_PICKS[name] and AR_DLG_PICKS[name][n]
 	local now = ar_cur_chapter()
 	return by and now and not (by < now)
@@ -744,6 +749,176 @@ ar_talk_returns = function(name, dlg, sub, home)
 	return nil
 end
 
+-- The nodes of a dialog (where its lines move to, the nodes with an exit, and home) and, for each, the number of steps back to home: by the lines on
+-- offer that move (AR_DLG_MOVE: a line belongs to node X when it has the field X, as the game's display_lines reads it) or by the exit line of the node
+-- (AR_DLG_EXIT). A node with no way home has none
+ar_talk_dist = function(name, dlg, home)
+	local moves = AR_DLG_MOVE[name] or { }
+	local exits = AR_DLG_EXIT[name] or { }
+	local nodes = { }
+	nodes[home] = TRUE
+	local n, to = next(moves, nil)
+	while n do
+		nodes[to] = TRUE
+		n, to = next(moves, n)
+	end
+	local x, y = next(exits, nil)
+	while x do
+		nodes[x] = TRUE
+		x, y = next(exits, x)
+	end
+	local dist = { }
+	dist[home] = 0
+	local changed = TRUE
+	while changed do
+		changed = nil
+		x = next(nodes, nil)
+		while x do
+			if not dist[x] then
+				local best = nil
+				y = exits[x]
+				if y and dist[y] and dlg.exit_lines and dlg.exit_lines[x] then
+					best = dist[y] + 1
+				end
+				n, to = next(moves, nil)
+				while n do
+					if dist[to] and to ~= x and type(dlg[n]) == "table" and dlg[n][x] and not dlg[n].off and (not best or dist[to] + 1 < best) then
+						best = dist[to] + 1
+					end
+					n, to = next(moves, n)
+				end
+				if best then
+					dist[x] = best
+					changed = TRUE
+				end
+			end
+			x = next(nodes, x)
+		end
+	end
+	return dist
+end
+
+-- Whether node `node` has a line on offer not said yet that the talk would say there (not one a chapter picks later; a move counts)
+ar_talk_node_new = function(name, dlg, node, ends)
+	local k, v = next(dlg, nil)
+	while k do
+		if type(k) == "number" and type(v) == "table" and v[node] and v.text and not v.off and not AR_SAID[v] and not ar_picked_later(name, k) and (not (AR_NO_AUTO[name] and AR_NO_AUTO[name][k]) or (AR_DLG_MOVE[name] and AR_DLG_MOVE[name][k]) or (ends and AR_DLG_END and AR_DLG_END[name] and AR_DLG_END[name][k])) then
+			return TRUE
+		end
+		k, v = next(dlg, k)
+	end
+	return nil
+end
+
+-- A line on offer that moves to another node the talk comes back home from: one not said yet (entered nil), or one said before into a node not entered
+-- on this visit that has a line not said (entered: the nodes entered); the moves home come last
+ar_talk_pick_move = function(name, dlg, target, dist, cur, home, entered)
+	local moves = AR_DLG_MOVE[name]
+	if not moves then
+		return nil
+	end
+	local found = nil
+	local found_home = nil
+	local i = 1
+	while dlg.current_choices and dlg.current_choices[i] do
+		local c = dlg.current_choices[i]
+		local n = ar_line_number(dlg, c)
+		local to = n and moves[n]
+		if to and (to ~= cur or not entered) and (dist[to] or to == cur) and c ~= target and not ar_picked_later(name, n) then
+			local ok = nil
+			if not entered then
+				ok = not AR_SAID[c]
+			else
+				ok = AR_SAID[c] and not entered[to] and to ~= home and ar_talk_node_new(name, dlg, to)
+			end
+			if ok then
+				if to == home then
+					found_home = found_home or c
+				else
+					found = found or c
+				end
+			end
+		end
+		i = i + 1
+	end
+	return found or found_home
+end
+
+-- The line on offer that moves nearest to home (fewest steps) and its steps; nil when none is nearer than node cur
+ar_talk_back = function(name, dlg, dist, cur)
+	local moves = AR_DLG_MOVE[name]
+	local best, best_d = nil, dist[cur]
+	local i = 1
+	while moves and dlg.current_choices and dlg.current_choices[i] do
+		local c = dlg.current_choices[i]
+		local n = ar_line_number(dlg, c)
+		local to = n and moves[n]
+		if to and dist[to] and (not best_d or dist[to] < best_d) and not ar_picked_later(name, n) then
+			best = c
+			best_d = dist[to]
+		end
+		i = i + 1
+	end
+	return best, best_d
+end
+
+-- The talk is to end anyway, in a node with no way home or at home with nothing left (ending): a line into a node with no way home that has a line
+-- not said (one not said first, then a move that stays on into a node not entered on this visit), else a line not said that only ends the talk
+-- (AR_DLG_END); away from home also the exit line of the node, or a line that ends the talk said before. TRUE when a line was said
+ar_talk_dead_end = function(name, dlg, target, dist, entered, home)
+	local cur = dlg.node
+	local moves = AR_DLG_MOVE[name] or { }
+	local ends = (AR_DLG_END and AR_DLG_END[name]) or { }
+	local into, into_said, end_new, end_old = nil, nil, nil, nil
+	local i = 1
+	while dlg.current_choices and dlg.current_choices[i] do
+		local c = dlg.current_choices[i]
+		local n = ar_line_number(dlg, c)
+		local to = n and moves[n]
+		if n and c ~= target and not ar_picked_later(name, n) then
+			if to and to ~= cur and to ~= home and not dist[to] and not entered[to] then
+				if not AR_SAID[c] then
+					into = into or c
+				elseif ar_talk_node_new(name, dlg, to, TRUE) then
+					into_said = into_said or c
+				end
+			elseif ends[n] then
+				if not AR_SAID[c] then
+					end_new = end_new or c
+				else
+					end_old = end_old or c
+				end
+			end
+		end
+		i = i + 1
+	end
+	local c = into or into_said
+	if c then
+		local to = moves[ar_line_number(dlg, c)]
+		entered[to] = TRUE
+		ar_talk_say(name, dlg, c, " (into " .. tostring(to) .. ", the talk ends there)")
+		return TRUE
+	end
+	if end_new then
+		ar_talk_say(name, dlg, end_new, " (ends the talk)")
+		return TRUE
+	end
+	if cur == home then
+		return nil
+	end
+	if dlg.exit_lines and dlg.exit_lines[cur] then
+		ar_log("extra: talk " .. name .. " exit of " .. tostring(cur) .. " (ends the talk)")
+		AR_PICK_EXIT_OLD(dlg)
+		ar_log("extra: done talk " .. name .. " exit of " .. tostring(cur))
+		return TRUE
+	end
+	if end_old then
+		ar_talk_say(name, dlg, end_old, " (ends the talk)")
+		return TRUE
+	end
+	return nil
+end
+
 -- Says one line (an extra of its own: what fails in it is logged, the story goes on)
 AR_TALK_N = AR_TALK_N or 0
 ar_talk_say = function(name, dlg, c, what)
@@ -758,9 +933,14 @@ end
 -- Before the line that a chapter picks (target), every other line the dialog offers, and the lines of the sub-menus it can come back from (AR_DLG_MOVE,
 -- AR_DLG_EXIT of ex02_dialogs.lua): a sub-menu is entered, talked through and left again, and the talk goes on in the node it started in, where the
 -- target is. When the target is the exit line of the start node (ar_pick_exit), a sub-menu whose exit ends the talk is entered too, as the last thing:
--- the talk ends in it (ar_talk_ended tells the caller). One level of sub-menus; each is entered once a visit.
-ar_talk_before = function(dlg, target)
+-- the talk ends in it (ar_talk_ended tells the caller). Nodes at any depth, by every line that moves to one the talk comes back home from
+-- (ar_talk_dist); a node already entered on this visit is entered again only by a line not said yet.
+ar_talk_before = function(dlg, target, force_end)
 	local name = ar_dialog_name(dlg)
+	-- (the node a talk starts in, for ar_dialog_has_new)
+	if not AR_DLG_HOME[name] and dlg.node then
+		AR_DLG_HOME[name] = dlg.node
+	end
 	-- (first: a dialog of AR_NO_TALK returns at once, and a TRUE left from an earlier talk made ar_pick_exit leave Celso's talk open, chapter 13)
 	AR_TALK_ENDED = nil
 	-- (AR_NO_TALK_UNTIL[name] = "<chapter>": the block holds up to that chapter only, the one whose own picks the lines said before it broke)
@@ -783,13 +963,13 @@ ar_talk_before = function(dlg, target)
 	local keep = AR_KEEP_GOING
 	AR_KEEP_GOING = TRUE
 	local home = dlg.node
-	local ending = target and dlg.exit_lines and target == dlg.exit_lines[home]
+	local ending = force_end or (target and dlg.exit_lines and target == dlg.exit_lines[home])
 	local entered = { }
-	local last_sub = nil
 	local rounds = 0
 	local picked = TRUE
-	while picked and rounds < 80 and system.buttonHandler == dlg do
+	while picked and rounds < 120 and system.buttonHandler == dlg do
 		picked = nil
+		local cur = dlg.node
 		local i = 1
 		-- the lines of the node it is in
 		while dlg.current_choices and dlg.current_choices[i] and not picked do
@@ -800,70 +980,46 @@ ar_talk_before = function(dlg, target)
 			end
 			i = i + 1
 		end
-		if not picked and dlg.node ~= home and system.buttonHandler == dlg then
-			-- a sub-menu talked through: back by a line that moves home, or by its exit line
-			local sub = dlg.node
-			local back = ar_talk_mover(name, dlg, home)
-			if back then
-				ar_talk_say(name, dlg, back, " (back to " .. tostring(home) .. ")")
-			elseif AR_DLG_EXIT[name] and AR_DLG_EXIT[name][sub] == home and dlg.exit_lines[sub] then
-				ar_log("extra: talk " .. name .. " exit of " .. tostring(sub))
-				AR_PICK_OLD(dlg, dlg.exit_lines[sub])
-				ar_log("extra: done talk " .. name .. " exit of " .. tostring(sub))
-			elseif ending and dlg.exit_lines[sub] then
-				-- (a sub-menu that does not come back, entered because the talk was to end anyway: its exit ends it)
-				ar_log("extra: talk " .. name .. " exit of " .. tostring(sub) .. " (ends the talk)")
-				AR_PICK_EXIT_OLD(dlg)
-				ar_log("extra: done talk " .. name .. " exit of " .. tostring(sub))
+		local dist = nil
+		if not picked and system.buttonHandler == dlg then
+			dist = ar_talk_dist(name, dlg, home)
+			-- a line not said yet that moves to another node the talk comes back home from (at any depth); the ones that go home last
+			local c = ar_talk_pick_move(name, dlg, target, dist, cur, home, nil)
+			-- or one said before, into a node not entered on this visit that still has a line not said
+			if not c then
+				c = ar_talk_pick_move(name, dlg, target, dist, cur, home, entered)
 			end
-			picked = TRUE
-			if system.buttonHandler == dlg and dlg.node ~= home then
-				ar_log("extra: talk " .. name .. ": could not come back from " .. tostring(sub) .. " to " .. tostring(home))
-				picked = nil
-			end
-		elseif not picked and dlg.node == home and system.buttonHandler == dlg then
-			-- a sub-menu not entered yet that the talk comes back from (or, when it is to end anyway, one that does not, but only when no other is left)
-			local moves = AR_DLG_MOVE[name]
-			local best = nil
-			local best_back = nil
-			i = 1
-			while moves and dlg.current_choices and dlg.current_choices[i] do
-				local c = dlg.current_choices[i]
-				local n = ar_line_number(dlg, c)
-				local to = n and moves[n]
-				if to and to ~= home and not entered[to] and not AR_SAID[c] and c ~= target then
-					if ar_talk_returns(name, dlg, to, home) then
-						best_back = best_back or c
-					elseif ending then
-						best = best or c
-					end
-				end
-				i = i + 1
-			end
-			local c = best_back or best
 			if c then
-				local n = ar_line_number(dlg, c)
-				entered[moves[n]] = TRUE
-				ar_talk_say(name, dlg, c, " (into " .. tostring(moves[n]) .. ")")
+				local to = AR_DLG_MOVE[name][ar_line_number(dlg, c)]
+				entered[to] = TRUE
+				ar_talk_say(name, dlg, c, " (into " .. tostring(to) .. ")")
 				picked = TRUE
 			end
 		end
-		rounds = rounds + 1
-	end
-	-- (the talk is to end now anyway: one line that does nothing but end it, AR_DLG_END, in place of the exit line; the others on a later visit)
-	if ending and system.buttonHandler == dlg and dlg.node == home and AR_DLG_END[name] then
-		local i = 1
-		local c = nil
-		while dlg.current_choices and dlg.current_choices[i] and not c do
-			local n = ar_line_number(dlg, dlg.current_choices[i])
-			if n and AR_DLG_END[name][n] and not AR_SAID[dlg.current_choices[i]] then
-				c = dlg.current_choices[i]
+		if not picked and cur ~= home and system.buttonHandler == dlg then
+			-- nothing left in this node: one step nearer home, by a line that moves or by the exit line of the node
+			local back, back_d = ar_talk_back(name, dlg, dist, cur)
+			local ex = AR_DLG_EXIT[name] and AR_DLG_EXIT[name][cur]
+			if back and not (ex and dist[ex] and back_d and dist[ex] < back_d) then
+				ar_talk_say(name, dlg, back, " (back toward " .. tostring(home) .. ")")
+			elseif ex and dist[ex] and dlg.exit_lines[cur] then
+				ar_log("extra: talk " .. name .. " exit of " .. tostring(cur))
+				AR_PICK_OLD(dlg, dlg.exit_lines[cur])
+				ar_log("extra: done talk " .. name .. " exit of " .. tostring(cur))
+			elseif ending then
+				-- (a node that does not come back, entered because the talk was to end anyway: deeper, or a line that ends it, or its exit)
+				ar_talk_dead_end(name, dlg, target, dist, entered, home)
 			end
-			i = i + 1
+			picked = TRUE
+			if system.buttonHandler == dlg and dlg.node == cur then
+				ar_log("extra: talk " .. name .. ": could not come back from " .. tostring(cur) .. " to " .. tostring(home))
+				picked = nil
+			end
+		elseif not picked and cur == home and ending and system.buttonHandler == dlg then
+			-- (the talk is to end anyway: a node it does not come back from, entered as the last thing, or a line that only ends it)
+			picked = ar_talk_dead_end(name, dlg, target, dist, entered, home)
 		end
-		if c then
-			ar_talk_say(name, dlg, c, " (ends the talk)")
-		end
+		rounds = rounds + 1
 	end
 	if system.buttonHandler ~= dlg and dlg.node == "exit_dialog" then
 		AR_TALK_ENDED = TRUE
@@ -879,6 +1035,11 @@ if AR_FULL and not AR_PICK_OLD then
 		if type(line) == "number" then
 			target = dlg[line]
 		end
+		-- (the dialog on screen first: a chapter picks as soon as the talk has started, and the talk before found no lines yet; Salvador's first
+		-- menu in chapter 5 was never talked in)
+		if ar_dialog_ready(dlg) and type(line) == "number" then
+			target = dlg[line]
+		end
 		ar_talk_before(dlg, target)
 		return AR_PICK_OLD(dlg, line)
 	end
@@ -888,11 +1049,19 @@ end
 if AR_FULL and not AR_PICK_EXIT_OLD then
 	AR_PICK_EXIT_OLD = ar_pick_exit
 	ar_pick_exit = function(dlg)
+		ar_dialog_ready(dlg)
 		if dlg.exit_lines and dlg.exit_lines[dlg.node] then
 			ar_talk_before(dlg, dlg.exit_lines[dlg.node])
 			-- (the talk ended in a sub-menu that does not come back, which the extras entered because it was to end now anyway)
 			if AR_TALK_ENDED then
 				ar_log("extra: the talk ended in a sub-menu, no exit line to say")
+				return TRUE
+			end
+		elseif dlg.exit_lines and system.buttonHandler == dlg then
+			-- (a node with no exit line, Salvador's fold_node: the talk ends there by a line that ends it)
+			ar_talk_before(dlg, nil, TRUE)
+			if AR_TALK_ENDED then
+				ar_log("extra: the talk ended in a node with no exit line")
 				return TRUE
 			end
 		end
@@ -904,17 +1073,34 @@ end
 -- set is left or the chapter ends in it. AR_NO_PEOPLE["set name"] = "why" keeps a set out (ex00_sweep.lua).
 AR_NO_PEOPLE = AR_NO_PEOPLE or { }
 AR_TALKERS = AR_TALKERS or { }
--- Talks to one person (AR_TALK_OBJ): every line on offer, the sub-menus, and the end; when the talk ended on a line that only ends it and that visit said
--- something new, the person is talked to again, for the lines left (at most 4 times)
+-- Talks to one person (AR_TALK_OBJ): every line on offer, the nodes, and the end; while the dialog has a line left and the visit said something new,
+-- the person is talked to again (at most 8 times): lines that come on only on a later visit, nodes with no way back, each ended in on its own visit
+-- Waits until a dialog has the keys, or the game has had its normal controls back for 4 s (a use that opens no dialog; Manny walks to Salvador's
+-- window before the menu shows)
+ar_wait_dialog_or_control = function()
+	local waited = 0
+	local idle = 0
+	while waited < 30000 and idle < 4000 and not (type(system.buttonHandler) == "table" and system.buttonHandler.exit_lines) do
+		break_here()
+		waited = waited + system.frameTime
+		if ar_handler_normal() and cutSceneLevel == 0 and not IsMessageGoing() then
+			idle = idle + system.frameTime
+		else
+			idle = 0
+		end
+	end
+end
 ar_talk_one = function()
 	local obj = AR_TALK_OBJ
 	local visits = 0
 	local again = TRUE
-	while again and visits < 4 and system.currentSet == obj.obj_set do
+	while again and visits < 8 and system.currentSet == obj.obj_set do
 		again = nil
 		visits = visits + 1
 		local before = AR_TALK_N
 		ar_do("use", obj)
+		-- (a talk that starts with a scene of its own: the dialog comes when it is over; Salvador peeks out and Manny walks to the window first)
+		ar_wait_dialog_or_control()
 		local dlg = system.buttonHandler
 		if type(dlg) == "table" and ar_dialog_name(dlg) ~= "?" then
 			AR_TALKER_DLG[obj] = dlg
@@ -923,7 +1109,7 @@ ar_talk_one = function()
 				ar_pick_exit(dlg)
 			end
 			-- (and only when the dialog has a line left to say: a use with nothing to talk about moved Membrillo, chapter 35, and the morgue had no way left)
-			if AR_TALK_ENDED and AR_TALK_N > before and ar_dialog_has_new(dlg) then
+			if AR_TALK_N > before and ar_dialog_has_new(dlg) then
 				again = TRUE
 			end
 		end
@@ -939,14 +1125,63 @@ AR_NO_TALKER = AR_NO_TALKER or { }
 ar_no_talker = function(key)
 	return AR_NO_TALKER[key] or AR_NO_TALKER[key .. "@" .. tostring(ar_cur_chapter())]
 end
+-- Whether the talk says line k of the dialog: a plain line, a move or a line that only ends the talk, not one a chapter picks later
+ar_talk_sayable = function(dlg, k)
+	local name = ar_dialog_name(dlg)
+	if ar_picked_later(name, k) then
+		return nil
+	end
+	if not (AR_NO_AUTO[name] and AR_NO_AUTO[name][k]) then
+		return TRUE
+	end
+	return (AR_DLG_MOVE[name] and AR_DLG_MOVE[name][k]) or (AR_DLG_END and AR_DLG_END[name] and AR_DLG_END[name][k])
+end
 -- Whether a dialog has a line that is not said yet and not off (the lines the game could still offer; lines of nodes not reached count too)
 ar_dialog_has_new = function(dlg)
+	local name = ar_dialog_name(dlg)
+	local home = AR_DLG_HOME[name] or dlg.node
+	local moves = AR_DLG_MOVE[name] or { }
+	-- (the nodes the talk can still get to from home, by the lines that move and are on)
+	local reach = { }
+	reach[home] = TRUE
+	local changed = TRUE
+	while changed do
+		changed = nil
+		local n, to = next(moves, nil)
+		while n do
+			local v = dlg[n]
+			if not reach[to] and type(v) == "table" and not v.off and not ar_picked_later(name, n) then
+				local x = next(reach, nil)
+				while x do
+					if v[x] then
+						reach[to] = TRUE
+						changed = TRUE
+					end
+					x = next(reach, x)
+				end
+			end
+			n, to = next(moves, n)
+		end
+	end
+	-- (a line the talk would say, in a node it can get to: off too in home, where a later visit's intro turns lines on (Salvador's 110); not one in a
+	-- node it can no longer get to (Carla's 51 to 53: a second visit only said goodbye, and chapter 18 then hung))
 	local k, v = next(dlg, nil)
 	while k do
-		if type(k) == "number" and type(v) == "table" and v.text and not v.off and not AR_SAID[v] then
+		if type(k) == "number" and type(v) == "table" and v.text and not AR_SAID[v] and ar_talk_sayable(dlg, k) and (v[home] or (not v.off and ar_dialog_in(v, reach))) then
 			return TRUE
 		end
 		k, v = next(dlg, k)
+	end
+	return nil
+end
+-- Whether line v belongs to one of the nodes of the set
+ar_dialog_in = function(v, nodes)
+	local x = next(nodes, nil)
+	while x do
+		if v[x] then
+			return TRUE
+		end
+		x = next(nodes, x)
 	end
 	return nil
 end

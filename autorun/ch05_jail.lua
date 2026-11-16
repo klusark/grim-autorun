@@ -21,6 +21,14 @@ AR_JAIL = gs
 ar_walk_to(ha.lo_door.use_pnt_x, ha.lo_door.use_pnt_y, ha.lo_door.use_pnt_z, function() return system.currentSet == AR_JAIL end)
 ar_expect_set(gs, "locked in Glottis' shop")
 
+-- (100% modes: Salvador is talked to at the door first, again and again while he has a line left: each talk ends with Manny still in the shop, by
+-- a line that ends it in a node with no way back (fold_node, angry_node) or the exit line; the chapter's own talk below lets Manny out)
+if AR_FULL then
+	AR_TALK_OBJ = gs.ga_door
+	ar_extra_run("talk to Salvador at the door", ar_talk_one)
+	ar_wait_for_control()
+	ar_check(system.currentSet == gs, "still in Glottis' shop after the talks at the door")
+end
 ar_do("use", gs.ga_door)
 -- the dialog table only exists once the conversation has been started
 ar_wait_for(function() return sa1 end, 60000)
