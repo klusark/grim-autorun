@@ -3,6 +3,12 @@
 -- to the Hotel Hatchet's elevator, and past Raoul, who lets him through now that Glottis is gambling inside. Checkpoint in slot 34.
 
 ar_load(17)
+ar_kh_plaque = function()
+	ar_do("lookAt", kh.sanspoof)
+	ar_wait_for_control()
+	ar_do("lookAt", kh.plaque)
+	ar_wait_for_control()
+end
 AR_NEW = TRUE
 ar_log("start in " .. ar_set_name())
 ar_wait_for_control()
@@ -88,6 +94,11 @@ ar_wait_for_control()
 ar_check(sl.detector.owner == manny, "Manny has the metal detector")
 -- and on to the Hotel Hatchet
 ar_go(ks.kh_door, kh)
+-- (100% modes: the plaque under Sanspoof, the stuffed cat; its look is the close view kh_sansp. The Kitty Hallway is not swept, ex00_sweep.lua)
+if AR_FULL then
+	ar_wait_for_control()
+	ar_extra_run("look at the plaque", ar_kh_plaque)
+end
 ar_go(kh.ts_door, ts)
 ar_go(ts.tb_door, tb)
 ar_wait_for_control()

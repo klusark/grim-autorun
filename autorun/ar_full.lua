@@ -435,6 +435,39 @@ ar_setup_changed = function()
 	return AR_SETUP_SET:current_setup() ~= AR_SETUP_BEFORE
 end
 
+-- A point of the walk floor (a sector that is on) inside the camera sector c, the nearest to its middle, on a grid of 12 by 12 over its box; nil if
+-- there is none
+ar_camera_floor_point = function(nav, c)
+	local poly = { p = { c.p } }
+	ar_nav_prep(poly)
+	local x0, x1, y0, y1 = poly.minx[1], poly.maxx[1], poly.miny[1], poly.maxy[1]
+	local bx, by, bz = nil, nil, nil
+	local bd = 1000000
+	local i = 0
+	while i <= 12 do
+		local j = 0
+		while j <= 12 do
+			local x = x0 + (x1 - x0) * i / 12
+			local y = y0 + (y1 - y0) * j / 12
+			if ar_nav_inside(poly, 1, x, y) then
+				local s = ar_nav_find(nav, x, y, c.fz)
+				if s then
+					local d = (x - c.x) * (x - c.x) + (y - c.y) * (y - c.y)
+					if d < bd then
+						bd = d
+						bx = x
+						by = y
+						bz = ar_nav_z(nav, s, x, y)
+					end
+				end
+			end
+			j = j + 1
+		end
+		i = i + 1
+	end
+	return bx, by, bz
+end
+
 -- The camera sectors of the set, walked into one by one so that each setup is seen once (nav_setfile.lua reads the set file; sectors of type camera
 -- are in sf.camera when it keeps them)
 ar_visit_setups = function(set)
@@ -452,7 +485,19 @@ ar_visit_setups = function(set)
 		if ar_nav_find_any(nav, c.x, c.y, c.z) then
 			ar_walk_to(c.x, c.y, c.z, ar_setup_changed, 30000)
 		else
-			ar_log("setups: the middle of " .. tostring(c.name) .. " is off the floor, not visited")
+			-- (else a point of the floor inside the sector, the nearest to its middle: the camera of the tube room's switch is over the edge of the walk
+			-- floor; only for a setup not seen yet)
+			local n = set.setups and set.setups[c.name]
+			local x, y, z = nil, nil, nil
+			if n and not AR_SETUP_SEEN[set.name .. "|" .. tostring(n)] then
+				x, y, z = ar_camera_floor_point(nav, c)
+			end
+			if x then
+				ar_log(format("setups: the middle of %s is off the floor, walking to %.2f %.2f in it", tostring(c.name), x, y))
+				ar_walk_to(x, y, z, ar_setup_changed, 30000)
+			else
+				ar_log("setups: the middle of " .. tostring(c.name) .. " is off the floor, not visited")
+			end
 		end
 		ar_log("COV setup | " .. tostring(set.name) .. " | " .. tostring(set:current_setup()))
 		i = i + 1

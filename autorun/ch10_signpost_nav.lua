@@ -20,6 +20,11 @@ if manny:getpos().x > 6 then
 	local p = manny:getpos()
 	ar_log(format("past the wagon at %.2f %.2f", p.x, p.y))
 end
+-- (100% modes: a look at the signpost first; now that it is loose it is the close view of Manny at it, sg_mancu, that only this shows)
+if AR_FULL then
+	ar_do("lookAt", sg.signpost)
+	ar_wait_for_control()
+end
 ar_do("pickUp", sg.signpost)
 ar_check(cur_puzzle_state[12], "Manny has the signpost (puzzle state 12)")
 
