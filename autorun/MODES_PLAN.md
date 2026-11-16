@@ -259,3 +259,14 @@ setups no script and no camera sector names (tu_swicu, Hallway 1, 4 and 5, co_ds
 Whole game: passes, 474,548 frames (SAVE=1), dialog lines 320 of 466. The speed run is unchanged (245,693).
 Of the 146 lines left: 45 move to another node of the talk, 32 end it or start a cutscene (AR_NO_AUTO), 19 are the exit lines of nodes, 4 cannot be
 offered, and 46 come on only after a line of another node or later in the story.
+
+Then the talk itself (ar_talk_before):
+
+* Nodes at any depth: every line that moves to a node the talk comes back home from (ar_talk_dist: the steps home by the lines that move and the exit
+  lines), each line once, and a node entered again on the same visit only by a line not said yet; back home one step at a time. Before, one level of
+  sub-menus, each entered once a visit (Salvador's 110, 130, 140 and 150 all go to fold_node).
+* The dialog on screen first (ar_dialog_ready) before the talk before a chapter's pick: chapter 5 picks as soon as Salvador's talk starts, and the talk
+  found no lines yet, so his first menu was never talked in (the same for every chapter that picks at once).
+* ca2 (Carla's second talk, chapter 18) is blocked: a line said before the chapter's picks ended the run inside the talk.
+
+Whole game: passes, 474,861 frames (SAVE=1), dialog lines 324 of 466. The speed run is unchanged (245,693).

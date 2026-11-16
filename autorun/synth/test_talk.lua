@@ -200,5 +200,43 @@ check(s == "/t10/ /t20/ /t40/ /t50/", "a line an earlier chapter picked: said ("
 AR_CHAPTER = nil
 AR_DLG_PICKS = { }
 
+-- nodes at any depth, and two lines into one node: n1 has 10, two ways into sub (20, 22) and the target 70; sub has 40, a way into deep (45) and the way
+-- back (50); deep has 46 and a way back to sub (47)
+local function make_deep()
+	local d = make()
+	d[22] = { text = "/t22/", n1 = TRUE, response = function() d.node = "sub" end }
+	d[45] = { text = "/t45/", sub = TRUE, response = function() d.node = "deep" end }
+	d[46] = { text = "/t46/", deep = TRUE }
+	d[47] = { text = "/t47/", deep = TRUE, response = function() d.node = "sub" end }
+	d[30] = nil
+	d[80] = nil
+	d.exit_lines.deep = { text = "/tx4/", response = function() d.node = "exit_dialog" end }
+	d.display()
+	return d
+end
+AR_NO_AUTO = { tdlg = { [20] = TRUE, [22] = TRUE, [45] = TRUE, [47] = TRUE, [50] = TRUE } }
+AR_DLG_MOVE = { tdlg = { [20] = "sub", [22] = "sub", [45] = "deep", [47] = "sub", [50] = "n1" } }
+AR_DLG_EXIT = { tdlg = { n1 = "exit_dialog", sub = "exit_dialog", deep = "exit_dialog" } }
+said = { }
+AR_SAID = { }
+tdlg = make_deep()
+ar_talk_before(tdlg, tdlg[70])
+s = table.concat(said, " ")
+check(s == "/t10/ /t20/ /t40/ /t45/ /t46/ /t47/ /t50/ /t22/ /t50/", "nodes at any depth, both ways into sub, back home each time (" .. s .. ")")
+check(tdlg.node == "n1" and system.buttonHandler == tdlg, "nodes at any depth: the talk is back in n1, waiting for the chapter's line")
+-- a deep node with no way back is not entered for a pick that is not the exit
+AR_DLG_MOVE = { tdlg = { [20] = "sub", [22] = "sub", [45] = "deep", [50] = "n1" } }
+said = { }
+AR_SAID = { }
+tdlg = make_deep()
+tdlg[47] = nil
+tdlg.display()
+ar_talk_before(tdlg, tdlg[70])
+s = table.concat(said, " ")
+check(s == "/t10/ /t20/ /t40/ /t50/ /t22/ /t50/", "a deep node with no way back: not entered (" .. s .. ")")
+AR_NO_AUTO = { tdlg = { [20] = TRUE, [30] = TRUE, [50] = TRUE, [80] = TRUE } }
+AR_DLG_MOVE = { tdlg = { [20] = "sub", [30] = "dead", [50] = "n1" } }
+AR_DLG_EXIT = { tdlg = { n1 = "exit_dialog", sub = "exit_dialog", dead = "exit_dialog" } }
+
 print(fails == 0 and "talk: all passed" or ("talk: " .. fails .. " failed"))
 os.exit(fails == 0 and 0 or 1)

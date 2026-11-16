@@ -55,3 +55,4 @@ AR_NO_EXTRA_TALK["lu1"] = "ch14_velasco" -- an extra talk of Lupe before chapter
 AR_NO_TALKER["casino interior charlie_obj@ch17_charlie"] = "a chapter failed after this person was talked to: the run ended inside an extra (the game never gave control back)"
 AR_NO_TALKER["high roller lounge virago_obj@ch34_blackmail"] = "a chapter failed after this person was talked to: the run ended inside an extra (the game never gave control back)"
 AR_NO_EXTRA_TALK["ce2"] = "ch60_celso" -- an extra talk of Celso before chapter 60 used up the fillers its line chooser says before /hfma040/, and the foyer stalled
+AR_NO_TALK["ca2"] = "a chapter failed after lines of it were said: the run ended inside an extra (the game never gave control back)"
