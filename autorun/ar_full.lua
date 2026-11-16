@@ -94,6 +94,11 @@ if AR_FULL and not AR_LOG_X_OLD then
 			ar_people_once()
 			AR_NO_PUT_BACK = nil
 		end
+		-- (a door the chapter uses to leave the set: the set is swept first, as for ar_go; Copal's office is left through its window by a use, chapter 2,
+		-- and was never swept)
+		if not AR_IN_EXTRA and noun1 and not noun2 and (noun1.walkOut or noun1.climbOut) and ar_sweep then
+			ar_sweep()
+		end
 		-- (the fire extinguisher of the Beaver Dam sprays until the USE key is let go, which a press of ar_do never does: chapter 12 lets go itself, an
 		-- extra had Manny spray for ever)
 		if AR_IN_EXTRA and type(bd) == "table" and bd.extinguisher and (noun2 == bd.extinguisher or noun1 == bd.extinguisher) then
@@ -301,6 +306,9 @@ end
 AR_NO_LOOK = AR_NO_LOOK or { }
 
 -- Looks at every object of the set that is there to be looked at (touchable, in the room, with a lookAt of its own)
+-- The objects looked at in this game (AR_LOOKED): a set is looked over again each time it would be swept, for the ones not looked at yet (an object that
+-- was not there to touch the first time: Charlie's printer, Copal's papers, the bodies in the Lola)
+AR_LOOKED = AR_LOOKED or { }
 ar_look_all = function(set)
 	if system.currentSet ~= set then
 		return
@@ -309,14 +317,59 @@ ar_look_all = function(set)
 	local i = 1
 	while i <= n and system.currentSet == set do
 		local o = list[i]
-		-- (a door is not looked at here: standing at it is standing in its door sector, and the game walks Manny out)
+		-- (a door is not looked at here: standing at it is standing in its door sector, and the game walks Manny out; ar_look_doors)
 		ar_talk_opened()
-		if system.currentSet == set and o.touchable and not o.owner and o.range and o.range > 0 and not o.walkOut and not o.climbOut and not AR_NO_LOOK[o.string_name] and ar_has_verb(o, "lookAt") then
+		if system.currentSet == set and not AR_LOOKED[o] and o.touchable and not o.owner and o.range and o.range > 0 and not o.walkOut and not o.climbOut and not AR_NO_LOOK[o.string_name] and ar_has_verb(o, "lookAt") then
+			AR_LOOKED[o] = TRUE
 			ar_do("lookAt", o)
 		end
 		i = i + 1
 	end
 	ar_talk_opened()
+end
+
+-- The doors of the set not looked at yet: from the door's use point, the place in front of it where the game puts Manny when he comes in through it (out of
+-- the door's sector, which would walk him out), turned to the door, and only when the game offers it there. Not where the use point is on no walk floor or
+-- on a hot sector (a door or a trigger)
+ar_look_doors = function(set)
+	if system.currentSet ~= set then
+		return
+	end
+	local nav = ar_nav_of(set)
+	local list, n = ar_set_objects(set)
+	local i = 1
+	while i <= n and system.currentSet == set do
+		local o = list[i]
+		if (o.walkOut or o.climbOut) and not AR_LOOKED[o] and o.touchable and o.range and o.range > 0 and o.use_pnt_x and o.obj_x and not AR_NO_LOOK[o.string_name] and ar_has_verb(o, "lookAt") then
+			AR_LOOKED[o] = TRUE
+			local z = o.use_pnt_z or 0
+			local hot = nav and ar_w_hot_at(nav, o.use_pnt_x, o.use_pnt_y)
+			if nav and ar_nav_find(nav, o.use_pnt_x, o.use_pnt_y, z) and not (hot and hot[1]) then
+				ar_walk_to(o.use_pnt_x, o.use_pnt_y, z, function() return ar_set_changed() end, 20000)
+				if system.currentSet == set then
+					AR_OBJ = o
+					ar_face(o)
+					ar_wait_turn()
+					ar_fix_head()
+					ar_wait_offered(800)
+					if ar_offered() and system.currentSet == set then
+						ar_do("lookAt", o)
+					else
+						ar_log("extra: " .. tostring(o.name) .. " is not offered from its use point, not looked at")
+					end
+				end
+			else
+				ar_log("extra: the use point of " .. tostring(o.name) .. " is on no plain floor, not looked at")
+			end
+		end
+		i = i + 1
+	end
+end
+
+-- (a set swept before: what is new to look at, and its doors)
+ar_relook = function()
+	ar_look_all(AR_VISIT_SET)
+	ar_look_doors(AR_VISIT_SET)
 end
 
 -- A dialog the game opened by itself, a set's intro walked into (Maximino greets Manny as he steps in and talks, mx1): every line on offer and the end, as
@@ -336,6 +389,7 @@ end
 
 -- Uses and picks up what the set has code for, except the objects the caller names (a table keyed by object: doors, and what moves the story on).
 -- Doors are never used here, the chapters walk through them.
+AR_USED = AR_USED or { pickUp = { }, use = { } }
 ar_use_all = function(set, except)
 	if system.currentSet ~= set then
 		return
@@ -347,11 +401,14 @@ ar_use_all = function(set, except)
 		local o = list[i]
 		if o.touchable and not o.owner and o.range and o.range > 0 and not except[o] and not o.walkOut and not o.climbOut and not ar_no_use(o) then
 			local before = ar_carried()
-			if ar_has_verb(o, "pickUp") then
+			-- (each verb once a game, AR_USED: a set is gone over again on later visits for the objects that were not there to touch before)
+			if ar_has_verb(o, "pickUp") and not AR_USED["pickUp"][o] then
+				AR_USED["pickUp"][o] = TRUE
 				ar_do("pickUp", o)
 				ar_settle()
 			end
-			if system.currentSet == set and ar_has_verb(o, "use") and not except[o] then
+			if system.currentSet == set and ar_has_verb(o, "use") and not except[o] and not AR_USED["use"][o] then
+				AR_USED["use"][o] = TRUE
 				ar_do("use", o)
 				ar_settle()
 			end
@@ -370,6 +427,7 @@ ar_left_by = function(set, o, before)
 end
 
 -- Every inventory item that the object has a use_<item> answer for, tried on it, nearest first
+AR_ITEM_TRIED = AR_ITEM_TRIED or { }
 ar_items_on = function(obj)
 	local inv = { }
 	local n = 0
@@ -383,8 +441,12 @@ ar_items_on = function(obj)
 	while i <= n and system.currentSet == obj.obj_set do
 		local item = inv[i]
 		-- (not the scythe where the game keeps it put away, no_scythe_sets of _sets.lua: Domino's office has code for it that no player can reach)
-		if item.owner == manny and obj[ "use_" .. trim_header(item.string_name) ]
+		local key = "use_" .. trim_header(item.string_name)
+		-- (each item on each object once a game, AR_ITEM_TRIED: later visits try the items Manny has got since)
+		if item.owner == manny and obj[key] and not (AR_ITEM_TRIED[obj] and AR_ITEM_TRIED[obj][key])
 			and not (item == mo.scythe and system.currentSet.setFile and ar_in_list(system.currentSet.setFile, no_scythe_sets)) then
+			AR_ITEM_TRIED[obj] = AR_ITEM_TRIED[obj] or { }
+			AR_ITEM_TRIED[obj][key] = TRUE
 			ar_do("use", obj, item)
 		end
 		i = i + 1
@@ -509,9 +571,31 @@ end
 -- setups only: nothing that uses or takes. AR_NO_SWEEP["set name"] = "why" keeps a set out: where the objects move the floor or take Manny through a door.
 AR_VISITED = AR_VISITED or { }
 AR_NO_SWEEP = AR_NO_SWEEP or { }
+AR_NO_RELOOK = AR_NO_RELOOK or { }
+AR_NO_REHEAVY = AR_NO_REHEAVY or { }
 ar_visit_set = function()
 	ar_look_all(AR_VISIT_SET)
+	ar_look_doors(AR_VISIT_SET)
 	ar_visit_setups(AR_VISIT_SET)
+end
+-- A step of the sweep that took Manny out of the set (a walk that crossed a door's sector: the walk to Copal's message board climbed out of his window,
+-- chapter 2, and the chapter then used the window from the ledge): back through the door of the set he is in that leads there (<set global>_door), as a
+-- player would
+ar_sweep_back = function(set)
+	local cur = system.currentSet
+	if not cur or cur == set then
+		return
+	end
+	ar_wait_for_control()
+	local g = ar_set_global(set)
+	local door = g and cur[g .. "_door"]
+	if type(door) == "table" and (door.walkOut or door.climbOut) and door.touchable then
+		ar_log("extra: back to " .. tostring(set.name) .. " through " .. tostring(door.name))
+		AR_GO_OLD(door, set)
+		ar_wait_for_control()
+	else
+		ar_log("extra: no door back to " .. tostring(set.name) .. " from " .. tostring(cur.name))
+	end
 end
 ar_sweep = function()
 	-- (not while a handler of its own has the keys: in the Bone Wagon at the end of chapter 56 the items step left the remote in hand, and the
@@ -522,9 +606,23 @@ ar_sweep = function()
 	local name = system.currentSet.name
 	local set = system.currentSet
 	if AR_VISITED[name] then
+		-- (what is new to look at since, AR_NO_RELOOK["set name"] = "why" keeps a set out)
+		if not AR_NO_SWEEP[name] and not AR_NO_RELOOK[name] then
+			AR_VISIT_SET = set
+			ar_extra_run("relook " .. tostring(name), ar_relook)
+			ar_sweep_back(set)
+		end
+		-- (and what is new to use, pick up and try the items on, with the items got since; AR_NO_REHEAVY["set name"] = "why" keeps a set out)
+		if system.currentSet == set and not AR_NO_SWEEP[name] and not AR_NO_HEAVY[name] and not AR_NO_REHEAVY[name] then
+			AR_VISIT_SET = set
+			ar_extra_run("reheavy " .. tostring(name), ar_heavy_set)
+			ar_sweep_back(set)
+		end
 		-- (the door trips again, each time the set would be swept: the first sweep can end out of the set, the heavy step of the kitchen took Manny to
 		-- the lounge)
-		ar_door_trips(set)
+		if system.currentSet == set then
+			ar_door_trips(set)
+		end
 		return
 	end
 	AR_VISITED[name] = TRUE
@@ -533,9 +631,11 @@ ar_sweep = function()
 	else
 		AR_VISIT_SET = set
 		ar_extra_run("visit " .. tostring(name), ar_visit_set)
+		ar_sweep_back(set)
 		-- (use, pick up and the items: as a step of its own, so that a set where it breaks the story loses only this)
 		if system.currentSet == AR_VISIT_SET and not AR_NO_HEAVY[name] then
 			ar_extra_run("heavy " .. tostring(name), ar_heavy_set)
+			ar_sweep_back(set)
 		end
 	end
 	-- (the doors to sets not entered yet: a trip of its own through each, and back; also from a set that is not swept)
