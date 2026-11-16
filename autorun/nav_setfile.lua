@@ -166,13 +166,15 @@ ar_nav_of = function(set)
 					nav.camera = nav.camera or { }
 					local p = sf.p[i]
 					local m = ar_nav_len(p) / 3
-					local sx, sy, k = 0, 0, 0
+					local sx, sy, sz, k = 0, 0, 0, 0
 					while k < m do
 						sx = sx + p[k * 3 + 1]
 						sy = sy + p[k * 3 + 2]
+						sz = sz + p[k * 3 + 3]
 						k = k + 1
 					end
-					nav.camera[ar_nav_len(nav.camera) + 1] = { x = sx / m, y = sy / m, z = 0, name = sf.n[i] }
+					-- (the corners too, and their height, for a point of the floor inside it when the middle is off the floor)
+					nav.camera[ar_nav_len(nav.camera) + 1] = { x = sx / m, y = sy / m, z = 0, fz = sz / m, p = p, name = sf.n[i] }
 				end
 				if (walk or hot) and not sf.on[i] then
 					nav.off[ar_nav_len(nav.off) + 1] = sf.n[i]

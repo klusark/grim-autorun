@@ -12,6 +12,11 @@ ar_walk_to(0.1, 1.95, -0.02, function() return cutSceneLevel > 0 or manny:getpos
 ar_wait_idle(200)
 ar_wait_for_control()
 ar_check(manny:getpos().z > 3, "Manny is on the roof")
+-- (100% modes: the far end of the roof, the high angle on the neon lady, nl_neoha: only while she still stands, it is the fallen sign's view after she falls)
+if AR_FULL then
+	ar_walk_to(-3.0, 6.0, 3.71, function() return nl:current_setup() == nl_neoha end, 30000)
+	ar_log("on the roof: setup " .. tostring(nl:current_setup()))
+end
 ar_walk_to(-7.5, 2.3, 3.71)
 -- the hot sector at the edge is where Manny hops on to the border by the neon hand
 ar_walk_to(-7.5, 1.85, 3.71, function() return cutSceneLevel > 0 or manny:getpos().z > 4 end)

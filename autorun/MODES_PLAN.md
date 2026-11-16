@@ -234,3 +234,16 @@ Whole game: passes, 446,245 frames (466,474 with SAVE=1), sets entered 119 of 12
 Left: the photofinish (the photo looked at in hand, Ctrl and the look key, chapter 29: ScummVM re-creates its window for the set and the
 engine stops answering, so it is not done).
 
+
+## Status (2026-11-16): camera setups
+
+* Every new setup of a set is a `COV setup` line (ar_set_watch), whatever showed it; Meche's intro is held until the computer view (mo_comin) shows.
+* The camera walk (ar_visit_setups): a camera sector whose middle is off the walk floor is walked into at a point of the floor inside it, the nearest to
+  its middle on a 12 by 12 grid (ar_camera_floor_point), when its setup has not been seen yet.
+* The look views: the plaque under Sanspoof on the way back from the cat stables (chapter 18, kh_sansp: the Kitty Hallway is not swept), the loose
+  signpost before it is picked up (chapter 10, sg_mancu), and the far end of the Neon Ledge roof while the neon lady still stands (chapter 61, nl_neoha).
+
+Whole game: passes, 449,988 frames, setups seen 236 of 363. Of the 127 unseen, 105 are the overhead debug views and most of the rest close-ups of
+cutscenes (skipped). Not reachable in play: tu_swiha (inside the tube switcher with its door closed: the door only opens, and the box floor is off
+while it is closed), ci_glotk (box_off at every entry), hp_intha (the pantry closed when Manny comes in: he walks in only through it open), and the
+setups no script and no camera sector names (tu_swicu, Hallway 1, 4 and 5, co_dskrv, lm_velws, bd_beacu, na_intws).
