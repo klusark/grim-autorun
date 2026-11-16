@@ -320,3 +320,23 @@ Then more of the talks, chapter by chapter:
 * Chapter 17: Charlie's talk is blocked until his 100 is picked, then the rest before the chapter's picks: 10 left -> 1 (110 is 100's other way).
 
 Whole game: passes, 491,407 frames (SAVE=1), dialog lines 381 of 466. The speed run is unchanged (245,693).
+
+## Status (2026-11-16): the Lua coverage of the game's scripts
+
+A ScummVM with cleanroom/scummvm/lua-coverage.patch (a worktree of the autorun branch, ~/scummvm-luacov, built as build-opt is) and GRIM_LUA_COVERAGE
+set measures which functions of the game's scripts a run calls: SVM_DIR=/home/Joel/scummvm-luacov/build-opt GRIM_LUA_COVERAGE=<folder> MODE=speed100
+run_all.sh, then tools/luacov.py <folder> --json report.json. tools/luamiss.py report.json <run log> gives each object handler that never ran
+(<set>.<object>.<lookAt|use|pickUp|use_item|walkOut>) the reason: set never entered, set not swept, heavy step off, tried and refused, never tried.
+
+* The sweep looks a set over again each time it would be swept, for what it has not looked at yet (AR_LOOKED; an object that was not there to touch
+  the first time), and uses, picks up and tries the items again for what is new (AR_USED, AR_ITEM_TRIED: each verb once a game, each item on each object
+  once): extras "relook <set>" and "reheavy <set>", blocked by AR_NO_RELOOK / AR_NO_REHEAVY (sweep_fix.sh kinds relook, reheavy).
+* Doors are looked at from their use point (out of the door's sector), turned to, and only where the game offers them there (ar_look_doors).
+* A door the chapter uses to leave a set (ar_do on a walkOut object) sweeps the set first, as ar_go does: Copal's office was never swept.
+* A step of the sweep that took Manny out of the set comes back through the door that leads there (ar_sweep_back): the walk to Copal's message board
+  climbed out of the window.
+* ex00_sweep.lua: the blocks of sets that sweep_fix.sh had added were all tried again; the ones still needed came back, several as one object instead of
+  the whole set (the rope of the alley, the cocoon, the cranes, the eye).
+
+Whole game: passes, 565,405 frames (SAVE=1). The speed run is unchanged (245,693). Functions of the game's scripts run: 3,718 -> 3,871 of 5,437;
+verbs done 710 -> 825 of 1,487, objects touched 354 -> 389, item combos 70 -> 84.

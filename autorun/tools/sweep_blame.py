@@ -18,7 +18,7 @@ def block_of(who):
         return None
     if who.startswith("[") and who.endswith("]"):
         kind, _, rest = who[1:-1].partition(" ")
-        if kind in ("visit", "heavy"):
+        if kind in ("visit", "heavy", "relook", "reheavy"):
             return kind + ":" + rest
         if kind == "trip":
             # (a door trip: "<set global>.<door field>", AR_NO_TRIP)
@@ -71,6 +71,10 @@ for ln in open(sys.argv[1], errors="replace"):
                 last = "visit:" + t[6:]
             elif t.startswith("heavy "):
                 last = "heavy:" + t[6:]
+            elif t.startswith("relook "):
+                last = "relook:" + t[7:]
+            elif t.startswith("reheavy "):
+                last = "reheavy:" + t[8:]
             elif t.startswith("trip "):
                 last = "trip:" + t[5:]
             elif t.startswith("talk "):
