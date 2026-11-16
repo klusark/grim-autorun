@@ -694,6 +694,8 @@ ar_cur_chapter = function()
 	end
 	return AR_CUR_CH
 end
+AR_NO_TALK_UNTIL = AR_NO_TALK_UNTIL or { }
+AR_NO_EXTRA_TALK = AR_NO_EXTRA_TALK or { }
 -- Whether this chapter or a later one picks line n of the dialog itself (AR_DLG_PICKS): such a line is left to that pick
 ar_picked_later = function(name, n)
 	local by = AR_DLG_PICKS and AR_DLG_PICKS[name] and AR_DLG_PICKS[name][n]
@@ -761,17 +763,22 @@ ar_talk_before = function(dlg, target)
 	local name = ar_dialog_name(dlg)
 	-- (first: a dialog of AR_NO_TALK returns at once, and a TRUE left from an earlier talk made ar_pick_exit leave Celso's talk open, chapter 13)
 	AR_TALK_ENDED = nil
-	if AR_NO_TALK[name] or not dlg.current_choices then
-		return
-	end
-	-- (an extra says nothing in a dialog that this chapter or a later one talks in itself, AR_DLG_LAST of ex04_dlg_later.lua, chapter 14: the people step
-	-- said all of Lupe before the chapter used her, and her talk did not open again. Celso's pitch said by the people step
-	-- at the end of chapter 59 took the line chapter 60 picks. That chapter's own talk says the lines, before its pick)
+	-- (AR_NO_TALK_UNTIL[name] = "<chapter>": the block holds up to that chapter only, the one whose own picks the lines said before it broke)
 	local now = ar_cur_chapter()
-	if AR_IN_EXTRA and AR_DLG_LAST and AR_DLG_LAST[name] and now and not (AR_DLG_LAST[name] < now) then
-		ar_log("extra: " .. name .. " is left to " .. AR_DLG_LAST[name])
+	if AR_NO_TALK[name] and not (AR_NO_TALK_UNTIL[name] and now and AR_NO_TALK_UNTIL[name] < now) then
 		return
 	end
+	-- (AR_NO_EXTRA_TALK[name] = "<chapter>": no extra talks in it up to that chapter, whose own talk says the lines: an extra's talk of Lupe before
+	-- chapter 14 and of Celso before chapter 60 broke the chapter's own picks)
+	if AR_IN_EXTRA and AR_NO_EXTRA_TALK[name] and now and not (AR_NO_EXTRA_TALK[name] < now) then
+		ar_log("extra: " .. name .. " is left to " .. AR_NO_EXTRA_TALK[name])
+		return
+	end
+	if not dlg.current_choices then
+		return
+	end
+	-- (a dialog that this chapter or a later one talks in itself is talked in too: the lines a chapter picks are left to it, ar_picked_later, and where
+	-- the talk breaks the chapter the person is blocked in that chapter, AR_NO_TALKER "<set> <field>@<chapter>")
 	local failed = AR_FAILED
 	local keep = AR_KEEP_GOING
 	AR_KEEP_GOING = TRUE
@@ -973,9 +980,9 @@ ar_talk_people = function()
 		if type(obj) ~= "table" or not obj.touchable or obj.owner then
 			ar_log("extra: " .. list[i] .. " in " .. tostring(set.name) .. " is not there to talk to")
 		else
-			if ar_talker_left(global .. "." .. list[i]) then
-				ar_log("extra: no talk to " .. list[i] .. " in " .. tostring(set.name) .. " (its dialog is left to the chapter that talks in it)")
-			elseif ar_no_talker(tostring(set.name) .. " " .. list[i]) then
+			-- (a person whose dialog a chapter talks in, this one or a later one, is talked to too: the chapter's own talk picks its lines after, and a
+			-- talk that breaks it is blocked for that chapter, AR_NO_TALKER "<set> <field>@<chapter>")
+			if ar_no_talker(tostring(set.name) .. " " .. list[i]) then
 				ar_log("extra: no talk to " .. list[i] .. " in " .. tostring(set.name) .. " (" .. ar_no_talker(tostring(set.name) .. " " .. list[i]) .. ")")
 			elseif AR_TALKER_DLG[obj] and not ar_dialog_has_new(AR_TALKER_DLG[obj]) then
 				ar_log("extra: nothing new to say to " .. list[i] .. " in " .. tostring(set.name))

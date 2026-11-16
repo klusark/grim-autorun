@@ -247,3 +247,15 @@ Whole game: passes, 449,988 frames, setups seen 236 of 363. Of the 127 unseen, 1
 cutscenes (skipped). Not reachable in play: tu_swiha (inside the tube switcher with its door closed: the door only opens, and the box floor is off
 while it is closed), ci_glotk (box_off at every entry), hp_intha (the pantry closed when Manny comes in: he walks in only through it open), and the
 setups no script and no camera sector names (tu_swicu, Hallway 1, 4 and 5, co_dskrv, lm_velws, bd_beacu, na_intws).
+
+## Status (2026-11-16): people talked to in every chapter
+
+* The people step talks to a person whose dialog a chapter talks in (this one or a later one) too, and the talk of an extra says the lines of such a
+  dialog (they were skipped, AR_DLG_LAST); the lines a chapter picks itself are still left to it (ar_picked_later).
+* A block holds where it broke only: AR_NO_TALKER "<set> <field>@<chapter>" (Charlie in chapter 17, Nick in chapter 34; the blocks of Celso, Charlie and
+  Nick in every chapter are gone), AR_NO_TALK_UNTIL[name] = "<chapter>" (ce1, ch1 and vi1 are blocked up to the chapter whose own picks they broke), and
+  AR_NO_EXTRA_TALK[name] = "<chapter>" (lu1 up to chapter 14, ce2 up to chapter 60: only the extras' talks, the chapter's own talk says the lines).
+
+Whole game: passes, 474,548 frames (SAVE=1), dialog lines 320 of 466. The speed run is unchanged (245,693).
+Of the 146 lines left: 45 move to another node of the talk, 32 end it or start a cutscene (AR_NO_AUTO), 19 are the exit lines of nodes, 4 cannot be
+offered, and 46 come on only after a line of another node or later in the story.
