@@ -351,3 +351,11 @@ in sets never swept or where no trip began.
 
 Whole game: passes, 620,775 frames (SAVE=1). The speed run is unchanged (245,693). Functions of the game's scripts run: 3,871 -> 3,920 of 5,437;
 verbs done 825 -> 852, objects touched 389 -> 396, item combos 84 -> 87, dialog lines 382 -> 384.
+
+Then the sets a chapter leaves by a cutscene or a script's move (2026-11-16): a set not swept yet is looked over (the visit: looks, doors, setups) before
+the chapter's first verb or walk in it (ar_sweep_early, extra "early <set>", AR_NO_EARLY; sweep_fix.sh kind early), and the heavy step comes when it
+would be swept again. Whole game: passes, 632,381 frames (SAVE=1); functions of the game's scripts run 3,920 -> 3,937 of 5,437, objects touched 396 ->
+404, verbs done 852 -> 860. The speed run is unchanged (245,693).
+
+The largest single gap left is the game's menus (_options.lua, 187 functions never run: the main menu, options, display, help, credits, cutscenes, save
+and load, the dialog transcript; the run turns the dialog log off, as it rewrites its whole file at each line).

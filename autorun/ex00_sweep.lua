@@ -13,6 +13,7 @@ AR_NO_PEOPLE = { }
 AR_NO_TRIP = { }
 AR_NO_RELOOK = { }
 AR_NO_REHEAVY = { }
+AR_NO_EARLY = { }
 
 AR_NO_SWEEP["Hallway"] = "the elevators change the walk floor when they are looked at"
 AR_NO_LOOK["file cabinet"] = "looking at it in the office closes the hallway elevator to the garage (the game sends the walk back)"
@@ -69,3 +70,10 @@ AR_NO_SWEEP["vault door"] = "a chapter failed after the sweep: the run ended ins
 AR_NO_TRIP["vd.vo_door"] = "a chapter failed after the trip through this door: nav: no way from -3.45 0.51 to 0.48 2.09 in temp factory hub for 18 seconds"
 AR_NO_TRIP["mn.ac_door"] = "a chapter failed after the trip through this door: the run ended inside an extra (the game never gave control back)"
 AR_NO_TRIP["cu.ew_door"] = "a chapter failed after the trip through this door: the run ended inside an extra (the game never gave control back)"
+AR_NO_USE["bd.dam"] = "a chapter failed after the heavy step used it (it took Manny out of the set or took an item he carried): the run ended inside an extra (the game never gave control back)"
+AR_NO_TALKER["rubamat interior celso_obj@ch13_plunge"] = "a chapter failed after this person was talked to: use /ritx068/Celso is not offered to the player: touchable=1 range=0.8 proximity=1.46112 seen[] trackmanny=tas"
+AR_NO_EARLY["rubamat interior"] = "a chapter failed after the set was looked over before the chapter's first step in it: nothing happened for 25000 ms while waiting for a condition"
+AR_NO_SWEEP["track betting"] = "a chapter failed after the sweep: the run ended inside an extra (the game never gave control back)"
+AR_NO_USE["hk.spigot"] = "a chapter failed after the heavy step used it (it took Manny out of the set or took an item he carried): the run ended inside an extra (the game never gave control back)"
+AR_NO_USE["hk.lower_cask"] = "a chapter failed after the heavy step used it (it took Manny out of the set or took an item he carried): the run ended inside an extra (the game never gave control back)"
+AR_NO_EARLY["dillopede hall"] = "a chapter failed after the set was looked over before the chapter's first step in it: the run ended inside an extra (the game never gave control back)"

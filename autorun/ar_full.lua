@@ -87,6 +87,9 @@ if AR_FULL and not AR_LOG_X_OLD then
 		if AR_EXTRA_ABORT then
 			return nil
 		end
+		if not AR_IN_EXTRA and ar_sweep_early then
+			ar_sweep_early()
+		end
 		if verb == "use" and not AR_IN_EXTRA and ar_is_talker and ar_is_talker(noun1) then
 			-- (Manny stays by the person after the talk: he is about to use them, and the walk back and to them again ended out of reach of Chepito, who
 			-- moves about the mine, chapters 41 and 42)
@@ -110,6 +113,9 @@ if AR_FULL and not AR_LOG_X_OLD then
 	ar_walk_to = function(x, y, z, stop_when, max_ms)
 		if AR_EXTRA_ABORT then
 			return nil
+		end
+		if not AR_IN_EXTRA and ar_sweep_early then
+			ar_sweep_early()
 		end
 		return AR_WALK_X_OLD(x, y, z, stop_when, max_ms)
 	end
@@ -596,6 +602,26 @@ ar_sweep_back = function(set)
 	else
 		ar_log("extra: no door back to " .. tostring(set.name) .. " from " .. tostring(cur.name))
 	end
+end
+-- A set not swept yet is looked over (the visit: looks, doors, setups; not the heavy step) before the chapter's first verb or walk in it: a chapter that
+-- leaves a set by a cutscene or a script's move, not by a door (the vault interior, the florist, the wine cellar), never swept it. The heavy step comes
+-- when the set would be swept again (reheavy). AR_NO_EARLY["set name"] = "why" keeps a set to the sweep when it is left
+AR_NO_EARLY = AR_NO_EARLY or { }
+ar_sweep_early = function()
+	local set = system.currentSet
+	if not AR_FULL or AR_IN_EXTRA or AR_SWEEP_EARLY_ON or not set or not set.name or cutSceneLevel > 0 or not ar_handler_normal() then
+		return
+	end
+	local name = set.name
+	if AR_VISITED[name] or AR_NO_SWEEP[name] or AR_NO_EARLY[name] then
+		return
+	end
+	AR_SWEEP_EARLY_ON = TRUE
+	AR_VISITED[name] = TRUE
+	AR_VISIT_SET = set
+	ar_extra_run("early " .. tostring(name), ar_visit_set)
+	ar_sweep_back(set)
+	AR_SWEEP_EARLY_ON = nil
 end
 ar_sweep = function()
 	-- (not while a handler of its own has the keys: in the Bone Wagon at the end of chapter 56 the items step left the remote in hand, and the
