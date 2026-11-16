@@ -284,3 +284,18 @@ Then talks held again while there are lines left:
   game never offers (130 needs 120 marked said, which nothing does; 140 is only ever turned off; one of 300 to 330 per game, 155 turns itself off).
 
 Whole game: passes, 486,808 frames (SAVE=1), dialog lines 336 of 466. The speed run is unchanged (245,693).
+
+Then lines with several nodes, aborts, and the lines the game says itself:
+
+* tools/gen_dlg_skip.py: AR_DLG_MOVES[dialog][line] = { nodes }, a line whose response only moves to one of several nodes as the state of the dialog has
+  it (Eva's 12 and 14, ev1:explain_choice(): explain_node, or first_eva_node once she has explained it all; Virago's 240). The talk takes it by its worst
+  node (a node with no way home makes it a one-way move) and follows the node the game goes to.
+* AR_DLG_ABORT[dialog][node] = node: the game runs the abort of a node by itself when only its exit line is left (_dialog.lua, min_line), so a node
+  talked through comes back there (Eva's explain2_node, Charlie's slot_machines, Domino's question and tell nodes). A way home for ar_talk_dist.
+* Of the moves on offer, the one into the node farthest from home first (Eva's explain_node: the way through page_node turns 105 on).
+* Dialog.execute_line logs a COV say line for every line the game says, also one a script says by itself (chapter 2 hands Eva the work order: her 2).
+* Chapter 2: Eva talked to before she gets the work order, her 4 is on only between Copal's office and Bruno reaped. (Her 14 is no window line:
+  met_glottis is never set, it is on in any talk after the garage.)
+
+Whole game: passes, 487,899 frames (SAVE=1), dialog lines 355 of 466. The speed run is unchanged (245,693). Eva's first talk: 16 lines left -> 5
+(5, 70, 75, 95: one way through explain_node a game; 130: its node is spelled expain2_node, never offered).

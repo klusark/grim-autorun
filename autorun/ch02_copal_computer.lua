@@ -82,6 +82,13 @@ ar_do("use", os.lo_door)
 ar_expect_set(lo, "back in the lobby")
 ar_go(lo.ha_door, ha)
 
+-- (100% modes: Eva is talked to before she gets the work order: her line 4, about Don, is on only now, after Copal's office and before Bruno is reaped)
+if AR_FULL then
+	ar_wait_for_control()
+	AR_TALK_OBJ = ha.eva_obj
+	ar_extra_run("talk to Eva after Copal's office", ar_talk_one)
+	ar_wait_for_control()
+end
 ar_do("use", ha.eva_obj, ga.work_order)
 ar_wait_for(function() return system.currentSet == lr end, 180000)
 ar_expect_set(lr, "the Land of the Living")

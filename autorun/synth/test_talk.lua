@@ -302,5 +302,68 @@ AR_DLG_MOVE = { tdlg = { [20] = "sub", [30] = "dead", [50] = "n1" } }
 AR_DLG_EXIT = { tdlg = { n1 = "exit_dialog", sub = "exit_dialog", dead = "exit_dialog" } }
 AR_DLG_END = { }
 
+-- a line with several nodes and an abort that comes back (Eva's explanation): n1 has 10, 12 (to exp until all is explained, else to n1 itself) and the
+-- chapter's line 99; exp has 70 (to exp2) and 80 (to page); page has 90 (to exp2); exp2 has 100 and 110 and an exit line that ends the talk, and its
+-- abort, which the game runs once only the exit line is left, marks it all explained and goes back to n1
+local function make_explain()
+	local d = { exit_lines = { }, aborts = { }, current_choices = { }, node = "n1" }
+	d[10] = { text = "/t10/", n1 = TRUE }
+	d[12] = { text = "/t12/", n1 = TRUE, response = function() if d.done then d.node = "n1" else d.node = "exp" end end }
+	d[99] = { text = "/t99/", n1 = TRUE }
+	d[70] = { text = "/t70/", exp = TRUE, response = function() d.node = "exp2" end }
+	d[80] = { text = "/t80/", exp = TRUE, response = function() d.node = "page" end }
+	d[90] = { text = "/t90/", page = TRUE, response = function() d.node = "exp2" end }
+	d[100] = { text = "/t100/", exp2 = TRUE, response = function() d[100].off = TRUE end }
+	d[110] = { text = "/t110/", exp2 = TRUE, response = function() d[110].off = TRUE end }
+	d.exit_lines.n1 = { text = "/tx1/", response = function() d.node = "exit_dialog" end }
+	d.exit_lines.exp2 = d.exit_lines.n1
+	d.aborts.exp2 = function() d.done = TRUE d.node = "n1" end
+	d[999] = "EOD"
+	d.display = function()
+		d.current_choices = { }
+		if d.node == "exit_dialog" then
+			system.buttonHandler = nil
+			return
+		end
+		local n = 0
+		for i = 1, 998 do
+			local l = d[i]
+			if type(l) == "table" and l[d.node] and not l.off then
+				n = n + 1
+				d.current_choices[n] = l
+			end
+		end
+		if d.exit_lines[d.node] then
+			n = n + 1
+			d.current_choices[n] = d.exit_lines[d.node]
+		end
+		if n <= 1 and d.aborts[d.node] then
+			d.aborts[d.node]()
+			return d.display()
+		end
+		system.buttonHandler = d
+	end
+	d.display()
+	return d
+end
+AR_NO_AUTO = { tdlg = { [12] = TRUE, [70] = TRUE, [80] = TRUE, [90] = TRUE } }
+AR_DLG_MOVE = { tdlg = { [70] = "exp2", [80] = "page", [90] = "exp2" } }
+AR_DLG_MOVES = { tdlg = { [12] = { "exp", "n1" } } }
+AR_DLG_EXIT = { tdlg = { n1 = "exit_dialog", exp2 = "exit_dialog" } }
+AR_DLG_ABORT = { tdlg = { exp2 = "n1" } }
+AR_DLG_END = { }
+said = { }
+AR_SAID = { }
+tdlg = make_explain()
+ar_talk_before(tdlg, tdlg[99])
+s = table.concat(said, " ")
+check(s == "/t10/ /t12/ /t80/ /t90/ /t100/ /t110/", "a line with several nodes, the deepest way on, back by the abort (" .. s .. ")")
+check(tdlg.node == "n1" and system.buttonHandler == tdlg and tdlg.done, "a line with several nodes: back in n1 by the abort, waiting for the chapter's line")
+AR_DLG_MOVES = { }
+AR_DLG_ABORT = { }
+AR_NO_AUTO = { tdlg = { [20] = TRUE, [30] = TRUE, [50] = TRUE, [80] = TRUE } }
+AR_DLG_MOVE = { tdlg = { [20] = "sub", [30] = "dead", [50] = "n1" } }
+AR_DLG_EXIT = { tdlg = { n1 = "exit_dialog", sub = "exit_dialog", dead = "exit_dialog" } }
+
 print(fails == 0 and "talk: all passed" or ("talk: " .. fails .. " failed"))
 os.exit(fails == 0 and 0 or 1)
