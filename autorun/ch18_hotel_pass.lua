@@ -34,6 +34,12 @@ ar_state("in the security lobby")
 -- down the stairs into the security hall (Carla greets Manny when he steps off them)
 ar_go(gt.sl_door, sl)
 ar_state("in the security hall")
+-- (100% modes: the people of the hall now, Carla's first talk, ca1: the detector scene below scorns her, and after it her use only says a line. Nothing in the
+-- other modes)
+if AR_FULL then
+	ar_wait_for_control()
+	ar_people_once()
+end
 ar_walk_to(-0.67, -0.92, 0)
 ar_wait_for_control()
 -- the liqueur wears off in ten seconds: drink it here, just short of the detector, and walk through

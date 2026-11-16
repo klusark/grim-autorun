@@ -50,3 +50,4 @@ AR_NO_TALK["vi1"] = "chapter 19 steers the talk with Nick through several nodes 
 AR_NO_TALKER["high roller lounge virago_obj"] = "a chapter failed after this person was talked to: nav: no way from -2.19 1.33 to 2.37 -4.19 in police station for 18 seconds"
 AR_NO_TALK["ch1"] = "chapter 17 waits for line 100, which Charlie's menu offers only after the fillers the line chooser says in order; a line said before (230) changed that order and the fillers ran out before 100 came"
 AR_NO_TALKER["ashtray room meche_obj@ch44_hostage"] = "talking to her in chapter 44, where Manny holds the gun, took it and moved Manny on to Domino's room; the chapter then gives her the gun (round 16)"
+AR_NO_SWEEP["engine room interior"] = "chapter 37: the walk to the instruments takes Manny out to the ocean porthole, and the way back to the dock porthole carries him into the engine room, where the anchor is used (the game never gave control back)"
