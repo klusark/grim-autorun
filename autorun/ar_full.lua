@@ -312,6 +312,29 @@ end
 AR_NO_LOOK = AR_NO_LOOK or { }
 
 -- Looks at every object of the set that is there to be looked at (touchable, in the room, with a lookAt of its own)
+-- Why the sweep left an object alone, once a game for each object, verb and reason (OBJSKIP lines, for tools/luamiss.py): an object of the set that has
+-- code for the verb and was not looked at, used or picked up
+AR_OBJSKIP_SEEN = AR_OBJSKIP_SEEN or { }
+ar_objskip = function(o, verb, why)
+	local key = tostring(AR_OBJ_KEY[o]) .. "|" .. verb .. "|" .. why
+	if not AR_OBJSKIP_SEEN[key] then
+		AR_OBJSKIP_SEEN[key] = TRUE
+		ar_log("OBJSKIP " .. tostring(AR_OBJ_KEY[o]) .. " " .. verb .. " " .. why)
+	end
+end
+ar_objskip_why = function(o)
+	if not o.touchable then
+		return "untouchable"
+	elseif o.owner then
+		return "owned"
+	elseif not o.range or o.range <= 0 then
+		return "no-range"
+	elseif o.walkOut or o.climbOut then
+		return "door"
+	end
+	return nil
+end
+
 -- The objects looked at in this game (AR_LOOKED): a set is looked over again each time it would be swept, for the ones not looked at yet (an object that
 -- was not there to touch the first time: Charlie's printer, Copal's papers, the bodies in the Lola)
 AR_LOOKED = AR_LOOKED or { }
@@ -328,6 +351,8 @@ ar_look_all = function(set)
 		if system.currentSet == set and not AR_LOOKED[o] and o.touchable and not o.owner and o.range and o.range > 0 and not o.walkOut and not o.climbOut and not AR_NO_LOOK[o.string_name] and ar_has_verb(o, "lookAt") then
 			AR_LOOKED[o] = TRUE
 			ar_do("lookAt", o)
+		elseif system.currentSet == set and not AR_LOOKED[o] and ar_has_verb(o, "lookAt") and not o.walkOut and not o.climbOut then
+			ar_objskip(o, "lookAt", ar_objskip_why(o) or (AR_NO_LOOK[o.string_name] and "no-look") or "?")
 		end
 		i = i + 1
 	end
@@ -358,9 +383,16 @@ ar_look_doors = function(set)
 					ar_wait_turn()
 					ar_fix_head()
 					ar_wait_offered(800)
+					if not ar_offered() and system.currentSet == set then
+						-- (from the use point, the stick toward the door until the game offers it: 21 doors were not offered there. A step into its
+						-- sector walks Manny out, and the sweep comes back through the door on the other side, ar_sweep_back)
+						AR_DOOR_SET = set
+						ar_walk_stick(o.obj_x, o.obj_y, o.obj_z or z, function() return ar_offered() or system.currentSet ~= AR_DOOR_SET end, 3000)
+						ar_wait_offered(400)
+					end
 					if ar_offered() and system.currentSet == set then
 						ar_do("lookAt", o)
-					else
+					elseif system.currentSet == set then
 						ar_log("extra: " .. tostring(o.name) .. " is not offered from its use point, not looked at")
 					end
 				end
@@ -419,6 +451,14 @@ ar_use_all = function(set, except)
 				ar_settle()
 			end
 			ar_left_by(set, o, before)
+		elseif system.currentSet == set and not o.walkOut and not o.climbOut then
+			local why = ar_objskip_why(o) or (except[o] and "except") or (ar_no_use(o) and "no-use") or "?"
+			if ar_has_verb(o, "pickUp") and not AR_USED["pickUp"][o] then
+				ar_objskip(o, "pickUp", why)
+			end
+			if ar_has_verb(o, "use") and not AR_USED["use"][o] then
+				ar_objskip(o, "use", why)
+			end
 		end
 		i = i + 1
 	end
@@ -456,6 +496,24 @@ ar_items_on = function(obj)
 			ar_do("use", obj, item)
 		end
 		i = i + 1
+	end
+	-- (an object with an answer of its own for any item, default_response: one item it has no answer for, once a game (the florist's gun, Domino's
+	-- mouthpiece, Charlie's printer). Not the scythe, where the game keeps it put away)
+	if rawgettable(obj, "default_response") and not (AR_ITEM_TRIED[obj] and AR_ITEM_TRIED[obj]["default"]) and system.currentSet == obj.obj_set then
+		i = 1
+		local any = nil
+		while i <= n and not any do
+			local item = inv[i]
+			if item.owner == manny and item ~= mo.scythe and not obj["use_" .. trim_header(item.string_name)] then
+				any = item
+			end
+			i = i + 1
+		end
+		if any then
+			AR_ITEM_TRIED[obj] = AR_ITEM_TRIED[obj] or { }
+			AR_ITEM_TRIED[obj]["default"] = TRUE
+			ar_do("use", obj, any)
+		end
 	end
 end
 
@@ -786,6 +844,12 @@ ar_sweep_early = function()
 	AR_VISIT_SET = set
 	ar_extra_run("early " .. tostring(name), ar_visit_set)
 	ar_sweep_back(set)
+	-- (and use, pick up and the items: a set left by a cutscene is never swept again. As "reheavy", AR_NO_REHEAVY)
+	if system.currentSet == set and not AR_NO_HEAVY[name] and not AR_NO_REHEAVY[name] then
+		AR_VISIT_SET = set
+		ar_extra_run("reheavy " .. tostring(name), ar_heavy_set)
+		ar_sweep_back(set)
+	end
 	AR_SWEEP_EARLY_ON = nil
 end
 ar_sweep = function()

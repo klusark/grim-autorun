@@ -365,3 +365,12 @@ every option one step right and back (not the 3D hardware, whose switch makes th
 its first cutscene stopped by the override, the save, load and erase lists with nothing chosen, the quit question answered no. The menus pause every
 task but the one that pressed the menu key, which drives them. The credits (no hot key) and the advanced 3D menu did not open. Whole game: passes,
 630,171 frames (SAVE=1); functions of the game's scripts run 3,937 -> 4,034 of 5,437 (_options.lua 10 -> about 107 of 197). The speed run is unchanged.
+
+Then the objects (2026-11-16): the sweep logs why it leaves an object alone (OBJSKIP <set.object> <verb> <untouchable|owned|no-range|no-look|no-use>,
+once a game), and tools/luamiss.py splits "never tried" by it. Of the object handlers never run, 55 are on objects that were untouchable at every
+sweep, and about 130 were on objects the sweep never listed: doors' looks (46), the verbs of sets that only had the early look (80), objects whose only
+code is the answer to any item (default_response, 8) and helpers the story calls (26). So: the heavy step after the early look too (as reheavy), one
+item with no answer of its own tried on an object with a default_response, and a door not offered from its use point is pushed toward with the stick
+until the game offers it. 11 rounds of sweep_fix.sh blocked one object or step each (the nozzles of the tube room, the dish, the liqueur, the bell of
+the florist, the mug rack, the reheavy of the outer vault and the le mans lobby). Whole game: passes, 647,507 frames (SAVE=1); functions of the
+game's scripts run 4,034 -> 4,038 of 5,437; verbs done 860 -> 865. The speed run is unchanged.
