@@ -1,5 +1,17 @@
 -- Where the look at everything of a 100% run (ar_sweep in ar_full.lua) breaks the story, found by running it. Each line says what happened.
 
+-- (the tables start empty here: a chapter played from a save has the Lua state of the run that made it, blocks this file no longer has included)
+AR_NO_SWEEP = { }
+AR_NO_LOOK = { }
+AR_NO_HEAVY = { }
+AR_NO_USE = { }
+AR_NO_TALKER = { }
+AR_NO_TALK = { }
+AR_NO_TALK_UNTIL = { }
+AR_NO_EXTRA_TALK = { }
+AR_NO_PEOPLE = { }
+AR_NO_TRIP = { }
+
 AR_NO_SWEEP["Hallway"] = "the elevators change the walk floor when they are looked at"
 AR_NO_LOOK["file cabinet"] = "looking at it in the office closes the hallway elevator to the garage (the game sends the walk back)"
 AR_NO_SWEEP["signpost fork"] = "the chapter walk after it is planned again 7 times and held up (chapter 7)"
@@ -45,8 +57,6 @@ AR_NO_HEAVY["meadow exterior"] = "using its objects (the greenhouse, its door) t
 AR_NO_SWEEP["meadow exterior"] = "a chapter failed after the sweep: stalled: a chapter took more than 120 s, scummvm killed"
 AR_NO_TALK["ce1"] = "chapter 13 picks lines 110, 120 and 135 in turn, and 120 only comes on after a line that the plain run says as a filler: with other lines said first it stayed off, and the filler 135 ended the talk"
 AR_NO_TALK_UNTIL["ce1"] = "ch13_plunge"
-AR_NO_TALK["vi1"] = "chapter 19 steers the talk with Nick through several nodes itself; line 180 said before its pick moved the talk from excellent_node to best_node in a way the scripts do not show to gen_dlg_skip.py, and the chapter's next line was out of reach"
-AR_NO_TALK_UNTIL["vi1"] = "ch19_baster"
 AR_NO_TALK["ch1"] = "chapter 17 waits for line 100, which Charlie's menu offers only after the fillers the line chooser says in order; a line said before (230) changed that order and the fillers ran out before 100 came"
 AR_NO_TALK_UNTIL["ch1"] = "ch17_charlie"
 AR_NO_TALKER["ashtray room meche_obj@ch44_hostage"] = "talking to her in chapter 44, where Manny holds the gun, took it and moved Manny on to Domino's room; the chapter then gives her the gun (round 16)"

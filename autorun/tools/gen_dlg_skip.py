@@ -21,6 +21,10 @@ line_def = re.compile(r'^([a-z_0-9]+)\[(\d+)\] = \{')
 resp_def = re.compile(r'^([a-z_0-9]+)\[(\d+)\]\.response = function')
 exit_def = re.compile(r'^([a-z_0-9]+)\.exit_lines\.([a-z_0-9]+)\.response = function')
 abort_def = re.compile(r'^([a-z_0-9]+)\.aborts\.([a-z_0-9]+) = function')
+obj_resp_def = re.compile(r'^([a-z_0-9]+)\.([a-z_0-9]+)\.response = function')
+exit_set = re.compile(r'\b([a-z_0-9]+)\.exit_lines\.([a-z_0-9]+) = ([a-z_0-9]+)\.(exit_lines\.)?([a-z_0-9]+)\s*$')
+obj_resp = {}
+exit_from = {}
 alias = re.compile(r'^([a-z_0-9]+)\[(\d+)\]\.response = ([a-z_0-9]+)\[(\d+)\]\.response')
 alias_func = re.compile(r'^([a-z_0-9]+)\[(\d+)\]\.response = ([a-z_0-9]+)\.([a-z_0-9]+)\s*$')
 fal = {}
@@ -33,11 +37,12 @@ node_set = re.compile(r'\.node\s*=\s*"([a-z_0-9]+)"')
 assign = re.compile(r'^\s*(local\s+)?([A-Za-z_][\w.\[\]"]*)\s*=[^=]')
 
 
-def sets_state(text):
-    """Whether a response assigns anything but the node of the dialog, the off of its line and locals (gl1[220] recruits Glottis: a story line)."""
+def sets_state(text, d=None):
+    """Whether a response assigns anything but the node of the dialog, the off of its line, locals and fields of its own dialog table (gl1[220]
+    recruits Glottis: a story line; Nick's 210 sets vi1.joke_time, which only picks his next greeting)."""
     for ln in text.split("\n"):
         m = assign.match(ln)
-        if m and not m.group(1) and not m.group(2).endswith(".node") and not m.group(2).endswith(".off"):
+        if m and not m.group(1) and not m.group(2).endswith(".node") and not m.group(2).endswith(".off") and not (d and m.group(2).startswith(d + ".")):
             return True
     return False
 body = {}
@@ -50,6 +55,7 @@ al = {}
 # line 12 moves to explain_node that way, which the walker could not come back from, chapter 1)
 func_def = re.compile(r'^([a-z_0-9]+)\.([a-z_0-9]+) = function')
 func_call = re.compile(r'\b([a-z_0-9]+):([a-z_0-9]+)\(')
+line_call = re.compile(r'\b([a-z_0-9]+)\[(\d+)\]:response\(')
 for f in sorted(glob.glob(os.path.join(src, "*.lua"))):
     cur = None
     for ln in open(f, errors="replace").read().split("\n"):
@@ -72,6 +78,15 @@ for f in sorted(glob.glob(os.path.join(src, "*.lua"))):
         m = abort_def.match(ln)
         if m:
             cur = aborts.setdefault((m[1], m[2]), []); continue
+        # (a line kept in a field of the dialog, "me2.delayed_n3_exit.response = function": for an exit line that is set to it, below)
+        m = obj_resp_def.match(ln)
+        if m:
+            cur = obj_resp.setdefault((m[1], m[2]), []); continue
+        # (an exit line set from another table, anywhere, also inside a function: "me2.exit_lines.n3 = me2.delayed_n3_exit", which Meche's n3 shows
+        # when it is displayed, or "ev1.exit_lines.explain2_node = ev1.exit_lines.first_eva_node")
+        m = exit_set.search(ln)
+        if m:
+            exit_from[(m[1], m[2])] = (m[3], m[4], m[5])
         m = func_def.match(ln)
         if m:
             cur = funcs.setdefault((m[1], m[2]), []); continue
@@ -89,6 +104,11 @@ def with_calls(text, d, depth=3):
     for obj, name in func_call.findall(text):
         if obj in (d, "arg1") and (d, name) in funcs:
             extra.append(with_calls("\n".join(funcs[(d, name)]), d, depth - 1))
+    # (the response of another line of the dialog, "vi1[190]:response()": Nick's 180 moves to best_node that way, and was taken for a plain line)
+    for obj, n in line_call.findall(text):
+        k = (obj, int(n))
+        if obj == d and k in body or k in al:
+            extra.append(with_calls("\n".join(body.get(al.get(k, k), [])), d, depth - 1))
     return text + ("\n" + "\n".join(extra) if extra else "")
 
 
@@ -108,13 +128,19 @@ for k in sorted(lines):
             if not turns_off.search(text):
                 keep.setdefault(k[0], []).append(k[1])
         # (nor a walk of Manny's: Carla's line 120, ca1, ends the talk with a walk across the metal detector, whose scene then never gives control back)
-        elif nodes == {"exit_dialog"} and not story.search(text) and not items.search(text) and not sets_state(text) and not manny_walk.search(text):
+        elif nodes == {"exit_dialog"} and not story.search(text) and not items.search(text) and not sets_state(text, k[0]) and not manny_walk.search(text):
             end.setdefault(k[0], []).append(k[1])
 for (d, node), b in sorted(aborts.items()):
     text = with_calls("\n".join(b), d)
     nodes = set(node_set.findall(text))
     if len(nodes) == 1 and not story.search(text) and "exit_dialog" not in nodes:
         abort.setdefault(d, {})[node] = nodes.pop()
+for (d, node), (d2, isexit, name) in sorted(exit_from.items()):
+    if (d, node) in exits:
+        continue
+    b = exits.get((d2, name)) if isexit else obj_resp.get((d2, name))
+    if b is not None:
+        exits[(d, node)] = b
 for (d, node), b in sorted(exits.items()):
     nodes = set(node_set.findall("\n".join(b)))
     if len(nodes) == 1:

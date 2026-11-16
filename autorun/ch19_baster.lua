@@ -3,6 +3,20 @@
 -- Casket's kitchen sink. On the way past the track betting hall Carla's bomb gives the skeleton key. Checkpoint 35.
 
 ar_load(18)
+-- (100% modes) the talk with Nick in the trouble node ended there, then Nick talked to again while he has lines left
+ar_nick_threats = function()
+	if ar_dialog_ready(vi1, 20000) then
+		ar_talk_before(vi1, nil, TRUE)
+	end
+end
+ar_nick_rounds = function()
+	if ar_dialog_ready(vi1, 20000) then
+		ar_talk_before(vi1, nil, TRUE)
+	end
+	ar_wait_for_control()
+	AR_TALK_OBJ = hl.virago_obj
+	ar_talk_one()
+end
 AR_NEW = TRUE
 ar_log("start in " .. ar_set_name())
 ar_wait_for_control()
@@ -15,8 +29,23 @@ ar_wait_for(function() return vi1 and system.buttonHandler == vi1 end, 120000)
 ar_check(vi1 and system.buttonHandler == vi1, "Nick talks")
 -- he refuses to help (a first round of questions), then the kiss is thrown at him
 ar_pick(vi1, 100)
+-- (100% modes: Nick is talked through first. His trouble, good, excellent, best and threats nodes have no way back, so each talk ends in one of
+-- them, by a line that ends it, and he is talked to again while there are lines left; 240 takes the talk back into trouble_node until he has
+-- refused (200). The lines this chapter picks are kept for it (ar_picked_later): 110 or 150 into good_node, 170, 190 and 200)
+if AR_FULL then
+	ar_extra_run("talk Nick through", ar_nick_rounds)
+	ar_wait_for_control()
+	ar_do("use", hl.virago_obj)
+	ar_wait_for(function() return vi1 and system.buttonHandler == vi1 end, 120000)
+	ar_pick(vi1, 240)
+end
 -- (a good question: with Terry arrested the first one is on the screen and hides the others, any of them leads to the good node)
-if ar_line_shown(vi1, vi1[110]) then
+-- (100% modes: with one line left in trouble_node, the game says it by itself when the talk comes back by 240, the node's abort, and the talk is
+-- in good_node already)
+ar_dialog_ready(vi1, 20000)
+if vi1.node ~= "trouble_node" then
+	ar_log("the game said the line into good_node itself")
+elseif ar_line_shown(vi1, vi1[110]) then
 	ar_pick(vi1, 110)
 else
 	ar_pick(vi1, 150)
@@ -25,10 +54,23 @@ ar_pick(vi1, 170)
 ar_pick(vi1, 190)
 ar_pick(vi1, 200)
 ar_wait_for_control()
+-- (100% modes: his threats node once more before the kiss is thrown at him, for the lines there and the one that ends the talk, 290)
+-- (240 goes to threats_node now that he has refused; the talk takes it only where every node it may go to can be ended, and trouble_node is empty)
+if AR_FULL then
+	ar_do("use", hl.virago_obj)
+	ar_wait_for(function() return vi1 and system.buttonHandler == vi1 end, 120000)
+	ar_pick(vi1, 240)
+	ar_extra_run("talk to Nick before the kiss", ar_nick_threats)
+	ar_wait_for_control()
+end
 ar_do("use", hl.virago_obj)
 ar_wait_for(function() return vi1 and system.buttonHandler == vi1 end, 120000)
 ar_pick(vi1, 240)
-ar_pick(vi1, 280)
+-- (100% modes: with 280 the only line left in threats_node the game says it by itself, the node's abort)
+ar_wait_for(function() return system.buttonHandler == vi1 or vi1[280].said end, 60000)
+if not vi1[280].said then
+	ar_pick(vi1, 280)
+end
 ar_wait_for(function() return hl.nick_gone end, 300000)
 ar_wait_for_control()
 ar_check(hl.nick_gone, "Nick has left")

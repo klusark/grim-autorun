@@ -19,6 +19,11 @@ ar_describe()
 ar_do("use", cn.charlie_obj)
 ar_wait_for(function() return ch1 and system.buttonHandler == ch1 end, 60000)
 ar_pick_if(ch1, 100)
+-- (100% modes: his talk is blocked up to this chapter (ex00_sweep.lua: lines said before 100 used up the fillers its pick waits for); with 100
+-- said, the rest before the chapter's picks: 230, the slot machines (180 to 220, back by their abort), 140 and 150 in counterfeit)
+if AR_FULL then
+	AR_NO_TALK["ch1"] = nil
+end
 ar_pick_if(ch1, 120)
 ar_pick_if(ch1, 130)
 ar_pick_if(ch1, 160)
