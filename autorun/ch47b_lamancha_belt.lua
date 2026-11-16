@@ -11,6 +11,54 @@ ar_wait_for_control()
 -- runs down the belt to the edge of it and jumps off by the lever (a cutscene, so the walk stops there)
 ar_go(cv.cy_door, cy)
 ar_wait_for_control()
+-- (100% modes: Glottis hanging on the Lamancha, a set the story does not need. The more belt at the far end of the conveyor floats Manny down the current to
+-- the anchor room, where he drifts (drift_button_handler); back crawls him along the belt, and its end, the anchor, is the Lamancha cutscene and the way up to
+-- Glottis (ac.gh_door, only before the ship is raised). Back: down the ladder to the anchor room (when Glottis was met in Domino's office the first walk to it is
+-- his reunion), and the belt crawled back to the conveyor room)
+ar_glottis_trip = function()
+	-- (on the belt, which moves Manny a little each frame and makes the planner plan again, the stick pushed toward the more belt, as a player does,
+	-- until the current takes him)
+	local tries = 0
+	while system.currentSet == cy and tries < 4 do
+		ar_walk_stick(cy.conveyor_exit.obj_x, cy.conveyor_exit.obj_y, manny:getpos().z, function() return system.currentSet ~= cy or cutSceneLevel > 0 end, 8000)
+		tries = tries + 1
+	end
+	ar_try_wait(function() return system.currentSet == ac and cutSceneLevel <= 0 end, 20000)
+	if system.currentSet ~= ac then
+		ar_log("extra: the current did not take Manny to the anchor room")
+		return
+	end
+	-- (he drifts in facing the conveyor room's door: the anchor is behind him, back crawls him to it; the key goes up as soon as the set changes)
+	ar_key_down("MOVE_BACKWARD")
+	ar_try_wait(function() return system.currentSet ~= ac end, 30000)
+	ar_keys_up()
+	ar_wait_for_control()
+	if system.currentSet ~= gh then
+		ar_log("extra: the crawl did not get to the Lamancha, Manny is at " .. format("%.2f %.2f", manny:getpos().x, manny:getpos().y))
+		return
+	end
+	ar_look_all(gh)
+	ar_talk_people()
+	tries = 0
+	while system.currentSet == gh and tries < 3 do
+		AR_GO_OLD(gh.ac_door, ac)
+		ar_wait_for_control()
+		ar_talk_opened()
+		tries = tries + 1
+	end
+	if system.currentSet == ac then
+		ar_key_down("MOVE_FORWARD")
+		ar_try_wait(function() return system.currentSet ~= ac end, 30000)
+		ar_keys_up()
+		ar_wait_for_control()
+	end
+	if system.currentSet ~= cy then
+		ar_log("extra: the crawl back did not get to the conveyor room, Manny is in " .. tostring(system.currentSet.name))
+	end
+end
+if AR_FULL and not raised_lamancha then
+	ar_extra_run("trip to the Lamancha", ar_glottis_trip)
+end
 -- (the way onto the belt passes the sector that makes the chain drift to the belt, another cutscene: on from there)
 ar_log("belt: crane_broken " .. tostring(ew.crane_broken) .. " crane_down " .. tostring(ew.crane_down) .. " crane_pos " .. tostring(ew.crane_pos) .. " at_conveyor " .. tostring(ew.at_conveyor) .. " drifting " .. tostring(cy.drifting))
 AR_BELT_TRIES = 0

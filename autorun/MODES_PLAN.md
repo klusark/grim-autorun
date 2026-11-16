@@ -220,7 +220,17 @@ Every dialog is opened now.
   ones, and a failure after them as inside one).
 
 Whole game: passes, 443,694 frames (463,906 with SAVE=1), sets entered 117 of 120. The speed run is unchanged (245,693).
-Left: Glottis hanging on the Lamancha (only in a cutscene the run skips); the crane track (its door is in the end of the world, which the run sees only in
-a cutscene movie); the photofinish (the photo looked at in hand, Ctrl and the look key, chapter 29: ScummVM re-creates its window for the set and the
+Then the two sets of chapter 47 (100% modes only):
+
+* The crane track: a set with no objects, the game shows it only for the movie of the chain dropped into the trough (ew.chain_in_trough), when the broken
+  crane is lowered at a stop between the crusher and the conveyor. Chapter 47a lets the turn key go at stop 2 (the move goes on to the next stop in the
+  frame it reaches one), lowers the crane at stop 1 and raises it again, then turns on to the conveyor.
+* Glottis hanging on the Lamancha: chapter 47b, before the lever, walks into the more belt of the conveyor room (the stick pushed toward it: the moving belt
+  makes the planner plan again every few frames), which floats Manny to the anchor room; there the back key crawls him along the belt to the anchor
+  (ac.gh_door, the Lamancha cutscene, only before the ship is raised), and back down the ladder and the forward key crawl him back to the conveyor room. The
+  doors are taken with AR_GO_OLD: the sweep of ar_go would have pulled the lever in the heavy step.
+
+Whole game: passes, 446,245 frames (466,474 with SAVE=1), sets entered 119 of 120. The speed run is unchanged (245,693).
+Left: the photofinish (the photo looked at in hand, Ctrl and the look key, chapter 29: ScummVM re-creates its window for the set and the
 engine stops answering, so it is not done).
 
