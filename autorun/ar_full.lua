@@ -702,6 +702,8 @@ end
 -- the items to the people and talks to them, and comes back. AR_NO_TRIP["<set global>.<door field>"] = "why" leaves a door alone (ex00_sweep.lua).
 AR_NO_TRIP = AR_NO_TRIP or { }
 AR_TRIP_TO = AR_TRIP_TO or { }
+AR_TRIP_DOOR = AR_TRIP_DOOR or { }
+AR_DOOR_DONE = AR_DOOR_DONE or { }
 ar_door_trips = function(set)
 	local sg = ar_set_global(set)
 	if not sg or AR_TRIP then
@@ -712,7 +714,15 @@ ar_door_trips = function(set)
 		if type(k) == "string" and type(v) == "table" and v.walkOut and strlen(k) > 5 and strsub(k, strlen(k) - 4, strlen(k)) == "_door" then
 			local t = getglobal(strsub(k, 1, strlen(k) - 5))
 			local key = sg .. "." .. k
-			if type(t) == "table" and t ~= set and t.come_out_door and t.name and AR_TRIP_TO[t.name] and not AR_ENTERED[t.name] and type(t[sg .. "_door"]) == "table" then
+			-- (or a door of the coverage list, ex06_doors.lua, AR_TRIP_DOOR: one the run never walks through, this way or the way back; each once a game)
+			local tg = t and type(t) == "table" and ar_set_global(t)
+			local back_key = tg and (tg .. "." .. sg .. "_door")
+			local listed = (AR_TRIP_DOOR[key] and not AR_DOOR_DONE[key]) or (back_key and AR_TRIP_DOOR[back_key] and not AR_DOOR_DONE[back_key])
+			if type(t) == "table" and t ~= set and t.come_out_door and t.name and ((AR_TRIP_TO[t.name] and not AR_ENTERED[t.name]) or listed) and type(t[sg .. "_door"]) == "table" then
+				AR_DOOR_DONE[key] = TRUE
+				if back_key then
+					AR_DOOR_DONE[back_key] = TRUE
+				end
 				if AR_NO_TRIP[key] then
 					ar_log("extra: no trip through " .. key .. " (" .. AR_NO_TRIP[key] .. ")")
 				else

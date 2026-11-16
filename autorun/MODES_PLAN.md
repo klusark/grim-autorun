@@ -340,3 +340,14 @@ run_all.sh, then tools/luacov.py <folder> --json report.json. tools/luamiss.py r
 
 Whole game: passes, 565,405 frames (SAVE=1). The speed run is unchanged (245,693). Functions of the game's scripts run: 3,718 -> 3,871 of 5,437;
 verbs done 710 -> 825 of 1,487, objects touched 354 -> 389, item combos 70 -> 84.
+
+Then the doors (2026-11-16): the run walked through 207 doors and never through 96 walkOuts; 52 of those are trigger boxes, not doors (the drift of
+the Lola, the rail of the cafe, the retreat of the Neon Ledge), left alone. tools/gen_door_trips.py writes the other 44 into ex06_doors.lua
+(AR_TRIP_DOOR), from a coverage report, and the door trips (ar_door_trips) take each once from a set swept that has it or its door back: through and
+back, both ways. 18 of the 44 are walked through now (bu.bl_door, cy.ea_door, dd.hb_door, ea.cy_door, ev.pc_door, fh.fo_door, fi.fp_door, fp.at_door,
+hb.dd_door, hl.hh_door, lw.nq_door, mg.pc_door, my.bs_door, rp.st_door, sg.sm_door, sh.lw_door, st.rp_door, zw.sh_door). Of the rest: 6 trips broke a
+chapter and are blocked (AR_NO_TRIP), 6 went and did not get through (the alley's trap door is not offered, Copal's door, the Lola Zapata door), 12 are
+in sets never swept or where no trip began.
+
+Whole game: passes, 620,775 frames (SAVE=1). The speed run is unchanged (245,693). Functions of the game's scripts run: 3,871 -> 3,920 of 5,437;
+verbs done 825 -> 852, objects touched 389 -> 396, item combos 84 -> 87, dialog lines 382 -> 384.
