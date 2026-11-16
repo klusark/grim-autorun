@@ -46,12 +46,12 @@ jobs:
         run: git config --global core.autocrlf false
 
       - name: Check out grim_tools
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           path: grim_tools
 
       - name: Check out ScummVM
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           repository: ${{ env.SCUMMVM_REPO }}
           ref: ${{ env.SCUMMVM_REF }}
@@ -78,7 +78,7 @@ jobs:
         run: Add-Content $env:GITHUB_PATH "${{ steps.msys2.outputs.msys2-location }}\ucrt64\bin"
 
       - name: ccache
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: ccache
           key: ccache-cov-ucrt64-${{ github.run_id }}
@@ -144,7 +144,7 @@ jobs:
 
       - name: Coverage pages
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: coverage
           path: |

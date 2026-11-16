@@ -33,12 +33,12 @@ jobs:
     timeout-minutes: 120
     steps:
       - name: Check out grim_tools
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           path: grim_tools
 
       - name: Check out grim-decomp
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           repository: ${{ env.DECOMP_REPO }}
           ref: ${{ env.DECOMP_REF }}
@@ -118,7 +118,7 @@ jobs:
 
       - name: Logs
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: decomp-cleanroom-logs
           path: |

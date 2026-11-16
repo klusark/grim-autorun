@@ -97,13 +97,13 @@ jobs:
         run: git config --global core.autocrlf false
 
       - name: Check out the clean room
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           ref: ${{ inputs.tests_ref }}
           path: grim_tools
 
       - name: Check out ScummVM
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           repository: scummvm/scummvm
           ref: ${{ matrix.side == 'pr' && needs.resolve.outputs.pr_sha || needs.resolve.outputs.base_sha }}
@@ -133,7 +133,7 @@ jobs:
         run: Add-Content $env:GITHUB_PATH "${{ steps.msys2.outputs.msys2-location }}\ucrt64\bin"
 
       - name: ccache
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: ccache
           key: ccache-ucrt64-pr-${{ matrix.side }}-${{ github.run_id }}
@@ -204,7 +204,7 @@ jobs:
 
       - name: Logs
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: logs-${{ matrix.side }}
           path: |
@@ -218,23 +218,23 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out the clean room
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           ref: ${{ inputs.tests_ref }}
           path: grim_tools
 
       - name: Check out the compare script
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           path: workflow
           sparse-checkout: .github/scripts
 
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           pattern: logs-*
           path: logs
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v7
         with:
           python-version: "3.12"
 
