@@ -359,3 +359,9 @@ would be swept again. Whole game: passes, 632,381 frames (SAVE=1); functions of 
 
 The largest single gap left is the game's menus (_options.lua, 187 functions never run: the main menu, options, display, help, credits, cutscenes, save
 and load, the dialog transcript; the run turns the dialog log off, as it rewrites its whole file at each line).
+
+Then the game's menus (2026-11-16): chapter 1 opens them once, as a player looks through them (ar_menu_tour): the menu key, the help pages both ways,
+every option one step right and back (not the 3D hardware, whose switch makes the engine's window again), the dialog transcript, the cutscene menu and
+its first cutscene stopped by the override, the save, load and erase lists with nothing chosen, the quit question answered no. The menus pause every
+task but the one that pressed the menu key, which drives them. The credits (no hot key) and the advanced 3D menu did not open. Whole game: passes,
+630,171 frames (SAVE=1); functions of the game's scripts run 3,937 -> 4,034 of 5,437 (_options.lua 10 -> about 107 of 197). The speed run is unchanged.

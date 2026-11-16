@@ -603,6 +603,171 @@ ar_sweep_back = function(set)
 		ar_log("extra: no door back to " .. tostring(set.name) .. " from " .. tostring(cur.name))
 	end
 end
+
+-- The game's menus once (100% modes), as a player looks through them (_options.lua): the menu key, then each item by its hot key or the arrows, and back:
+-- the help pages, every option turned one step and back, the advanced 3D menu, the dialog transcript, the cutscene menu and one cutscene, the save,
+-- load and erase menus (nothing saved, loaded or erased), the credits and the quit question (no). The menus pause every task but the one that pressed
+-- the menu key (game_pauser), this one, which drives them.
+ar_menu_wait = function(cond, n)
+	local k = 0
+	while not cond() and k < n do
+		break_here()
+		k = k + 1
+		if game_pauser.is_paused then
+			AR_FRAME = AR_FRAME + 1
+		end
+	end
+	return cond()
+end
+ar_menu_key = function(name)
+	ar_press_key(ar_real_key(name))
+	ar_menu_wait(function() return FALSE end, 3)
+end
+ar_menu_hot = function(c)
+	if system.characterHandler and system.characterHandler.characterHandler then
+		system.characterHandler:characterHandler(c)
+	end
+	ar_menu_wait(function() return FALSE end, 3)
+end
+ar_menu_main = function()
+	return ar_menu_wait(function() return main_menu.is_active and system.buttonHandler == main_menu end, 90)
+end
+-- back to the main menu from a menu (its override), TRUE when it is up
+ar_menu_up = function(what)
+	local k = 0
+	while not (main_menu.is_active and system.buttonHandler == main_menu) and k < 4 do
+		ar_menu_key("OVERRIDE")
+		ar_menu_main()
+		k = k + 1
+	end
+	if not (main_menu.is_active and system.buttonHandler == main_menu) then
+		ar_log("MENU no main menu after " .. tostring(what))
+		return nil
+	end
+	return TRUE
+end
+ar_menu_tour = function()
+	ar_wait_for_control()
+	ar_log("MENU the tour")
+	ar_press_key(ar_real_key("MENU"))
+	if not ar_menu_main() then
+		ar_log("MENU the main menu did not open")
+		return
+	end
+	ar_menu_key("DIALOG_DOWN")
+	ar_menu_key("DIALOG_UP")
+	-- help: the pages, both ways
+	ar_menu_hot("h")
+	if ar_menu_wait(function() return help_menu.is_active end, 30) then
+		ar_menu_key("TURN_RIGHT")
+		ar_menu_key("TURN_RIGHT")
+		ar_menu_key("TURN_LEFT")
+		ar_log("MENU help")
+	end
+	if not ar_menu_up("help") then return end
+	-- options: each item one step right and back, then the advanced 3D menu, out of it with nothing chosen
+	ar_menu_hot("o")
+	if ar_menu_wait(function() return settings_menu.is_active and system.buttonHandler == settings_menu end, 30) then
+		local m = settings_menu.menu
+		ar_menu_key("PAGE_HOME")
+		local i = 0
+		while i < (m.num_items or 0) + 1 do
+			local cur = m.cur_item
+			-- (not the 3D hardware on and off, threed_index: the engine would make its window again, which hung ScummVM at the photofinish)
+			if cur ~= settings_menu.exit_index and cur ~= settings_menu.advanced_threed_index and cur ~= settings_menu.threed_index then
+				ar_menu_key("TURN_RIGHT")
+				ar_menu_wait(function() return not find_script(settings_menu.change_value) end, 30)
+				ar_menu_key("TURN_LEFT")
+				ar_menu_wait(function() return not find_script(settings_menu.change_value) end, 30)
+			end
+			ar_menu_key("DIALOG_DOWN")
+			i = i + 1
+		end
+		ar_log("MENU options")
+		local k = 0
+		while settings_menu.advanced_threed_index and m.cur_item ~= settings_menu.advanced_threed_index and k < 30 do
+			ar_menu_key("DIALOG_DOWN")
+			k = k + 1
+		end
+		if m.cur_item == settings_menu.advanced_threed_index then
+			ar_menu_key("DIALOG_CHOOSE")
+			if ar_menu_wait(function() return display_menu.is_active end, 30) then
+				ar_menu_key("DIALOG_DOWN")
+				ar_menu_key("DIALOG_UP")
+				ar_log("MENU display")
+				ar_menu_key("OVERRIDE")
+				ar_menu_wait(function() return settings_menu.is_active and system.buttonHandler == settings_menu end, 60)
+			end
+		end
+	end
+	if not ar_menu_up("options") then return end
+	-- the dialog transcript
+	ar_menu_hot("d")
+	ar_menu_wait(function() return dialog_log.is_active end, 30)
+	ar_menu_key("PAGE_UP")
+	ar_menu_key("PAGE_DOWN")
+	if not ar_menu_up("the dialog transcript") then return end
+	-- the cutscenes: the list, and the first one, stopped by its override (no movie of the game is playing now)
+	ar_menu_hot("c")
+	if ar_menu_wait(function() return cutscene_menu.is_active and system.buttonHandler == cutscene_menu end, 30) and not IsMoviePlaying() then
+		ar_menu_key("PAGE_HOME")
+		ar_menu_key("DIALOG_DOWN")
+		ar_menu_key("PAGE_HOME")
+		ar_menu_key("DIALOG_CHOOSE")
+		if ar_menu_wait(function() return system.buttonHandler == cutscene_menu_view_button_handler end, 60) then
+			ar_menu_wait(function() return IsMoviePlaying() end, 30)
+			ar_menu_key("OVERRIDE")
+			ar_menu_wait(function() return system.buttonHandler == cutscene_menu end, 120)
+			ar_log("MENU a cutscene")
+		end
+	end
+	if not ar_menu_up("the cutscenes") then return end
+	-- save, load and erase: the list of each, nothing chosen
+	local modes = { "s", "l", "e" }
+	local j = 1
+	while modes[j] do
+		ar_menu_hot(modes[j])
+		ar_menu_wait(function() return saveload_menu.is_active end, 60)
+		ar_menu_key("DIALOG_DOWN")
+		ar_menu_key("DIALOG_UP")
+		if not ar_menu_up("the save menu " .. modes[j]) then return end
+		j = j + 1
+	end
+	ar_log("MENU save, load, erase")
+	-- the credits (no hot key: the arrows), a screen of them and out
+	ar_menu_key("PAGE_HOME")
+	local k = 0
+	while main_menu.menu and main_menu.menu.cur_item ~= 8 and k < 12 do
+		ar_menu_key("DIALOG_DOWN")
+		k = k + 1
+	end
+	if main_menu.menu and main_menu.menu.cur_item == 8 then
+		ar_menu_key("DIALOG_CHOOSE")
+		if ar_menu_wait(function() return credits_menu.is_active end, 60) then
+			ar_menu_wait(function() return FALSE end, 120)
+			ar_log("MENU credits")
+		end
+	end
+	if not ar_menu_up("the credits") then return end
+	-- the quit question: the choices both ways, back to no, and out of it
+	ar_menu_hot("q")
+	if ar_menu_wait(function() return exit_query and exit_query.is_active end, 60) then
+		ar_menu_key("INVENTORY_NEXT")
+		ar_menu_key("INVENTORY_PREV")
+		ar_menu_key("OVERRIDE")
+		ar_menu_wait(function() return not (exit_query and exit_query.is_active) end, 60)
+		ar_log("MENU the quit question")
+	end
+	-- back to the game
+	local n = 0
+	while game_pauser.is_paused and n < 10 do
+		ar_menu_key("OVERRIDE")
+		n = n + 1
+	end
+	ar_wait_for_control()
+	ar_log("MENU done, paused " .. tostring(game_pauser.is_paused))
+end
+
 -- A set not swept yet is looked over (the visit: looks, doors, setups; not the heavy step) before the chapter's first verb or walk in it: a chapter that
 -- leaves a set by a cutscene or a script's move, not by a door (the vault interior, the florist, the wine cellar), never swept it. The heavy step comes
 -- when the set would be swept again (reheavy). AR_NO_EARLY["set name"] = "why" keeps a set to the sweep when it is left
