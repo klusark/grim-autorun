@@ -2439,6 +2439,12 @@ ar_skip_timer = function(serial)
 	while serial == AR_OV_SERIAL and cutSceneLevel > 0 and system.override and system.override.is_active and ar_ov_after_cutscene(system.override.override_func) do
 		break_here()
 	end
+	-- (100% modes, ar_full.lua: a cutscene held until a camera setup that only it shows has come up, ar_skip_hold; at most 20 s)
+	local held = 0
+	while serial == AR_OV_SERIAL and system.override and system.override.is_active and ar_skip_hold and ar_skip_hold(system.override.override_func) and held < 20000 do
+		break_here()
+		held = held + system.frameTime
+	end
 	if serial == AR_OV_SERIAL and system.override and system.override.is_active and not AR_NO_SKIP and not AR_REAL then
 		ar_log("skipping a cutscene")
 		-- the movie is stopped first, as the overrides do not always stop it and the

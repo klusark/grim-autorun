@@ -499,6 +499,24 @@ ar_sweep = function()
 	end
 end
 
+-- Cutscenes held in the 100% modes until a camera setup that only they show has come up, and a few frames more so that it is drawn; then the skip goes on as
+-- usual (ar_skip_timer, ar_lib.lua). Meche's intro in chapter 4 (me1.intro) cuts to the computer, mo_comin, when Manny goes to look her up.
+AR_HOLD_FRAMES = AR_HOLD_FRAMES or 0
+ar_skip_hold = function(f)
+	if not AR_FULL then
+		return nil
+	end
+	if me1 and f == me1.intro_override and mo and mo_comin then
+		if mo:current_setup() ~= mo_comin then
+			AR_HOLD_FRAMES = 0
+			return TRUE
+		end
+		AR_HOLD_FRAMES = AR_HOLD_FRAMES + 1
+		return AR_HOLD_FRAMES < 6
+	end
+	return nil
+end
+
 -- The sets entered in this game (100% modes): the set is looked at every frame; the first time in a set is a COV set line for the coverage report
 -- (a set the story only passes through, in a cutscene or a script's move, has no camera notes)
 AR_ENTERED = AR_ENTERED or { }
