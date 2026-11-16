@@ -11,7 +11,8 @@ reason, the first that holds:
   tried, refused         the run tried the verb on it and the game did not offer it ("FAIL <verb> <code> is not offered")
   tried, other handler   the run did the verb on it (a COV do line) and still this function did not run (the game took another way)
   item never tried       use_<item> on an object the run never used that item on
-  never tried            none of the above: the object was not there to touch when the set was looked over, or it is no verb the run does
+  skipped: <why>         the sweep had it in its list and left it (OBJSKIP lines of ar_full.lua: untouchable, owned, no-range, no-look, no-use...)
+  never tried            none of the above: the sweep never had it in its list, or it is no verb the run does
 The other never-run functions (no object of the catalog) are counted by their file.
 """
 import json, re, sys, collections, os
@@ -44,6 +45,9 @@ def main():
     done = set()
     for verb, name, item, sname in re.findall(r"COV do \| (\w+) \| (.*?) \| (.*?) \| (.+)", log):
         done.add((verb, name.strip(), item.strip(), sname.strip()))
+    skips = collections.defaultdict(set)
+    for key, verb, why in re.findall(r"OBJSKIP (\S+) (\w+) (\S+)", log):
+        skips[(key, verb)].add(why)
     items_used = collections.defaultdict(set)
     for verb, name, item, sname in done:
         if item:
@@ -80,6 +84,8 @@ def main():
                 why = "tried, other handler"
             elif item:
                 why = "item never tried" if not items_used.get((disp, sname)) else "item never tried (others were)"
+            elif skips.get(("%s.%s" % (g, field), verb)):
+                why = "skipped: " + "/".join(sorted(skips[("%s.%s" % (g, field), verb)]))
             else:
                 why = "never tried"
             key = "%s %s" % (why, h if h in ("lookAt", "use", "pickUp", "walkOut") else ("use_<item>" if item else "other handler"))
