@@ -1766,6 +1766,14 @@ ar_menu_save = function(slot)
 	Save(fname)
 	break_here()
 	break_here()
+	-- (a load resumes here: the volumes come from the registry again, as in the menu; the save holds no iMUSE volumes, and one loaded
+	-- during a fullscreen movie otherwise kept the movie's sound effect volume of 0)
+	if JustLoaded() then
+		system_prefs:init()
+		if music_state.paused then
+			ImSetSfxVol(0)
+		end
+	end
 	WriteRegistryValue("LastSavedGame", fname)
 end
 
