@@ -214,7 +214,8 @@ Detailed docs: `autorun/PROGRESS.md` (chapter table), `TESTS.md`, `TEST_PLAN.md`
 - Tracing the original: `GRIMRUN=./grimtrace.exe GRIMTRACE_BP=4a8610 GRIMTRACE_PEEK="ecx+0,ecx+18" sh orig_test.sh x.lua`.
   Useful BPs: 4a8610 (walk state), 4a83ce/4a843e (turn in/out), 4912e4 (yaw vector).
 - Bit comparison: `tools/walk_exact.py`. The ScummVM log needs `DEBUGFLAGS=actors` for WALKSEC/UPDYAW/TURNH lines.
-- Frames: `tools/framecap.py` + `framediff.py`. Coverage: `tools/covreport.py`.
+- Frames: `tools/framecap.py` + `framediff.py`. Coverage: `tools/covreport.py` (the engine's C++); `tools/luacov.py` (the Lua that
+  ran: functions, lines, instructions; a ScummVM with `cleanroom/scummvm/lua-coverage.patch`, see cleanroom/README.md "Coverage of the Lua").
 
 ### Bit-exact lesson
 The original keeps intermediate values unrounded on the x87 stack and rounds to float only at FSTP (often once

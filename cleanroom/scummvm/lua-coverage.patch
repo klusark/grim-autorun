@@ -1,0 +1,542 @@
+diff --git a/engines/grim/lua.cpp b/engines/grim/lua.cpp
+index 03fbc6ef..109ee864 100644
+--- a/engines/grim/lua.cpp
++++ b/engines/grim/lua.cpp
+@@ -43,6 +43,7 @@
+ #include "engines/grim/lua/lauxlib.h"
+ #include "engines/grim/lua/luadebug.h"
+ #include "engines/grim/lua/lualib.h"
++#include "engines/grim/lua/lcoverage.h"
+ 
+ namespace Grim {
+ 
+@@ -108,6 +109,7 @@ LuaBase::LuaBase() :
+ 		_translationMode(0), _frameTimeCollection(0) {
+ 	s_instance = this;
+ 
++	luaCov_init();
+ 	lua_iolibopen();
+ 	lua_strlibopen();
+ 	lua_mathlibopen();
+@@ -119,6 +121,7 @@ LuaBase::~LuaBase() {
+ 	lua_removelibslists();
+ 	lua_close();
+ 	lua_iolibclose();
++	luaCov_shutdown();
+ }
+ 
+ // Entries in the system table
+diff --git a/engines/grim/lua/lcoverage.cpp b/engines/grim/lua/lcoverage.cpp
+new file mode 100644
+index 00000000..b1e342d2
+--- /dev/null
++++ b/engines/grim/lua/lcoverage.cpp
+@@ -0,0 +1,250 @@
++/* ScummVM - Graphic Adventure Engine
++ *
++ * ScummVM is the legal property of its developers, whose names
++ * are too numerous to list here. Please refer to the COPYRIGHT
++ * file distributed with this source distribution.
++ *
++ * This program is free software: you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License as published by
++ * the Free Software Foundation, either version 3 of the License, or
++ * (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License
++ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
++ *
++ */
++
++#define FORBIDDEN_SYMBOL_EXCEPTION_getenv
++
++#include "common/array.h"
++#include "common/config-manager.h"
++#include "common/file.h"
++#include "common/fs.h"
++#include "common/hashmap.h"
++#include "common/str.h"
++#include "common/system.h"
++
++#include "engines/grim/lua/lcoverage.h"
++#include "engines/grim/lua/lopcodes.h"
++#include "engines/grim/lua/lstring.h"
++
++namespace Grim {
++
++bool luaCovEnabled = false;
++TProtoFunc *luaCovLastTf = nullptr;
++uint32 *luaCovLastHits = nullptr;
++
++namespace {
++
++// One function: what it is (the same function made again, by another dofile of its file or a restore, adds to the same one)
++struct CovRec {
++	Common::String key;            // file, line, code and constants: what makes it the same function
++	Common::String file;
++	int32 line;
++	Common::Array<byte> code;      // up to and with its ENDCODE
++	Common::Array<Common::String> consts;   // "S <text>", "N <number>", "P <record>", "-"
++	Common::Array<uint32> hits;    // by offset in code: how many times the instruction there ran
++	bool hit;                      // any count since the last write
++};
++
++struct PtrHash {
++	uint operator()(const void *p) const { return (uint)(((uintptr)p) >> 3) ^ (uint)(((uintptr)p) >> 19); }
++};
++struct PtrEq {
++	bool operator()(const void *a, const void *b) const { return a == b; }
++};
++
++Common::String g_dir;
++Common::Array<CovRec *> g_recs;
++Common::HashMap<Common::String, uint> g_byKey;
++Common::HashMap<const void *, uint, PtrHash, PtrEq> g_live;
++uint32 g_dumps = 0;
++
++// The length in bytes of each instruction (lua31dis.py has the same table)
++int opSize(byte op) {
++	switch (op) {
++	case SETLISTW:
++		return 4;
++	case SETLIST:
++	case CALLFUNC:
++	case PUSHNUMBERW: case PUSHCONSTANTW: case GETGLOBALW: case GETDOTTEDW: case PUSHSELFW: case CREATEARRAYW:
++	case SETGLOBALW: case ONTJMPW: case ONFJMPW: case JMPW: case IFFJMPW: case IFTUPJMPW: case IFFUPJMPW: case SETLINEW:
++		return 3;
++	case PUSHNIL: case PUSHNUMBER: case PUSHCONSTANT: case PUSHUPVALUE: case PUSHLOCAL: case GETGLOBAL: case GETDOTTED:
++	case PUSHSELF: case CREATEARRAY: case SETLOCAL: case SETGLOBAL: case SETTABLE: case SETLIST0: case SETMAP: case ONTJMP:
++	case ONFJMP: case JMP: case IFFJMP: case IFTUPJMP: case IFFUPJMP: case CLOSURE: case CALLFUNC0: case CALLFUNC1: case RETCODE:
++	case SETLINE: case POP:
++		return 2;
++	default:
++		return 1;
++	}
++}
++
++int32 codeLength(const byte *code) {
++	int32 p = 2;   // (the stack size and the arguments)
++	while (code[p] != ENDCODE)
++		p += opSize(code[p]);
++	return p + 1;
++}
++
++Common::String escape(const char *s) {
++	Common::String r;
++	for (; *s; s++) {
++		byte c = (byte)*s;
++		if (c == '\\')
++			r += "\\\\";
++		else if (c < 32 || c >= 127)
++			r += Common::String::format("\\x%02x", c);
++		else
++			r += (char)c;
++	}
++	return r;
++}
++
++uint record(TProtoFunc *tf) {
++	if (g_live.contains(tf))
++		return g_live[tf];
++	CovRec *r = new CovRec();
++	r->file = tf->fileName ? tf->fileName->str : "?";
++	r->line = tf->lineDefined;
++	int32 n = codeLength(tf->code);
++	r->code.resize(n);
++	memcpy(r->code.data(), tf->code, n);
++	for (int32 i = 0; i < tf->nconsts; i++) {
++		TObject *o = tf->consts + i;
++		if (ttype(o) == LUA_T_STRING)
++			r->consts.push_back("S " + escape(svalue(o)));
++		else if (ttype(o) == LUA_T_NUMBER)
++			r->consts.push_back(Common::String::format("N %.9g", (double)nvalue(o)));
++		else if (ttype(o) == LUA_T_PROTO && tfvalue(o))
++			r->consts.push_back(Common::String::format("P %u", record(tfvalue(o))));
++		else
++			r->consts.push_back("-");
++	}
++	r->key = Common::String::format("%s\n%d\n", r->file.c_str(), r->line);
++	for (int32 i = 0; i < n; i++)
++		r->key += Common::String::format("%02x", r->code[i]);
++	for (uint i = 0; i < r->consts.size(); i++)
++		r->key += "\n" + r->consts[i];
++	uint idx;
++	if (g_byKey.contains(r->key)) {
++		idx = g_byKey[r->key];
++		delete r;
++	} else {
++		r->hits.resize(n);
++		for (int32 i = 0; i < n; i++)
++			r->hits[i] = 0;
++		r->hit = false;
++		idx = g_recs.size();
++		g_recs.push_back(r);
++		g_byKey[r->key] = idx;
++	}
++	g_live[tf] = idx;
++	return idx;
++}
++
++} // end of anonymous namespace
++
++void luaCov_init() {
++	if (luaCovEnabled)
++		return;
++	if (ConfMan.hasKey("lua_coverage"))
++		g_dir = ConfMan.get("lua_coverage");
++	if (g_dir.empty()) {
++		const char *e = getenv("GRIM_LUA_COVERAGE");
++		if (e)
++			g_dir = e;
++	}
++	luaCovEnabled = !g_dir.empty();
++}
++
++void luaCov_register(TProtoFunc *tf) {
++	if (luaCovEnabled && tf)
++		record(tf);
++}
++
++void luaCov_switch(TProtoFunc *tf) {
++	CovRec *r = g_recs[record(tf)];
++	r->hit = true;
++	luaCovLastTf = tf;
++	luaCovLastHits = r->hits.data();
++}
++
++void luaCov_free(TProtoFunc *tf) {
++	if (!luaCovEnabled)
++		return;
++	g_live.erase(tf);
++	if (luaCovLastTf == tf) {
++		luaCovLastTf = nullptr;
++		luaCovLastHits = nullptr;
++	}
++}
++
++void luaCov_dump() {
++	if (!luaCovEnabled || g_recs.empty())
++		return;
++	Common::DumpFile f;
++	Common::FSNode dir(Common::Path(g_dir, Common::Path::kNativeSeparator));
++	// (a name of its own: the runs of several engines at once write to the same folder)
++	Common::FSNode node;
++	uint32 salt = g_system->getMillis() ^ (uint32)(uintptr)&f ^ (uint32)((uintptr)&g_recs >> 12);
++	for (uint32 i = 0; ; i++) {
++		node = dir.getChild(Common::String::format("luacov_%08x_%u_%u.txt", salt, g_dumps, i));
++		if (!node.exists())
++			break;
++	}
++	g_dumps++;
++	if (!f.open(node)) {
++		warning("Lua coverage: cannot write %s", node.getPath().toString().c_str());
++		return;
++	}
++	f.writeString("LUACOV 1\n");
++	// (every function: the ones that never ran too, but the counts only of those that ran since the last write)
++	for (uint idx = 0; idx < g_recs.size(); idx++) {
++		CovRec *r = g_recs[idx];
++		Common::String s = Common::String::format("F %u %d %s\n", idx, r->line, escape(r->file.c_str()).c_str());
++		s += "C ";
++		for (uint i = 0; i < r->code.size(); i++)
++			s += Common::String::format("%02x", r->code[i]);
++		s += "\n";
++		for (uint i = 0; i < r->consts.size(); i++)
++			s += Common::String::format("K %u %s\n", i, r->consts[i].c_str());
++		if (r->hit) {
++			s += "H";
++			for (uint i = 0; i < r->hits.size(); i++) {
++				if (r->hits[i]) {
++					s += Common::String::format(" %u:%u", i, r->hits[i]);
++					r->hits[i] = 0;
++				}
++			}
++			s += "\n";
++			r->hit = false;
++		}
++		f.writeString(s);
++	}
++	f.writeString("END\n");
++	f.close();
++	// (the counts are zero again: the next luaCov_switch sets hit again)
++	luaCovLastTf = nullptr;
++	luaCovLastHits = nullptr;
++}
++
++void luaCov_shutdown() {
++	luaCov_dump();
++	for (uint i = 0; i < g_recs.size(); i++)
++		delete g_recs[i];
++	g_recs.clear();
++	g_byKey.clear();
++	g_live.clear();
++	luaCovLastTf = nullptr;
++	luaCovLastHits = nullptr;
++	luaCovEnabled = false;
++	g_dir.clear();
++}
++
++} // end of namespace Grim
+diff --git a/engines/grim/lua/lcoverage.h b/engines/grim/lua/lcoverage.h
+new file mode 100644
+index 00000000..63b0117f
+--- /dev/null
++++ b/engines/grim/lua/lcoverage.h
+@@ -0,0 +1,64 @@
++/* ScummVM - Graphic Adventure Engine
++ *
++ * ScummVM is the legal property of its developers, whose names
++ * are too numerous to list here. Please refer to the COPYRIGHT
++ * file distributed with this source distribution.
++ *
++ * This program is free software: you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License as published by
++ * the Free Software Foundation, either version 3 of the License, or
++ * (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License
++ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
++ *
++ */
++
++#ifndef GRIM_LCOVERAGE_H
++#define GRIM_LCOVERAGE_H
++
++#include "engines/grim/lua/lobject.h"
++
++namespace Grim {
++
++/*
++** Coverage of the Lua scripts: how many times each instruction of each Lua function ran.
++**
++** On when the configuration key lua_coverage (or the environment variable GRIM_LUA_COVERAGE) names a folder. Every function
++** that is made (parsed, undumped or restored from a save) is recorded with its file, line, code and constants, also the ones
++** that never run; the counts are written to <folder>/luacov_<n>.txt when the engine ends and when a script asks
++** (PrintDebug("CRLUACOV"), or "CRGCOV"), and are zero again after each write, so the files of a run add up.
++**
++** The parser marks the line of each statement in the code of text scripts with SETLINEW (line | LUACOV_LINE): the marks move
++** with the code when the parser moves it (jumps made shorter or longer, the condition of a while), and the VM skips them, so
++** the stack and the behaviour are the same as without (a real SETLINE, of $debug, puts a line slot on the stack).
++** autorun/tools/luacov.py reads the files.
++*/
++
++#define LUACOV_LINE 0x8000
++
++extern bool luaCovEnabled;
++extern TProtoFunc *luaCovLastTf;
++extern uint32 *luaCovLastHits;
++
++void luaCov_init();
++void luaCov_register(TProtoFunc *tf);
++void luaCov_switch(TProtoFunc *tf);
++void luaCov_free(TProtoFunc *tf);
++void luaCov_dump();
++void luaCov_shutdown();
++
++inline void luaCov_hit(TProtoFunc *tf, const byte *pc) {
++	if (tf != luaCovLastTf)
++		luaCov_switch(tf);
++	luaCovLastHits[pc - tf->code]++;
++}
++
++} // end of namespace Grim
++
++#endif
+diff --git a/engines/grim/lua/lfunc.cpp b/engines/grim/lua/lfunc.cpp
+index 176ebaf0..7ac68cf0 100644
+--- a/engines/grim/lua/lfunc.cpp
++++ b/engines/grim/lua/lfunc.cpp
+@@ -7,6 +7,7 @@
+ #define FORBIDDEN_SYMBOL_EXCEPTION_longjmp
+ 
+ #include "engines/grim/lua/lfunc.h"
++#include "engines/grim/lua/lcoverage.h"
+ #include "engines/grim/lua/lmem.h"
+ #include "engines/grim/lua/lstate.h"
+ 
+@@ -37,6 +38,7 @@ TProtoFunc *luaF_newproto() {
+ }
+ 
+ static void freefunc(TProtoFunc *f) {
++	luaCov_free(f);
+ 	luaM_free(f->code);
+ 	luaM_free(f->locvars);
+ 	luaM_free(f->consts);
+diff --git a/engines/grim/lua/llex.cpp b/engines/grim/lua/llex.cpp
+index faf5b7e6..c3812476 100644
+--- a/engines/grim/lua/llex.cpp
++++ b/engines/grim/lua/llex.cpp
+@@ -10,6 +10,7 @@
+ 
+ #include "engines/grim/lua/lauxlib.h"
+ #include "engines/grim/lua/llex.h"
++#include "engines/grim/lua/lcoverage.h"
+ #include "engines/grim/lua/lmem.h"
+ #include "engines/grim/lua/lobject.h"
+ #include "engines/grim/lua/lparser.h"
+@@ -241,7 +242,7 @@ int32 luaY_lex(YYSTYPE *l) {
+ 	LexState *LS = lua_state->lexstate;
+ 	double a;
+ 	luaL_resetbuffer();
+-	if (lua_debug)
++	if (lua_debug || luaCovEnabled)
+ 		luaY_codedebugline(LS->linelasttoken);
+ 	LS->linelasttoken = LS->linenumber;
+ 	while (1) {
+diff --git a/engines/grim/lua/lrestore.cpp b/engines/grim/lua/lrestore.cpp
+index 7810b79c..22521951 100644
+--- a/engines/grim/lua/lrestore.cpp
++++ b/engines/grim/lua/lrestore.cpp
+@@ -16,6 +16,7 @@
+ #include "engines/grim/lua/lopcodes.h"
+ #include "engines/grim/lua/lstring.h"
+ #include "engines/grim/lua/lstate.h"
++#include "engines/grim/lua/lcoverage.h"
+ #include "engines/grim/lua/lua.h"
+ 
+ namespace Grim {
+@@ -369,6 +370,9 @@ void lua_Restore(SaveGame *savedState) {
+ 		}
+ 		tempProtoFunc = (TProtoFunc *)tempProtoFunc->head.next;
+ 	}
++	// (the functions of the save for the Lua coverage: their constants are whole now)
++	for (tempProtoFunc = (TProtoFunc *)rootproto.next; tempProtoFunc; tempProtoFunc = (TProtoFunc *)tempProtoFunc->head.next)
++		luaCov_register(tempProtoFunc);
+ 
+ 	tempHash = (Hash *)roottable.next;
+ 	while (tempHash) {
+diff --git a/engines/grim/lua/lstx.cpp b/engines/grim/lua/lstx.cpp
+index 59351b70..bc59eb59 100644
+--- a/engines/grim/lua/lstx.cpp
++++ b/engines/grim/lua/lstx.cpp
+@@ -24,6 +24,7 @@ by  GNU Bison version 1.25
+ #include "engines/grim/lua/lua.h"
+ #include "engines/grim/lua/luadebug.h"
+ #include "engines/grim/lua/lzio.h"
++#include "engines/grim/lua/lcoverage.h"
+ 
+ namespace Grim {
+ 
+@@ -450,6 +451,14 @@ void luaY_codedebugline (int32 line)
+ 	if (lua_debug && line != lua_state->lexstate->lastline) {
+ 		code_oparg(SETLINE, 0, line, 0);
+ 		lua_state->lexstate->lastline = line;
++	} else if (luaCovEnabled && !lua_debug && line != lua_state->lexstate->lastline && line > 0 && line < LUACOV_LINE) {
++		// (the line of what follows for the Lua coverage: a SETLINEW the VM skips, lcoverage.h)
++		check_pc(3);
++		FuncState *fs = lua_state->currState;
++		fs->f->code[fs->pc++] = SETLINEW;
++		fs->f->code[fs->pc++] = line & 0xFF;
++		fs->f->code[fs->pc++] = (line | LUACOV_LINE) >> 8;
++		lua_state->lexstate->lastline = line;
+ 	}
+ }
+ 
+@@ -653,6 +662,7 @@ static TProtoFunc *close_func() {
+ 		f->locvars = luaM_reallocvector(f->locvars, lua_state->currState->nvars, LocVar);
+ 	}
+ 	lua_state->currState--;
++	luaCov_register(f);
+ 	return f;
+ }
+ 
+diff --git a/engines/grim/lua/lundump.cpp b/engines/grim/lua/lundump.cpp
+index 42aed06e..df64c417 100644
+--- a/engines/grim/lua/lundump.cpp
++++ b/engines/grim/lua/lundump.cpp
+@@ -8,6 +8,7 @@
+ #include "engines/grim/lua/lmem.h"
+ #include "engines/grim/lua/lstring.h"
+ #include "engines/grim/lua/lundump.h"
++#include "engines/grim/lua/lcoverage.h"
+ 
+ namespace Grim {
+ 
+@@ -126,6 +127,7 @@ static TProtoFunc *LoadFunction(ZIO *Z) {
+ 	LoadConstants(tf, Z);
+ 	LoadLocals(tf, Z);
+ 	LoadFunctions(tf, Z);
++	luaCov_register(tf);
+ 
+ 	return tf;
+ }
+diff --git a/engines/grim/lua/lvm.cpp b/engines/grim/lua/lvm.cpp
+index c5eb2afa..e05d2942 100644
+--- a/engines/grim/lua/lvm.cpp
++++ b/engines/grim/lua/lvm.cpp
+@@ -21,6 +21,7 @@
+ #include "engines/grim/lua/ltm.h"
+ #include "engines/grim/lua/luadebug.h"
+ #include "engines/grim/lua/lvm.h"
++#include "engines/grim/lua/lcoverage.h"
+ 
+ namespace Grim {
+ 
+@@ -259,6 +260,8 @@ StkId luaV_execute(lua_Task *task) {
+ 	lua_state->callLevelCounter++;
+ 
+ 	while (1) {
++		if (luaCovEnabled)
++			luaCov_hit(task->tf, task->pc);
+ 		switch ((OpCode)(task->aux = *task->pc++)) {
+ 		case PUSHNIL0:
+ 			ttype(task->S->top++) = LUA_T_NIL;
+@@ -670,6 +673,9 @@ callfunc:
+ 			return (task->base + ((task->aux == RETCODE) ? *task->pc : 0));
+ 		case SETLINEW:
+ 			task->aux = next_word(task->pc);
++			// (a line mark of the Lua coverage, lcoverage.h: nothing to do)
++			if (task->aux & LUACOV_LINE)
++				break;
+ 			goto setline;
+ 		case SETLINE:
+ 			task->aux = *task->pc++;
+diff --git a/engines/grim/lua_v1.cpp b/engines/grim/lua_v1.cpp
+index 0fc0d2aa..454fdf19 100644
+--- a/engines/grim/lua_v1.cpp
++++ b/engines/grim/lua_v1.cpp
+@@ -41,6 +41,7 @@
+ #include "engines/grim/localize.h"
+ #include "engines/grim/lua/lauxlib.h"
+ #include "engines/grim/lua/luadebug.h"
++#include "engines/grim/lua/lcoverage.h"
+ 
+ namespace Grim {
+ 
+@@ -86,6 +87,14 @@ extern "C" void __gcov_reset(void);
+ #endif
+ 
+ void Lua_V1::PrintDebug() {
++	{
++		// (the Lua coverage so far to its file, lcoverage.h; the clean-room tests ask with CRGCOV)
++		lua_Object msgObj = lua_getparam(1);
++		if (luaCovEnabled && lua_isstring(msgObj) && (!strcmp(lua_getstring(msgObj), "CRLUACOV") || !strcmp(lua_getstring(msgObj), "CRGCOV")))
++			luaCov_dump();
++		if (lua_isstring(msgObj) && !strcmp(lua_getstring(msgObj), "CRLUACOV"))
++			return;
++	}
+ 	if (g_grim->isTestData()) {
+ 		lua_Object msgObj = lua_getparam(1);
+ 		if (lua_isstring(msgObj) && !strncmp(lua_getstring(msgObj), "CRSNAP:", 7)) {
+diff --git a/engines/grim/module.mk b/engines/grim/module.mk
+index 55cc1a8e..1c0a2b5b 100644
+--- a/engines/grim/module.mk
++++ b/engines/grim/module.mk
+@@ -63,6 +63,7 @@ MODULE_OBJS := \
+ 	lua/lauxlib.o \
+ 	lua/lbuffer.o \
+ 	lua/lbuiltin.o \
++	lua/lcoverage.o \
+ 	lua/ldo.o \
+ 	lua/lfunc.o \
+ 	lua/lgc.o \
