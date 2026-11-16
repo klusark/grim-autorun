@@ -749,12 +749,15 @@ ar_talk_returns = function(name, dlg, sub, home)
 	return nil
 end
 
--- The nodes of a dialog (where its lines move to, the nodes with an exit, and home) and, for each, the number of steps back to home: by the lines on
--- offer that move (AR_DLG_MOVE: a line belongs to node X when it has the field X, as the game's display_lines reads it) or by the exit line of the node
--- (AR_DLG_EXIT). A node with no way home has none
+-- The nodes of a dialog (where its lines move to, the nodes with an exit or an abort, and home) and, for each, the number of steps back to home: by
+-- the lines on offer that move (AR_DLG_MOVE: a line belongs to node X when it has the field X, as the game's display_lines reads it; a line with
+-- several nodes, AR_DLG_MOVES, when each of them comes back, by the longest), by the exit line of the node (AR_DLG_EXIT) or by its abort, which the game
+-- runs by itself once the node is talked through (AR_DLG_ABORT). A node with no way home has none
 ar_talk_dist = function(name, dlg, home)
 	local moves = AR_DLG_MOVE[name] or { }
+	local multi = (AR_DLG_MOVES and AR_DLG_MOVES[name]) or { }
 	local exits = AR_DLG_EXIT[name] or { }
+	local aborts = (AR_DLG_ABORT and AR_DLG_ABORT[name]) or { }
 	local nodes = { }
 	nodes[home] = TRUE
 	local n, to = next(moves, nil)
@@ -762,10 +765,25 @@ ar_talk_dist = function(name, dlg, home)
 		nodes[to] = TRUE
 		n, to = next(moves, n)
 	end
+	local l = nil
+	n, l = next(multi, nil)
+	while n do
+		local j = 1
+		while l[j] do
+			nodes[l[j]] = TRUE
+			j = j + 1
+		end
+		n, l = next(multi, n)
+	end
 	local x, y = next(exits, nil)
 	while x do
 		nodes[x] = TRUE
 		x, y = next(exits, x)
+	end
+	x, y = next(aborts, nil)
+	while x do
+		nodes[x] = TRUE
+		x, y = next(aborts, x)
 	end
 	local dist = { }
 	dist[home] = 0
@@ -780,12 +798,39 @@ ar_talk_dist = function(name, dlg, home)
 				if y and dist[y] and dlg.exit_lines and dlg.exit_lines[x] then
 					best = dist[y] + 1
 				end
+				y = aborts[x]
+				if y and dist[y] and (not best or dist[y] + 1 < best) then
+					best = dist[y] + 1
+				end
 				n, to = next(moves, nil)
 				while n do
 					if dist[to] and to ~= x and type(dlg[n]) == "table" and dlg[n][x] and not dlg[n].off and (not best or dist[to] + 1 < best) then
 						best = dist[to] + 1
 					end
 					n, to = next(moves, n)
+				end
+				n, l = next(multi, nil)
+				while n do
+					if type(dlg[n]) == "table" and dlg[n][x] and not dlg[n].off then
+						local worst = -1
+						local j = 1
+						while l[j] and worst do
+							if l[j] ~= x then
+								if dist[l[j]] then
+									if dist[l[j]] > worst then
+										worst = dist[l[j]]
+									end
+								else
+									worst = nil
+								end
+							end
+							j = j + 1
+						end
+						if worst and worst >= 0 and (not best or worst + 1 < best) then
+							best = worst + 1
+						end
+					end
+					n, l = next(multi, n)
 				end
 				if best then
 					dist[x] = best
@@ -798,11 +843,43 @@ ar_talk_dist = function(name, dlg, home)
 	return dist
 end
 
+-- The node line n moves to, from node cur: its node (AR_DLG_MOVE), or for a line with several (AR_DLG_MOVES) the one it can go to that has no way
+-- home, else the one farthest from home (the talk follows the node the game goes to); nil for a line that is no move
+ar_move_to = function(name, n, dist, cur)
+	local to = AR_DLG_MOVE[name] and AR_DLG_MOVE[name][n]
+	if to then
+		return to
+	end
+	local l = AR_DLG_MOVES and AR_DLG_MOVES[name] and AR_DLG_MOVES[name][n]
+	if not l then
+		return nil
+	end
+	local best = nil
+	local j = 1
+	while l[j] do
+		if l[j] ~= cur then
+			if not (dist and dist[l[j]]) then
+				return l[j]
+			end
+			if not best or dist[l[j]] > dist[best] then
+				best = l[j]
+			end
+		end
+		j = j + 1
+	end
+	return best or cur
+end
+
+-- Whether line n moves to a node (one, or one of several)
+ar_is_move = function(name, n)
+	return (AR_DLG_MOVE[name] and AR_DLG_MOVE[name][n]) or (AR_DLG_MOVES and AR_DLG_MOVES[name] and AR_DLG_MOVES[name][n])
+end
+
 -- Whether node `node` has a line on offer not said yet that the talk would say there (not one a chapter picks later; a move counts)
 ar_talk_node_new = function(name, dlg, node, ends)
 	local k, v = next(dlg, nil)
 	while k do
-		if type(k) == "number" and type(v) == "table" and v[node] and v.text and not v.off and not AR_SAID[v] and not ar_picked_later(name, k) and (not (AR_NO_AUTO[name] and AR_NO_AUTO[name][k]) or (AR_DLG_MOVE[name] and AR_DLG_MOVE[name][k]) or (ends and AR_DLG_END and AR_DLG_END[name] and AR_DLG_END[name][k])) then
+		if type(k) == "number" and type(v) == "table" and v[node] and v.text and not v.off and not AR_SAID[v] and not ar_picked_later(name, k) and (not (AR_NO_AUTO[name] and AR_NO_AUTO[name][k]) or ar_is_move(name, k) or (ends and AR_DLG_END and AR_DLG_END[name] and AR_DLG_END[name][k])) then
 			return TRUE
 		end
 		k, v = next(dlg, k)
@@ -813,17 +890,13 @@ end
 -- A line on offer that moves to another node the talk comes back home from: one not said yet (entered nil), or one said before into a node not entered
 -- on this visit that has a line not said (entered: the nodes entered); the moves home come last
 ar_talk_pick_move = function(name, dlg, target, dist, cur, home, entered)
-	local moves = AR_DLG_MOVE[name]
-	if not moves then
-		return nil
-	end
-	local found = nil
+	local found, found_d = nil, nil
 	local found_home = nil
 	local i = 1
 	while dlg.current_choices and dlg.current_choices[i] do
 		local c = dlg.current_choices[i]
 		local n = ar_line_number(dlg, c)
-		local to = n and moves[n]
+		local to = n and ar_move_to(name, n, dist, cur)
 		if to and (to ~= cur or not entered) and (dist[to] or to == cur) and c ~= target and not ar_picked_later(name, n) then
 			local ok = nil
 			if not entered then
@@ -834,8 +907,10 @@ ar_talk_pick_move = function(name, dlg, target, dist, cur, home, entered)
 			if ok then
 				if to == home then
 					found_home = found_home or c
-				else
-					found = found or c
+				elseif not found or (dist[to] or 0) > found_d then
+					-- (the node farthest from home first: Eva's explain_node has three ways on, and the one through page_node turns more lines on)
+					found = c
+					found_d = dist[to] or 0
 				end
 			end
 		end
@@ -846,13 +921,12 @@ end
 
 -- The line on offer that moves nearest to home (fewest steps) and its steps; nil when none is nearer than node cur
 ar_talk_back = function(name, dlg, dist, cur)
-	local moves = AR_DLG_MOVE[name]
 	local best, best_d = nil, dist[cur]
 	local i = 1
-	while moves and dlg.current_choices and dlg.current_choices[i] do
+	while dlg.current_choices and dlg.current_choices[i] do
 		local c = dlg.current_choices[i]
 		local n = ar_line_number(dlg, c)
-		local to = n and moves[n]
+		local to = n and ar_move_to(name, n, dist, cur)
 		if to and dist[to] and (not best_d or dist[to] < best_d) and not ar_picked_later(name, n) then
 			best = c
 			best_d = dist[to]
@@ -867,14 +941,13 @@ end
 -- (AR_DLG_END); away from home also the exit line of the node, or a line that ends the talk said before. TRUE when a line was said
 ar_talk_dead_end = function(name, dlg, target, dist, entered, home)
 	local cur = dlg.node
-	local moves = AR_DLG_MOVE[name] or { }
 	local ends = (AR_DLG_END and AR_DLG_END[name]) or { }
 	local into, into_said, end_new, end_old = nil, nil, nil, nil
 	local i = 1
 	while dlg.current_choices and dlg.current_choices[i] do
 		local c = dlg.current_choices[i]
 		local n = ar_line_number(dlg, c)
-		local to = n and moves[n]
+		local to = n and ar_move_to(name, n, dist, cur)
 		if n and c ~= target and not ar_picked_later(name, n) then
 			if to and to ~= cur and to ~= home and not dist[to] and not entered[to] then
 				if not AR_SAID[c] then
@@ -894,7 +967,7 @@ ar_talk_dead_end = function(name, dlg, target, dist, entered, home)
 	end
 	local c = into or into_said
 	if c then
-		local to = moves[ar_line_number(dlg, c)]
+		local to = ar_move_to(name, ar_line_number(dlg, c), dist, cur)
 		entered[to] = TRUE
 		ar_talk_say(name, dlg, c, " (into " .. tostring(to) .. ", the talk ends there)")
 		return TRUE
@@ -990,7 +1063,7 @@ ar_talk_before = function(dlg, target, force_end)
 				c = ar_talk_pick_move(name, dlg, target, dist, cur, home, entered)
 			end
 			if c then
-				local to = AR_DLG_MOVE[name][ar_line_number(dlg, c)]
+				local to = ar_move_to(name, ar_line_number(dlg, c), dist, cur)
 				entered[to] = TRUE
 				ar_talk_say(name, dlg, c, " (into " .. tostring(to) .. ")")
 				picked = TRUE
@@ -1134,7 +1207,7 @@ ar_talk_sayable = function(dlg, k)
 	if not (AR_NO_AUTO[name] and AR_NO_AUTO[name][k]) then
 		return TRUE
 	end
-	return (AR_DLG_MOVE[name] and AR_DLG_MOVE[name][k]) or (AR_DLG_END and AR_DLG_END[name] and AR_DLG_END[name][k])
+	return ar_is_move(name, k) or (AR_DLG_END and AR_DLG_END[name] and AR_DLG_END[name][k])
 end
 -- Whether a dialog has a line that is not said yet and not off (the lines the game could still offer; lines of nodes not reached count too)
 ar_dialog_has_new = function(dlg)
@@ -1161,6 +1234,23 @@ ar_dialog_has_new = function(dlg)
 				end
 			end
 			n, to = next(moves, n)
+		end
+		-- (a line with several nodes: all of them)
+		local l = nil
+		n, l = next((AR_DLG_MOVES and AR_DLG_MOVES[name]) or { }, nil)
+		while n do
+			local v = dlg[n]
+			if type(v) == "table" and not v.off and not ar_picked_later(name, n) and ar_dialog_in(v, reach) then
+				local j = 1
+				while l[j] do
+					if not reach[l[j]] then
+						reach[l[j]] = TRUE
+						changed = TRUE
+					end
+					j = j + 1
+				end
+			end
+			n, l = next(AR_DLG_MOVES[name], n)
 		end
 	end
 	-- (a line the talk would say, in a node it can get to: off too in home, where a later visit's intro turns lines on (Salvador's 110); not one in a
@@ -1227,6 +1317,21 @@ ar_talk_people = function()
 			end
 		end
 		i = i + 1
+	end
+end
+-- Every dialog line the game says is a COV say line (100% modes), also one a script says by itself, not chosen from the menu: chapter 2 uses the work
+-- order on Eva, and the game says her line 2 for it (Dialog.execute_line, which every dialog has from Dialog, its parent)
+if AR_FULL and Dialog and Dialog.execute_line and not AR_EXEC_LINE_OLD then
+	AR_EXEC_LINE_OLD = Dialog.execute_line
+	Dialog.execute_line = function(d, line, nowait)
+		local l = line
+		if type(l) ~= "table" and d.current_choices then
+			l = d.current_choices[line]
+		end
+		if type(l) == "table" and l.text then
+			ar_cov("say | " .. tostring(l.text))
+		end
+		return AR_EXEC_LINE_OLD(d, line, nowait)
 	end
 end
 AR_PEOPLE_DONE = AR_PEOPLE_DONE or { }
