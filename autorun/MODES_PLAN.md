@@ -180,3 +180,20 @@ Not done:
 * The dialogs never opened: Domino's first (`do1`, Year 1, his office), Maximino (`mx1`), Carla's first (`ca1`), Aitor (`ai1`): their people are in sets the run
   leaves without a door or a use of them.
 * The original (`build_original.sh MODE=`) was not run with the modes.
+
+## Status (2026-11-15): speed100 on the new route
+
+The reordered speed route (PROGRESS.md, 2026-11-15) broke speed100 in chapter 37: the sweep of the engine room walked Manny out through the instruments to
+the ocean porthole, and the way back carried him into the engine room, where the anchor was used. That sweep is blocked (ex00_sweep.lua, by tools/sweep_fix.sh).
+Then three more people to talk to:
+
+* Brennis in the Year 1 tube room (br1, 7 of 9 lines): his dialog is opened with dofile and `br1:init()`, not `Dialog:run`, which tools/gen_talkers.py now
+  also reads (the clown's cl1 too, which chapter 2 keeps for itself).
+* Carla's first talk (ca1, 9 of 13 lines): only there before the metal detector scene of chapter 18, which scorns her; the people of the security hall are
+  now talked to as Manny comes down the stairs (100% modes only). Her line 120 ends the talk with a walk across the detector, whose scene then never gave
+  control back: tools/gen_dlg_skip.py no longer counts a response that walks Manny as one that only ends the talk.
+
+Whole game: passes, 427,048 frames (446,011 with SAVE=1), dialog lines 293 of 466 (was 277). The speed run is unchanged (245,693).
+Still never opened: Aitor (ai1, the high roller elevator, reached only with the dillopede elevator on its top floor) and Maximino (mx1, his door is
+untouchable until the story opens it).
+

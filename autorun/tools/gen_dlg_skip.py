@@ -18,6 +18,7 @@ risky = re.compile(r'\.node\s*=|exit_dialog|START_CUT_SCENE|switch_to_set|cut_sc
 # (what makes a line more than a move to a node: anything of risky but the node itself)
 story = re.compile(r'exit_dialog\(|START_CUT_SCENE|switch_to_set|cut_scene\.|\.outro|Dialog:|put_in_limbo|goto_|game_over|ChangeSet|load_game|save_game')
 items = re.compile(r':get\(\)|:free\(\)|put_in_limbo|give|\.owner')
+manny_walk = re.compile(r'manny:walkto\b|manny:walk_and_face|manny:run_to')
 node_set = re.compile(r'\.node\s*=\s*"([a-z_0-9]+)"')
 assign = re.compile(r'^\s*(local\s+)?([A-Za-z_][\w.\[\]"]*)\s*=[^=]')
 
@@ -81,13 +82,14 @@ for k in sorted(lines):
         nodes = set(node_set.findall(text))
         if len(nodes) == 1 and not story.search(text) and "exit_dialog" not in nodes:
             move.setdefault(k[0], {})[k[1]] = nodes.pop()
-        elif nodes == {"exit_dialog"} and not story.search(text) and not items.search(text) and not sets_state(text):
+        # (nor a walk of Manny's: Carla's line 120, ca1, ends the talk with a walk across the metal detector, whose scene then never gives control back)
+        elif nodes == {"exit_dialog"} and not story.search(text) and not items.search(text) and not sets_state(text) and not manny_walk.search(text):
             end.setdefault(k[0], []).append(k[1])
 for (d, node), b in sorted(exits.items()):
     nodes = set(node_set.findall("\n".join(b)))
     if len(nodes) == 1:
         back.setdefault(d, {})[node] = nodes.pop()
-with open("ex02_dialogs.lua", "w") as f:
+with open("ex02_dialogs.lua", "w", newline=chr(10)) as f:
     f.write("-- made by tools/gen_dlg_skip.py from the dialog scripts: the lines that the 100% run does not say on its own (their response ends the dialog,\n"
             "-- starts a cutscene, changes the set or moves to a node), the moves to a node, where the exit line of each node goes, and the lines that only\n"
             "-- end the talk; do not edit\n"

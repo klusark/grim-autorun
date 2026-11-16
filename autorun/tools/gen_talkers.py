@@ -6,7 +6,8 @@ import re, glob, os
 src = "C:/Users/Joel/grim_lua_src"
 hdr = re.compile(r"^([a-z_0-9]+)\.([a-zA-Z_0-9]+)\.use = function")
 other = re.compile(r"^[a-z_0-9]+(\.[a-zA-Z_0-9]+)+ = function")
-run = re.compile(r'Dialog:run\("(\w+)"')
+# (Dialog:run("ve1", ...), or the dialog's file read once and its init called after: br1:init() in the tube room, cl1 and tb1)
+run = re.compile(r'Dialog:run\("(\w+)"|\b([a-z]{2}\d):init\(\)')
 talk = {}
 dlgs = {}
 for f in sorted(glob.glob(src + "/*.lua")):
@@ -25,9 +26,10 @@ for f in sorted(glob.glob(src + "/*.lua")):
             if cur[1] not in talk[cur[0]]:
                 talk[cur[0]].append(cur[1])
             d = dlgs.setdefault(cur[0] + "." + cur[1], [])
-            if m[1] not in d:
-                d.append(m[1])
-with open("ex03_talkers.lua", "w") as o:
+            name = m[1] or m[2]
+            if name not in d:
+                d.append(name)
+with open("ex03_talkers.lua", "w", newline=chr(10)) as o:
     o.write("-- made by tools/gen_talkers.py from the scripts (the use of an object that starts a dialog): AR_TALKERS[set global] = { object, ... } and\n"
             "-- AR_TALKER_DLGS[\"<set global>.<object>\"] = { dialog, ... }; the 100% run uses them and talks, see ar_talk_people in ar_full.lua\n"
             "AR_TALKERS = AR_TALKERS or { }\nAR_TALKER_DLGS = AR_TALKER_DLGS or { }\n")
