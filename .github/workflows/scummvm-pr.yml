@@ -1,4 +1,4 @@
-# The clean-room tests (cleanroom/) of the branch knowngood of this repository on a pull request of scummvm/scummvm.
+# The clean-room tests (cleanroom/) of this repository (main by default) on a pull request of scummvm/scummvm.
 # Started by hand (Actions > ScummVM PR clean-room tests > Run workflow, or `gh workflow run scummvm-pr.yml -f pr=1234`).
 #
 # The PR is tested as GitHub merges it into master (refs/pull/<n>/merge; the PR's head on its merge base when it does
@@ -18,7 +18,7 @@ on:
         required: true
       tests_ref:
         description: Branch of this repository whose clean room runs
-        default: knowngood
+        default: main
       merge_repo:
         description: ScummVM repository whose branch is merged into the PR instead of the test patch (with merge_branch)
         default: klusark/scummvm
