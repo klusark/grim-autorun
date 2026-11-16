@@ -10,6 +10,7 @@ file of the game's data. See README.md.
   python run.py decomp [--only T]          runs the rebuilt exe of grim-decomp (its own test knobs, no grimlaunch.exe), compares
                                            with the expected log
   python run.py both                      both engines, compared with each other
+  python run.py scummvm --lua-coverage DIR  ... with the coverage of the tests' Lua: the report in DIR/report (README.md)
   python run.py compare A.log B.log        compares two result logs
   python run.py <command> --work DIR       its own build/, run/ and logs/ in DIR, locked on its own, and nothing written to
                                            expected/ (the crashers it finds are reported only): runs in parallel with
@@ -1095,6 +1096,26 @@ def renderer_diff(r0, r1):
                                                                                        (" ..." if len(diff) > 40 else "")) if diff else ""))
 
 
+def run_lua_coverage(folder, run):
+    """--lua-coverage: the run with ScummVM's Lua coverage on (GRIM_LUA_COVERAGE, every game of every renderer writes its own
+    luacov_*.txt into folder when it ends, and every 200 tests), then the report of all of them in folder/report. The
+    sources are the build's (the cr_<file>.lua the games loaded). Returns the run's exit code."""
+    folder = os.path.abspath(folder)
+    os.makedirs(folder, exist_ok=True)
+    for f in os.listdir(folder):
+        if f.startswith("luacov_") and f.endswith(".txt"):
+            os.remove(os.path.join(folder, f))
+    os.environ["GRIM_LUA_COVERAGE"] = folder
+    rc = run()
+    if not any(f.startswith("luacov_") for f in os.listdir(folder)):
+        say("lua coverage: no luacov_*.txt in %s: is ScummVM built with scummvm/lua-coverage.patch?" % folder)
+        return rc
+    sys.path.insert(0, os.path.join(HERE, "..", "autorun", "tools"))
+    import luacov  # noqa: E402
+    luacov.main([folder, "--src", BUILD, "--out", os.path.join(folder, "report"), "--json", os.path.join(folder, "report.json")])
+    return rc
+
+
 def run_scummvm_all(reference, only, fresh, renderers):
     """Runs the tests on ScummVM once with each renderer and compares each run with the reference; the logs of each are
     kept as logs/scummvm_<renderer>.log and _raw.log. Returns 0 when every renderer matches."""
@@ -1172,6 +1193,9 @@ def main():
     ap.add_argument("--game", choices=["grim", "emi"], default="grim", help="the game whose engine is tested (default grim)")
     ap.add_argument("--fresh", action="store_true",
                     help="scummvm: run the tests that crashed or hung ScummVM before again (expected/scummvm_crashers_<renderer>.txt)")
+    ap.add_argument("--lua-coverage", metavar="DIR",
+                    help="scummvm: the coverage of the tests' Lua (a ScummVM with scummvm/lua-coverage.patch): its luacov_*.txt "
+                         "in DIR (the old ones removed first), then the report DIR/report/index.html (autorun/tools/luacov.py)")
     ap.add_argument("--visible", action="store_true", help="show the engines' windows on the screen (same as CR_VISIBLE=1)")
     ap.add_argument("--work", metavar="DIR", help="build/, run/ and logs/ in DIR, and expected/ only read: for runs in parallel")
     ap.add_argument("-v", "--verbose", action="store_true",
@@ -1204,6 +1228,8 @@ def main():
         # (the reference is the Remastered's own run when there is one; the marks are for the original, so this is a report)
         run_scummvm_all(rem_log if os.path.exists(rem_log) else EXPECTED, a.only, a.fresh, renderers)
         return 0
+    if a.what == "scummvm" and a.lua_coverage:
+        return run_lua_coverage(a.lua_coverage, lambda: run_scummvm_all(EXPECTED, a.only, a.fresh, renderers))
     if a.what == "scummvm":
         return run_scummvm_all(EXPECTED, a.only, a.fresh, renderers)
     if a.what == "original" and a.save:
