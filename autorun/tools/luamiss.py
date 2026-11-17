@@ -36,8 +36,12 @@ def main():
     for s, v in cat["sets"].items():
         set_name[v["global"]] = s
     entered = set(re.findall(r"COV set \| (.+)", log)) | set(re.findall(r"Switching to set: (.+?)\.\r?$", log, re.M))
-    no_sweep = set(re.findall(r'AR_NO_SWEEP\["(.+?)"\]', ex00)) | set(re.findall(r"no sweep of (.+?) \(", log))
-    no_heavy = set(re.findall(r'AR_NO_HEAVY\["(.+?)"\]', ex00))
+    # (a block of one chapter, "<set>@<chapter>", counts as the set's: the run may have been there in that chapter only)
+    no_sweep = set(k.split("@")[0] for k in re.findall(r'AR_NO_(?:SWEEP|EARLY|RELOOK)\["(.+?)"\]', ex00)) | set(re.findall(r"no sweep of (.+?) [(]", log))
+    no_heavy = set(k.split("@")[0] for k in re.findall(r'AR_NO_(?:HEAVY|REHEAVY)\["(.+?)"\]', ex00))
+    # (the sets the sweep ran a step in)
+    swept = set(re.findall(r"extra: (?:visit|early|relook) (.+)", log))
+    heavied = set(re.findall(r"extra: (?:heavy|reheavy) (.+)", log))
     no_use = set(re.findall(r'AR_NO_USE\["(.+?)"\]', ex00))
     refused = set()
     for verb, code in re.findall(r"FAIL (\w+) (\S+) is not offered", log):
@@ -76,8 +80,12 @@ def main():
                 why = "set never entered"
             elif sname in no_sweep and h in ("lookAt",):
                 why = "set not swept"
+            elif h == "lookAt" and sname not in swept:
+                why = "set never looked over"
             elif h != "lookAt" and h != "walkOut" and (sname in no_heavy or sname in no_sweep or "%s.%s" % (g, field) in no_use):
                 why = "heavy step off"
+            elif h != "lookAt" and h != "walkOut" and sname not in heavied:
+                why = "set never used over"
             elif (verb, o["code"]) in refused:
                 why = "tried, refused"
             elif not item and any(d[0] == verb and d[1] == disp and not d[2] and d[3] == sname for d in done):
