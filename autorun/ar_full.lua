@@ -642,6 +642,12 @@ ar_visit_set = function()
 	ar_look_doors(AR_VISIT_SET)
 	ar_visit_setups(AR_VISIT_SET)
 end
+-- A block of a set's step: for every chapter (AR_NO_SWEEP["<set name>"]) or for one (AR_NO_SWEEP["<set name>@<chapter>"], what tools/sweep_fix.sh writes
+-- now: a step that broke one chapter is tried again in the others); the reason, or nil
+ar_blocked = function(t, name)
+	return t[name] or t[tostring(name) .. "@" .. tostring(ar_cur_chapter())]
+end
+
 -- A step of the sweep that took Manny out of the set (a walk that crossed a door's sector: the walk to Copal's message board climbed out of his window,
 -- chapter 2, and the chapter then used the window from the ledge): back through the door of the set he is in that leads there (<set global>_door), as a
 -- player would
@@ -836,7 +842,7 @@ ar_sweep_early = function()
 		return
 	end
 	local name = set.name
-	if AR_VISITED[name] or AR_NO_SWEEP[name] or AR_NO_EARLY[name] then
+	if AR_VISITED[name] or ar_blocked(AR_NO_SWEEP, name) or ar_blocked(AR_NO_EARLY, name) then
 		return
 	end
 	AR_SWEEP_EARLY_ON = TRUE
@@ -845,7 +851,7 @@ ar_sweep_early = function()
 	ar_extra_run("early " .. tostring(name), ar_visit_set)
 	ar_sweep_back(set)
 	-- (and use, pick up and the items: a set left by a cutscene is never swept again. As "reheavy", AR_NO_REHEAVY)
-	if system.currentSet == set and not AR_NO_HEAVY[name] and not AR_NO_REHEAVY[name] then
+	if system.currentSet == set and not ar_blocked(AR_NO_HEAVY, name) and not ar_blocked(AR_NO_REHEAVY, name) then
 		AR_VISIT_SET = set
 		ar_extra_run("reheavy " .. tostring(name), ar_heavy_set)
 		ar_sweep_back(set)
@@ -862,19 +868,27 @@ ar_sweep = function()
 	local set = system.currentSet
 	if AR_VISITED[name] then
 		-- (what is new to look at since, AR_NO_RELOOK["set name"] = "why" keeps a set out)
-		if not AR_NO_SWEEP[name] and not AR_NO_RELOOK[name] then
+		if not ar_blocked(AR_NO_SWEEP, name) and not ar_blocked(AR_NO_RELOOK, name) then
 			AR_VISIT_SET = set
 			ar_extra_run("relook " .. tostring(name), ar_relook)
 			ar_sweep_back(set)
 		end
 		-- (and what is new to use, pick up and try the items on, with the items got since; AR_NO_REHEAVY["set name"] = "why" keeps a set out)
-		if system.currentSet == set and not AR_NO_SWEEP[name] and not AR_NO_HEAVY[name] and not AR_NO_REHEAVY[name] then
+		if system.currentSet == set and not ar_blocked(AR_NO_SWEEP, name) and not ar_blocked(AR_NO_HEAVY, name) and not ar_blocked(AR_NO_REHEAVY, name) then
 			AR_VISIT_SET = set
 			ar_extra_run("reheavy " .. tostring(name), ar_heavy_set)
 			ar_sweep_back(set)
 		end
 		-- (the door trips again, each time the set would be swept: the first sweep can end out of the set, the heavy step of the kitchen took Manny to
 		-- the lounge)
+		if system.currentSet == set then
+			ar_door_trips(set)
+		end
+		return
+	end
+	-- (a block of this chapter only, "<set name>@<chapter>": the set is swept in a later chapter, so it is not marked visited)
+	if not AR_NO_SWEEP[name] and ar_blocked(AR_NO_SWEEP, name) then
+		ar_log("extra: no sweep of " .. tostring(name) .. " in this chapter (" .. ar_blocked(AR_NO_SWEEP, name) .. ")")
 		if system.currentSet == set then
 			ar_door_trips(set)
 		end
@@ -888,7 +902,7 @@ ar_sweep = function()
 		ar_extra_run("visit " .. tostring(name), ar_visit_set)
 		ar_sweep_back(set)
 		-- (use, pick up and the items: as a step of its own, so that a set where it breaks the story loses only this)
-		if system.currentSet == AR_VISIT_SET and not AR_NO_HEAVY[name] then
+		if system.currentSet == AR_VISIT_SET and not ar_blocked(AR_NO_HEAVY, name) then
 			ar_extra_run("heavy " .. tostring(name), ar_heavy_set)
 			ar_sweep_back(set)
 		end

@@ -38,11 +38,13 @@ item_lefts = []
 losses = []
 lefts = []
 chapter = 0
+chname = None
 # (how deep in extras the log is: a talk is an extra inside the people extra, and its done line used to end both)
 inside = 0
 for ln in open(sys.argv[1], errors="replace"):
     if "AUTORUN === chapter " in ln:
         chapter += 1
+        chname = ln.split("AUTORUN === chapter ", 1)[1].split(" ")[0].strip().strip("=")
     if "AUTORUN STALL:" in ln or ("AUTORUN FAIL" in ln and not inside):
         near = [b for c, b in item_lefts + lefts if c >= chapter - 1]
         left = near[0] if near else None
@@ -52,6 +54,9 @@ for ln in open(sys.argv[1], errors="replace"):
             # (only of this chapter or the one before it when the failure comes: a set left in chapter 2, Eva's talk took Manny to the lobby, is not
             # what breaks chapter 19)
             b = block_of(t[len("the set was left by "):].rsplit(" (now in ", 1)[0])
+            # (a set step carries the chapter it ran in: the early look of the Scrimshaw at the end of chapter 33 broke chapter 34)
+            if b and b.split(":")[0] in ("visit", "heavy", "relook", "reheavy", "early") and chname:
+                b = b + "@" + chname
             if b:
                 lefts.append((chapter, b))
         elif t.startswith("an item was taken by "):
@@ -68,15 +73,15 @@ for ln in open(sys.argv[1], errors="replace"):
         else:
             inside += 1
             if t.startswith("visit "):
-                last = "visit:" + t[6:]
+                last = "visit:" + t[6:] + ("@" + chname if chname else "")
             elif t.startswith("heavy "):
-                last = "heavy:" + t[6:]
+                last = "heavy:" + t[6:] + ("@" + chname if chname else "")
             elif t.startswith("relook "):
-                last = "relook:" + t[7:]
+                last = "relook:" + t[7:] + ("@" + chname if chname else "")
             elif t.startswith("reheavy "):
-                last = "reheavy:" + t[8:]
+                last = "reheavy:" + t[8:] + ("@" + chname if chname else "")
             elif t.startswith("early "):
-                last = "early:" + t[6:]
+                last = "early:" + t[6:] + ("@" + chname if chname else "")
             elif t.startswith("trip "):
                 last = "trip:" + t[5:]
             elif t.startswith("talk "):

@@ -16,6 +16,9 @@ block() {
 		talk) var=AR_NO_TALK; text="lines of it were said" ;;
 		*) var=AR_NO_SWEEP; text="the sweep" ;;
 	esac
+	# (the set steps are blocked in the chapter given only, as a person is: a sweep that broke one chapter is tried again in the others)
+	# (sweep_blame.py names the chapter the extra ran in, "<set>@<chapter>": the heavy step at the end of chapter 8 broke chapter 9)
+	case "$kind" in visit|heavy|relook|reheavy|early) case "$name" in *@*) ;; *) [ -n "$2" ] && name="$name@$2" ;; esac ;; esac
 	grep -q "$var\[\"$name\"\]" ex00_sweep.lua && return 1
 	printf '%s["%s"] = "a chapter failed after %s: %s"\n' "$var" "$name" "$text" "$why" >> ex00_sweep.lua
 	return 0

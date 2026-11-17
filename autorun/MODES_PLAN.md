@@ -374,3 +374,11 @@ item with no answer of its own tried on an object with a default_response, and a
 until the game offers it. 11 rounds of sweep_fix.sh blocked one object or step each (the nozzles of the tube room, the dish, the liqueur, the bell of
 the florist, the mug rack, the reheavy of the outer vault and the le mans lobby). Whole game: passes, 647,507 frames (SAVE=1); functions of the
 game's scripts run 4,034 -> 4,038 of 5,437; verbs done 860 -> 865. The speed run is unchanged.
+
+Then the blocks of a set's steps per chapter (2026-11-16): AR_NO_SWEEP / AR_NO_HEAVY / AR_NO_RELOOK / AR_NO_REHEAVY / AR_NO_EARLY["<set name>@<chapter>"]
+hold in that chapter only (ar_blocked), and a set blocked in one chapter is swept in a later one. tools/sweep_blame.py names the chapter the step ran
+in (the heavy step at the end of chapter 8 broke chapter 9; the early look at the end of chapter 29 broke chapter 34), and sweep_lib.sh writes the block
+with it. A step whose effect lasts can still need a block for every chapter: the heavy step on the extend o bridge in chapter 18 left it so that the
+walk of chapter 34 never got across; the fixer, blocking the steps of chapter 29 one by one, never reached it (21 rounds), so that one is by hand.
+The global set blocks sweep_fix.sh had added were all tried again under the new rule. Whole game: passes, 668,016 frames (SAVE=1); functions of the
+game's scripts run 4,038 -> 4,060 of 5,437; verbs done 865 -> 879, objects touched 405 -> 411. The speed run is unchanged.
