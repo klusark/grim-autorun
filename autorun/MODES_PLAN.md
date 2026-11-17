@@ -382,3 +382,9 @@ with it. A step whose effect lasts can still need a block for every chapter: the
 walk of chapter 34 never got across; the fixer, blocking the steps of chapter 29 one by one, never reached it (21 rounds), so that one is by hand.
 The global set blocks sweep_fix.sh had added were all tried again under the new rule. Whole game: passes, 668,016 frames (SAVE=1); functions of the
 game's scripts run 4,038 -> 4,060 of 5,437; verbs done 865 -> 879, objects touched 405 -> 411. The speed run is unchanged.
+
+Then three handwritten blocks narrowed (2026-11-16): the Hallway's sweep (its elevators change the walk floor when looked at) is two looks
+blocked (AR_NO_LOOK on the two elevator doors), the signpost fork's is for chapter 7 only and the engine room's for chapter 37 only; tools/luamiss.py
+counts a per-chapter block as the set's and tells a set never looked over or used over apart. Functions of the game's scripts run 4,060 -> 4,071 of
+5,437. Of the 1,366 left: 718 object handlers, about 200 set functions of other ways through the story (a puzzle failed, the bone wagon driven,
+Carla's moods, the songs), about 400 of the system, actors, menus and the engine (cd swap, debug prints).
