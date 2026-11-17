@@ -878,6 +878,61 @@ ar_gaze_at = function(obj)
 		return nil
 	end
 	-- (the change-gaze key, as a player cycles through what is in front of him; nothing of the gaze is set from here)
+	if ar_gaze_cycle(obj) then
+		return TRUE
+	end
+	-- The game's Change_Gaze can go round two objects for ever: it steps through the objects within 10 degrees of the one
+	-- looked at, in the order of a Lua table whose keys hash by their address (so it changes from run to run), and the gaze
+	-- stays locked on what the key chose until that leaves the list. In the morgue it went corpse 2, corpse 1, corpse 2 ..
+	-- and never to the Coroner beside them (about one run in three). A player steps back until the object he is stuck on
+	-- is out of reach, comes back and faces the one he wants: the game then picks the gaze by itself, the object nearest
+	-- the way he faces first.
+	local stuck = hot_object
+	if stuck and stuck.obj_x and vlist[obj] then
+		ar_log("gaze: the key goes round without " .. tostring(obj.name) .. " (stuck on " .. tostring(stuck.name) .. "), stepping back")
+		-- (to the point on the floor, half a metre or a third of one away, that is farthest from the object he is stuck on:
+		-- straight back from it is often off the floor, the morgue is narrow)
+		local p = manny:getpos()
+		local nav = ar_nav_of and ar_nav_of(system.currentSet)
+		local bx, by, bd = nil, nil, -1
+		local k = 0
+		while k < 16 do
+			local a = k * 22.5   -- (Lua 3.1's cos and sin take degrees)
+			local r = 0.5
+			while r > 0.3 do
+				local x, y = p.x + r * cos(a), p.y + r * sin(a)
+				if not nav or ar_nav_find(nav, x, y, p.z) then
+					local d = (x - stuck.obj_x) * (x - stuck.obj_x) + (y - stuck.obj_y) * (y - stuck.obj_y)
+					if d > bd then
+						bx, by, bd = x, y, d
+					end
+				end
+				r = r - 0.15
+			end
+			k = k + 1
+		end
+		-- (with the keys, as a player: ar_walk_to fails the chapter when its route search finds no way, and the morgue's
+		-- floor is a narrow aisle; the walk stops as soon as the object he was stuck on is out of the list)
+		if bx then
+			AR_GAZE_STUCK = stuck
+			ar_walk_stick(bx, by, p.z, function() return not (vlist and vlist[AR_GAZE_STUCK]) end, 3000)
+			ar_keys_up()
+			AR_GAZE_STUCK = nil
+		end
+		ar_approach(obj)
+		if obj.obj_x then
+			ar_face_precise(obj, 5)
+		end
+		sleep_for(300)
+		if ar_gaze_cycle(obj) then
+			return TRUE
+		end
+	end
+	return nil
+end
+
+-- Presses the change-gaze key until Manny looks at obj, 12 times at most
+ar_gaze_cycle = function(obj)
 	local tries = 0
 	while hot_object ~= obj and tries < 12 do
 		ar_press_key(ar_real_key("CHANGE_GAZE"))
