@@ -161,7 +161,7 @@ Rule: every function that is decoded gets a name (and a plate comment for what i
 | 0x00446690 | Set_LoadSectorsFromText | text set sector parser; copies only the listed sort planes |
 | 0x00413c50 | Lua_DetachActor | the actor's own sort order becomes the parent's effective one (a negative plane included) |
 | 0x0041d300 / 0x0042c2c0 | Lua_SayLine / Actor_SayLine | say line: voice, speaker, text object, talk chore |
-| 0x0042c6f0 | Actor_CreateSayText | places the text once: over the rectangle at actor+0x140 when the byte actor+0x13c is set and the mode is not 3, else bottom centre of the screen; the writer of +0x13c/+0x140 not found |
+| 0x0042c6f0 | Actor_CreateSayText | places the text once: over the rectangle at actor+0x140 when the byte actor+0x13c is set and the mode is not 3, else bottom centre of the screen; rect written each frame by Actor_ComputeScreenRect, text x = rect.x + rect.w/2, y = rect.y - text height |
 | 0x004130f0 | Lua_SetActorVisibility | bit 1 of actor+0x124 (set = hidden) |
 
 ## Added 2026-10-29 (Grim actor lighting, v101 GRIMFANDANGO.EXE)
@@ -238,3 +238,68 @@ Rule: every function that is decoded gets a name (and a plate comment for what i
 | --- | --- | --- |
 | 0x00410080 | sputLua_NotifyAxisHandler | per frame: system.axisHandler(id, analog value) when the value changed; same as Grim's sputLua_NotifyControlHandlers (0x0049e150 area) axis branch |
 | 0x00443210 | stdControl_ReadAxis | (raw - centre) * scale, 0 inside the per-axis dead zone; same as Grim's 0x00477160 |
+
+## Added 2026-11-16 (EMI sprites, Monkey4.exe)
+
+| Address | Name | What |
+| --- | --- | --- |
+| 0x0043ab00 | Costume_CreateComponentByTag | builds a costume component from its '!tag' ('sprt' = sprite) |
+| 0x004a27d0 | Sprite_Construct | sprite object: size +0x18, pos +0x20, 4 per-corner colours +0x2c (a,r,g,b ints), 4 UVs +0x6c |
+| 0x004a36c0 | Sprite_Draw | D3D quad, each corner gets its own colour; then global alpha (+0xc/+0x10) and per-vertex local alpha (+0x14/+0x18 map) |
+| 0x00413570 | Lua_SetActorLocalAlpha | alpha -1/2/3 = mode off/replace/modulate, else per-vertex alpha in the primitive's map; only shipped use is wed.fuse (a mesh) |
+| 0x00489bbe | __RTDynamicCast | MSVC CRT dynamic_cast |
+| 0x00429f90 | Actor_DrawShadows | (named earlier) only primitives that dynamic_cast RPrimitive -> RMesh are drawn into a shadow; sprites never cast shadows |
+| 0x004a01f0 | (empty) | sprite vtable slot after Sprite_Draw does nothing |
+| 0x004a2ed0 | Sprite_LoadBinary | .sprb loader; render flags (ScummVM _flags2) at sprite+0x8c go to the draw primitive unchanged, no overworld case |
+
+## Added 2026-11-16 (EMI say-text rect, Monkey4.exe)
+
+| Address | Name | Note |
+| --- | --- | --- |
+| 0x004258f0 | Actor_ComputeScreenRect | say-text rect: 8 corners of each primitive's model-space bbox (resource vbase +0x28) through the actor world matrix + camera, z < 0 skipped, one unclipped min/max -> actor+0x140 {x, y, w, h} via ftol; returns rect overlaps viewport |
+| 0x00428a10 | Set_UpdateActors | per frame: draw list, actor+0x13c = Actor_ComputeScreenRect, Actor_UpdateMovement |
+| 0x00465930 | Node_TransformPointToWorld | point by the node world matrix (+0xbc..0xe8) |
+| 0x004260e0 | Actor_Save | actor save; writes the say rect +0x140..0x14c, +0x13c and primitives by resource name |
+| 0x0041c820 | Lua_SetOffscreenTextPos | off-screen say rect DAT_004d6800 {x, y, 0, 0}; startup default (W/2, H/16) = (320, 30); Actor_CreateSayText uses it when actor+0x13c is clear |
+| 0x0048ad30 | CRT_ftol | MSVC _ftol, truncates |
+| 0x004a0be0 | Node_RemovePrimitiveAt | erase from node+0x110 primitive vector; called by costume component destructors |
+
+## Grim say-text box (v101 GRIMFANDANGO.EXE, existing names, 2026-11-16)
+
+| Address | Name | Note |
+| --- | --- | --- |
+| 0x0048b2e0 | sputText_CreateActorText | x = box.x + box.w/2, y = box.y - text height when nScreenBoxValid and mode != 3; else default subtitle pos, or the projected actor position when it has no costume or is hidden; clamps 40 px sides, 10 px top/bottom |
+| 0x004950a0 | sputCostume_InternalDraw3D | per model component: extents reset to (640,480,0,0), rdThing_Draw, nScreenBoxValid = drew something (last component wins); aScreenBox = extents only for the costume's main model |
+| 0x00406860 | rdCache_AddProcFace | extents = min/max of each frustum-clipped, projected face (round + ftol) |
+| 0x00485290 | Actor_ComputeScreenBox | same box for draw items of type 1 (main model only) |
+| 0x0040dc30 | rdPrimit3_GetScreenCoord | fallback for an actor with no costume or hidden (only when the box is not valid and it is in the current set): projected actor position if inside the view frustum |
+| 0x004a5ecc in sputRoom_RemoveActor | (store) | nScreenBoxValid only cleared here and by the draw, so hiding an actor keeps its last box |
+
+## Added 2026-11-21 (EMI say-line / text layout, Monkey4.exe; ScummVM bugs 11790, 11807, 11809)
+
+| Address | Name | Note |
+| --- | --- | --- |
+| 0x00416ef0 | Lua_WorldToScreen | (function created) camera projection to pixels, nil, nil off the viewport, else normalized x and y UP |
+| 0x0041d470 | SayLine_ParseTable | SayLine table x AND y = ftol(320*(v+1)) (y uses the width, not 240); explicit y is the text TOP |
+| 0x0041cd70 | TextObject_SetParamsFromTable | MakeTextObject x = ftol(320v+320), y = ftol(240-240v) (truncation; ScummVM truncates v*320 first for x) |
+| 0x00433830 | TextObject_BreakLine | greedy wrap; centred max width 2*min(x-left, left+width-x) from the CURRENT x |
+| 0x00433a80 / 0x00433bf0 | TextObject_GetMaxLineWidth / TextObject_GetHeight | widest wrapped line / lines * font height |
+| 0x00432970 / 0x00432d80 | TextObject_Construct / TextObject_InitFromDefaults | x = 0 unless the defaults object DAT_004d7270 has one |
+
+Actor_CreateSayText detail (disassembly 0x42c828..0x42c8bd): width measured BEFORE x is set (x = 0, so one word per line: half the
+widest word); x = rect.x + rect.w/2 (or explicit x), clamped so x -/+ halfWidest stays 40 px inside the screen; height then measured
+at that x; y = rect.y - height (or explicit y as is), clamped to [25, 480 - 25 - height].
+
+Grim v1.01 (GRIMFANDANGO.EXE) uses the same rule, decoded 2026-11-21: sputText_CreateActorText (0x0048b2e0) copies
+g_SubtitleTextCtx (0x004e84c8: nX = 0, flags 5; scripts only call SetSayLineDefaults({ font = talk_font })), measures
+Text_GetStringWidth (0x004aaa80, via text_FindNextBreak 0x004ab210: centred max width 2*min(nX - clip.x, clip.x + clip.w - nX))
+before setting nX, so the width is the widest word; x clamped 40 px inside; y clamped to [10, H - 10 - height] (EMI: 25).
+
+## Added 2026-11-21 (EMI pictures for the clean room, Monkey4.exe)
+
+| Address | Name | Note |
+| --- | --- | --- |
+| 0x0040be30 | Game_RunFrame | frame time, Lua tasks (0x40f740), actors, draw (0x43d0c0, ends in SwapBuffers 0x4631ba with -gl), then the game's screenshot when DAT_004d53b0 |
+| 0x0040da30 | Game_SaveScreenshotTga | numbered ".\%s\%s%02d.tga" (counter DAT_004d53b4), then Render_WriteScreenshotTga |
+| 0x0040cd60 | Render_WriteScreenshotTga | the frame through the renderer's vtable +0xd4, written as .tga; not decoded further |
+| 0x0041cd70 | TextObject_SetParamsFromTable | (more) width / height are pixels into the text's rectangle +0x24 / +0x28; Actor_CreateSayText replaces that rectangle by the screen's, so SetSayLineDefaults' width and height do nothing to say lines |
