@@ -180,7 +180,7 @@ end)
 
 -- the chore's own fades: PlayActorChore with a fade time (in), StopChore with one (out); PauseChore, PlayChore and
 -- AdvanceChore
-cr_scummvm_differs("emd_chore_fade", "AdvanceChore of a chore that has ended plays it again on ScummVM (lua_v2_actor.cpp:384), not on the original") cr_test("emd_chore_fade", function()
+cr_test("emd_chore_fade", function()
 	local a, r = emd_pair()
 	local c = PlayActorChore(a, "up", "emd_anim.cos", nil, 0.5)
 	cr_log("fade_in", emd_trace(r, c, 5, 6))

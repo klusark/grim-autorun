@@ -12,6 +12,7 @@ args_BlastText_p1_tab
 args_BlastText_p2_nil
 args_BlastText_p2_str
 args_BlastText_str
+args_GetActorNodeLocation_p2_neg
 args_GetCameraActor_a
 args_GetCameraActor_a_nil
 args_GetCameraActor_a_num

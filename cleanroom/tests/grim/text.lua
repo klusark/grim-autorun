@@ -103,7 +103,7 @@ cr_t_text_change = function()
 	cr_log("char_pos", GetTextCharPosition(t, 0), GetTextCharPosition(t, 3))
 	KillTextObject(t)
 end
-cr_scummvm_differs("text_change") cr_test("text_change", cr_t_text_change)
+cr_test("text_change", cr_t_text_change)
 
 cr_t_text_char_pos_past_end = function()
 	local t = MakeTextObject("abc", { font = cr_text_font(), x = 10, y = 20 })
@@ -128,7 +128,7 @@ cr_t_blast_print = function()
 	cr_frames(1)
 	cr_log("ok", 1)
 end
-cr_scummvm_differs("blast_print") cr_test("blast_print", cr_t_blast_print)
+cr_test("blast_print", cr_t_blast_print)
 
 -- (SayLine without a voice file: the text is shown for a time that depends on its length and the text speed. The original
 -- ends it by real time, not by the game's clock, so with simtime the frame counts vary from run to run (unstable.txt);

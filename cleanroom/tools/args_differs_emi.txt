@@ -86,7 +86,6 @@ args_GetCameraFOV_none
 args_GetCameraFOV_num
 args_GetCameraFOV_str
 args_GetCameraFOV_tab
-args_GetCameraLookVector_num
 args_GetCurrentSetup_num
 args_GetCurrentSetup_str
 args_GetGroupVolume_fn
@@ -374,7 +373,6 @@ args_TurnActorTo_a
 args_TurnActorTo_a_nil
 args_TurnActorTo_a_str
 args_TurnActorTo_a_tab
-args_TurnLightOn_num
 args_WalkActorVector_a
 args_WalkActorVector_a_nil
 args_WalkActorVector_a_num
@@ -407,4 +405,5 @@ args_log10_num
 args_log_num
 args_nextvar_nil
 args_random_none
+args_random_num
 args_tostring_none

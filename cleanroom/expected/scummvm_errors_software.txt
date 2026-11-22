@@ -31,6 +31,12 @@ args_PlayActorChoreLooping_c_num
 args_PlayActorChore_c_num
 args_PushActorCostume_a_num
 args_PushActorCostume_a_str
+args_SayLine_p0
+args_SayLine_p1_nil
+args_SayLine_p1_str
+args_SayLine_p1_tab
+args_SayLine_p2_nil
+args_SayLine_p2_tab
 args_SayLine_p3_nil
 args_SayLine_p3_str
 args_SetActorChoreLooping_a
