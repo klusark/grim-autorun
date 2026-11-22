@@ -57,6 +57,9 @@ def files():
     # with a lip sync file (A.lipsync's phonemes), crtv02 without one
     for name in ("crtv01", "crtv02"):
         out[name + ".wVC"] = F.mcmp(*F.wav_split(F.wav(1.0, freq=200.0)))
+    # (and for the texts emi_text_pos.lua says: a SayLine without a voice crashes Monkey4.exe)
+    for name in ("crt001", "crt002", "crt004", "crt005", "crt008"):
+        out[name + ".wVC"] = F.mcmp(*F.wav_split(F.wav(1.0, freq=200.0)))
     out["crtv01.lip"] = F.lip([(0, 0x64), (20, 0x6F), (40, 0x66)], 62)
     _extras(out, "files")
     return out

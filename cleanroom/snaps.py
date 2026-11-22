@@ -1,7 +1,9 @@
 """Snapshots of the screen (cr_snap in Lua): where the text is on a frame.
 
 A test calls cr_snap(key): PrintDebug("CRSNAP:<file>") saves a frame to <file> in the game folder, on the original through
-patch.dll (Render_SaveScreenshotBmp, its back buffer at once) and on ScummVM through the test patch (the next frame drawn),
+patch.dll (Render_SaveScreenshotBmp, its back buffer at once; on EMI's original, with -gl, grimlaunch's debuglog and patch.dll's
+EmiBeforeSwap: the frame drawn after the call, read before its SwapBuffers) and on ScummVM through the test patch (the next
+frame drawn),
 and the log gets `key = "snap:<file>"`. After a run, resolve() replaces each of those values by the box of the bright pixels
 of the file (x0 y0 x1 y1, inclusive): the tests draw white text on the dark backgrounds of assets.py, so the box is that of
 the text. "none" when nothing is bright, "missing" when the file was not written. cr_snap(key, "dark"): the box of the

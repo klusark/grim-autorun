@@ -1,8 +1,8 @@
 -- EMI's talk chores (SetActorTalkChore(actor, index, chore, costume), SetActorMumblechore) with cr_lv.cos: the lip
 -- shapes are "short" (CR_LV 10, then 11), the mumble "loop" (20, 21); "endless" (30) keeps the costume on the actor.
 -- crtv01 has a voice and a lip sync file, crtv02 a voice only (emi_sound.lua). A line with a place of its own
--- (SayLine's table: x, y from -1 to 1), and a talk chore index out of range. No pictures of the screen on EMI's
--- original: CR_LV, IsMessageGoing and the chores are what is compared.
+-- (SayLine's table: x, y from -1 to 1), and a talk chore index out of range. CR_LV, IsMessageGoing and the chores are
+-- what is compared here; where the text goes is in emi_text_pos.lua (pictures of the screen).
 
 eatk_talker = function()
 	local a = cr_ea_actor("cr_flat.set")

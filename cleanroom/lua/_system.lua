@@ -108,7 +108,8 @@ end
 -- A picture of the screen: run.py puts the box of the bright pixels of it (x0 y0 x1 y1) in the log under key (snaps.py);
 -- mode "dark": of the pixels darker than any background, "lit": of the others.
 -- The original saves its back buffer at once; ScummVM the next frame it draws: let a frame or two pass before changing what
--- is on the screen.
+-- is on the screen. EMI's original (with -gl) saves the frame it draws after the call, before showing it (grimlaunch's debuglog,
+-- patch.dll's EmiBeforeSwap), so on EMI cr_snap lets that frame pass itself, on both engines.
 CR_SNAP_N = 0
 cr_snap = function(key, mode)
 	CR_SNAP_N = CR_SNAP_N + 1
@@ -118,6 +119,9 @@ cr_snap = function(key, mode)
 		cr_log(key, "snap:" .. f .. ":" .. mode)
 	else
 		cr_log(key, "snap:" .. f)
+	end
+	if CR_GAME == "emi" then
+		break_here()
 	end
 end
 
