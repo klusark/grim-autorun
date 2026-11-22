@@ -1,4 +1,4 @@
-START 2586 tests
+START 2601 tests
 BEGIN numbers
 V numbers|arith|3.500000 1024.000000 -2.333333 1.#INF00
 V numbers|tostring|"0.333333" "100" "1e+015" "-0.5"
@@ -379,6 +379,15 @@ V builtins|fn_esn_state|"function"
 V builtins|fn_esn_sv_state|"function"
 V builtins|fn_esn_voice|"function"
 V builtins|fn_esn_wait|"function"
+V builtins|fn_ess_actor|"function"
+V builtins|fn_ess_floor_y|"function"
+V builtins|fn_ess_lift_moving|"function"
+V builtins|fn_ess_pos|"function"
+V builtins|fn_ess_ramp_walk|"function"
+V builtins|fn_ess_seq|"function"
+V builtins|fn_ess_setups|"function"
+V builtins|fn_ess_walk|"function"
+V builtins|fn_ess_walk_track|"function"
 V builtins|fn_execute|"function"
 V builtins|fn_exit|"function"
 V builtins|fn_exp|"function"
@@ -1674,6 +1683,178 @@ V emi_smv_latesub|start|1.000000
 V emi_smv_latesub|playing_at_once|1.000000
 V emi_smv_latesub|ended|1.000000
 END emi_smv_latesub
+BEGIN ess_place
+V ess_place|left_now|10.000000
+V ess_place|left|10.000000 11.000000 12.000000
+V ess_place|left_pos|-3.000000 0.000000 0.000000
+V ess_place|mid_left_now|30.000000
+V ess_place|mid_left|30.000000 31.000000 32.000000
+V ess_place|mid_left_pos|-0.500000 0.000000 0.000000
+V ess_place|mid_right_now|30.000000
+V ess_place|mid_right|30.000000 31.000000 32.000000
+V ess_place|mid_right_pos|0.500000 0.000000 0.000000
+V ess_place|right_now|20.000000
+V ess_place|right|20.000000 21.000000 0.000000
+V ess_place|right_pos|3.000000 0.000000 0.000000
+V ess_place|edge_lr_now|10.000000
+V ess_place|edge_lr|10.000000 11.000000 12.000000
+V ess_place|edge_lr_pos|0.000000 0.000000 1.500000
+V ess_place|mid_edge_now|30.000000
+V ess_place|mid_edge|30.000000 31.000000 32.000000
+V ess_place|mid_edge_pos|-1.000000 0.000000 0.000000
+V ess_place|neg_now|-1.000000
+V ess_place|neg|-1.000000 -2.000000 -3.000000
+V ess_place|neg_pos|0.000000 0.000000 3.000000
+V ess_place|out_near_now|10.000000
+V ess_place|out_near|10.000000 11.000000 12.000000
+V ess_place|out_near_pos|-4.000000 0.000000 0.000000
+V ess_place|out_far_now|10.000000
+V ess_place|out_far|10.000000 11.000000 12.000000
+V ess_place|out_far_pos|-4.000000 0.000000 0.000000
+V ess_place|door_off_now|20.000000
+V ess_place|door_off|20.000000 21.000000 0.000000
+V ess_place|door_off_pos|4.000000 0.000000 0.000000
+END ess_place
+BEGIN ess_follow
+V ess_follow|never|99.000000
+V ess_follow|on_now|10.000000
+V ess_follow|on|10.000000
+V ess_follow|off_now|99.000000
+V ess_follow|off|99.000000
+V ess_follow|own_set_following|10.000000
+END ess_follow
+BEGIN ess_height
+V ess_height|up3mm_now|10.000000
+V ess_height|up3mm|10.000000
+V ess_height|up3mm_pos|-3.000000 0.003000 0.000000
+V ess_height|up8mm_now|10.000000
+V ess_height|up8mm|10.000000
+V ess_height|up8mm_pos|-3.000000 0.000000 0.000000
+V ess_height|up2cm_now|10.000000
+V ess_height|up2cm|10.000000
+V ess_height|up2cm_pos|-3.000000 0.000000 0.000000
+V ess_height|down3mm_now|10.000000
+V ess_height|down3mm|10.000000
+V ess_height|down3mm_pos|-3.000000 -0.003000 0.000000
+V ess_height|down2cm_now|10.000000
+V ess_height|down2cm|10.000000
+V ess_height|down2cm_pos|-3.000000 0.000000 0.000000
+END ess_height
+BEGIN ess_tall
+V ess_tall|tall_floor|40.000000
+V ess_tall|tall_5cm_now|40.000000
+V ess_tall|tall_5cm|40.000000
+V ess_tall|tall_5cm_pos|-1.000000 0.050000 0.000000
+V ess_tall|flat_5cm_now|41.000000
+V ess_tall|flat_5cm|41.000000
+V ess_tall|flat_5cm_pos|1.000000 0.000000 0.000000
+END ess_tall
+BEGIN ess_walk_mid
+V ess_walk_mid|through_mid_seq|"10 30 20"
+V ess_walk_mid|through_mid_end|3.000000 0.000000 0.000000
+V ess_walk_mid|after_through|20.000000 21.000000 0.000000
+V ess_walk_mid|past_mid_seq|"10 20"
+V ess_walk_mid|past_mid_end|3.000000 0.000000 1.500000
+V ess_walk_mid|after_past|20.000000 21.000000 0.000000
+END ess_walk_mid
+BEGIN ess_walk_into
+V ess_walk_into|into_mid_seq|"10 30"
+V ess_walk_into|into_mid_end|-0.500000 0.000000 0.000000
+V ess_walk_into|stopped|30.000000 31.000000 32.000000
+V ess_walk_into|stopped_5|30.000000 31.000000 32.000000
+V ess_walk_into|out_left_seq|"30 10"
+V ess_walk_into|out_left_end|-3.000000 0.000000 0.000000
+V ess_walk_into|back_left|10.000000 11.000000 12.000000
+V ess_walk_into|into_mid_right_seq|"10 30"
+V ess_walk_into|into_mid_right_end|0.500000 0.000000 0.000000
+V ess_walk_into|stopped_right|30.000000 31.000000 32.000000
+V ess_walk_into|to_right_seq|"30 20"
+V ess_walk_into|to_right_end|3.000000 0.000000 0.000000
+V ess_walk_into|in_right|20.000000 21.000000 0.000000
+END ess_walk_into
+BEGIN ess_put_after_walk
+V ess_put_after_walk|short_seq|"10"
+V ess_put_after_walk|short_end|-2.000000 0.000000 0.000000
+V ess_put_after_walk|walked|10.000000
+V ess_put_after_walk|put_right_now|20.000000
+V ess_put_after_walk|put_right|20.000000 21.000000 0.000000
+V ess_put_after_walk|put_mid|30.000000 31.000000 32.000000
+V ess_put_after_walk|put_neg|-1.000000 -2.000000 -3.000000
+V ess_put_after_walk|put_out|10.000000 11.000000 12.000000
+V ess_put_after_walk|put_out_pos|-4.000000 0.000000 0.000000
+V ess_put_after_walk|from_out_seq|"10"
+V ess_put_after_walk|from_out_end|-3.000000 0.000000 0.000000
+V ess_put_after_walk|after_walk_back|10.000000 11.000000 12.000000
+END ess_put_after_walk
+BEGIN ess_box_off
+V ess_box_off|nowalk_off_now|10.000000
+V ess_box_off|nowalk_off|10.000000
+V ess_box_off|nowalk_off_pos|-3.000000 0.000000 0.000000
+V ess_box_off|nowalk_on|10.000000
+V ess_box_off|nowalk_on_pos|-3.000000 0.000000 0.000000
+V ess_box_off|walk_seq|"10"
+V ess_box_off|walk_end|-2.000000 0.000000 0.000000
+V ess_box_off|walked_off_now|10.000000
+V ess_box_off|walked_off|10.000000
+V ess_box_off|walked_off_pos|-2.000000 0.000000 0.000000
+V ess_box_off|walked_on|10.000000
+END ess_box_off
+BEGIN ess_door
+V ess_door|in_door_now|50.000000
+V ess_door|in_door|50.000000 51.000000 52.000000
+V ess_door|door_off_now|20.000000
+V ess_door|seq|"50 20 | 20 30 10"
+V ess_door|end|-3.000000 0.000000 0.000000
+END ess_door
+BEGIN ess_ramp
+V ess_ramp|start|5.000000
+V ess_ramp|up_seq|"5 6 7"
+V ess_ramp|up_off_plane|"within 1 mm"
+V ess_ramp|up_end|0.000000 0.500000 2.000000
+V ess_ramp|down_seq|"7 6 5"
+V ess_ramp|down_off_plane|"within 1 mm"
+V ess_ramp|down_end|1.000000 0.000000 -2.000000
+V ess_ramp|onto_ramp_seq|"5 6"
+V ess_ramp|onto_ramp_off_plane|"within 1 mm"
+V ess_ramp|onto_ramp_end|-1.000000 0.250000 0.500000
+END ess_ramp
+BEGIN ess_hot_path
+V ess_hot_path|start|10.000000
+V ess_hot_path|across_seq|"10 20 30"
+V ess_hot_path|across_route|"by the bridge"
+V ess_hot_path|across_end|2.000000 0.000000 -2.000000
+V ess_hot_path|back_seq|"30 20 10"
+V ess_hot_path|back_route|"by the bridge"
+V ess_hot_path|back_end|-2.000000 0.000000 -2.000000
+END ess_hot_path
+BEGIN ess_hot_put
+V ess_hot_put|in_hot_now|10.000000
+V ess_hot_put|in_hot|10.000000
+V ess_hot_put|in_hot_pos|-1.000000 0.000000 -2.000000
+V ess_hot_put|to_hot_seq|"10"
+V ess_hot_put|to_hot_route|"straight"
+V ess_hot_put|to_hot_end|-1.000000 0.000000 -2.000000
+END ess_hot_put
+BEGIN ess_stair_type
+V ess_stair_type|start|10.000000
+V ess_stair_type|across_seq|"10 20 30"
+V ess_stair_type|across_route|"straight"
+V ess_stair_type|across_end|2.000000 0.000000 0.000000
+V ess_stair_type|on_mid|20.000000
+V ess_stair_type|on_mid_pos|0.000000 0.000000 2.000000
+END ess_stair_type
+BEGIN ess_apart
+V ess_apart|start|10.000000
+V ess_apart|moving|nil
+V ess_apart|seq|"10"
+V ess_apart|end|-8.000000 0.000000 6.000000
+END ess_apart
+BEGIN ess_lift
+V ess_lift|seq|"10 20"
+V ess_lift|height|"on the floor"
+V ess_lift|end|3.000000 0.000000 0.000000
+V ess_lift|other|0.000000 0.000000 3.500000
+END ess_lift
 BEGIN eso_load
 V eso_load|handle|"userdata"
 V eso_load|loaded|"nil 100"
@@ -9201,4 +9382,4 @@ V lex_binary|short|nil
 ERROR lex_binary binary file cr_bin_old.lua too old: version=0x30; expected at least 0x31
 V lex_binary|old|nil
 END lex_binary
-SUMMARY 2586 tests, 247 failed
+SUMMARY 2601 tests, 247 failed
