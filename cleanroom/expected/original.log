@@ -1,4 +1,4 @@
-START 5725 tests
+START 5731 tests
 BEGIN boot_state
 V boot_state|movie_playing|nil
 V boot_state|fullscreen_movie_playing|nil
@@ -4629,6 +4629,61 @@ BEGIN save_image_dim
 V save_image_dim|type|"userdata"
 V save_image_dim|blast|100.000000 100.000000 349.000000 287.000000 47000.000000 104.000000
 END save_image_dim
+BEGIN soff_point_initial
+V soff_point_initial|off_full|nil
+V soff_point_initial|off_part|nil
+V soff_point_initial|off_prefix|nil
+V soff_point_initial|on_full|3.000000 "e_off" 4096.000000
+V soff_point_initial|on_part|3.000000 "e_off" 4096.000000
+V soff_point_initial|on_prefix|3.000000 "e_off" 4096.000000
+V soff_point_initial|off_again_full|nil
+V soff_point_initial|off_again_prefix|nil
+V soff_point_initial|outside|nil
+END soff_point_initial
+BEGIN soff_point_switched
+V soff_point_switched|left_on|0.000000 "e_left" 4096.000000
+V soff_point_switched|left_off|nil
+V soff_point_switched|left_off_part|nil
+V soff_point_switched|left_off_prefix|nil
+V soff_point_switched|left_off_frame|nil
+V soff_point_switched|left_on_again|0.000000 "e_left" 4096.000000
+V soff_point_switched|left_off_by_id|0.000000 "e_left" 4096.000000
+V soff_point_switched|left_on_by_id|0.000000 "e_left" 4096.000000
+END soff_point_switched
+BEGIN soff_point_shared
+V soff_point_shared|shared_both_on|1.000000 "e_right" 4096.000000
+V soff_point_shared|shared_left_off|1.000000 "e_right" 4096.000000
+V soff_point_shared|shared_left_off_left|nil
+V soff_point_shared|shared_left_off_right|1.000000 "e_right" 4096.000000
+V soff_point_shared|shared_both_off|nil
+V soff_point_shared|shared_right_off|0.000000 "e_left" 4096.000000
+V soff_point_shared|shared_both_on_again|1.000000 "e_right" 4096.000000
+END soff_point_shared
+BEGIN soff_actor
+V soff_actor|left_on|0.000000 "e_left" 4096.000000
+V soff_actor|left_off|nil
+V soff_actor|left_off_part|nil
+V soff_actor|left_off_prefix|nil
+V soff_actor|left_off_frames|nil
+V soff_actor|left_on_again|0.000000 "e_left" 4096.000000
+V soff_actor|in_off|nil
+V soff_actor|in_off_prefix|nil
+V soff_actor|in_off_on|3.000000 "e_off" 4096.000000
+V soff_actor|in_off_off|nil
+V soff_actor|shared_left_off|1.000000 "e_right" 4096.000000
+V soff_actor|shared_left_on|1.000000 "e_right" 4096.000000
+END soff_actor
+BEGIN soff_actor_follow
+V soff_actor_follow|pos|0.000000 0.000000 0.000000
+V soff_actor_follow|left_off|nil
+V soff_actor_follow|walk_sector|1.000000
+V soff_actor_follow|left_on|0.000000 "e_left" 4096.000000
+V soff_actor_follow|walk_sector_on|1.000000
+END soff_actor_follow
+BEGIN soff_after_set_change
+V soff_after_set_change|left_after_return|nil
+V soff_after_set_change|left_on_after_return|0.000000 "e_left" 4096.000000
+END soff_after_set_change
 BEGIN sector_active
 V sector_active|off_before|nil
 V sector_active|on_by_name|3.000000 "e_off" 4096.000000
@@ -21458,4 +21513,4 @@ END zbuffer_post
 BEGIN zbuffer_bar
 V zbuffer_bar|bar_box|458.000000 207.000000 571.000000 267.000000 6601.000000
 END zbuffer_bar
-SUMMARY 5725 tests, 257 failed
+SUMMARY 5731 tests, 257 failed

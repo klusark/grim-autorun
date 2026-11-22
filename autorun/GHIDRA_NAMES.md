@@ -339,3 +339,15 @@ walks included, whatever the mover's own mode; the sphere branch of Collision_Te
 the box branch also re-plans the path (Walker_AvoidActorPath). The sphere centre is the model header's centre (rdModel3
 +0x78) turned with the actor, without the insert offset (+0x84); rdModel3_LoadEntryBinary keeps the header's radius, centre
 and box (no rdModel3_LoadPostProcess for binary models). Cleanroom collision_edge.lua.
+
+## Monkey4.exe (/emi/Monkey4.exe), 2026-11-22: sector lookups by name
+
+| Address | Name | What |
+| --- | --- | --- |
+| 0x00416790 | Lua_IsActorInSector | sector by exact name (first with it), Sector_ContainsPointExact(world pos +0xe0, 1): off or invisible sector contains nothing |
+| 0x00416a40 | Lua_IsPointInSector | the same with a point (exact name, not Grim's substring) |
+| 0x004464e0 | SectorList_FindByExactName | first sector of the set's list whose name equals the string (case-sensitive, same length) |
+
+Grim v1.01 for comparison (already named): sputLua_IsActorInSector 0x49c2c0, sputLua_IsPointInSector 0x49c4c0: substring
+(String_ContainsSubstring) over the walk-plane list from g_pWalkPlane_wp_head, first that contains the point, WalkPlane_Within(.., 1)
+(0x4a6980) skips inactive / invisible sectors.
