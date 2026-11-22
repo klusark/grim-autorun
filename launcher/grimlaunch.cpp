@@ -19,7 +19,8 @@
 //              exclusive full screen at startup (device scan, mode enumeration) or for movies, which blanked the monitor
 //
 // EMI patches:
-//   debuglog   PrintDebug appends its text to grimdebug.log next to the exe (no dll: the release exe drops the text, see patchEmiDebuglog)
+//   debuglog   PrintDebug appends its text to grimdebug.log next to the exe (no dll: the release exe drops the text, see patchEmiDebuglog);
+//              PrintDebug("CRSNAP:<file>") saves the next frame to <file>, a .bmp (patch.dll, with OpenGL: -gl)
 //   datadir    the game's data folder ("Install Path" in the registry) is the folder of the exe
 //   nocd       no disc check (the movies of the data folder are not looked for)
 //   simtime    fixed frame time, --simtime-ms N (default 17)
@@ -586,19 +587,74 @@ static void patchEmiUndo640() {
 
 static std::string g_dir;   // the folder of the exe
 static const DWORD EMI_IAT_CREATEFILEA = 0x004ac194, EMI_IAT_WRITEFILE = 0x004ac120;
+// (Monkey4.exe's import table slots of LoadLibraryA and GetProcAddress, for loaderStub: main sets them for EMI)
+static const DWORD EMI_IAT_LOADLIBRARYA = 0x004ac168, EMI_IAT_GETPROCADDRESS = 0x004ac164;
+
+// With OpenGL (-gl) every frame ends in the one SwapBuffers call (0x4631ba: push eax; call [IAT SwapBuffers]). A patch that wants code
+// to run right before the swap gives it to hookEmiSwap: the call then goes to a stub of that code, which goes on to the stub hooked
+// before it (or to SwapBuffers), so debuglog's and novsync's stubs chain in either order. The code must leave the stack and the
+// registers as it found them ([esp] the return address, [esp+4] the DC). (The import table is filled by the loader after the patches
+// are made, so the call site is patched, not the table.)
+static const DWORD EMI_SWAP_CALL = 0x004631ba, EMI_IAT_SWAPBUFFERS = 0x004ac04c;
+
+static void hookEmiSwap(const std::string &code) {
+	std::string at = read(EMI_SWAP_CALL, 6), next;
+	if (at == bytes({0xff, 0x15}) + le32(EMI_IAT_SWAPBUFFERS)) {
+		next = bytes({0xff, 0x25}) + le32(EMI_IAT_SWAPBUFFERS);                 // jmp [SwapBuffers]
+	} else if (at[0] == '\xe8' && at[5] == '\x90') {
+		DWORD prev = EMI_SWAP_CALL + 5 + *(const DWORD *)&at[1];
+		next = bytes({0x68}) + le32(prev) + bytes({0xc3});                     // push prev; ret (on to the stub hooked before)
+	} else {
+		die("unexpected bytes at the EMI SwapBuffers call (" + hex(EMI_SWAP_CALL) + "): not the v1.1 Monkey4.exe");
+	}
+	DWORD va = alloc(code.size() + next.size());
+	write(va, code + next);
+	// (call stub; nop: SwapBuffers returns past the nop, then on)
+	write(EMI_SWAP_CALL, bytes({0xe8}) + le32(va - (EMI_SWAP_CALL + 5)) + bytes({0x90}));
+}
 
 // The release Monkey4.exe builds PrintDebug's text (its argument and "\n", 0x418420..0x4184f0) and frees it without writing it anywhere.
 // At 0x4184f2 the text is at [esp+0x18] (null when the argument was not a string); the hook appends it to grimdebug.log next to the
 // exe (CreateFileA with FILE_APPEND_DATA, opened on the first call, then WriteFile: not buffered, so a killed game loses nothing), then
 // runs the seven bytes it replaced (mov edx,[esp+0x18]; pop edi; cmp edx,ebx) and goes on at 0x4184f9.
+// A text that starts with "CRSNAP:" (cleanroom's cr_snap) is not logged: it goes to patch.dll's EmiSnapText, which keeps the file name,
+// and a byte here says a picture is wanted; the swap stub (hookEmiSwap) then has patch.dll's EmiBeforeSwap save the back buffer to
+// the file before the next SwapBuffers: the frame drawn after the call. Only with OpenGL; patch.dll is loaded at the first picture, so
+// a run without one never loads it.
 static void patchEmiDebuglog() {
 	static const DWORD AT = 0x004184f2;
 	expect(AT, bytes({0x8b, 0x54, 0x24, 0x18, 0x5f, 0x3b, 0xd3}), "EMI PrintDebug");
-	DWORD handle = alloc(4, 4), written = alloc(4, 4), path = cstring(g_dir + "\\grimdebug.log");
+	DWORD handle = alloc(4, 4), written = alloc(4, 4), pending = alloc(4, 4), path = cstring(g_dir + "\\grimdebug.log");
 	write(handle, le32(0));
-	std::string c = bytes({0x8b, 0x54, 0x24, 0x18, 0x85, 0xd2, 0x74, 0x00});   // mov edx,[esp+0x18]; test edx,edx; jz done
-	size_t jzDone = c.size() - 1;
-	c += bytes({0x60, 0x8b, 0xf2, 0xa1}) + le32(handle);                         // pushad; mov esi,edx; mov eax,[handle]
+	write(pending, le32(0));
+	DWORD snapText = loaderStub("EmiSnapText"), beforeSwap = loaderStub("EmiBeforeSwap");
+	auto fix32 = [](std::string &code, size_t at, size_t to) {                  // (a rel32 at `at` that jumps to `to`)
+		DWORD rel = (DWORD)(to - (at + 4));
+		memcpy(&code[at], &rel, 4);
+	};
+	std::string c = bytes({0x8b, 0x54, 0x24, 0x18, 0x85, 0xd2, 0x0f, 0x84, 0, 0, 0, 0});   // mov edx,[esp+0x18]; test edx,edx; jz done
+	size_t jzDone = c.size() - 4;
+	c += bytes({0x60, 0x8b, 0xf2});                                              // pushad; mov esi,edx
+	// (a picture: "CRSNAP:" compared byte by byte, so a shorter text stops at its end)
+	std::vector<size_t> toLog;
+	static const char MARK[] = "CRSNAP:";
+	for (unsigned char k = 0; k < 7; k++) {
+		if (k == 0)
+			c += bytes({0x80, 0x3e, (unsigned char)MARK[0]});                     // cmp byte [esi],'C'
+		else
+			c += bytes({0x80, 0x7e, k, (unsigned char)MARK[k]});                  // cmp byte [esi+k],MARK[k]
+		c += bytes({0x0f, 0x85, 0, 0, 0, 0});                                    // jne log
+		toLog.push_back(c.size() - 4);
+	}
+	c += bytes({0x56, 0xb8}) + le32(snapText) + bytes({0xff, 0xd0, 0x83, 0xc4, 0x04});   // push esi; mov eax,EmiSnapText; call eax; add esp,4
+	c += bytes({0x85, 0xc0, 0x0f, 0x84, 0, 0, 0, 0});                            // test eax,eax; jz log (no patch.dll: logged)
+	toLog.push_back(c.size() - 4);
+	c += bytes({0xc6, 0x05}) + le32(pending) + bytes({0x01});                     // mov byte [pending],1
+	c += bytes({0xe9, 0, 0, 0, 0});                                              // jmp out
+	size_t jmpOut = c.size() - 4;
+	for (size_t at : toLog)
+		fix32(c, at, c.size());
+	c += bytes({0xa1}) + le32(handle);                                           // log: mov eax,[handle]
 	c += bytes({0x85, 0xc0, 0x75, 0x00});                                        // test eax,eax; jnz have
 	size_t jnzHave = c.size() - 1;
 	c += bytes({0x6a, 0x00, 0x68}) + le32(0x80) + bytes({0x6a, 0x04, 0x6a, 0x00, 0x6a, 0x03, 0x6a, 0x04, 0x68}) + le32(path);
@@ -608,12 +664,21 @@ static void patchEmiDebuglog() {
 	c += bytes({0x8b, 0xfe, 0x33, 0xc0, 0x83, 0xc9, 0xff, 0xf2, 0xae, 0xf7, 0xd1, 0x49});   // ecx = strlen(esi)
 	c += bytes({0x6a, 0x00, 0x68}) + le32(written) + bytes({0x51, 0x56, 0xff, 0x35}) + le32(handle);
 	c += bytes({0xff, 0x15}) + le32(EMI_IAT_WRITEFILE);                           // WriteFile(handle, text, len, &written, 0)
-	c += bytes({0x61});                                                          // popad
-	c[jzDone] = (char)(c.size() - (jzDone + 1));
+	fix32(c, jmpOut, c.size());
+	c += bytes({0x61});                                                          // out: popad
+	fix32(c, jzDone, c.size());
 	c += bytes({0x8b, 0x54, 0x24, 0x18, 0x5f, 0x3b, 0xd3});                       // done: the replaced bytes
 	DWORD va = alloc(c.size() + 5);
 	write(va, c + jmp(va + c.size(), AT + 7));
 	write(AT, jmp(AT, va) + bytes({0x90, 0x90}));
+
+	// the swap stub: a picture asked for since the last frame is taken before this one is shown
+	std::string s = bytes({0x80, 0x3d}) + le32(pending) + bytes({0x00, 0x74, 0x00});   // cmp byte [pending],0; je on
+	size_t jeOn = s.size() - 1;
+	s += bytes({0xc6, 0x05}) + le32(pending) + bytes({0x00});                    // mov byte [pending],0
+	s += bytes({0x60, 0xb8}) + le32(beforeSwap) + bytes({0xff, 0xd0, 0x61});     // pushad; mov eax,EmiBeforeSwap; call eax; popad
+	s[jeOn] = (char)(s.size() - (jeOn + 1));
+	hookEmiSwap(s);
 }
 
 // The frame time (0x40bfe0, called once a frame from 0x40bea2) is the time since the last frame from the performance counter, unless the
@@ -649,13 +714,10 @@ static void patchEmiTaskclock() {
 
 // With OpenGL (-gl) every frame ends in SwapBuffers (its one call, 0x4631ba: push eax; call [IAT SwapBuffers]), which the driver
 // makes wait for the screen's refresh by default: the game ran at 60 frames a second, with simtime's 17 ms a frame real time. The exe
-// never sets the swap interval. The call goes through a stub that, the first time (a context is current then), asks opengl32's
-// wglGetProcAddress for wglSwapIntervalEXT and sets it to 0, then jumps to SwapBuffers. (The import table is filled by the loader
-// after this patch is made, so the call site is patched, not the table.)
+// never sets the swap interval. The call goes through a stub (hookEmiSwap) that, the first time (a context is current then), asks
+// opengl32's wglGetProcAddress for wglSwapIntervalEXT and sets it to 0, then goes on to SwapBuffers.
 static void patchEmiNovsync() {
-	static const DWORD CALL = 0x004631ba, IAT_SWAPBUFFERS = 0x004ac04c, IAT_GETMODULEHANDLEA = 0x004ac1d0,
-		IAT_GETPROCADDRESS = 0x004ac164;
-	expect(CALL, bytes({0xff, 0x15}) + le32(IAT_SWAPBUFFERS), "the EMI SwapBuffers call");
+	static const DWORD IAT_GETMODULEHANDLEA = 0x004ac1d0, IAT_GETPROCADDRESS = 0x004ac164;
 	DWORD flag = alloc(4, 4);
 	write(flag, le32(0));
 	DWORD dll = cstring("opengl32.dll"), gpa = cstring("wglGetProcAddress"), swi = cstring("wglSwapIntervalEXT");
@@ -681,16 +743,12 @@ static void patchEmiNovsync() {
 	c += bytes({0x6a, 0x00, 0xff, 0xd0});                                 // push 0; call eax (wglSwapIntervalEXT)
 	size_t out = c.size();
 	c += bytes({0x61});                                                   // out: popad
-	size_t real = c.size();
-	c += bytes({0xff, 0x25}) + le32(IAT_SWAPBUFFERS);                    // real: jmp [SwapBuffers]
+	size_t real = c.size();                                               // real: (hookEmiSwap goes on to SwapBuffers)
 	c[jneAt] = (char)(real - (jneAt + 1));
 	c[jz1] = (char)(out - (jz1 + 1));
 	c[jz2] = (char)(out - (jz2 + 1));
 	c[jz3] = (char)(out - (jz3 + 1));
-	DWORD va = alloc(c.size());
-	write(va, c);
-	// (call stub; nop: the stub's jmp returns from SwapBuffers to the nop, then on)
-	write(CALL, bytes({0xe8}) + le32(va - (CALL + 5)) + bytes({0x90}));
+	hookEmiSwap(c);
 }
 
 // The main loop (0x4065ac) pumps the messages and runs a frame (0x407280 -> 0x40be30) only while the byte at 0x4d4ef4 (set when the
@@ -1099,6 +1157,7 @@ int main(int argc, char **argv) {
 	bool needDll = false;
 	for (const char *n : {"debuglog", "framelimit", "config", "imusetime"})
 		needDll |= game != EMI && enabled(n, strcmp(n, "framelimit") != 0 && strcmp(n, "imusetime") != 0);
+	needDll |= game == EMI && enabled("debuglog", true);   // (its pictures, PrintDebug("CRSNAP:<file>"))
 	if (needDll && GetFileAttributesA(g_dllPath.c_str()) == INVALID_FILE_ATTRIBUTES)
 		fprintf(stderr, "warning: %s does not exist, the stubs will do nothing\n", g_dllPath.c_str());
 	if (enabled("config", true) && !noIni) {
@@ -1117,6 +1176,10 @@ int main(int argc, char **argv) {
 	if (!CreateProcessA(nullptr, &cmd[0], nullptr, nullptr, FALSE, CREATE_SUSPENDED, nullptr, dir.c_str(), &si, &pi))
 		die("CreateProcess");
 	g_proc = pi.hProcess;
+	if (game == EMI) {
+		g_iatLoadLibraryA = EMI_IAT_LOADLIBRARYA;
+		g_iatGetProcAddress = EMI_IAT_GETPROCADDRESS;
+	}
 	if (game == REMASTERED) {
 		// ASLR: the exe was mapped and relocated at a load address of the system's choosing, so the addresses move by the difference
 		typedef LONG(NTAPI * QueryInfoFn)(HANDLE, ULONG, PVOID, ULONG, PULONG);

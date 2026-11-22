@@ -140,7 +140,9 @@ means the same test source, not the same values. The EMI runs use `build_emi/`, 
 - **The original:** `run.py` copies `Monkey4.exe`, the Miles dlls and filters and `binkw32.dll` from `EMI_INSTALL`
   (default `C:\GOG Games\Escape from Monkey Island`). No `.m4b` is copied. The copy has no Windows compatibility setting,
   because GOG's 640x480 one is keyed on the install path. `grimlaunch.exe` applies these EMI patches:
-  - `debuglog`: the release exe builds `PrintDebug`'s text and drops it; the hook appends it to `grimdebug.log`.
+  - `debuglog`: the release exe builds `PrintDebug`'s text and drops it; the hook appends it to `grimdebug.log`. A text that
+    starts with `CRSNAP:` (`cr_snap`) goes to patch.dll instead, and the frame drawn after the call is saved before its
+    `SwapBuffers` (below, `cr_snap`).
   - `datadir`: "Install Path" is the exe's folder, so the run never reads the install's archives.
   - `nocd`: no disc check.
   - `simtime`: every frame is 17 ms, through the exe's own fixed-step branch of the frame time.
@@ -263,6 +265,16 @@ EMI's text objects (`emi_text.lua`, with the font of Grim's data in EMI's archiv
 dimensions and character positions the same on both; `GetFontDimensions` crashes Monkey4.exe. EMI's sprites and textured
 meshes (`ec_sprite`; `formats.sprb`, `meshb(textured=True)`, a .tga material): loaded and played the same on both.
 
+EMI's text on the screen (`emi_text_pos.lua`, 2026-11-21, the first EMI test with pictures: text objects, and SayLine with its
+table's x and y, with SetSayLineDefaults' width and height; ScummVM bugs 11790 and 11807). Each line has a voice
+(`crt*.wVC`), and the test turns the speech mode to 3 for it (the original starts in 2, the voice only, and shows no text).
+The original (`Actor_CreateSayText` 0x42c6f0) keeps the widest word's half 40 pixels inside the sides, as Grim does; the
+table's x and y are both 320 * (v + 1) and y is the top of the text (0 is 320 down), kept 25 pixels from the top and the
+bottom; an actor without a costume has an empty screen rectangle at (0, 0) and its line goes to the top left corner. ScummVM
+(branch grim-11790) places x the same, but takes y as the bottom of the text at 240 * (v + 1) (the 11807 fix is on another
+branch), shows no line for an actor without a costume, keeps the space a wrapped line broke at, and wraps text objects
+differently (the original does not break `Clean room text one` at a `width` of 100).
+
 EMI's attached actors (`emi_attach.lua`): a rider attached to the `body` joint of `cr_ebox.cos`'s skeleton stays where it
 is and follows the carrier's moves and turns, the same on both once ScummVM attaches to the joint asked for (it looked
 up the previous joint's name and attached to the actor: the rider jumped by the joint's offset; fixed on klusark's
@@ -276,7 +288,7 @@ plays nothing on the original, and after `StopSound` its handle has no volume. A
 Monkey4.exe.
 
 Not done: the rotation of a setup's camera, EMI's textured meshes and what a skeleton or an animation does to the mesh
-(no pictures of the original's EMI), and sharing Grim's set, actor and walk tests (they need Grim's points turned over and
+(the original's EMI has pictures now: `emi_text_pos.lua`), and sharing Grim's set, actor and walk tests (they need Grim's points turned over and
 EMI's sets).
 
 The argument tests of the builtins whose results vary are marked unstable by `tools/gen_args.py` (`UNSTABLE`): ticks,
@@ -338,7 +350,11 @@ What Lua cannot read can be looked at on the screen: `cr_snap(key)` saves a pict
 box of its bright pixels (`x0 y0 x1 y1`, or `none`). The tests draw white text on the dark backgrounds, so the box is that
 of the text. The call is `PrintDebug("CRSNAP:<file>")`: on the original, patch.dll saves the back buffer with the game's own
 screenshot function (`Render_SaveScreenshotBmp` 0x487340, the Backspace+S debug key; only on v1.01, whose bytes it checks);
-on ScummVM, the test patch draws the scene and saves it (ScummVM's picture is grey, which does not change the box; with
+on EMI's original (`-gl`; Direct3D never calls `SwapBuffers`, and the file is missing), grimlaunch's debuglog stub hands the
+name to patch.dll (`EmiSnapText`) and its stub at the frame's one `SwapBuffers` (0x4631ba) has patch.dll read the back buffer
+(`EmiBeforeSwap`, `glReadPixels`) into a 24-bit .bmp: the frame drawn after the call (`Game_RunFrame` 0x40be30 runs the scripts
+before the draw), so on EMI `cr_snap` lets that frame pass itself, on both engines (Monkey4.exe's own screenshot, 0x40da30,
+writes numbered .tga files); on ScummVM, the test patch draws the scene and saves it (ScummVM's picture is grey, which does not change the box; with
 TinyGL it presents the frame first, as only one in 8 is). `cr_snap(key, "dark")` gives the box of the pixels darker than
 any background (a shadow), `cr_snap(key, "lit")` the box of the others (what an iris leaves open). The original's picture is
 the frame drawn before the call, ScummVM's the scene as it is at the call: a picture right after a change in the same frame
@@ -631,6 +647,18 @@ Hand-written tests, besides the per-frame walk and turn values:
   the screen into six at the left; the original keeps it on one line (11 to 627). The off-screen position matches, except
   at the corners (a few pixels). A model without faces is never drawn: both use the off-screen position for an actor with
   such a costume, so the placement above a drawn actor is not tested yet.
+- Where SayLine keeps its text inside the screen (`text_pos_clamp.lua`, 2026-11-21, ScummVM bug 11790; the text at the
+  off-screen position, which both take as it is). The original (`sputText_CreateActorText` 0x48b2e0) measures the text before
+  its x is set, in a copy of the say line defaults (x 0, centred): broken at a width of 2 * min(0, 640) = 0 every word is a line
+  of its own, so the width is the widest word's (the spaces of a run but the first lead the word after them), and x is kept so
+  that the widest word's half is 40 pixels inside each side; the top is kept at 10 and the bottom at 470. SetSayLineDefaults'
+  `width` and `height` go to a clip rectangle that the defaults do not have (a null pointer): they change nothing, on either
+  engine (ScummVM's `setDefaults` does not copy them). Its `x` is the x the text is measured at, and its `ljustify` /
+  `rjustify` the justification it is measured and laid out with (a wider measure keeps the text further in). ScummVM clamped
+  x at 64 pixels from the sides (the line then breaks at 128 pixels: 38 of the 201 tests the same); with the widest-word clamp
+  and the 10-pixel top and bottom (branch grim-11790) 119 are the same. What differs then: a wrapped line keeps the space it
+  broke at (drawn, and counted when it is centred, half a space to the left), and the defaults' `x` and justification are not
+  used (no script of the game sets them).
 - The iris (`iris.lua`, with `cr_snap(key, "lit")`). On the original `IrisDown(x, y, ms)` / `IrisUp` store the clock, x, y
   and the time (IrisUp: negated); each frame `Engine_RenderFrame` takes t = |elapsed / time| and `Render_DrawIris`
   (0x486d00) blacks out the screen outside a rectangle from (t x, t y) to (640 - t (640 - x), 480 - t (480 - y)) (1 - t for

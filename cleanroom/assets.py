@@ -20,6 +20,15 @@ TEXT = [
     ("crtv04", "Voice four"),
     # (wider than the screen in cr_font.laf: 107 characters of 5 and 6 pixels)
     ("crt004", "a line of text that is much too long to fit on the screen in one piece, so that it is clamped at both edges"),
+    # (text_pos_clamp.lua: the widest word decides how far from the edges SayLine keeps the text)
+    # (one word of 30 characters: 180 pixels)
+    ("crt005", "abcdefghijklmnopqrstuvwxyzabcd"),
+    # (a run of spaces: the spaces after the first lead the next word, 3 * 5 + 60 = 75 pixels)
+    ("crt006", "aa    bbbbbbbbbb cc"),
+    # (ten narrow words: 24 pixels each, 285 in all)
+    ("crt008", "aaaa bbbb cccc dddd eeee ffff gggg hhhh iiii jjjj"),
+    # (two spaces before the first word: they lead it, 10 + 36 = 46 pixels)
+    ("crt009", "  leading spaces"),
 ]
 
 

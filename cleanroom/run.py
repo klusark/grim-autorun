@@ -974,8 +974,12 @@ def prepare_tools(d):
     dll_src = [os.path.join(pdir, "patch.c"), os.path.join(pdir, "config.c")]
     dll = os.path.join(tools, "patch.dll")
     if not newer(dll, dll_src):
+        # (the 32-bit compiler's folder first: from a UCRT64 shell its cc1 found the 64-bit DLLs of ucrt64\bin and failed
+        # without a word)
+        gcc32 = shutil.which("i686-w64-mingw32-gcc")
+        env = dict(os.environ, PATH=os.path.dirname(gcc32) + os.pathsep + os.environ.get("PATH", "")) if gcc32 else None
         subprocess.run(["i686-w64-mingw32-gcc", "-shared", "-O2", "-static-libgcc", "-o", dll] + dll_src +
-                       ["-luser32", "-lgdi32", "-lwinmm"], check=True)
+                       ["-luser32", "-lgdi32", "-lwinmm"], check=True, env=env)
         print("original: built patch.dll")
     launcher_src = [os.path.join(pdir, "grimlaunch.cpp")]
     launcher = os.path.join(tools, "grimlaunch.exe")

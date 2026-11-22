@@ -1,4 +1,4 @@
-START 2478 tests
+START 2586 tests
 BEGIN numbers
 V numbers|arith|3.500000 1024.000000 -2.333333 1.#INF00
 V numbers|tostring|"0.333333" "100" "1e+015" "-0.5"
@@ -716,8 +716,8 @@ BEGIN eat_shadow
 V eat_shadow|ok|1.000000
 END eat_shadow
 BEGIN emi_bitmap_flat
-V emi_bitmap_flat|lit|missing
-V emi_bitmap_flat|count|missing
+V emi_bitmap_flat|lit|0.000000 0.000000 639.000000 479.000000
+V emi_bitmap_flat|count|none
 END emi_bitmap_flat
 BEGIN ec_load
 V ec_load|handle|"number" 1.000000 1.000000
@@ -1726,6 +1726,431 @@ V et_text_blank|empty|0.000000 0.050000
 V et_text_blank|trailing|0.068750 0.050000
 V et_text_blank|change_space|0.015625 0.050000
 END et_text_blank
+BEGIN ets_nothing
+V ets_nothing|text|none
+END ets_nothing
+BEGIN ets_obj_centre
+V ets_obj_centre|text|320.000000 232.000000 432.000000 241.000000
+END ets_obj_centre
+BEGIN ets_obj_left
+V ets_obj_left|text|0.000000 112.000000 112.000000 121.000000
+END ets_obj_left
+BEGIN ets_obj_right
+V ets_obj_right|text|607.000000 352.000000 638.000000 397.000000
+END ets_obj_right
+BEGIN ets_obj_centred
+V ets_obj_centred|text|263.000000 232.000000 375.000000 241.000000
+END ets_obj_centred
+BEGIN ets_obj_centred_left
+V ets_obj_centred_left|text|0.000000 232.000000 31.000000 277.000000
+END ets_obj_centred_left
+BEGIN ets_obj_width
+V ets_obj_width|text|160.000000 232.000000 272.000000 241.000000
+END ets_obj_width
+BEGIN ets_one_default
+V ets_one_default|going|1.000000
+V ets_one_default|text|11.000000 17.000000 100.000000 38.000000
+END ets_one_default
+BEGIN ets_punct_default
+V ets_punct_default|going|1.000000
+V ets_punct_default|text|13.000000 17.000000 137.000000 38.000000
+END ets_punct_default
+BEGIN ets_long_default
+V ets_long_default|going|1.000000
+V ets_long_default|text|0.000000 17.000000 120.000000 86.000000
+END ets_long_default
+BEGIN ets_word_default
+V ets_word_default|going|1.000000
+V ets_word_default|text|40.000000 17.000000 218.000000 26.000000
+END ets_word_default
+BEGIN ets_narrow_default
+V ets_narrow_default|going|1.000000
+V ets_narrow_default|text|11.000000 17.000000 91.000000 62.000000
+END ets_narrow_default
+BEGIN ets_one_xm1
+V ets_one_xm1|going|1.000000
+V ets_one_xm1|text|11.000000 312.000000 100.000000 333.000000
+END ets_one_xm1
+BEGIN ets_one_xm0p95
+V ets_one_xm0p95|going|1.000000
+V ets_one_xm0p95|text|11.000000 312.000000 100.000000 333.000000
+END ets_one_xm0p95
+BEGIN ets_one_xm0p9
+V ets_one_xm0p9|going|1.000000
+V ets_one_xm0p9|text|11.000000 312.000000 100.000000 333.000000
+END ets_one_xm0p9
+BEGIN ets_one_xm0p8
+V ets_one_xm0p8|going|1.000000
+V ets_one_xm0p8|text|6.000000 312.000000 118.000000 321.000000
+END ets_one_xm0p8
+BEGIN ets_one_xm0p5
+V ets_one_xm0p5|going|1.000000
+V ets_one_xm0p5|text|103.000000 312.000000 215.000000 321.000000
+END ets_one_xm0p5
+BEGIN ets_one_x0
+V ets_one_x0|going|1.000000
+V ets_one_x0|text|263.000000 312.000000 375.000000 321.000000
+END ets_one_x0
+BEGIN ets_one_x0p5
+V ets_one_x0p5|going|1.000000
+V ets_one_x0p5|text|423.000000 312.000000 535.000000 321.000000
+END ets_one_x0p5
+BEGIN ets_one_x0p8
+V ets_one_x0p8|going|1.000000
+V ets_one_x0p8|text|519.000000 312.000000 631.000000 321.000000
+END ets_one_x0p8
+BEGIN ets_one_x0p9
+V ets_one_x0p9|going|1.000000
+V ets_one_x0p9|text|539.000000 312.000000 628.000000 333.000000
+END ets_one_x0p9
+BEGIN ets_one_x0p95
+V ets_one_x0p95|going|1.000000
+V ets_one_x0p95|text|539.000000 312.000000 628.000000 333.000000
+END ets_one_x0p95
+BEGIN ets_one_x1
+V ets_one_x1|going|1.000000
+V ets_one_x1|text|539.000000 312.000000 628.000000 333.000000
+END ets_one_x1
+BEGIN ets_punct_xm1
+V ets_punct_xm1|going|1.000000
+V ets_punct_xm1|text|13.000000 312.000000 137.000000 333.000000
+END ets_punct_xm1
+BEGIN ets_punct_xm0p95
+V ets_punct_xm0p95|going|1.000000
+V ets_punct_xm0p95|text|13.000000 312.000000 137.000000 333.000000
+END ets_punct_xm0p95
+BEGIN ets_punct_xm0p9
+V ets_punct_xm0p9|going|1.000000
+V ets_punct_xm0p9|text|13.000000 312.000000 137.000000 333.000000
+END ets_punct_xm0p9
+BEGIN ets_punct_xm0p8
+V ets_punct_xm0p8|going|1.000000
+V ets_punct_xm0p8|text|13.000000 312.000000 137.000000 333.000000
+END ets_punct_xm0p8
+BEGIN ets_punct_xm0p5
+V ets_punct_xm0p5|going|1.000000
+V ets_punct_xm0p5|text|43.000000 312.000000 275.000000 321.000000
+END ets_punct_xm0p5
+BEGIN ets_punct_x0
+V ets_punct_x0|going|1.000000
+V ets_punct_x0|text|203.000000 312.000000 435.000000 321.000000
+END ets_punct_x0
+BEGIN ets_punct_x0p5
+V ets_punct_x0p5|going|1.000000
+V ets_punct_x0p5|text|363.000000 312.000000 595.000000 321.000000
+END ets_punct_x0p5
+BEGIN ets_punct_x0p8
+V ets_punct_x0p8|going|1.000000
+V ets_punct_x0p8|text|501.000000 312.000000 625.000000 333.000000
+END ets_punct_x0p8
+BEGIN ets_punct_x0p9
+V ets_punct_x0p9|going|1.000000
+V ets_punct_x0p9|text|501.000000 312.000000 625.000000 333.000000
+END ets_punct_x0p9
+BEGIN ets_punct_x0p95
+V ets_punct_x0p95|going|1.000000
+V ets_punct_x0p95|text|501.000000 312.000000 625.000000 333.000000
+END ets_punct_x0p95
+BEGIN ets_punct_x1
+V ets_punct_x1|going|1.000000
+V ets_punct_x1|text|501.000000 312.000000 625.000000 333.000000
+END ets_punct_x1
+BEGIN ets_long_xm1
+V ets_long_xm1|going|1.000000
+V ets_long_xm1|text|0.000000 312.000000 120.000000 381.000000
+END ets_long_xm1
+BEGIN ets_long_xm0p95
+V ets_long_xm0p95|going|1.000000
+V ets_long_xm0p95|text|0.000000 312.000000 120.000000 381.000000
+END ets_long_xm0p95
+BEGIN ets_long_xm0p9
+V ets_long_xm0p9|going|1.000000
+V ets_long_xm0p9|text|0.000000 312.000000 120.000000 381.000000
+END ets_long_xm0p9
+BEGIN ets_long_xm0p8
+V ets_long_xm0p8|going|1.000000
+V ets_long_xm0p8|text|2.000000 312.000000 122.000000 381.000000
+END ets_long_xm0p8
+BEGIN ets_long_xm0p5
+V ets_long_xm0p5|going|1.000000
+V ets_long_xm0p5|text|15.000000 312.000000 303.000000 345.000000
+END ets_long_xm0p5
+BEGIN ets_long_x0
+V ets_long_x0|going|1.000000
+V ets_long_x0|text|11.000000 312.000000 627.000000 321.000000
+END ets_long_x0
+BEGIN ets_long_x0p5
+V ets_long_x0p5|going|1.000000
+V ets_long_x0p5|text|335.000000 312.000000 623.000000 345.000000
+END ets_long_x0p5
+BEGIN ets_long_x0p8
+V ets_long_x0p8|going|1.000000
+V ets_long_x0p8|text|513.000000 312.000000 638.000000 369.000000
+END ets_long_x0p8
+BEGIN ets_long_x0p9
+V ets_long_x0p9|going|1.000000
+V ets_long_x0p9|text|518.000000 312.000000 638.000000 381.000000
+END ets_long_x0p9
+BEGIN ets_long_x0p95
+V ets_long_x0p95|going|1.000000
+V ets_long_x0p95|text|518.000000 312.000000 638.000000 381.000000
+END ets_long_x0p95
+BEGIN ets_long_x1
+V ets_long_x1|going|1.000000
+V ets_long_x1|text|518.000000 312.000000 638.000000 381.000000
+END ets_long_x1
+BEGIN ets_word_xm1
+V ets_word_xm1|going|1.000000
+V ets_word_xm1|text|40.000000 312.000000 218.000000 321.000000
+END ets_word_xm1
+BEGIN ets_word_xm0p95
+V ets_word_xm0p95|going|1.000000
+V ets_word_xm0p95|text|40.000000 312.000000 218.000000 321.000000
+END ets_word_xm0p95
+BEGIN ets_word_xm0p9
+V ets_word_xm0p9|going|1.000000
+V ets_word_xm0p9|text|40.000000 312.000000 218.000000 321.000000
+END ets_word_xm0p9
+BEGIN ets_word_xm0p8
+V ets_word_xm0p8|going|1.000000
+V ets_word_xm0p8|text|40.000000 312.000000 218.000000 321.000000
+END ets_word_xm0p8
+BEGIN ets_word_xm0p5
+V ets_word_xm0p5|going|1.000000
+V ets_word_xm0p5|text|70.000000 312.000000 248.000000 321.000000
+END ets_word_xm0p5
+BEGIN ets_word_x0
+V ets_word_x0|going|1.000000
+V ets_word_x0|text|230.000000 312.000000 408.000000 321.000000
+END ets_word_x0
+BEGIN ets_word_x0p5
+V ets_word_x0p5|going|1.000000
+V ets_word_x0p5|text|390.000000 312.000000 568.000000 321.000000
+END ets_word_x0p5
+BEGIN ets_word_x0p8
+V ets_word_x0p8|going|1.000000
+V ets_word_x0p8|text|420.000000 312.000000 598.000000 321.000000
+END ets_word_x0p8
+BEGIN ets_word_x0p9
+V ets_word_x0p9|going|1.000000
+V ets_word_x0p9|text|420.000000 312.000000 598.000000 321.000000
+END ets_word_x0p9
+BEGIN ets_word_x0p95
+V ets_word_x0p95|going|1.000000
+V ets_word_x0p95|text|420.000000 312.000000 598.000000 321.000000
+END ets_word_x0p95
+BEGIN ets_word_x1
+V ets_word_x1|going|1.000000
+V ets_word_x1|text|420.000000 312.000000 598.000000 321.000000
+END ets_word_x1
+BEGIN ets_narrow_xm1
+V ets_narrow_xm1|going|1.000000
+V ets_narrow_xm1|text|11.000000 312.000000 91.000000 357.000000
+END ets_narrow_xm1
+BEGIN ets_narrow_xm0p95
+V ets_narrow_xm0p95|going|1.000000
+V ets_narrow_xm0p95|text|11.000000 312.000000 91.000000 357.000000
+END ets_narrow_xm0p95
+BEGIN ets_narrow_xm0p9
+V ets_narrow_xm0p9|going|1.000000
+V ets_narrow_xm0p9|text|11.000000 312.000000 91.000000 357.000000
+END ets_narrow_xm0p9
+BEGIN ets_narrow_xm0p8
+V ets_narrow_xm0p8|going|1.000000
+V ets_narrow_xm0p8|text|8.000000 312.000000 117.000000 345.000000
+END ets_narrow_xm0p8
+BEGIN ets_narrow_xm0p5
+V ets_narrow_xm0p5|going|1.000000
+V ets_narrow_xm0p5|text|18.000000 312.000000 301.000000 321.000000
+END ets_narrow_xm0p5
+BEGIN ets_narrow_x0
+V ets_narrow_x0|going|1.000000
+V ets_narrow_x0|text|178.000000 312.000000 461.000000 321.000000
+END ets_narrow_x0
+BEGIN ets_narrow_x0p5
+V ets_narrow_x0p5|going|1.000000
+V ets_narrow_x0p5|text|338.000000 312.000000 621.000000 321.000000
+END ets_narrow_x0p5
+BEGIN ets_narrow_x0p8
+V ets_narrow_x0p8|going|1.000000
+V ets_narrow_x0p8|text|521.000000 312.000000 630.000000 345.000000
+END ets_narrow_x0p8
+BEGIN ets_narrow_x0p9
+V ets_narrow_x0p9|going|1.000000
+V ets_narrow_x0p9|text|547.000000 312.000000 627.000000 357.000000
+END ets_narrow_x0p9
+BEGIN ets_narrow_x0p95
+V ets_narrow_x0p95|going|1.000000
+V ets_narrow_x0p95|text|547.000000 312.000000 627.000000 357.000000
+END ets_narrow_x0p95
+BEGIN ets_narrow_x1
+V ets_narrow_x1|going|1.000000
+V ets_narrow_x1|text|547.000000 312.000000 627.000000 357.000000
+END ets_narrow_x1
+BEGIN ets_one_ym1
+V ets_one_ym1|going|1.000000
+V ets_one_ym1|text|263.000000 17.000000 375.000000 26.000000
+END ets_one_ym1
+BEGIN ets_narrow_ym1
+V ets_narrow_ym1|going|1.000000
+V ets_narrow_ym1|text|11.000000 17.000000 91.000000 62.000000
+END ets_narrow_ym1
+BEGIN ets_one_ym0p95
+V ets_one_ym0p95|going|1.000000
+V ets_one_ym0p95|text|263.000000 17.000000 375.000000 26.000000
+END ets_one_ym0p95
+BEGIN ets_narrow_ym0p95
+V ets_narrow_ym0p95|going|1.000000
+V ets_narrow_ym0p95|text|11.000000 17.000000 91.000000 62.000000
+END ets_narrow_ym0p95
+BEGIN ets_one_ym0p9
+V ets_one_ym0p9|going|1.000000
+V ets_one_ym0p9|text|263.000000 24.000000 375.000000 33.000000
+END ets_one_ym0p9
+BEGIN ets_narrow_ym0p9
+V ets_narrow_ym0p9|going|1.000000
+V ets_narrow_ym0p9|text|11.000000 24.000000 91.000000 69.000000
+END ets_narrow_ym0p9
+BEGIN ets_one_ym0p5
+V ets_one_ym0p5|going|1.000000
+V ets_one_ym0p5|text|263.000000 152.000000 375.000000 161.000000
+END ets_one_ym0p5
+BEGIN ets_narrow_ym0p5
+V ets_narrow_ym0p5|going|1.000000
+V ets_narrow_ym0p5|text|11.000000 152.000000 91.000000 197.000000
+END ets_narrow_ym0p5
+BEGIN ets_one_y0
+V ets_one_y0|going|1.000000
+V ets_one_y0|text|263.000000 312.000000 375.000000 321.000000
+END ets_one_y0
+BEGIN ets_narrow_y0
+V ets_narrow_y0|going|1.000000
+V ets_narrow_y0|text|11.000000 312.000000 91.000000 357.000000
+END ets_narrow_y0
+BEGIN ets_one_y0p3
+V ets_one_y0p3|going|1.000000
+V ets_one_y0p3|text|263.000000 408.000000 375.000000 417.000000
+END ets_one_y0p3
+BEGIN ets_narrow_y0p3
+V ets_narrow_y0p3|going|1.000000
+V ets_narrow_y0p3|text|11.000000 399.000000 91.000000 444.000000
+END ets_narrow_y0p3
+BEGIN ets_one_y0p4
+V ets_one_y0p4|going|1.000000
+V ets_one_y0p4|text|263.000000 435.000000 375.000000 444.000000
+END ets_one_y0p4
+BEGIN ets_narrow_y0p4
+V ets_narrow_y0p4|going|1.000000
+V ets_narrow_y0p4|text|11.000000 399.000000 91.000000 444.000000
+END ets_narrow_y0p4
+BEGIN ets_one_y0p45
+V ets_one_y0p45|going|1.000000
+V ets_one_y0p45|text|263.000000 435.000000 375.000000 444.000000
+END ets_one_y0p45
+BEGIN ets_narrow_y0p45
+V ets_narrow_y0p45|going|1.000000
+V ets_narrow_y0p45|text|11.000000 399.000000 91.000000 444.000000
+END ets_narrow_y0p45
+BEGIN ets_one_y0p5
+V ets_one_y0p5|going|1.000000
+V ets_one_y0p5|text|263.000000 435.000000 375.000000 444.000000
+END ets_one_y0p5
+BEGIN ets_narrow_y0p5
+V ets_narrow_y0p5|going|1.000000
+V ets_narrow_y0p5|text|11.000000 399.000000 91.000000 444.000000
+END ets_narrow_y0p5
+BEGIN ets_one_x_only
+V ets_one_x_only|going|1.000000
+V ets_one_x_only|text|423.000000 17.000000 535.000000 26.000000
+END ets_one_x_only
+BEGIN ets_one_y_only
+V ets_one_y_only|going|1.000000
+V ets_one_y_only|text|11.000000 423.000000 100.000000 444.000000
+END ets_one_y_only
+BEGIN ets_punct_w200_left
+V ets_punct_w200_left|going|1.000000
+V ets_punct_w200_left|text|13.000000 312.000000 137.000000 333.000000
+END ets_punct_w200_left
+BEGIN ets_long_w200_left
+V ets_long_w200_left|going|1.000000
+V ets_long_w200_left|text|0.000000 312.000000 120.000000 381.000000
+END ets_long_w200_left
+BEGIN ets_punct_w200_mid
+V ets_punct_w200_mid|going|1.000000
+V ets_punct_w200_mid|text|203.000000 312.000000 435.000000 321.000000
+END ets_punct_w200_mid
+BEGIN ets_long_w200_mid
+V ets_long_w200_mid|going|1.000000
+V ets_long_w200_mid|text|11.000000 312.000000 627.000000 321.000000
+END ets_long_w200_mid
+BEGIN ets_punct_w200_right
+V ets_punct_w200_right|going|1.000000
+V ets_punct_w200_right|text|501.000000 312.000000 625.000000 333.000000
+END ets_punct_w200_right
+BEGIN ets_long_w200_right
+V ets_long_w200_right|going|1.000000
+V ets_long_w200_right|text|518.000000 312.000000 638.000000 381.000000
+END ets_long_w200_right
+BEGIN ets_one_w200_default
+V ets_one_w200_default|going|1.000000
+V ets_one_w200_default|text|11.000000 17.000000 100.000000 38.000000
+END ets_one_w200_default
+BEGIN ets_punct_w1000_left
+V ets_punct_w1000_left|going|1.000000
+V ets_punct_w1000_left|text|13.000000 312.000000 137.000000 333.000000
+END ets_punct_w1000_left
+BEGIN ets_long_w1000_left
+V ets_long_w1000_left|going|1.000000
+V ets_long_w1000_left|text|0.000000 312.000000 120.000000 381.000000
+END ets_long_w1000_left
+BEGIN ets_punct_w1000_mid
+V ets_punct_w1000_mid|going|1.000000
+V ets_punct_w1000_mid|text|203.000000 312.000000 435.000000 321.000000
+END ets_punct_w1000_mid
+BEGIN ets_long_w1000_mid
+V ets_long_w1000_mid|going|1.000000
+V ets_long_w1000_mid|text|11.000000 312.000000 627.000000 321.000000
+END ets_long_w1000_mid
+BEGIN ets_punct_w1000_right
+V ets_punct_w1000_right|going|1.000000
+V ets_punct_w1000_right|text|501.000000 312.000000 625.000000 333.000000
+END ets_punct_w1000_right
+BEGIN ets_long_w1000_right
+V ets_long_w1000_right|going|1.000000
+V ets_long_w1000_right|text|518.000000 312.000000 638.000000 381.000000
+END ets_long_w1000_right
+BEGIN ets_one_w1000_default
+V ets_one_w1000_default|going|1.000000
+V ets_one_w1000_default|text|11.000000 17.000000 100.000000 38.000000
+END ets_one_w1000_default
+BEGIN ets_punct_h100_left
+V ets_punct_h100_left|going|1.000000
+V ets_punct_h100_left|text|13.000000 312.000000 137.000000 333.000000
+END ets_punct_h100_left
+BEGIN ets_long_h100_left
+V ets_long_h100_left|going|1.000000
+V ets_long_h100_left|text|0.000000 312.000000 120.000000 381.000000
+END ets_long_h100_left
+BEGIN ets_punct_h100_mid
+V ets_punct_h100_mid|going|1.000000
+V ets_punct_h100_mid|text|203.000000 312.000000 435.000000 321.000000
+END ets_punct_h100_mid
+BEGIN ets_long_h100_mid
+V ets_long_h100_mid|going|1.000000
+V ets_long_h100_mid|text|11.000000 312.000000 627.000000 321.000000
+END ets_long_h100_mid
+BEGIN ets_punct_h100_right
+V ets_punct_h100_right|going|1.000000
+V ets_punct_h100_right|text|501.000000 312.000000 625.000000 333.000000
+END ets_punct_h100_right
+BEGIN ets_long_h100_right
+V ets_long_h100_right|going|1.000000
+V ets_long_h100_right|text|518.000000 312.000000 638.000000 381.000000
+END ets_long_h100_right
+BEGIN ets_one_h100_default
+V ets_one_h100_default|going|1.000000
+V ets_one_h100_default|text|11.000000 17.000000 100.000000 38.000000
+END ets_one_h100_default
 BEGIN fp_exact_self
 V fp_exact_self|one|"8388608p-23"
 V fp_exact_self|half|"8388608p-24"
@@ -8424,7 +8849,7 @@ BEGIN args_rad_fn
 ERROR args_rad_fn bad argument #1 to function `rad' (number expected)
 FAILED args_rad_fn
 BEGIN args_random_none
-V args_random_none|r|0.120182
+V args_random_none|r|0.632313
 END args_random_none
 BEGIN args_random_nil
 ERROR args_random_nil bad argument #1 to function `random' (number expected)
@@ -8433,7 +8858,7 @@ BEGIN args_random_str
 ERROR args_random_str bad argument #1 to function `random' (number expected)
 FAILED args_random_str
 BEGIN args_random_num
-V args_random_num|r|2.000000
+V args_random_num|r|1.000000
 END args_random_num
 BEGIN args_random_tab
 ERROR args_random_tab bad argument #1 to function `random' (number expected)
@@ -8776,4 +9201,4 @@ V lex_binary|short|nil
 ERROR lex_binary binary file cr_bin_old.lua too old: version=0x30; expected at least 0x31
 V lex_binary|old|nil
 END lex_binary
-SUMMARY 2478 tests, 247 failed
+SUMMARY 2586 tests, 247 failed

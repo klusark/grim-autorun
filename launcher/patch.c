@@ -576,6 +576,128 @@ __declspec(dllexport) void __cdecl GrimLogError(void) {
 	logFromLua("ERROR");
 }
 
+/* ---- EMI (Monkey4.exe with -gl): PrintDebug("CRSNAP:<file>") saves a picture of the screen ----
+ * grimlaunch's EMI debuglog stub calls EmiSnapText with a PrintDebug text that starts with "CRSNAP:" (the name, then the "\n"
+ * PrintDebug adds), and its swap stub calls EmiBeforeSwap right before the frame's one SwapBuffers (0x4631ba) when a picture was
+ * asked for. The picture is the back buffer then: the frame drawn after the call (the scripts run before the drawing in EMI's
+ * frame, 0x40be30: 0x40f740 the tasks, then 0x43d0c0 the draw), read with glReadPixels and written as a 24-bit .bmp, the name
+ * relative to the exe's folder. Monkey4.exe has a screenshot of its own (0x40da30: numbered .tga files, a name of its own
+ * choosing), hence this. Only with OpenGL: Direct3D never calls SwapBuffers, and the file is not written. */
+static char emiSnapFile[MAX_PATH];
+static int emiSnapPending;
+
+__declspec(dllexport) int __cdecl EmiSnapText(const char *text) {
+	size_t len;
+
+	if (!text || strncmp(text, "CRSNAP:", 7) != 0)
+		return 0;
+	text += 7;
+	len = strlen(text);
+	while (len > 0 && (text[len - 1] == '\n' || text[len - 1] == '\r'))
+		len--;
+	if (len == 0 || len >= sizeof emiSnapFile) {
+		logLine("ERROR", "CRSNAP: no file name, or one too long");
+		return 1;
+	}
+	if (emiSnapPending)
+		logLine("ERROR", "CRSNAP: a second picture asked for in one frame: only the last is saved");
+	memcpy(emiSnapFile, text, len);
+	emiSnapFile[len] = 0;
+	emiSnapPending = 1;
+	return 1;
+}
+
+typedef void (WINAPI *GlReadPixelsFn)(int, int, int, int, unsigned, unsigned, void *);
+typedef void (WINAPI *GlReadBufferFn)(unsigned);
+typedef void (WINAPI *GlGetIntegervFn)(unsigned, int *);
+typedef void (WINAPI *GlPixelStoreiFn)(unsigned, int);
+typedef HDC (WINAPI *WglGetCurrentDCFn)(void);
+#define CR_GL_BACK 0x0405
+#define CR_GL_READ_BUFFER 0x0C02
+#define CR_GL_PACK_ALIGNMENT 0x0D05
+#define CR_GL_BGR_EXT 0x80E0
+#define CR_GL_UNSIGNED_BYTE 0x1401
+
+__declspec(dllexport) void __cdecl EmiBeforeSwap(void) {
+	HMODULE gl;
+	GlReadPixelsFn readPixels;
+	GlReadBufferFn readBuffer;
+	GlGetIntegervFn getIntegerv;
+	GlPixelStoreiFn pixelStorei;
+	WglGetCurrentDCFn currentDC;
+	HWND wnd;
+	RECT r;
+	int w, h, pitch, oldRead = CR_GL_BACK, oldAlign = 4;
+	unsigned char *pixels;
+	char path[MAX_PATH * 2 + 2], *slash;
+	BITMAPFILEHEADER fh;
+	BITMAPINFOHEADER ih;
+	FILE *f;
+
+	if (!emiSnapPending)
+		return;
+	emiSnapPending = 0;
+	gl = GetModuleHandleA("opengl32.dll");
+	readPixels = gl ? (GlReadPixelsFn)GetProcAddress(gl, "glReadPixels") : NULL;
+	readBuffer = gl ? (GlReadBufferFn)GetProcAddress(gl, "glReadBuffer") : NULL;
+	getIntegerv = gl ? (GlGetIntegervFn)GetProcAddress(gl, "glGetIntegerv") : NULL;
+	pixelStorei = gl ? (GlPixelStoreiFn)GetProcAddress(gl, "glPixelStorei") : NULL;
+	currentDC = gl ? (WglGetCurrentDCFn)GetProcAddress(gl, "wglGetCurrentDC") : NULL;
+	if (!readPixels || !readBuffer || !getIntegerv || !pixelStorei || !currentDC) {
+		logLine("ERROR", "CRSNAP: no OpenGL in the game (Monkey4.exe -gl), no picture");
+		return;
+	}
+	/* (the size of the window the frame is drawn for: the drawable) */
+	wnd = currentDC() ? WindowFromDC(currentDC()) : NULL;
+	if (!wnd || !GetClientRect(wnd, &r) || r.right <= 0 || r.bottom <= 0) {
+		logLine("ERROR", "CRSNAP: no window for the OpenGL context, no picture");
+		return;
+	}
+	w = r.right;
+	h = r.bottom;
+	pitch = (w * 3 + 3) & ~3;
+	pixels = (unsigned char *)malloc((size_t)pitch * h);
+	if (!pixels)
+		return;
+	/* (rows from the bottom, BGR, each padded to 4 bytes: the layout of a bottom-up .bmp) */
+	getIntegerv(CR_GL_READ_BUFFER, &oldRead);
+	getIntegerv(CR_GL_PACK_ALIGNMENT, &oldAlign);
+	readBuffer(CR_GL_BACK);
+	pixelStorei(CR_GL_PACK_ALIGNMENT, 4);
+	readPixels(0, 0, w, h, CR_GL_BGR_EXT, CR_GL_UNSIGNED_BYTE, pixels);
+	pixelStorei(CR_GL_PACK_ALIGNMENT, oldAlign);
+	readBuffer((unsigned)oldRead);
+	if (emiSnapFile[0] && emiSnapFile[1] == ':') {
+		strcpy(path, emiSnapFile);
+	} else if (GetModuleFileNameA(NULL, path, MAX_PATH)) {
+		slash = strrchr(path, '\\');
+		strcpy(slash ? slash + 1 : path, emiSnapFile);
+	} else {
+		strcpy(path, emiSnapFile);
+	}
+	memset(&fh, 0, sizeof fh);
+	memset(&ih, 0, sizeof ih);
+	fh.bfType = 0x4d42;
+	fh.bfOffBits = sizeof fh + sizeof ih;
+	fh.bfSize = fh.bfOffBits + (DWORD)pitch * h;
+	ih.biSize = sizeof ih;
+	ih.biWidth = w;
+	ih.biHeight = h;
+	ih.biPlanes = 1;
+	ih.biBitCount = 24;
+	ih.biSizeImage = (DWORD)pitch * h;
+	f = fopen(path, "wb");
+	if (!f || fwrite(&fh, sizeof fh, 1, f) != 1 || fwrite(&ih, sizeof ih, 1, f) != 1 ||
+	    fwrite(pixels, (size_t)pitch * h, 1, f) != 1) {
+		char text[MAX_PATH * 2 + 40];
+		sprintf(text, "CRSNAP: cannot write %s", path);
+		logLine("ERROR", text);
+	}
+	if (f)
+		fclose(f);
+	free(pixels);
+}
+
 /* Called by patches/grim/framelimit.py's stub once per frame of the original executable: holds the game to 60 frames
  * a second (unthrottled it runs at ~850 and some of its per frame arithmetic stops working). */
 __declspec(dllexport) void __cdecl GrimFrameLimit(void) {
