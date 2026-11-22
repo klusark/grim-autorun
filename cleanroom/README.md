@@ -287,6 +287,26 @@ fixed on klusark's `cleanroom`); a voiced line goes until ShutUpActor on both. L
 plays nothing on the original, and after `StopSound` its handle has no volume. A `SayLine` without a voice file crashes
 Monkey4.exe.
 
+EMI's sort planes and walk paths (`emi_sort_sector.lua`, 2026-11-21, ScummVM bug 11816: a Lucre tourist drawn over the port
+authority building; `assets_emi_extra_ess.py`, sectors with sort planes: `formats.set_binary`'s sixth sector item). An actor
+that follows the boxes is drawn with its walk sector's plane for the current setup (`Actor_GetEffectiveSortOrder`
+0x4257b0); outside every walk sector with its own order, which for the game's actors is 0: in front of every background layer.
+The original asks when called: before the first walk the first active walk sector holding the position, then the sector its
+walker's heading frame is in (picked again by position on placement and at every path waypoint, handed on at an edge, not
+checked for being active). Its planner (`WalkPlaneCollection_BuildPath` 0x445980) goes over walk sectors only (the walk bit:
+0x1000, 0x1100, 0x1200), so an actor is never outside them. The bug was ScummVM's planner: `Sector::getBridgesTo` cut a
+bridge only where it crossed an edge segment of the other sector, not the edge's line, so sectors that do not touch had
+bridges (87 of Lucre's 402 bridged pairs); the tourist's path from sector213 went to sector143 12 m away and straight over
+the `long_cheatbox` hot box behind the building (`ess_apart` uses those two sectors). `Actor::walkTo` also planned through
+hot sectors (`ess_hot_path`) and not through 0x1200 ones (`ess_stair_type`), and `Actor::getTangentPos` moved a path point
+round other actors' spheres in Grim's x-y plane, a side view in EMI: the point went up or down (y 3.67 -> 3.93 in Lucre)
+and the walker left the floor (`ess_lift`, another actor 3.5 m to the side). The original's plain `WalkActorTo` moves no
+path point round actors (`Actor_WalkTo` passes none to avoid to 0x42aee0; its walker is pushed while walking instead).
+Fixed on `grim-11816` (the tangent now in x-z, spheres only: `amc_ewalk_sphere`/`_box` come close to the original). Left as known
+differences: ScummVM works the plane out once a frame in `Actor::update`, so `GetActorSortOrder` right after `PutActorAt`
+or `MakeCurrentSetup` gives the old value; a sector switched off under a standing actor makes ScummVM move the actor to the
+closest visible sector (the original keeps it and the plane); ScummVM snaps an actor a few mm off the floor onto it.
+
 Not done: the rotation of a setup's camera, EMI's textured meshes and what a skeleton or an animation does to the mesh
 (the original's EMI has pictures now: `emi_text_pos.lua`), and sharing Grim's set, actor and walk tests (they need Grim's points turned over and
 EMI's sets).
@@ -710,6 +730,21 @@ Hand-written tests, besides the per-frame walk and turn values:
 - Paths (`paths.lua`, `cr_ell`): the walk round the corner of an L takes the same way, but the original stops about 3 cm
   past the point it was sent to. Walking forward at 45 degrees into the edge of the floor, the original stops at x = -0.90
   and ScummVM slides along the edge to the corner (x = -2).
+- Fake links (`fake_links.lua`, `assets_extra_fkl.py`, 2026-11-21; bug 11816, EMI's `ess_apart`): ScummVM's
+  `Sector::getBridgesTo` cut a bridge only where it crossed an edge segment of the other floor, not the edge's line, so
+  floors that do not touch got bridges and a walk went straight over the gap, off every floor. `fkl_low` and the triangle
+  `fkl_tri` 1 m above it: the original goes round by `fkl_west` and `fkl_top`, ScummVM went straight (fixed on
+  `grim-11816`). A replay of the old and fixed cut over the game's 134 sets: 598 links between walk floors whose bridge lies
+  more than 0.5 m outside the other floor, in 80 sets (125 more than 2 m, in 32: `na`, `ga`, `ps`, `rf`, ...). The floors
+  share their corners, as the game's do: the original's planner goes into the next floor only through that floor's corners
+  that lie in the current one, so a floor whose shared edge is only a part of the other's longer edge has no way across.
+- Chernobyl sectors in paths (`fake_links.lua`: `fkl_hot_path`, `fkl_hot_off`; set `fkl_hot`): the original's planner
+  (BuildPath 0x4a9430, FindPath, FindExitPoints) takes planes with the walk bit 0x1000 only, and its parser makes
+  `chernobyl` 0x8000, so it goes round by the walk bridge; ScummVM's `Actor::walkTo` also took hot sectors (2011, "Walk only
+  on Walk and Hot sectors", ResidualVM #122, whose cage in `fo` was camera sectors) and walked straight through, off every
+  floor. With the sector switched off both go round. Fixed on `grim-11816` (walk bit for both games). In the game data, 46
+  chernobyl sectors in 25 sets join walk floors that do not touch each other (cheat boxes, door triggers, `rf`'s
+  `attack_zone`, `bd`'s `death`).
 - `MakeSectorActive` with a number does nothing on the original. A sector switched on stays on across a change of set on the
   original; ScummVM resets it. The current setup is kept across a change of set on the original; ScummVM goes back to 0.
   `GetCurrentSetup` of a set that is not current is 0 on the original and nil on ScummVM.

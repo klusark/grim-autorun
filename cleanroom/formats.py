@@ -331,7 +331,8 @@ def checker_rgb(width, height, cell, c0, c1):
     return [c0 if ((x // cell) + (y // cell)) % 2 == 0 else c1 for y in range(height) for x in range(width)]
 
 
-SECTOR_TYPES = {"walk": 0x1000, "funnel": 0x1100, "camera": 0x2000, "special": 0x4000, "chernobyl": 0x8000, "hot": 0x8000}
+SECTOR_TYPES = {"walk": 0x1000, "funnel": 0x1100, "walk_stair": 0x1200, "camera": 0x2000, "special": 0x4000, "chernobyl": 0x8000,
+                "hot": 0x8000}
 LIGHT_TYPES = {"omni": 1, "spot": 2, "direct": 3, "ambient": 4}
 
 
@@ -351,7 +352,8 @@ def set_binary(setups, lights, sectors, shadows=()):
     set_file, without colormaps or z-buffers. A setup is: name[128], background (counted string), position, a rotation
     quaternion (x y z w), fov, nclip, fclip; its "rotation" key (default no rotation) is the quaternion. A light: name[32],
     position, quaternion, type, intensity, 0, colour (3 ints), falloff near and far, umbra and penumbra (radians). A sector:
-    the vertices, name (counted), id, a visible byte, type, the sort planes (none), height. Then the shadows: name and
+    the vertices, name (counted), id, a visible byte, type, the sort planes (counted ints, one per setup: a sector tuple's
+    optional sixth item, none without it), height. Then the shadows: name and
     light name (counted; a light's name makes its position the shadow's point), the point, the sectors it falls on
     (counted names), 4 bytes, the colour (3 ints). shadows: [(name, light or "", point, [sector names], colour)]."""
     f = lambda *v: struct.pack("<%df" % len(v), *v)
@@ -366,9 +368,13 @@ def set_binary(setups, lights, sectors, shadows=()):
         out += struct.pack("<3i", *l.get("color", (255, 255, 255)))
         out += f(l.get("falloff_near", 0.0), l.get("falloff_far", 100.0), l.get("umbra", 0.0), l.get("penumbra", 0.0))
     out += struct.pack("<I", len(sectors))
-    for i, (name, typ, visible, height, pts) in enumerate(sectors):
+    for i, sector in enumerate(sectors):
+        # (an optional sixth item: the sector's sort planes, one int per setup; the original reads a height of 0 as 0.005)
+        name, typ, visible, height, pts = sector[:5]
+        planes = sector[5] if len(sector) > 5 else ()
         out += struct.pack("<I", len(pts)) + b"".join(f(*p) for p in pts)
-        out += _counted(name) + struct.pack("<IBII", i, 1 if visible else 0, SECTOR_TYPES[typ], 0) + f(height)
+        out += _counted(name) + struct.pack("<IBII", i, 1 if visible else 0, SECTOR_TYPES[typ], len(planes))
+        out += struct.pack("<%di" % len(planes), *planes) + f(height)
     out += struct.pack("<I", len(shadows))
     for name, light, point, sectors_, colour in shadows:
         out += _counted(name) + (_counted(light) if light else struct.pack("<i", 0)) + f(*point)

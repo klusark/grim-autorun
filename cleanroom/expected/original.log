@@ -1,4 +1,4 @@
-START 5709 tests
+START 5713 tests
 BEGIN boot_state
 V boot_state|movie_playing|nil
 V boot_state|fullscreen_movie_playing|nil
@@ -1055,6 +1055,9 @@ V builtins|fn_execute|"function"
 V builtins|fn_exit|"function"
 V builtins|fn_exp|"function"
 V builtins|fn_find_script|"function"
+V builtins|fn_fkl_actor|"function"
+V builtins|fn_fkl_hot_actor|"function"
+V builtins|fn_fkl_walk|"function"
 V builtins|fn_floor|"function"
 V builtins|fn_foreach|"function"
 V builtins|fn_foreachvar|"function"
@@ -1523,6 +1526,38 @@ V walk_rate_change|at_40_rate0|0.850000 0.000000 0.000000
 V walk_rate_change|moving_rate0|1.000000
 V walk_rate_change|end|1.884266 -0.010077 0.000000
 END walk_rate_change
+BEGIN fkl_across
+V fkl_across|up_route|"round by the west"
+V fkl_across|up_floor|"on the floors"
+V fkl_across|up_end|"5.0 2.5"
+V fkl_across|up_sector|"fkl_tri"
+V fkl_across|down_route|"round by the west"
+V fkl_across|down_floor|"on the floors"
+V fkl_across|down_end|"5.0 -1.0"
+V fkl_across|down_sector|"fkl_low"
+END fkl_across
+BEGIN fkl_corner
+V fkl_corner|to_corner_route|"round by the west"
+V fkl_corner|to_corner_floor|"on the floors"
+V fkl_corner|to_corner_end|"3.5 2.8"
+V fkl_corner|to_corner_sector|"fkl_tri"
+END fkl_corner
+BEGIN fkl_hot_path
+V fkl_hot_path|across_route|"round by the bridge"
+V fkl_hot_path|across_floor|"on the floors"
+V fkl_hot_path|across_end|"2.0 -2.0"
+V fkl_hot_path|across_sector|"fkl_hc"
+V fkl_hot_path|back_route|"round by the bridge"
+V fkl_hot_path|back_floor|"on the floors"
+V fkl_hot_path|back_end|"-2.0 -2.0"
+V fkl_hot_path|back_sector|"fkl_ha"
+END fkl_hot_path
+BEGIN fkl_hot_off
+V fkl_hot_off|across_route|"round by the bridge"
+V fkl_hot_off|across_floor|"on the floors"
+V fkl_hot_off|across_end|"2.0 -2.0"
+V fkl_hot_off|across_sector|"fkl_hc"
+END fkl_hot_off
 BEGIN files
 V files|check_set|1.000000
 V files|check_tab|1.000000
@@ -21357,4 +21392,4 @@ END zbuffer_post
 BEGIN zbuffer_bar
 V zbuffer_bar|bar_box|458.000000 207.000000 571.000000 267.000000 6601.000000
 END zbuffer_bar
-SUMMARY 5709 tests, 257 failed
+SUMMARY 5713 tests, 257 failed

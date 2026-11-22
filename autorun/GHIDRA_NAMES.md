@@ -303,3 +303,27 @@ before setting nX, so the width is the widest word; x clamped 40 px inside; y cl
 | 0x0040da30 | Game_SaveScreenshotTga | numbered ".\%s\%s%02d.tga" (counter DAT_004d53b4), then Render_WriteScreenshotTga |
 | 0x0040cd60 | Render_WriteScreenshotTga | the frame through the renderer's vtable +0xd4, written as .tga; not decoded further |
 | 0x0041cd70 | TextObject_SetParamsFromTable | (more) width / height are pixels into the text's rectangle +0x24 / +0x28; Actor_CreateSayText replaces that rectangle by the screen's, so SetSayLineDefaults' width and height do nothing to say lines |
+
+## Added 2026-11-21 (EMI sort-order sectors, bug 11816, Monkey4.exe)
+
+| Address | Name | Note |
+| --- | --- | --- |
+| 0x00438a40 | Set_LoadBinary | .setb reader; a sector's sort planes are counted ints into the 32 inline planes (+0x24, zeroed by Sector_Create); height 0 becomes 0.005 (+0x1c, the plane tolerance); sectors kept in file order |
+| 0x00445880 | Set_LinkWalkSectors | neighbour links between touching walk sectors after loading |
+| 0x00446590 | Set_FindSectorOfTypeOrClosest | Set_FindSectorOfType, else the nearest active visible sector of the type (first of equals) |
+| 0x00429270 | Actor_PlaceViaHeadingFrame | placement and every path waypoint: the heading frame's sector is cleared and picked again by position (first holding it, else closest), the point snapped into it |
+| 0x00444b90 | HeadingFrame_AttachToSet | frame+0x14c = set; picks the sector when there is none; snaps the frame into it |
+| 0x00444fa0 | HeadingFrame_Step | one walk step on the sector plane; at an edge hands over to the first active sector holding the exit point (its own deactivated meanwhile); keeps its sector between edges, also where an earlier-listed sector overlaps |
+| 0x00444cf0 / 0x00444d40 / 0x00444c50 | HeadingFrame_TurnToward / HeadingFrame_YawDeltaTo / HeadingFrame_AddYaw | yaw helpers of the heading frame |
+| 0x00445980 | WalkPlaneCollection_BuildPath | (name from the exe's error strings) start/end by the walk mask 0x1000, search over Set_LinkWalkSectors' links: hot, camera and special sectors are never on a path |
+| 0x0042aee0 | Actor_PathAvoidActor | plain WalkActorTo passes no actor (path unchanged); WalkActorToAvoiding: way round a box about the other actor, corners snapped to the floor |
+
+Sort order rule (Actor_GetEffectiveSortOrder 0x4257b0, computed when asked, not cached): the heading frame's sector plane for the
+current setup (planes past the count read 0); before the frame exists, the first active walk sector holding the position.
+The sector is not re-checked for being active: switching it off under a standing actor keeps its plane and its position
+(cleanroom emi_sort_sector.lua: ess_box_off).
+
+Grim v1.01 (GRIMFANDANGO.EXE), checked for the same bug: BuildPath (0x4a9430), Planner_FindPath (0x4a94d0) and
+FindExitPoints (0x4a96f0) take walk planes only (WalkPlane_PlaneAt(.., 0x1000), dwType & 0x1000), and ParseCollection
+(0x4a7bc0) types `chernobyl` 0x8000, `funnel` 0x1100: chernobyl sectors are never on a path (cleanroom fake_links.lua:
+fkl_hot_path).
