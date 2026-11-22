@@ -198,7 +198,7 @@ cr_t_ims_ids = function()
 	cr_log("stopped_by_id", cr_im("ims_loop.imu"))
 	ims_reset()
 end
-cr_scummvm_differs("ims_ids", "in the whole run the id of the next sound is one apart (ScummVM's ids skip one a cached sound has, as ims_cache)") cr_test("ims_ids", cr_t_ims_ids)
+cr_test("ims_ids", cr_t_ims_ids)
 
 -- (a number from 1367 up, not 10000, as the sound is read as the address of a name: it crashes the original's iMUSE.dll at
 -- +0xBEA0 and ScummVM in cacheGetSoundId's string compare (imuse_files.cpp:925-958): left out)

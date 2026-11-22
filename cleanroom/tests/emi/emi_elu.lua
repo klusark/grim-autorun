@@ -744,7 +744,7 @@ cr_test("elu_thumbnail", function()
 	cr_log("wrong", ThumbnailFromFile("elu"))
 end)
 
-cr_scummvm_differs("elu_file_find", "in the whole run the original finds a .gsv saved by an earlier test; ScummVM's FileFindFirst does not (as save_find_*)") cr_test("elu_file_find", function()
+cr_test("elu_file_find", function()
 	cr_log("saves", FileFindFirst("Saves/elu_none*.gsv"))
 	FileFindDispose()
 	cr_log("gsv", type(FileFindFirst("*.gsv")))

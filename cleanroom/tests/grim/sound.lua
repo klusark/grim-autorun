@@ -91,7 +91,7 @@ cr_t_sound_fade = function()
 	ImStopSound("cr_long.wav")
 	cr_frames(1)
 end
-cr_scummvm_differs("sound_fade", "the steps of a fade differ a little between the engines' timers") cr_test("sound_fade", cr_t_sound_fade)
+cr_test("sound_fade", cr_t_sound_fade)
 
 -- the same sound twice: a play count of 2, and one stop for both
 cr_t_sound_twice = function()
