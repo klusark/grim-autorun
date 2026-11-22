@@ -1,4 +1,4 @@
-START 2601 tests
+START 2608 tests
 BEGIN numbers
 V numbers|arith|3.500000 1024.000000 -2.333333 1.#INF00
 V numbers|tostring|"0.333333" "100" "1e+015" "-0.5"
@@ -728,6 +728,97 @@ BEGIN emi_bitmap_flat
 V emi_bitmap_flat|lit|0.000000 0.000000 639.000000 479.000000
 V emi_bitmap_flat|count|none
 END emi_bitmap_flat
+BEGIN ecle_walkto
+V ecle_walkto|ecle_walkto_f30|-0.200000 -0.050000
+V ecle_walkto|ecle_walkto_f60|-0.200000 -0.050000
+V ecle_walkto|ecle_walkto_f90|-0.200000 -0.050000
+V ecle_walkto|ecle_walkto_f120|-0.200000 -0.050000
+V ecle_walkto|ecle_walkto_f150|-0.200000 -0.050000
+V ecle_walkto|ecle_walkto_f180|-0.200000 -0.050000
+V ecle_walkto|ecle_walkto_f210|-0.200000 -0.050000
+V ecle_walkto|ecle_walkto_f240|-0.200000 -0.050000
+V ecle_walkto|ecle_walkto_closest|104.000000
+V ecle_walkto|ecle_walkto_end|-0.200000 -0.050000
+V ecle_walkto|ecle_walkto_moving|nil
+END ecle_walkto
+BEGIN ecle_walkto_floor
+V ecle_walkto_floor|ecle_walkto_floor_f30|-1.255000 -1.000000
+V ecle_walkto_floor|ecle_walkto_floor_f60|-1.255000 -1.000000
+V ecle_walkto_floor|ecle_walkto_floor_f90|-1.255000 -1.000000
+V ecle_walkto_floor|ecle_walkto_floor_f120|-1.255000 -1.000000
+V ecle_walkto_floor|ecle_walkto_floor_f150|-1.255000 -1.000000
+V ecle_walkto_floor|ecle_walkto_floor_f180|-1.255000 -1.000000
+V ecle_walkto_floor|ecle_walkto_floor_f210|-1.255000 -1.000000
+V ecle_walkto_floor|ecle_walkto_floor_f240|-1.255000 -1.000000
+V ecle_walkto_floor|ecle_walkto_floor_closest|65.000000
+V ecle_walkto_floor|ecle_walkto_floor_end|-1.255000 -1.000000
+V ecle_walkto_floor|ecle_walkto_floor_moving|1.000000
+END ecle_walkto_floor
+BEGIN ecle_walkto_graze
+V ecle_walkto_graze|ecle_walkto_graze_f30|-0.259000 -1.158000
+V ecle_walkto_graze|ecle_walkto_graze_f60|-0.200000 -1.150000
+V ecle_walkto_graze|ecle_walkto_graze_f90|-0.200000 -1.150000
+V ecle_walkto_graze|ecle_walkto_graze_f120|-0.200000 -1.150000
+V ecle_walkto_graze|ecle_walkto_graze_f150|-0.200000 -1.150000
+V ecle_walkto_graze|ecle_walkto_graze_f180|-0.200000 -1.150000
+V ecle_walkto_graze|ecle_walkto_graze_f210|-0.200000 -1.150000
+V ecle_walkto_graze|ecle_walkto_graze_f240|-0.200000 -1.150000
+V ecle_walkto_graze|ecle_walkto_graze_closest|65.000000
+V ecle_walkto_graze|ecle_walkto_graze_end|-0.200000 -1.150000
+V ecle_walkto_graze|ecle_walkto_graze_moving|nil
+END ecle_walkto_graze
+BEGIN ecle_walkto_into
+V ecle_walkto_into|ecle_walkto_into_f30|-1.228000 -1.113000
+V ecle_walkto_into|ecle_walkto_into_f60|-1.228000 -1.114000
+V ecle_walkto_into|ecle_walkto_into_f90|-1.228000 -1.114000
+V ecle_walkto_into|ecle_walkto_into_f120|-1.228000 -1.114000
+V ecle_walkto_into|ecle_walkto_into_f150|-1.228000 -1.114000
+V ecle_walkto_into|ecle_walkto_into_f180|-1.228000 -1.114000
+V ecle_walkto_into|ecle_walkto_into_f210|-1.228000 -1.114000
+V ecle_walkto_into|ecle_walkto_into_f240|-1.228000 -1.114000
+V ecle_walkto_into|ecle_walkto_into_closest|65.000000
+V ecle_walkto_into|ecle_walkto_into_end|-1.228000 -1.114000
+V ecle_walkto_into|ecle_walkto_into_moving|1.000000
+END ecle_walkto_into
+BEGIN ecle_walkto_mover_off
+V ecle_walkto_mover_off|ecle_walkto_mover_off_f30|-0.200000 -1.150000
+V ecle_walkto_mover_off|ecle_walkto_mover_off_f60|-0.200000 -1.150000
+V ecle_walkto_mover_off|ecle_walkto_mover_off_f90|-0.200000 -1.150000
+V ecle_walkto_mover_off|ecle_walkto_mover_off_f120|-0.200000 -1.150000
+V ecle_walkto_mover_off|ecle_walkto_mover_off_f150|-0.200000 -1.150000
+V ecle_walkto_mover_off|ecle_walkto_mover_off_f180|-0.200000 -1.150000
+V ecle_walkto_mover_off|ecle_walkto_mover_off_f210|-0.200000 -1.150000
+V ecle_walkto_mover_off|ecle_walkto_mover_off_f240|-0.200000 -1.150000
+V ecle_walkto_mover_off|ecle_walkto_mover_off_closest|23.000000
+V ecle_walkto_mover_off|ecle_walkto_mover_off_end|-0.200000 -1.150000
+V ecle_walkto_mover_off|ecle_walkto_mover_off_moving|nil
+END ecle_walkto_mover_off
+BEGIN ecle_walkto_other_off
+V ecle_walkto_other_off|ecle_walkto_other_off_f30|-0.200000 -1.150000
+V ecle_walkto_other_off|ecle_walkto_other_off_f60|-0.200000 -1.150000
+V ecle_walkto_other_off|ecle_walkto_other_off_f90|-0.200000 -1.150000
+V ecle_walkto_other_off|ecle_walkto_other_off_f120|-0.200000 -1.150000
+V ecle_walkto_other_off|ecle_walkto_other_off_f150|-0.200000 -1.150000
+V ecle_walkto_other_off|ecle_walkto_other_off_f180|-0.200000 -1.150000
+V ecle_walkto_other_off|ecle_walkto_other_off_f210|-0.200000 -1.150000
+V ecle_walkto_other_off|ecle_walkto_other_off_f240|-0.200000 -1.150000
+V ecle_walkto_other_off|ecle_walkto_other_off_closest|23.000000
+V ecle_walkto_other_off|ecle_walkto_other_off_end|-0.200000 -1.150000
+V ecle_walkto_other_off|ecle_walkto_other_off_moving|nil
+END ecle_walkto_other_off
+BEGIN ecle_walkto_other_box
+V ecle_walkto_other_box|ecle_walkto_other_box_f30|-0.200000 -1.150000
+V ecle_walkto_other_box|ecle_walkto_other_box_f60|-0.200000 -1.150000
+V ecle_walkto_other_box|ecle_walkto_other_box_f90|-0.200000 -1.150000
+V ecle_walkto_other_box|ecle_walkto_other_box_f120|-0.200000 -1.150000
+V ecle_walkto_other_box|ecle_walkto_other_box_f150|-0.200000 -1.150000
+V ecle_walkto_other_box|ecle_walkto_other_box_f180|-0.200000 -1.150000
+V ecle_walkto_other_box|ecle_walkto_other_box_f210|-0.200000 -1.150000
+V ecle_walkto_other_box|ecle_walkto_other_box_f240|-0.200000 -1.150000
+V ecle_walkto_other_box|ecle_walkto_other_box_closest|23.000000
+V ecle_walkto_other_box|ecle_walkto_other_box_end|-0.200000 -1.150000
+V ecle_walkto_other_box|ecle_walkto_other_box_moving|nil
+END ecle_walkto_other_box
 BEGIN ec_load
 V ec_load|handle|"number" 1.000000 1.000000
 V ec_load|missing|2.000000
@@ -9382,4 +9473,4 @@ V lex_binary|short|nil
 ERROR lex_binary binary file cr_bin_old.lua too old: version=0x30; expected at least 0x31
 V lex_binary|old|nil
 END lex_binary
-SUMMARY 2601 tests, 247 failed
+SUMMARY 2608 tests, 247 failed

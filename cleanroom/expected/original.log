@@ -1,4 +1,4 @@
-START 5713 tests
+START 5725 tests
 BEGIN boot_state
 V boot_state|movie_playing|nil
 V boot_state|fullscreen_movie_playing|nil
@@ -242,6 +242,72 @@ V chore_loop|after_stop|nil
 V chore_loop|completed|3.000000
 V chore_loop|completed_next|3.000000
 END chore_loop
+BEGIN cle_slide
+V cle_slide|cle_slide_kept_out|1.000000
+V cle_slide|cle_slide_closest|140.000000
+V cle_slide|cle_slide_end|-22.000000 77.000000
+END cle_slide
+BEGIN cle_slide_south
+V cle_slide_south|cle_slide_south_kept_out|1.000000
+V cle_slide_south|cle_slide_south_closest|140.000000
+V cle_slide_south|cle_slide_south_end|-22.000000 -77.000000
+END cle_slide_south
+BEGIN cle_slide_near
+V cle_slide_near|cle_slide_near_kept_out|1.000000
+V cle_slide_near|cle_slide_near_closest|140.000000
+V cle_slide_near|cle_slide_near_end|-30.000000 52.000000
+END cle_slide_near
+BEGIN cle_head_on
+V cle_head_on|cle_head_on_kept_out|1.000000
+V cle_head_on|cle_head_on_closest|140.000000
+V cle_head_on|cle_head_on_end|-22.000000 50.000000
+END cle_head_on
+BEGIN cle_steep
+V cle_steep|cle_steep_kept_out|1.000000
+V cle_steep|cle_steep_closest|140.000000
+V cle_steep|cle_steep_end|-21.000000 58.000000
+END cle_steep
+BEGIN cle_on_floor
+V cle_on_floor|cle_on_floor_kept_out|1.000000
+V cle_on_floor|cle_on_floor_closest|140.000000
+V cle_on_floor|cle_on_floor_end|-50.000000 13.000000
+END cle_on_floor
+BEGIN cle_walkto
+V cle_walkto|cle_walkto_kept_out|1.000000
+V cle_walkto|cle_walkto_closest|140.000000
+V cle_walkto|cle_walkto_end|-2.000000 150.000000
+V cle_walkto|cle_walkto_moving|nil
+END cle_walkto
+BEGIN cle_walkto_into
+V cle_walkto_into|cle_walkto_into_kept_out|1.000000
+V cle_walkto_into|cle_walkto_into_closest|140.000000
+V cle_walkto_into|cle_walkto_into_end|-22.000000 50.000000
+V cle_walkto_into|cle_walkto_into_moving|1.000000
+END cle_walkto_into
+BEGIN cle_walkto_mover_off
+V cle_walkto_mover_off|cle_walkto_mover_off_kept_out|1.000000
+V cle_walkto_mover_off|cle_walkto_mover_off_closest|140.000000
+V cle_walkto_mover_off|cle_walkto_mover_off_end|-2.000000 150.000000
+V cle_walkto_mover_off|cle_walkto_mover_off_moving|nil
+END cle_walkto_mover_off
+BEGIN cle_walkto_wall_off
+V cle_walkto_wall_off|cle_walkto_wall_off_kept_out|nil
+V cle_walkto_wall_off|cle_walkto_wall_off_closest|69.000000
+V cle_walkto_wall_off|cle_walkto_wall_off_end|-2.000000 150.000000
+V cle_walkto_wall_off|cle_walkto_wall_off_moving|nil
+END cle_walkto_wall_off
+BEGIN cle_walkto_floor
+V cle_walkto_floor|cle_walkto_floor_kept_out|1.000000
+V cle_walkto_floor|cle_walkto_floor_closest|140.000000
+V cle_walkto_floor|cle_walkto_floor_end|-50.000000 13.000000
+V cle_walkto_floor|cle_walkto_floor_moving|1.000000
+END cle_walkto_floor
+BEGIN cle_walkto_graze
+V cle_walkto_graze|cle_walkto_graze_kept_out|1.000000
+V cle_walkto_graze|cle_walkto_graze_closest|140.000000
+V cle_walkto_graze|cle_walkto_graze_end|-80.000000 150.000000
+V cle_walkto_graze|cle_walkto_graze_moving|nil
+END cle_walkto_graze
 BEGIN floor_float_wall
 V floor_float_wall|float_wall_z|0.000000
 V floor_float_wall|float_wall_z_after|0.000000
@@ -21392,4 +21458,4 @@ END zbuffer_post
 BEGIN zbuffer_bar
 V zbuffer_bar|bar_box|458.000000 207.000000 571.000000 267.000000 6601.000000
 END zbuffer_bar
-SUMMARY 5713 tests, 257 failed
+SUMMARY 5725 tests, 257 failed
