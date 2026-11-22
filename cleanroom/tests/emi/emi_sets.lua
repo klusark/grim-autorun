@@ -73,6 +73,8 @@ cr_t_es_active = function()
 end
 cr_scummvm_differs("es_active") cr_test("es_active", cr_t_es_active)
 
+-- (in_off: e_off is on here because es_active left it on; ScummVM gets 3 only because it ignores whether a sector is on,
+-- and forgets the switch after a change of set: emi_sector_lookup.lua's esl_after_set_change)
 cr_t_es_point_in = function()
 	MakeCurrentSet("cr_edge.set")
 	cr_log("in_left", IsPointInSector(-1, 0, 0, "e_left"))

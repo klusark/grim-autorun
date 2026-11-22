@@ -1,4 +1,4 @@
-START 2608 tests
+START 2614 tests
 BEGIN numbers
 V numbers|arith|3.500000 1024.000000 -2.333333 1.#INF00
 V numbers|tostring|"0.333333" "100" "1e+015" "-0.5"
@@ -1682,6 +1682,67 @@ V rnd_e_say|far|1.000000
 V rnd_e_say|draw28|(unstable)
 U rnd_e_say|draw28
 END rnd_e_say
+BEGIN esl_point_names
+V esl_point_names|exact|0.000000 "e_left" 4096.000000
+V esl_point_names|part_end|nil
+V esl_point_names|part_start|nil
+V esl_point_names|prefix|nil
+V esl_point_names|upper|nil
+V esl_point_names|longer|nil
+V esl_point_names|other_sector|nil
+V esl_point_names|empty|nil
+V esl_point_names|right_exact|1.000000 "e_right" 4096.000000
+V esl_point_names|right_part|nil
+V esl_point_names|shared_left|0.000000 "e_left" 4096.000000
+V esl_point_names|shared_right|1.000000 "e_right" 4096.000000
+V esl_point_names|shared_prefix|nil
+END esl_point_names
+BEGIN esl_point_off
+V esl_point_off|off_initial|nil
+V esl_point_off|off_initial_part|nil
+V esl_point_off|off_on|3.000000 "e_off" 4096.000000
+V esl_point_off|off_off|nil
+V esl_point_off|left_off|nil
+V esl_point_off|left_off_shared_right|1.000000 "e_right" 4096.000000
+V esl_point_off|left_off_frame|nil
+V esl_point_off|left_on|0.000000 "e_left" 4096.000000
+END esl_point_off
+BEGIN esl_actor
+V esl_actor|exact|0.000000 "e_left" 4096.000000
+V esl_actor|part|nil
+V esl_actor|prefix|nil
+V esl_actor|upper|nil
+V esl_actor|left_off|nil
+V esl_actor|left_off_frames|nil
+V esl_actor|left_on|0.000000 "e_left" 4096.000000
+V esl_actor|in_off|nil
+V esl_actor|in_off_on|3.000000 "e_off" 4096.000000
+V esl_actor|in_off_off|nil
+END esl_actor
+BEGIN esl_actor_attached
+V esl_actor_attached|before_left|0.000000 "e_left" 4096.000000
+V esl_actor_attached|before_right|nil
+V esl_actor_attached|attached_pos|-2.000000 0.000000 0.000000
+V esl_actor_attached|attached_wpos|-1.000000 0.000000 0.000000
+V esl_actor_attached|attached_left|0.000000 "e_left" 4096.000000
+V esl_actor_attached|attached_right|nil
+V esl_actor_attached|carrier_moved_wpos|-1.000000 0.000000 3.000000
+V esl_actor_attached|moved_right|nil
+V esl_actor_attached|moved_gap|2.000000 "e_gap" 4096.000000
+V esl_actor_attached|moved_left|nil
+V esl_actor_attached|detached_wpos|-1.000000 0.000000 3.000000
+V esl_actor_attached|detached_left|nil
+V esl_actor_attached|detached_gap|2.000000 "e_gap" 4096.000000
+END esl_actor_attached
+BEGIN esl_after_set_change
+V esl_after_set_change|off_point|3.000000 "e_off" 4096.000000
+V esl_after_set_change|left_point|nil
+V esl_after_set_change|off_point_same_set|3.000000 "e_off" 4096.000000
+END esl_after_set_change
+BEGIN esl_after_set_change_active
+V esl_after_set_change_active|off_active|1.000000
+V esl_after_set_change_active|left_active|nil
+END esl_after_set_change_active
 BEGIN es_load
 V es_load|setup|0.000000
 V es_load|centre|0.000000 "floor" 4096.000000
@@ -9473,4 +9534,4 @@ V lex_binary|short|nil
 ERROR lex_binary binary file cr_bin_old.lua too old: version=0x30; expected at least 0x31
 V lex_binary|old|nil
 END lex_binary
-SUMMARY 2608 tests, 247 failed
+SUMMARY 2614 tests, 247 failed

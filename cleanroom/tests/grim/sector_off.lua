@@ -1,0 +1,133 @@
+-- IsPointInSector and IsActorInSector with sectors that are switched off (MakeSectorActive). The game's scripts ask
+-- find_sector_name (IsActorInSector) about sectors that other scripts switch on and off: open_inventory says "not here"
+-- in a door trigger (_inventory.lua), ga.lua switches ha_door_trigger off when the bone wagon is lowered. ScummVM's
+-- getSectorBySubstring did not look at whether the sector is on.
+-- cr_edge.set: e_left (-2..0) and e_right (0..2) share the edge x = 0, e_off (y -4..-2) starts off, e_gap, e_wedge.
+
+cr_soff_point = function(key, x, y, z, name)
+	local id, sname, typ = IsPointInSector(x, y, z, name)
+	cr_log(key, id, sname, typ)
+end
+
+cr_soff_actor = function(key, a, name)
+	local id, sname, typ = IsActorInSector(a, name)
+	cr_log(key, id, sname, typ)
+end
+
+-- a sector that is off from the set file, then on, then off again; by its full name and by part of it
+cr_t_soff_point_initial = function()
+	MakeCurrentSet("cr_edge.set")
+	cr_frames(1)
+	cr_soff_point("off_full", 0, -3, 0, "e_off")
+	cr_soff_point("off_part", 0, -3, 0, "off")
+	cr_soff_point("off_prefix", 0, -3, 0, "e_")
+	MakeSectorActive("e_off", TRUE)
+	cr_soff_point("on_full", 0, -3, 0, "e_off")
+	cr_soff_point("on_part", 0, -3, 0, "off")
+	cr_soff_point("on_prefix", 0, -3, 0, "e_")
+	MakeSectorActive("e_off", FALSE)
+	cr_soff_point("off_again_full", 0, -3, 0, "e_off")
+	cr_soff_point("off_again_prefix", 0, -3, 0, "e_")
+	-- (a point outside of every sector, for comparison)
+	cr_soff_point("outside", 0, -5, 0, "e_")
+end
+cr_scummvm_differs("soff_point_initial", "master: a sector that is off contains points (getSectorBySubstring ignores isVisible)") cr_test("soff_point_initial", cr_t_soff_point_initial)
+
+-- a sector that is on in the set file, switched off and on again
+cr_t_soff_point_switched = function()
+	MakeCurrentSet("cr_edge.set")
+	cr_frames(1)
+	cr_soff_point("left_on", -1, 0, 0, "e_left")
+	MakeSectorActive("e_left", FALSE)
+	cr_soff_point("left_off", -1, 0, 0, "e_left")
+	cr_soff_point("left_off_part", -1, 0, 0, "left")
+	cr_soff_point("left_off_prefix", -1, 0, 0, "e_")
+	cr_frames(1)
+	cr_soff_point("left_off_frame", -1, 0, 0, "e_left")
+	MakeSectorActive("e_left", TRUE)
+	cr_soff_point("left_on_again", -1, 0, 0, "e_left")
+	-- (switched by its id: e_left is the first sector of the file)
+	MakeSectorActive(0, FALSE)
+	cr_soff_point("left_off_by_id", -1, 0, 0, "e_left")
+	MakeSectorActive(0, TRUE)
+	cr_soff_point("left_on_by_id", -1, 0, 0, "e_left")
+end
+cr_scummvm_differs("soff_point_switched", "master: a switched-off sector contains points; MakeSectorActive by number switches it, the original does not") cr_test("soff_point_switched", cr_t_soff_point_switched)
+
+-- the shared edge x = 0: with e_left off a search by a common part of the names finds e_right
+cr_t_soff_point_shared = function()
+	MakeCurrentSet("cr_edge.set")
+	cr_frames(1)
+	cr_soff_point("shared_both_on", 0, 0, 0, "e_")
+	MakeSectorActive("e_left", FALSE)
+	cr_soff_point("shared_left_off", 0, 0, 0, "e_")
+	cr_soff_point("shared_left_off_left", 0, 0, 0, "e_left")
+	cr_soff_point("shared_left_off_right", 0, 0, 0, "e_right")
+	MakeSectorActive("e_right", FALSE)
+	cr_soff_point("shared_both_off", 0, 0, 0, "e_")
+	MakeSectorActive("e_left", TRUE)
+	cr_soff_point("shared_right_off", 0, 0, 0, "e_")
+	MakeSectorActive("e_right", TRUE)
+	cr_soff_point("shared_both_on_again", 0, 0, 0, "e_")
+end
+cr_scummvm_differs("soff_point_shared", "master: sectors that are off contain points; the original searches the last sector of the file first (e_right on the shared edge)") cr_test("soff_point_shared", cr_t_soff_point_shared)
+
+-- an actor standing in a sector that is switched off under it (the door trigger of open_inventory)
+cr_t_soff_actor = function()
+	local a = cr_actor("cr_edge.set", TRUE)
+	cr_frames(1)
+	PutActorAt(a, -1, 0, 0)
+	cr_soff_actor("left_on", a, "e_left")
+	MakeSectorActive("e_left", FALSE)
+	cr_soff_actor("left_off", a, "e_left")
+	cr_soff_actor("left_off_part", a, "left")
+	cr_soff_actor("left_off_prefix", a, "e_")
+	cr_frames(2)
+	cr_soff_actor("left_off_frames", a, "e_left")
+	MakeSectorActive("e_left", TRUE)
+	cr_soff_actor("left_on_again", a, "e_left")
+	PutActorAt(a, 0, -3, 0)
+	cr_soff_actor("in_off", a, "e_off")
+	cr_soff_actor("in_off_prefix", a, "e_")
+	MakeSectorActive("e_off", TRUE)
+	cr_soff_actor("in_off_on", a, "e_off")
+	MakeSectorActive("e_off", FALSE)
+	cr_soff_actor("in_off_off", a, "e_off")
+	PutActorAt(a, 0, 0, 0)
+	MakeSectorActive("e_left", FALSE)
+	cr_soff_actor("shared_left_off", a, "e_")
+	MakeSectorActive("e_left", TRUE)
+	cr_soff_actor("shared_left_on", a, "e_")
+end
+cr_scummvm_differs("soff_actor", "master: IsActorInSector finds sectors that are off; search order on the shared edge (original: last sector first)") cr_test("soff_actor", cr_t_soff_actor)
+
+-- an actor that follows the boxes, put in a sector that is off (PutActorAt does not move it out)
+cr_t_soff_actor_follow = function()
+	local a = cr_actor("cr_edge.set")
+	cr_frames(1)
+	MakeSectorActive("e_left", FALSE)
+	PutActorAt(a, -1, 0, 0)
+	cr_frames(1)
+	cr_pos("pos", a)
+	cr_soff_actor("left_off", a, "e_left")
+	cr_log("walk_sector", GetActorSector(a, 4096))
+	MakeSectorActive("e_left", TRUE)
+	cr_soff_actor("left_on", a, "e_left")
+	cr_log("walk_sector_on", GetActorSector(a, 4096))
+end
+cr_scummvm_differs("soff_actor_follow", "master: IsActorInSector finds a sector that is off; GetActorSector on the shared edge (original: last sector first)") cr_test("soff_actor_follow", cr_t_soff_actor_follow)
+
+-- the state of the sectors is kept across a change of set: a lookup after coming back
+cr_t_soff_after_set_change = function()
+	MakeCurrentSet("cr_edge.set")
+	cr_frames(1)
+	MakeSectorActive("e_left", FALSE)
+	MakeCurrentSet("cr_flat.set")
+	cr_frames(1)
+	MakeCurrentSet("cr_edge.set")
+	cr_frames(1)
+	cr_soff_point("left_after_return", -1, 0, 0, "e_left")
+	MakeSectorActive("e_left", TRUE)
+	cr_soff_point("left_on_after_return", -1, 0, 0, "e_left")
+end
+cr_scummvm_differs("soff_after_set_change", "master: a sector that is off contains points; switched sectors are on again after a change of set (cf. sector_active_kept)") cr_test("soff_after_set_change", cr_t_soff_after_set_change)
