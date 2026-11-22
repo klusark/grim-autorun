@@ -327,3 +327,15 @@ Grim v1.01 (GRIMFANDANGO.EXE), checked for the same bug: BuildPath (0x4a9430), P
 FindExitPoints (0x4a96f0) take walk planes only (WalkPlane_PlaneAt(.., 0x1000), dwType & 0x1000), and ParseCollection
 (0x4a7bc0) types `chernobyl` 0x8000, `funnel` 0x1100: chernobyl sectors are never on a path (cleanroom fake_links.lua:
 fkl_hot_path).
+
+## Added 2026-11-22 (actor collisions on path walks, ScummVM bug 11813)
+
+| Address | Name | Note |
+| --- | --- | --- |
+| 0x0042ce50 (Monkey4.exe) | Actor_CollideWithOthers | EMI's collision pass for one moved actor, path walks included: only when the mover's mode (extra+0x270) is on (box or sphere, both act as a sphere); radius = half the x-z diagonal of the model's bounding box * scale (extra+0x274), no 0.8; centre = the model's centre through the world matrix, 3D distance; only sphere-mode (2) actors push, to r1 + r2 (Actor_PlaceViaHeadingFrame); then the Lua callback FUN_0040f9a0 (cleanroom emi_collision_path.lua) |
+
+Grim (GRIMFANDANGO.EXE): Collision_UpdateMovedActors (0x4939a0) tests every actor whose position changed in the frame, path
+walks included, whatever the mover's own mode; the sphere branch of Collision_TestActorAgainstOthers (0x4939f0) only pushes,
+the box branch also re-plans the path (Walker_AvoidActorPath). The sphere centre is the model header's centre (rdModel3
++0x78) turned with the actor, without the insert offset (+0x84); rdModel3_LoadEntryBinary keeps the header's radius, centre
+and box (no rdModel3_LoadPostProcess for binary models). Cleanroom collision_edge.lua.
