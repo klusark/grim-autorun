@@ -3,7 +3,7 @@
 # so run.py counts the test running then as a crasher (expected/*scummvm_crashers_<renderer>.txt). The valgrind report is
 # appended to ScummVM's --logfile (run.py keeps it in logs/crashes/) and kept in $VG_LOGS.
 # Valgrind is slow: CR_STALL=180 CR_STARTUP=600 CR_GAMES=<cores>. VG_EXE: the ScummVM build (with -g); VG_SUPP: suppressions.
-EXE=${VG_EXE:-$HOME/scummvm-cleanroom/build/scummvm}
+EXE=${VG_EXE:-$HOME/scummvm-patched/build-opt/scummvm}
 VG_LOGS=${VG_LOGS:-/tmp/vglogs}; mkdir -p "$VG_LOGS"
 # (the OpenGL shaders: an uninstalled build looks for shaders/ under extrapath)
 SRC=$(dirname "$(dirname "$EXE")"); mkdir -p "$VG_LOGS/extra"; ln -sfn "$SRC/engines/grim/shaders" "$VG_LOGS/extra/shaders"

@@ -7,7 +7,7 @@
 # first chapter starts a new game). The voices are muted (subtitles only) and the game runs in
 # simulated time (SIMFPS frames a second, 60 unless set), never in a scaled clock. The log of the run is written to
 # ./logs/<chapter>.log and the AUTORUN lines are shown at the end.
-# Run it from an MSYS2 UCRT64 shell, scummvm is the one built in ~/scummvm-autorun/build-opt (SVM_DIR).
+# Run it from an MSYS2 UCRT64 shell, scummvm is the one built in ~/scummvm-patched/build-opt by ../scummvm/build.sh (SVM_DIR).
 
 AR=/c/Users/Joel/grim_tools/autorun
 . "$AR/mode.sh" || exit 1
@@ -62,9 +62,10 @@ for r in $GRIMON; do ini_set "$INI" "$r" true; done
 [ -n "$NOPATCHR" ] && ini_set "$INI" no_patchr true
 [ -n "$DUMPPATCHR" ] && ini_set "$INI" dump_patchr true
 
-# The engine: SVM_DIR, default the build-opt of the worktree ~/scummvm-autorun (branch autorun, the one engine of the Grim and EMI autoruns;
+# The engine: SVM_DIR, default the build-opt of the worktree ~/scummvm-patched (upstream master + ../scummvm/grim-tools.patch, built by
+# ../scummvm/build.sh: the one engine of the Grim and EMI autoruns and the clean-room tests; the old branch autorun is SVM_DIR=/home/Joel/scummvm-autorun/build-opt;
 # SVM_BUILD=build-cov or another build folder of that worktree)
-export SVM_DIR="${SVM_DIR:-/home/Joel/scummvm-autorun/${SVM_BUILD:-build-opt}}"
+export SVM_DIR="${SVM_DIR:-/home/Joel/scummvm-patched/${SVM_BUILD:-build-opt}}"
 cd "$SVM_DIR" || exit 1
 # STALL=<seconds>: a run that logs nothing of the autorun for that long is killed (default 90; 0 = never)
 # CHSTALL=<seconds>: a chapter that takes longer than that is killed (default 120 in speed100, where a chapter takes 32 s at most; 0 = never)

@@ -13,7 +13,7 @@ HERE=$(cd "$(dirname "$0")/.." && pwd)
 WORK=$1
 SRC=$2
 shift 2 || { sed -n 2,12p "$0"; exit 2; }
-BUILDDIR=${CR_COV_BUILD:-$HOME/scummvm-cleanroom/build-cov}
+BUILDDIR=${CR_COV_BUILD:-$HOME/scummvm-patched/build-cov}
 REPO=$(cd "$BUILDDIR/.." && pwd)
 mkdir -p "$WORK"
 WORK=$(cd "$WORK" && pwd)

@@ -89,7 +89,7 @@ once keep the machine busy. `--coverage` is the coverage run (below). `tools/mar
   The game is started only through `grimlaunch.exe` (debuglog, simtime, config and windowed patches). `grim.ini` points
   `GrimDataDir` at the run folder and sets `good_times` (no CD check).
   `run.py` does not start if a `GRIMFANDANGO.exe` is running already, and it kills only the process it started.
-- **ScummVM:** a build with `scummvm/grim-test-data.patch` (a detection entry for the marker file `grimtestdata.txt`,
+- **ScummVM:** a build with `../scummvm/grim-tools.patch`, the patch the autoruns use too (a detection entry for the marker file `grimtestdata.txt`,
   flag `GF_TESTDATA`: no `gfupd101.exe`, no `grim-patch.lab`, no md5 check, loose files and the folder's own LABs;
   `PrintDebug("CRSNAP:<file>")` saves a picture of the screen; an `error()` ends ScummVM at once, with its message in the
   log, instead of opening the debugger and waiting there; `sim_frame_ms` in the ini makes every frame that long, like the
@@ -98,9 +98,9 @@ once keep the machine busy. `--coverage` is the coverage run (below). `tools/mar
   still does the draw path's updates (movie time, spoken-line text placement, text objects), so the logs are the same.
   In Grim the mixer, iMUSE, SMUSH and the movie decoders also run by that game time instead of the wall clock, through
   small hooks in `audio/mixer` and `video/video_decoder`. Test data also skips the 0.6 s ScummVM logo).
-  The patch applies to upstream `master` and needs nothing from another branch. `scummvm/build.sh` builds it in the
-  worktree `~/scummvm-cleanroom` (`git worktree add --detach ../scummvm-cleanroom master` and `git apply` the patch
-  first). `SCUMMVM=` selects another exe.
+  The patch applies to upstream `master` and needs nothing from another branch. `../scummvm/build.sh` builds it in the
+  worktree `~/scummvm-patched` (made from upstream master the first time, the patch applied by `../scummvm/prepare.sh`),
+  in `build-opt`, the engine run.py uses by default; see `../scummvm/README.md`. `SCUMMVM=` selects another exe.
 - **No windows on the screen:** ScummVM and the originals run on a desktop of their own (`tools/offscreen.c`, built into
   `run/offscreen.exe`): they draw as before (OpenGL, DirectDraw), but nothing shows and they cannot take the focus. The
   program and what it starts are in a job that ends with `offscreen.exe`, so killing a run that hangs kills them all. EMI's
@@ -166,7 +166,7 @@ means the same test source, not the same values. The EMI runs use `build_emi/`, 
   - a `.tga` background loads, but leaves its resource list broken, and about one run in three later hangs inside
     `MakeCurrentSet`, walking that list without end (0x45d3e1);
   - it also loads `pixeltest.til`, `dfltroom.til` and `default.tga` at start, so the archive has them.
-- **ScummVM:** `grim-test-data.patch` also has a `monkey4` "Test data" entry: no `MonkeyUpdate.exe`, no
+- **ScummVM:** `grim-tools.patch` also has a `monkey4` "Test data" entry: no `MonkeyUpdate.exe`, no
   `monkey4-patch.m4b`, only the folder's own `.m4b`, and no music-table dialog. ScummVM stops without `script.tab` and
   shows that dialog without the music tables; the original does neither.
 
@@ -431,8 +431,9 @@ DestroyAllUIButtonsImmediately, CacheCurrentWalkVector and RemoveBorders as buil
 `.github/workflows/scummvm-cleanroom.yml` runs `run.py scummvm` for Grim and EMI on a Windows runner every night, on a
 push that changes `cleanroom/`, and by hand (Actions, "Run workflow": another repository or branch of ScummVM, other
 renderers). It builds the branch `cleanroom` of klusark/scummvm: the test patch as a commit of its own and, after it, the
-fixes in progress of `~/scummvm-cleanroom` (push the worktree's work there to test it). For a branch without the test
-patch (upstream master), "apply_patch" applies `scummvm/grim-test-data.patch`. The build is in the runner's MSYS2 (UCRT64,
+fixes in progress (push them there to test them). For a branch without the test patch (upstream master), "apply_patch"
+applies `scummvm/grim-tools.patch`. The build uses the same scripts as a local one (`scummvm/prepare.sh` and
+`scummvm/configure.sh`, `../scummvm/README.md`) in the runner's MSYS2 (UCRT64,
 ccache), with Mesa's software OpenGL (llvmpipe, `opengl32.dll` next to `scummvm.exe`: the runner has no GPU), and it is
 compared with the expected logs here; the originals are not run there. The job fails on a regression or a crash without
 a mark; the summary lists them and the logs are kept as an artifact. The marks follow upstream master: a test that only
@@ -447,15 +448,11 @@ lines never run, is the artifact `coverage` (`index.html`). Its results are not 
 
 ## Coverage of ScummVM
 
-A gcov build of the cleanroom worktree measures which lines of engines/grim the tests run:
+A gcov build of the patched worktree measures which lines of engines/grim the tests run:
 
 ```sh
-mkdir ~/scummvm-cleanroom/build-cov && cd ~/scummvm-cleanroom/build-cov
-CXX="ccache g++" CC="ccache gcc" CXXFLAGS="--coverage -fprofile-update=atomic -O0 -g" \
-    LDFLAGS="--coverage -fprofile-update=atomic" ../configure --disable-all-engines --enable-engines=grim,monkey4
-sed -i 's/^CXXFLAGS := \(.*\)$/CXXFLAGS := \1 -DCR_GCOV/' config.mk   # Exit() writes the counters (see below)
-make -j16
-cd ~/grim_tools/cleanroom && tools/parallel.sh --coverage   # every game and renderer at once; the report: reports/coverage/
+bash ../scummvm/build.sh --gcov   # ~/scummvm-patched/build-cov: --coverage -O0 and -DCR_GCOV (Exit() writes the counters, see below)
+tools/parallel.sh --coverage      # every game and renderer at once; the report: reports/coverage/
 ```
 
 `tools/parallel.sh --coverage` runs Grim, EMI and Grim in the Remastered mode, each with every renderer: nine `run.py
@@ -487,8 +484,8 @@ and the debugger.
 
 Which of the Lua the engine ran: every function, line and instruction of every script, with counts. It works for any Lua the
 engine runs, so the same build measures the clean-room tests, the autorun's own scripts and the game's scripts in a playthrough.
-It needs a ScummVM with `scummvm/lua-coverage.patch` (made on the `cleanroom` branch, on top of grim-test-data.patch; only
-the `PrintDebug` hunk depends on it). The patch is in engines/grim/lua (`lcoverage.cpp`); it does nothing until it is turned on.
+It needs a ScummVM with `../scummvm/lua-coverage.patch` (on top of grim-tools.patch, only the `PrintDebug` hunk depends on
+it): `bash ../scummvm/build.sh --lua-coverage ~/scummvm-luacov`. The patch is in engines/grim/lua (`lcoverage.cpp`); it does nothing until it is turned on.
 
 ```sh
 python run.py scummvm --lua-coverage DIR [--game emi] [--only ...]   # the report: DIR/report/index.html, DIR/report.json

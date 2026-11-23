@@ -72,8 +72,8 @@ RUN = os.path.join(WORK, "run")
 LOGS = os.path.join(WORK, "logs")
 EXPECTED = os.path.join(HERE, "expected", "original.log")
 UNSTABLE = os.path.join(HERE, "expected", "unstable.txt")
-# (a build with scummvm/grim-test-data.patch: scummvm/build.sh makes it in ~/scummvm-cleanroom)
-SCUMMVM = os.environ.get("SCUMMVM", r"C:\msys64\home\Joel\scummvm-cleanroom\build\scummvm.exe")
+# (a build with grim_tools/scummvm/grim-tools.patch: ../scummvm/build.sh makes it in ~/scummvm-patched, shared with the autoruns)
+SCUMMVM = os.environ.get("SCUMMVM", r"C:\msys64\home\Joel\scummvm-patched\build-opt\scummvm.exe")
 GRIM_INSTALL = os.environ.get("GRIM_INSTALL", r"C:\GOG Games\GRIMDATA")
 REMASTERED_INSTALL = os.environ.get("REMASTERED_INSTALL", "C:/Program Files (x86)/Steam/steamapps/common/Grim Fandango Remastered")
 
@@ -604,7 +604,7 @@ class DecompEngine(Engine):
 class ScummvmEngine(Engine):
     """ScummVM with the current renderer (RENDERER). Its log is its --logfile, written line by line (its stdout is buffered
     and lost when the process is killed). Every frame is 17 ms, like the original's simtime patch (sim_frame_ms in the ini,
-    grim-test-data.patch), and there is no frame limit."""
+    grim-tools.patch), and there is no frame limit."""
     name = "scummvm"
     keep = ["scummvm.ini"]
 
@@ -621,7 +621,7 @@ class ScummvmEngine(Engine):
                     # (no waiting for the screen's refresh at each picture drawn: with it a run takes 5 times as long)
                     "vsync=false\n"
                     # (no anti-aliasing: with it 0 the backend does not probe the levels, a window and an OpenGL context for
-                    # each of 2 to 32 samples at every start, grim-test-data.patch)
+                    # each of 2 to 32 samples at every start, grim-tools.patch)
                     "antialiasing=0\n"
                     # (no joystick: with -1 the backend does not start SDL's joystick subsystem and look for one at every start)
                     "joystick_num=-1\n\n"
@@ -1112,7 +1112,7 @@ def run_lua_coverage(folder, run):
     os.environ["GRIM_LUA_COVERAGE"] = folder
     rc = run()
     if not any(f.startswith("luacov_") for f in os.listdir(folder)):
-        say("lua coverage: no luacov_*.txt in %s: is ScummVM built with scummvm/lua-coverage.patch?" % folder)
+        say("lua coverage: no luacov_*.txt in %s: is ScummVM built with grim_tools/scummvm/lua-coverage.patch (scummvm/build.sh --lua-coverage)?" % folder)
         return rc
     sys.path.insert(0, os.path.join(HERE, "..", "autorun", "tools"))
     import luacov  # noqa: E402
@@ -1198,7 +1198,7 @@ def main():
     ap.add_argument("--fresh", action="store_true",
                     help="scummvm: run the tests that crashed or hung ScummVM before again (expected/scummvm_crashers_<renderer>.txt)")
     ap.add_argument("--lua-coverage", metavar="DIR",
-                    help="scummvm: the coverage of the tests' Lua (a ScummVM with scummvm/lua-coverage.patch): its luacov_*.txt "
+                    help="scummvm: the coverage of the tests' Lua (a ScummVM with grim_tools/scummvm/lua-coverage.patch): its luacov_*.txt "
                          "in DIR (the old ones removed first), then the report DIR/report/index.html (autorun/tools/luacov.py)")
     ap.add_argument("--visible", action="store_true", help="show the engines' windows on the screen (same as CR_VISIBLE=1)")
     ap.add_argument("--work", metavar="DIR", help="build/, run/ and logs/ in DIR, and expected/ only read: for runs in parallel")

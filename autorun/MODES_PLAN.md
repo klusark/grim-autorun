@@ -323,7 +323,7 @@ Whole game: passes, 491,407 frames (SAVE=1), dialog lines 381 of 466. The speed 
 
 ## Status (2026-11-16): the Lua coverage of the game's scripts
 
-A ScummVM with cleanroom/scummvm/lua-coverage.patch (a worktree of the autorun branch, ~/scummvm-luacov, built as build-opt is) and GRIM_LUA_COVERAGE
+A ScummVM with scummvm/lua-coverage.patch (a worktree of the autorun branch, ~/scummvm-luacov, built as build-opt is) and GRIM_LUA_COVERAGE
 set measures which functions of the game's scripts a run calls: SVM_DIR=/home/Joel/scummvm-luacov/build-opt GRIM_LUA_COVERAGE=<folder> MODE=speed100
 run_all.sh, then tools/luacov.py <folder> --json report.json. tools/luamiss.py report.json <run log> gives each object handler that never ran
 (<set>.<object>.<lookAt|use|pickUp|use_item|walkOut>) the reason: set never entered, set not swept, heavy step off, tried and refused, never tried.

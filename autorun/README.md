@@ -19,9 +19,10 @@ differences, read [../HANDOFF.md](../HANDOFF.md).
 ## Requirements
 
 - An MSYS2 **UCRT64** shell. The scripts are POSIX `sh`, with Python for the tools.
-- The autorun engine: worktree `~/scummvm-autorun` (branch `autorun`), build `build-opt`, built by
-  `../build_scummvm_autorun.sh`. The EMI autorun uses the same engine. `SVM_DIR=<folder>` or
-  `SVM_BUILD=<build folder of that worktree>` points a run at another build.
+- The autorun engine: worktree `~/scummvm-patched` (upstream master with `../scummvm/grim-tools.patch`), build
+  `build-opt`, built by `../scummvm/build.sh` (`../scummvm/README.md`). The EMI autorun and the clean-room tests use the
+  same engine. `SVM_DIR=<folder>` or `SVM_BUILD=<build folder of that worktree>` points a run at another build (the old
+  `autorun` branch: `SVM_DIR=/home/Joel/scummvm-autorun/build-opt`, built by `../build_scummvm_autorun.sh`).
 - The game data in `C:\GOG Games\GRIMDATA`. Your `%APPDATA%\ScummVM\scummvm.ini` must have a `grim-win`
   target. Each run copies that ini into `generated/` and changes the copy, so your own ini is never written.
 - For the original exe: the v1.01 install and `../launcher/grimlaunch.exe` (see `../README.md`). Start the

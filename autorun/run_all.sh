@@ -107,9 +107,10 @@ if [ -n "$WIN" ]; then
 	ini_set "$INI" fullscreen false
 fi
 
-# The engine: SVM_DIR, default the build-opt of the worktree ~/scummvm-autorun (branch autorun, the one engine of the Grim and EMI autoruns;
+# The engine: SVM_DIR, default the build-opt of the worktree ~/scummvm-patched (upstream master + ../scummvm/grim-tools.patch, built by
+# ../scummvm/build.sh: the one engine of the Grim and EMI autoruns and the clean-room tests; the old branch autorun is SVM_DIR=/home/Joel/scummvm-autorun/build-opt;
 # SVM_BUILD=build-cov or another build folder of that worktree)
-export SVM_DIR="${SVM_DIR:-/home/Joel/scummvm-autorun/${SVM_BUILD:-build-opt}}"
+export SVM_DIR="${SVM_DIR:-/home/Joel/scummvm-patched/${SVM_BUILD:-build-opt}}"
 cd "$SVM_DIR" || exit 1
 # STALL=<seconds>: a run that logs nothing of the autorun for that long is killed (default 90; 0 = never)
 # CHSTALL=<seconds>: a chapter that takes longer than that is killed (default 120 in speed100, where a chapter takes 32 s at most; 0 = never)

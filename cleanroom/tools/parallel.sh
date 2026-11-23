@@ -5,7 +5,7 @@
 #   tools/parallel.sh [--games grim,emi,remastered] [--renderers opengl,opengl_shaders,software] [run.py options...]
 #       a quick check with the usual build ($SCUMMVM, or run.py's default); games default grim,emi
 #   tools/parallel.sh --coverage [build dir] [...]
-#       the coverage: the gcov build (default ~/scummvm-cleanroom/build-cov, README.md "Coverage of ScummVM"), its counters
+#       the coverage: the gcov build (default ~/scummvm-patched/build-cov, README.md "Coverage of ScummVM"), its counters
 #       cleared first, every game by default, then autorun/tools/covreport.py --all into reports/coverage/
 #   (other options go to every run.py: --only T1,T2, --fresh, --visible)
 #   CR_PARALLEL_DIR: the folder of the runs (default run/parallel, relative to cleanroom/; emptied first)
@@ -24,7 +24,7 @@ ARGS=()
 while [ $# -gt 0 ]; do
 	case $1 in
 		--coverage)
-			COV=$HOME/scummvm-cleanroom/build-cov
+			COV=$HOME/scummvm-patched/build-cov
 			if [ -n "$2" ] && [ "${2#--}" = "$2" ]; then COV=$2; shift; fi ;;
 		--games) GAMES=$2; GAMES_SET=1; shift ;;
 		--renderers) RENDERERS=$2; shift ;;
