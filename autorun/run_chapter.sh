@@ -31,6 +31,9 @@ if [ -z "$REAL" ]; then
 else
 	ini_set "$INI" speech_mute false; ini_set "$INI" subtitles true
 fi
+# (a simulated run does not wait for the monitor at a flip: a movie flips at every new picture of it, and with vsync each flip waits for the next refresh,
+# which holds the movies to the monitor's rate; VSYNC=1 keeps the vsync of the configuration, a run in real time, REALTIME=1, keeps it too)
+[ -z "$REALTIME" ] && [ -z "$VSYNC" ] && ini_set "$INI" vsync false
 [ "${PRELOAD:-1}" != 0 ] && ini_set "$INI" preload_data true
 [ -z "$LOOSE" ] && ini_set "$INI" loose_files false
 [ -n "$SIMMS" ] && ini_set "$INI" sim_frame_ms "$SIMMS"
