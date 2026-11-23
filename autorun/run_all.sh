@@ -92,6 +92,9 @@ fi
 # NOSHORT=1: no zero-length frame after a change of set, a load or a save (the original has none); SHORTSIM=1: the zero frame in a simulated run too
 [ -n "$NOSHORT" ] && ini_set "$INI" no_short_frame true
 [ -n "$SHORTSIM" ] && ini_set "$INI" sim_short_frame true
+# (a simulated run does not wait for the monitor at a flip: a movie flips at every new picture of it, and with vsync each flip waits for the next refresh,
+# which holds the movies to the monitor's rate; VSYNC=1 keeps the vsync of the configuration, a run in real time, REALTIME=1, keeps it too)
+[ -z "$REALTIME" ] && [ -z "$VSYNC" ] && ini_set "$INI" vsync false
 [ -n "$WALLFPS" ] && ini_set "$INI" sim_wall_fps "$WALLFPS"
 [ -n "$HOLDMS" ] && ini_set "$INI" sim_hold_ms "$HOLDMS"
 [ -n "$MARKER" ] && ini_set "$INI" frame_marker true
