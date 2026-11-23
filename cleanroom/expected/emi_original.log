@@ -1,4 +1,4 @@
-START 2614 tests
+START 2618 tests
 BEGIN numbers
 V numbers|arith|3.500000 1024.000000 -2.333333 1.#INF00
 V numbers|tostring|"0.333333" "100" "1e+015" "-0.5"
@@ -1743,6 +1743,51 @@ BEGIN esl_after_set_change_active
 V esl_after_set_change_active|off_active|1.000000
 V esl_after_set_change_active|left_active|nil
 END esl_after_set_change_active
+BEGIN eopp_names
+V eopp_names|exact_ret|nil
+V eopp_names|exact|-0.500000 0.000000 2.000000
+V eopp_names|part_ret|nil
+V eopp_names|part|-0.500000 0.000000 0.500000
+V eopp_names|upper_ret|nil
+V eopp_names|upper|-0.500000 0.000000 0.500000
+V eopp_names|none_ret|nil
+V eopp_names|none|-0.500000 0.000000 0.500000
+END eopp_names
+BEGIN eopp_facing
+V eopp_facing|yaw_0_ret|nil
+V eopp_facing|yaw_0|-0.500000 0.000000 2.000000
+V eopp_facing|yaw_90_ret|nil
+V eopp_facing|yaw_90|0.000000 0.000000 0.500000
+V eopp_facing|yaw_180_ret|nil
+V eopp_facing|yaw_180|-0.500000 0.000000 -2.000000
+V eopp_facing|yaw_270_ret|nil
+V eopp_facing|yaw_270|-2.000000 0.000000 0.500000
+V eopp_facing|yaw_30_ret|nil
+V eopp_facing|yaw_30|-1.943376 0.000000 2.000000
+V eopp_facing|yaw_135_ret|nil
+V eopp_facing|yaw_135|0.000000 0.000000 1.800001
+V eopp_facing|left_off_ret|nil
+V eopp_facing|left_off|0.000000 0.000000 2.000000
+V eopp_facing|outside_ret|nil
+V eopp_facing|outside|1.000000 0.000000 0.500000
+END eopp_facing
+BEGIN eopp_shapes
+V eopp_shapes|trap_yaw_90_ret|nil
+V eopp_shapes|trap_yaw_90|3.500000 0.000000 -1.000000
+V eopp_shapes|trap_yaw_270_ret|nil
+V eopp_shapes|trap_yaw_270|2.000000 0.000000 -1.000001
+V eopp_shapes|trap_yaw_200_ret|nil
+V eopp_shapes|trap_yaw_200|3.281312 0.000000 -1.572896
+V eopp_shapes|tri_ret|nil
+V eopp_shapes|tri|-1.800000 0.000000 -2.200000
+END eopp_shapes
+BEGIN eopp_active_number
+V eopp_active_number|left_off_by_number|nil
+V eopp_active_number|left_on_by_number|0.000000
+V eopp_active_number|off_on_by_number|3.000000
+V eopp_active_number|off_off_by_number|nil
+V eopp_active_number|left_by_string_number|nil
+END eopp_active_number
 BEGIN es_load
 V es_load|setup|0.000000
 V es_load|centre|0.000000 "floor" 4096.000000
@@ -9534,4 +9579,4 @@ V lex_binary|short|nil
 ERROR lex_binary binary file cr_bin_old.lua too old: version=0x30; expected at least 0x31
 V lex_binary|old|nil
 END lex_binary
-SUMMARY 2614 tests, 247 failed
+SUMMARY 2618 tests, 247 failed
