@@ -87,7 +87,7 @@ Detailed docs: `autorun/PROGRESS.md` (chapter table), `TESTS.md`, `TEST_PLAN.md`
 
 - **The whole game is scripted:** ch01..ch65 (ch65 ends in the credits). Each chapter passes standalone.
   `ar_lib_legacy.lua` serves ch01-ch14 and `ar_lib.lua` ch15+ (`AR_NEW = TRUE`); run_chapter/run_all choose by name.
-  Other libraries: `ar_nav.lua` (A* over sector dumps), `ar_helpers.lua`, `ar_safe.lua`.
+  Other libraries: `ar_nav.lua` (A* over sector dumps), `ar_helpers.lua`.
 - **Everything goes through real keys,** like a player: walking is keys only since 2026-10-23
   (`ar_steer`/`ar_walk_stick`/`ar_nav` + `ar_walk_path`); verbs via `ar_do` (walk, face, gaze makes it the hot
   object, press key); items via hotkeys (`ar_hold`); doors via `ar_go(door,target,viaX,viaY,viaZ)`; driving
