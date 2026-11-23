@@ -351,3 +351,16 @@ and box (no rdModel3_LoadPostProcess for binary models). Cleanroom collision_edg
 Grim v1.01 for comparison (already named): sputLua_IsActorInSector 0x49c2c0, sputLua_IsPointInSector 0x49c4c0: substring
 (String_ContainsSubstring) over the walk-plane list from g_pWalkPlane_wp_head, first that contains the point, WalkPlane_Within(.., 1)
 (0x4a6980) skips inactive / invisible sectors.
+
+## Monkey4.exe (/emi/Monkey4.exe), 2026-11-22: MakeSectorActive, GetSectorOppositeEdge
+
+| Address | Name | What |
+| --- | --- | --- |
+| 0x004199d0 | Lua_MakeSectorActive | a number is the sector's id (lua_isnumber first), a string the exact name; visible byte +0x18 = 0 for nil, 1 otherwise |
+| 0x0042cb10 | Actor_MoveToSectorOppositeEdge | GetSectorOppositeEdge's work: Sector_JumpOut on the actor's node, then the actor placed there; nothing returned |
+| 0x00444780 | Sector_JumpOut | four edges only; the line to 10 units behind the actor crossed with the edges (FUN_004441a0: segments on x-z, farthest crossing, first of a tie; none: no move), then the same fraction from the other end on edge (i+2)%4 |
+
+Grim v1.01 for comparison (already named): sputLua_MakeSectorActiveL 0x49eeb0 checks lua_isstring first (true for a number in Lua 3.1), so a
+number is a name; sputLua_GetSectorOppositeEdge 0x49ed90 -> sputActor_LeaveSector 0x4931f0 -> WalkPlane_JumpOut 0x4a7390: the far point
+clipped back onto each edge it is outside of (WalkPlane_Intersection 0x4a6d10, no move when it is inside the sector), the actor moved,
+nothing returned. Cleanroom sector_opposite.lua, emi_sector_opposite.lua.
