@@ -1769,6 +1769,8 @@ ar_menu_save = function(slot)
 	-- (a load resumes here: the volumes come from the registry again, as in the menu; the save holds no iMUSE volumes, and one loaded
 	-- during a fullscreen movie otherwise kept the movie's sound effect volume of 0)
 	if JustLoaded() then
+		-- (ar_checkpoint hands the game to the player after it with AR_MANUAL_SAVES)
+		AR_JUST_LOADED = TRUE
 		system_prefs:init()
 		if music_state.paused then
 			ImSetSfxVol(0)
@@ -1847,6 +1849,7 @@ ar_checkpoint = function(slot)
 		end
 		sleep_for(1000)
 		AR_SAVING = TRUE
+		AR_JUST_LOADED = nil
 		ar_screen_clear()
 		RenderModeUser(TRUE)
 		sleep_for(300)
@@ -1854,6 +1857,19 @@ ar_checkpoint = function(slot)
 		sleep_for(1500)
 		RenderModeUser(nil)
 		AR_SAVING = nil
+		-- AR_MANUAL_SAVES (MANUALSAVES=1): a game loaded from this save is the player's. The save holds the autorun (it makes the save), so the
+		-- autorun that comes back with a load stops itself here, in the first frames after the load, and gives back what it wrapped; the run
+		-- that made the save plays on.
+		if AR_MANUAL_SAVES and AR_JUST_LOADED then
+			AR_JUST_LOADED = nil
+			ar_hand_over()
+			PrintDebug("AUTORUN loaded checkpoint grim" .. slot .. ".gsv: handed to the player\n")
+			-- (what is left running: the game's own tasks and this one)
+			print_scripts()
+			while TRUE do
+				sleep_for(3600000)
+			end
+		end
 		ar_screen_draw()
 		ar_log("saved checkpoint grim" .. slot .. ".gsv")
 		-- A resume loads this save and injects the chapter when it sees the line above: the autorun that the save holds
@@ -2566,22 +2582,58 @@ ar_override_clock = function()
 end
 AR_OV_CLOCK_TASK = start_script(ar_override_clock)
 
--- F10 cancels the run and hands the game to the player: the script of the run and the helper tasks are stopped, the keys it holds are let go,
--- cutscenes are no longer skipped, and the progress text goes. The game keeps running (ar_finish would end it).
-ar_cancel = function()
-	ar_log("CANCELLED by F10, where the walk was: " .. tostring(AR_WHERE))
+-- Hands the game to the player (F10, or a game loaded from a checkpoint of a MANUALSAVES run): every task of the autorun but the one that calls this
+-- is stopped (the tasks whose function is the autorun's own: its file is autorun_all.lua on the original, a dostring in ScummVM), the keys it holds
+-- are let go, cutscenes are no longer skipped, the progress text goes, and the game's functions that the autorun wrapped are the game's again.
+-- The game keeps running (ar_finish would end it).
+ar_is_autorun_task = function(task)
+	local name = FunctionName(identify_script(task))
+	return name and (strfind(name, "autorun") or strfind(name, "dostring"))
+end
+ar_hand_over = function()
 	-- (the watchdog first: it would take the end of the script for a death and finish the run)
 	stop_script(ar_watchdog)
-	if __autorun__ then
+	local me = GetCurrentScript()
+	if __autorun__ and identify_script(me) ~= __autorun__ then
 		stop_script(__autorun__)
 	end
-	stop_script(ar_skipper)
-	stop_script(ar_override_clock)
-	stop_script(ar_skip_timer)
-	stop_script(ar_save_task)
-	if AR_FRAME_TASK then
-		stop_script(AR_FRAME_TASK)
+	local task = next_script(nil)
+	local doomed = { }
+	local n = 0
+	while task do
+		if task ~= me and ar_is_autorun_task(task) then
+			n = n + 1
+			doomed[n] = task
+		end
+		task = next_script(task)
 	end
+	while n > 0 do
+		stop_script(doomed[n])
+		n = n - 1
+	end
+	-- (the wrapped functions: each library keeps the game's own one)
+	if AR_OLD_GCS then
+		GetControlState = AR_OLD_GCS
+	end
+	if AR_OLD_WALK_FORWARD then
+		Actor.walk_forward = AR_OLD_WALK_FORWARD
+	end
+	if AR_WFS_OLD then
+		wait_for_sound = AR_WFS_OLD
+	end
+	if AR_RNG_HOOKED and AR_RNG_OLD then
+		random = AR_RNG_OLD
+	end
+	if AR_CAMCHANGE_SET then
+		system.camChangeHandler = AR_CAMCHANGE_OLD
+	end
+	if AR_EXEC_LINE_OLD then
+		Dialog.execute_line = AR_EXEC_LINE_OLD
+	end
+	if AR_ORIG_SAVE_CALLBACK then
+		system.saveGameCallback = AR_ORIG_SAVE_CALLBACK
+	end
+	AR_SAVE_TABLE = nil
 	local key = next(AR_HELD, nil)
 	while key do
 		AR_HELD[key] = nil
@@ -2594,10 +2646,16 @@ ar_cancel = function()
 		name = next(AR_AXE_KEYS, nil)
 	end
 	AR_NO_SKIP = TRUE
-	set_override = AR_SETOV_OLD
+	if AR_SETOV_OLD then
+		set_override = AR_SETOV_OLD
+	end
 	ar_screen_clear()
 	ar_shown_count = 0
 	AR_NOSCREEN = TRUE
+end
+ar_cancel = function()
+	ar_log("CANCELLED by F10, where the walk was: " .. tostring(AR_WHERE))
+	ar_hand_over()
 end
 ar_cancel_watch = function()
 	local gcs = AR_OLD_GCS or GetControlState

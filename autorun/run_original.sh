@@ -5,6 +5,9 @@
 AR=/c/Users/Joel/grim_tools/autorun
 [ -z "$NOBUILD" ] && sh "$AR/build_original.sh" > /dev/null
 taskkill //F //IM GRIMFANDANGO.exe 2>/dev/null
+# the original plays ScummVM's script patches (orig_patchlab.sh); the game outlives this script, so the lab stays until patchlab_remove
+. "$AR/orig_patchlab.sh"
+patchlab_install
 # the game saves GrimLastSet etc. into the user's registry virtual store and, with good_times set, boots
 # into that set: remove it so that every run starts the new game in Manny's office
 powershell -NoProfile -Command "Remove-Item 'HKCU:\Software\Classes\VirtualStore\MACHINE\SOFTWARE\WOW6432Node\LucasArts Entertainment Company LLC' -Recurse -Force -ErrorAction SilentlyContinue"

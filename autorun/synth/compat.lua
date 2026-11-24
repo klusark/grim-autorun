@@ -44,28 +44,32 @@ exit = os.exit
 PrintDebug = function(s) io.write(s) end
 call = function(f, args) return f(unpack(args)) end
 
--- readfrom / read: the text files of a set, found in synth/sets (the game finds them in its archives). readfrom(name) returns what was read from before,
--- readfrom(that) goes back to it.
+-- readfrom / read: the text files of a set, found in synth/sets (the game finds them in its archives). As in Lua 3.1: readfrom(name) opens the
+-- file and returns its handle (not the one read from before); readfrom(handle) reads from that handle, closing nothing; readfrom() closes the
+-- current file. SYNTH_OPEN counts the files left open, so that a test can see a leak.
 SYNTH_DIR = SYNTH_DIR or "synth"
+SYNTH_OPEN = 0
 local cur = nil
 readfrom = function(name)
-	local prev = cur or "stdin"
-	if name == nil or name == "stdin" or type(name) == "userdata" then
+	if name == nil then
 		if cur then
 			cur:close()
+			SYNTH_OPEN = SYNTH_OPEN - 1
 		end
 		cur = nil
-		if type(name) == "userdata" then
-			cur = name
-		end
-		return prev
+		return 1
+	end
+	if type(name) == "userdata" then
+		cur = name
+		return name
 	end
 	local f = io.open(SYNTH_DIR .. "/sets/" .. name, "r")
 	if not f then
 		return nil
 	end
+	SYNTH_OPEN = SYNTH_OPEN + 1
 	cur = f
-	return prev
+	return f
 end
 read = function()
 	if not cur then
