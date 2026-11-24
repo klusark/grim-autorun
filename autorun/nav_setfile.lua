@@ -32,8 +32,7 @@ ar_sf_words = function(line)
 end
 
 ar_sf_load = function(file)
-	local old = readfrom(file)
-	if not old then
+	if not readfrom(file) then
 		return nil
 	end
 	local sf = { n = { }, id = { }, t = { }, on = { }, p = { }, lines = 0 }
@@ -85,7 +84,11 @@ ar_sf_load = function(file)
 		end
 		line = read()
 	end
-	readfrom(old)
+	-- readfrom() closes the file. (readfrom(name) returns the handle of the file it opened, not the one read from before, and
+	-- readfrom(handle) only reads from it again: closed that way it never was. The game has 128 file slots in all; every read of a set
+	-- kept one, and with the checkpoint saves, which empty AR_NAV so that the sets are read again, the run used them up: the next file
+	-- the game opened failed, a crash in the rebuilt game (sputResource_MatLoader) and a freeze in the original, by ch19-ch29.)
+	readfrom()
 	sf.count = cur
 	return sf
 end

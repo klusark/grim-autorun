@@ -101,6 +101,16 @@ dofile("synth/test_planner.lua")
 dofile("synth/test_follow.lua")
 dofile("synth/test_door.lua")
 
+-- Reading a set file closes it: the game has 128 file slots, and a read that left its file open used them up in a run with checkpoint saves
+-- (each save empties AR_NAV, so the sets are read again)
+do
+	local before = SYNTH_OPEN
+	for i = 1, 3 do
+		ar_sf_load("flat.set")
+	end
+	check("setfile_closed", SYNTH_OPEN == before, "files left open after three reads: " .. tostring(SYNTH_OPEN - before))
+end
+
 if not SYNTH_NOEXIT then
 	print(string.format("SYNTH SUMMARY %d passed, %d failed", passed, failed))
 end

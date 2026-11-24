@@ -13,6 +13,8 @@ GD="${OUTDIR:-/c/GOG Games/GRIMDATA}"
 	# REAL=1: nothing is skipped and the voices are on; FRAMES=<ms>: a frame mark that often (tools/framecap.py takes the frames)
 	echo "$MODE_LUA"
 	[ -n "$NOSAVE" ] && echo 'AR_NOSAVE = TRUE'
+	# MANUALSAVES=1: a game loaded from one of the run's checkpoint saves is handed to the player (the autorun stops itself after the load)
+	[ -n "$MANUALSAVES" ] && echo 'AR_MANUAL_SAVES = TRUE'
 	[ -n "$SKIPMS" ] && echo "AR_SKIP_MS = $SKIPMS"
 	[ -n "$FRAMES" ] && echo "AR_FRAMES = $FRAMES"
 	cat <<'PRE'

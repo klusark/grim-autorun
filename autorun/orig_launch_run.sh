@@ -17,7 +17,7 @@ max="${1:-1800}"; copy="$(realpath -m "${2:-$AR/logs/orig_launch_last.log}")"
 w=0; while tasklist | grep -qi GRIMFANDANGO && [ $w -lt 30 ]; do sleep 2; w=$((w + 2)); done
 tasklist | grep -qi GRIMFANDANGO && { echo "a GRIMFANDANGO.exe is running, not starting"; exit 1; }
 mkdir -p "$RUN" "$AR/logs"
-for f in GRIMFANDANGO.exe LUA.DLL IMUSE.DLL CHORE.DLL NULLMUSE.DLL HMIFXFP.DLL HMIFXLIB.DLL HMILIBS.INI IMUSE.PSL grimdlg.dll; do
+for f in GRIMFANDANGO.exe LUA.DLL IMUSE.DLL CHORE.DLL NULLMUSE.DLL HMIFXFP.DLL HMIFXLIB.DLL HMILIBS.INI IMUSE.PSL grimdlg.dll GRIM.TAB; do
 	[ -f "$RUN/$f" ] || cp "$GD/$f" "$RUN/$f"
 done
 cmp -s "$RUN/GRIMFANDANGO.exe" /c/Users/Joel/grim_tools/gfupd/v101_clean.exe || { echo "the run folder's exe is not the clean v1.01"; exit 1; }
@@ -29,6 +29,10 @@ L=/c/Users/Joel/grim_tools/launcher
 # (a new game: a fresh grim.ini each run, no GrimLastSet to boot into)
 printf '[Grim]\r\nGrimDataDir=C:\\GOG Games\\GRIMDATA\\\r\ngood_times=TRUE\r\nTextAllowed=true\r\nExperimentalDisplay=0\r\nLast3DDevice=hex:00000000000000000000000000000000\r\nLastDisplayDevice=hex:009fa692fa13d11197c000a024293005\r\n' > "$RUN/grim.ini"
 ONCE=1 NOSAVE="${NOSAVE-1}" OUTDIR="$RUN" sh "$AR/build_original.sh" > /dev/null || exit 1
+# the original plays ScummVM's script patches (orig_patchlab.sh): the patch lab is in GRIMDATA for the length of the run
+. "$AR/orig_patchlab.sh"
+patchlab_install
+trap 'taskkill //F //IM GRIMFANDANGO.exe > /dev/null 2>&1; patchlab_remove' EXIT
 G="$RUN/grimdebug.log"
 : > "$G"
 cd "$RUN"

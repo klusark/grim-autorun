@@ -28,4 +28,7 @@ done
 cp "$L" "$copy"
 [ -n "$FOCUS_PID" ] && kill "$FOCUS_PID" 2>/dev/null
 taskkill //F //IM GRIMFANDANGO.exe > /dev/null 2>&1
+# (the patch lab that resume_original.sh or run_original.sh put into GRIMDATA)
+. "$AR/orig_patchlab.sh"
+patchlab_remove
 echo "done after $i s, log in $copy"

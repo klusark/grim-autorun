@@ -11,12 +11,16 @@ RUN="$AR/origrun"
 file="$1"; max="${2:-1400}"; copy="${3:-$AR/logs/orig_run_last.log}"
 tasklist | grep -qi GRIMFANDANGO && { echo "a GRIMFANDANGO.exe is running, not starting"; exit 1; }
 mkdir -p "$RUN"
-for f in LUA.DLL IMUSE.DLL CHORE.DLL NULLMUSE.DLL HMIFXFP.DLL HMIFXLIB.DLL HMILIBS.INI IMUSE.PSL grimdlg.dll; do
+for f in LUA.DLL IMUSE.DLL CHORE.DLL NULLMUSE.DLL HMIFXFP.DLL HMIFXLIB.DLL HMILIBS.INI IMUSE.PSL grimdlg.dll GRIM.TAB; do
 	[ -f "$RUN/$f" ] || cp "$GD/$f" "$RUN/$f"
 done
 cp /c/Users/Joel/grim_tools/gfupd/v101_fl.exe "$RUN/GRIMFANDANGO.exe"
 TESTFILE="$file" sh "$AR/build_original.sh" > /dev/null
 cp "$GD/autorun_all.lua" "$GD/grimpatch.bin" "$RUN/"
+# the original plays ScummVM's script patches (orig_patchlab.sh), for the length of the run
+. "$AR/orig_patchlab.sh"
+patchlab_install
+trap 'taskkill //F //IM GRIMFANDANGO.exe > /dev/null 2>&1; patchlab_remove' EXIT
 L="$RUN/grimdebug.log"
 : > "$L"
 # (good_times boots into GrimLastSet of the virtual store: removed so that the run starts the new game in Manny's office)

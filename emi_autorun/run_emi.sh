@@ -1,5 +1,5 @@
 #!/bin/sh
-# Runs an EMI autorun script in the autorun build (SVM_DIR, default ~/scummvm-autorun/build-opt: branch autorun, the same engine as the Grim
+# Runs an EMI autorun script in the autorun build (SVM_DIR, default ~/scummvm-patched/build-opt: ../scummvm/build.sh, the same engine as the Grim
 # autorun; the old Oct 27 build is SVM_DIR=/home/Joel/scummvm-emi/build-opt), apart from the grim runs:
 # own config copy, own save path, own logs. The grim_tools/autorun libraries are only read, never changed.
 #
@@ -38,7 +38,7 @@ sed -i '/^\[scummvm\]/a enable_unsupported_game_warning=false' "$EM/generated/_s
 
 log="$EM/logs/${LOG:-$name}.log"
 : > "$log"; : > "$log.times"
-cd "${SVM_DIR:-/home/Joel/scummvm-autorun/build-opt}" || exit 1
+cd "${SVM_DIR:-/home/Joel/scummvm-patched/build-opt}" || exit 1
 start=$(date +%s)
 # (GDB=1: under gdb, which prints the stack of a crash into the log: the rare crash with exit status 127, a division by zero in
 # Audio::Timestamp::msecs, Nov 10)

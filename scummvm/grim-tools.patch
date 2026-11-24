@@ -130,6 +130,56 @@ index f2c4e5149d1..430eedbf9e8 100644
  	debug(2, "SDL Video OpenGL Feature Detection Complete");
  #endif
  
+diff --git a/base/commandLine.cpp b/base/commandLine.cpp
+index 87b0fafe9f2..0d1f95639ac 100644
+--- a/base/commandLine.cpp
++++ b/base/commandLine.cpp
+@@ -246,6 +246,16 @@ static const char HELP_STRING4[] =
+ 	"  --join-game=IP[:PORT]    Join an online game for Moonbase Commander.\n"
+ 	"                           This method only works on the full version of the game,\n"
+ 	"                           Demo users can still join a game via the main menu.\n"
++#endif
++#ifdef ENABLE_GRIM
++	"  --autorun=FILE           Run the Lua script FILE as a game script once the game\n"
++	"                           has started, for Grim Fandango or Escape from Monkey\n"
++	"                           Island. The script can end the game with exit()\n"
++	"  --sim-fps=NUM            Simulate the game clock for Grim Fandango or Escape from\n"
++	"                           Monkey Island: every frame advances the game by exactly\n"
++	"                           1/NUM second however long it takes (1 - 1000), the sound\n"
++	"                           and the music as well, so a run does not depend on the\n"
++	"                           speed of the computer (--engine-speed=0 runs it flat out)\n"
+ #endif
+ 	"  --engine-speed=NUM       Set frame per second limit (0 - 100), 0 = no limit\n"
+ 	"                           (default: 60)\n"
+@@ -1048,6 +1058,28 @@ Common::String parseCommandLine(Common::StringMap &settings, int argc, const cha
+ 			END_OPTION
+ #endif
+ 
++#ifdef ENABLE_GRIM
++			DO_LONG_OPTION("autorun")
++				Common::FSNode path(Common::Path::fromCommandLine(option));
++				if (!path.exists()) {
++					usage("Non-existent autorun script '%s'", option);
++				} else if (!path.isReadable()) {
++					usage("Non-readable autorun script '%s'", option);
++				}
++				settings["autorun"] = path.getPath().toConfig();
++			END_OPTION
++
++			DO_LONG_OPTION_INT("sim-fps")
++				if (retval < 1 || retval > 1000)
++					usage("--sim-fps: '%s' is out of range, use 1 - 1000", option);
++			END_OPTION
++
++			DO_LONG_OPTION_INT("sim-render-every")
++				if (retval < 1 || retval > 1000)
++					usage("--sim-render-every: '%s' is out of range, use 1 - 1000", option);
++			END_OPTION
++#endif
++
+ 			DO_LONG_OPTION_INT("engine-speed")
+ 			END_OPTION
+ 
 diff --git a/engines/grim/actor.cpp b/engines/grim/actor.cpp
 index 2e7b94f8f97..b4af166cb77 100644
 --- a/engines/grim/actor.cpp
@@ -350,30 +400,42 @@ index d495a79df1c..fcdf0cd0b87 100644
  			_numMusicStates = 126;
  			_musicTable = musicTable;
 diff --git a/engines/grim/grim.cpp b/engines/grim/grim.cpp
-index 549a38870d2..92c8f2cb8e5 100644
+index 549a38870d2..61036231cf5 100644
 --- a/engines/grim/grim.cpp
 +++ b/engines/grim/grim.cpp
-@@ -49,6 +49,9 @@
+@@ -25,6 +25,13 @@
+ #define FORBIDDEN_SYMBOL_EXCEPTION_stdin
+ #define FORBIDDEN_SYMBOL_EXCEPTION_FILE
  
- #include "image/png.h"
++#define FORBIDDEN_SYMBOL_EXCEPTION_getenv
++#define FORBIDDEN_SYMBOL_EXCEPTION_fopen
++#define FORBIDDEN_SYMBOL_EXCEPTION_fputs
++#define FORBIDDEN_SYMBOL_EXCEPTION_fclose
++#define FORBIDDEN_SYMBOL_EXCEPTION_remove
++#define FORBIDDEN_SYMBOL_EXCEPTION_rename
++
+ #include "common/archive.h"
+ #include "common/debug-channels.h"
+ #include "common/file.h"
+@@ -33,6 +40,9 @@
+ #include "common/compression/stuffit.h"
+ #include "common/translation.h"
  
 +#include "audio/mixer_intern.h"
 +#include "video/video_decoder.h"
 +
- #include "engines/engine.h"
- #include "engines/util.h"
- 
-@@ -72,6 +75,9 @@
+ #include "backends/keymapper/action.h"
+ #include "backends/keymapper/keymap.h"
+ #include "backends/keymapper/standard-actions.h"
+@@ -72,6 +82,7 @@
  #include "engines/grim/primitives.h"
  #include "engines/grim/objectstate.h"
  #include "engines/grim/set.h"
-+
-+#include "common/file.h"
 +#include "image/bmp.h"
  #include "engines/grim/sound.h"
  #include "engines/grim/debugger.h"
  #include "engines/grim/remastered/overlay.h"
-@@ -81,15 +87,22 @@
+@@ -81,15 +92,23 @@
  #include "engines/grim/emi/sound/emisound.h"
  #include "engines/grim/lua/lua.h"
  
@@ -382,6 +444,7 @@ index 549a38870d2..92c8f2cb8e5 100644
 +
  namespace Grim {
  
++
  GrimEngine *g_grim = nullptr;
  GfxBase *g_driver = nullptr;
  int g_imuseState = -1;
@@ -396,7 +459,32 @@ index 549a38870d2..92c8f2cb8e5 100644
  
  	setDebugger(new Debugger());
  	_gameType = gameType;
-@@ -331,13 +344,38 @@ GfxBase *GrimEngine::createRenderer(int screenW, int screenH) {
+@@ -111,6 +130,24 @@ GrimEngine::GrimEngine(OSystem *syst, uint32 gameFlags, GrimGameType gameType, C
+ 	ConfMan.registerDefault("use_arb_shaders", true);
+ 
+ 	_showFps = ConfMan.getBool("show_fps");
++	_autorunPending = ConfMan.hasKey("autorun");
++	if (ConfMan.hasKey("sim_fps"))
++		_simFps = CLIP(ConfMan.getInt("sim_fps"), 1, 1000);
++	// sim_frame_ms: every simulated frame is exactly that many milliseconds (the original, patched to a fixed frame time, runs 17 ms frames: 60 fps
++	// would give 16 and 17 ms alternately)
++	if (ConfMan.hasKey("sim_frame_ms")) {
++		_simMs = CLIP(ConfMan.getInt("sim_frame_ms"), 1, 1000);
++		if (!_simFps)
++			_simFps = 1000 / _simMs;
++	}
++	if (ConfMan.hasKey("sim_render_every"))
++		_simRenderEvery = CLIP(ConfMan.getInt("sim_render_every"), 0, 1000);
++	// the sound is mixed and iMuse and the movies run in steps of the simulated time too, see luaUpdate(). (Not with EMI's test data,
++	// grim_tools/cleanroom: EMI's original plays its sound by the clock still)
++	if (_simFps && !((gameFlags & GF_TESTDATA) && gameType == GType_MONKEY4)) {
++		static_cast<Audio::MixerImpl *>(_mixer)->setSimulated(true);
++		Video::g_videoSimulated = true;
++	}
+ 
+ 	_softRenderer = true;
+ 
+@@ -331,13 +368,25 @@ GfxBase *GrimEngine::createRenderer(int screenW, int screenH) {
  }
  
  const char *GrimEngine::getUpdateFilename() {
@@ -416,19 +504,6 @@ index 549a38870d2..92c8f2cb8e5 100644
  Common::Error GrimEngine::run() {
 +	if (isTestData()) {
 +		Common::setErrorHandler(testDataErrorHandler);
-+		// (sim_frame_ms in the configuration: every frame is that many milliseconds long however long it took, like the
-+		// original with the simtime patch of grimlaunch, so that what a test measures per frame is the same every run)
-+		if (ConfMan.hasKey("sim_frame_ms"))
-+			_testFrameMs = CLIP(ConfMan.getInt("sim_frame_ms"), 1, 1000);
-+		if (ConfMan.hasKey("sim_render_every"))
-+			_testRenderEvery = MAX(ConfMan.getInt("sim_render_every"), 0);
-+		// (Grim: the sound, iMUSE and the movies go by the same game time, not by the clock: the engine mixes the sound and runs
-+		// their timers itself, once a frame, see luaUpdate(); the original with grimlaunch's smushtime and imusetime. EMI's original
-+		// has its sound on the clock still, so EMI keeps it too)
-+		if (_testFrameMs && getGameType() == GType_GRIM) {
-+			static_cast<Audio::MixerImpl *>(_mixer)->setSimulated(true);
-+			Video::g_videoSimulated = true;
-+		}
 +		// (no ScummVM logo: it waits 0.6 s at the start of every game, and the tests start a game per file)
 +		splash = true;
 +	}
@@ -436,7 +511,7 @@ index 549a38870d2..92c8f2cb8e5 100644
  	// Try to see if we have the EMI Mac installer present
  	// Currently, this requires the data fork to be standalone
  	if (getGameType() == GType_MONKEY4) {
-@@ -356,7 +394,7 @@ Common::Error GrimEngine::run() {
+@@ -356,7 +405,7 @@ Common::Error GrimEngine::run() {
  	}
  
  	ConfMan.registerDefault("check_gamedata", true);
@@ -445,29 +520,59 @@ index 549a38870d2..92c8f2cb8e5 100644
  		MD5CheckDialog d;
  		if (!d.runModal()) {
  			Common::U32String confirmString = Common::U32String::format(_(
-@@ -830,7 +868,20 @@ void GrimEngine::luaUpdate() {
- 	_frameTime = newStart - _frameStart;
- 	_frameStart = newStart;
+@@ -823,20 +872,45 @@ void GrimEngine::luaUpdate() {
  
--	if (_mode == PauseMode || _shortFrame) {
-+	if (_testFrameMs) {
-+		// (test data: a fixed frame time, the frame after a load too)
-+		_frameTime = _mode == PauseMode ? 0 : _testFrameMs;
-+		// the sound, the movies and iMUSE move on by the frame (the original's frame stub of grimlaunch steps them before the frame)
+ 	// Update timing information
+ 	unsigned newStart = g_system->getMillis();
+-	if (newStart < _frameStart) {
++	if (_simFps) {
++		// Simulated time: every frame is the same length however long it really took, so that a run does not depend on
++		// the speed of the machine (the whole milliseconds add up to exactly _simFps frames a second)
++		unsigned before = _simMs ? _simFrame * _simMs : (unsigned)((uint64)_simFrame * 1000 / _simFps);
++		_simFrame++;
++		unsigned simTime = _simMs ? _simFrame * _simMs : (unsigned)((uint64)_simFrame * 1000 / _simFps);
++		_frameTime = simTime - before;
++		_frameStart = newStart;
++		// the sound, the movies and iMUSE move on by the same simulated time (the original's frame stub of grimlaunch steps them before the frame)
 +		if (Video::g_videoSimulated) {
-+			_testClockMs += _testFrameMs;
-+			static_cast<Audio::MixerImpl *>(_mixer)->simulateStep(_testClockMs);
-+			Video::g_videoSimMillis = _testClockMs;
++			static_cast<Audio::MixerImpl *>(_mixer)->simulateStep(simTime);
++			Video::g_videoSimMillis = simTime;
 +			if (g_movie)
 +				g_movie->simulate();
 +			if (g_imuse)
-+				g_imuse->simulate(_testClockMs);
++				g_imuse->simulate(simTime);
 +		}
-+	} else if (_mode == PauseMode || _shortFrame) {
++	} else {
++		if (newStart < _frameStart) {
++			_frameStart = newStart;
++			return;
++		}
++		_frameTime = newStart - _frameStart;
+ 		_frameStart = newStart;
+-		return;
+ 	}
+-	_frameTime = newStart - _frameStart;
+-	_frameStart = newStart;
+ 
+-	if (_mode == PauseMode || _shortFrame) {
++	// (a frame after a change of set or a load is a short one, so that the time of the load does not count; with a simulated clock every frame
++	// is as long as the others, as it is in the original with the fixed frame time)
++	if (_mode == PauseMode || (_shortFrame && !_simFps)) {
  		_frameTime = 0;
  	}
  
-@@ -916,6 +967,33 @@ void GrimEngine::updateDrawMode() {
++	// (the original does not update the actors in a frame that began with a movie: the scripts that end the movie, and set the angles of Manny
++	// right after, see the angles that are seen change one frame later than they would without the movie)
++	const bool movieFrame = _mode == SmushMode && getGameType() == GType_GRIM && (!ConfMan.hasKey("movie_frame") || ConfMan.getBool("movie_frame"));
++
+ 	LuaBase::instance()->update(_frameTime, _movieTime);
+ 
+-	if (_currSet && (_mode == NormalMode || _mode == SmushMode)) {
++	if (_currSet && !movieFrame && (_mode == NormalMode || _mode == SmushMode)) {
+ 		// call updateTalk() before calling update(), since it may modify costumes state, and
+ 		// the costumes are updated in update().
+ 		for (Common::List<Actor *>::iterator i = _talkingActors.begin(); i != _talkingActors.end(); ++i) {
+@@ -916,6 +990,33 @@ void GrimEngine::updateDrawMode() {
  	_movieTime = 0;
  }
  
@@ -501,7 +606,7 @@ index 549a38870d2..92c8f2cb8e5 100644
  void GrimEngine::drawNormalMode() {
  	_prevSmushFrame = 0;
  	_movieTime = 0;
-@@ -987,6 +1065,25 @@ void GrimEngine::drawNormalMode() {
+@@ -987,6 +1088,25 @@ void GrimEngine::drawNormalMode() {
  	_currSet->drawBitmaps(ObjectState::OBJSTATE_OVERLAY);
  }
  
@@ -527,20 +632,23 @@ index 549a38870d2..92c8f2cb8e5 100644
  void GrimEngine::doFlip() {
  	_frameCounter++;
  	// When possible, flip the buffer
-@@ -1154,7 +1251,21 @@ void GrimEngine::mainLoop() {
+@@ -1154,7 +1274,24 @@ void GrimEngine::mainLoop() {
  			}
  		}
  
 -		if (_mode != PauseMode) {
-+		// (test data with a fixed frame time: the frames go as fast as they can, and drawing them all is most of what a run
-+		// costs. One frame in sim_render_every (8) is drawn, by the count of frames so that a run is the same every time, and the
-+		// frame of a change of setup, mode or set; the others keep what drawing changes besides the picture: updateUndrawnFrame)
++		// A simulated run goes through thousands of frames a second, drawing them all is most of what it costs: draw one frame
++		// in sim_render_every (8; by the count of frames, not by the clock, so that a run stays the same every time; 0 draws only
++		// the frames that must be), and every frame when what is on the screen changes (a set, a camera setup, the mode) or a movie
++		// has a new picture, as the scripts that follow the camera react to the drawing. A frame that is not drawn keeps what drawing
++		// changes besides the picture: updateUndrawnFrame()
 +		bool renderFrame = true;
-+		if (_testFrameMs) {
-+			if (_setupChanged || _mode != _testLastMode || _currSet != _testLastSet ||
-+			    (_testRenderEvery > 0 && _frameCounter % _testRenderEvery == 0)) {
-+				_testLastMode = _mode;
-+				_testLastSet = _currSet;
++		if (_simFps && _simRenderEvery != 1) {
++			if (_setupChanged || _mode != _lastSimRenderMode || _currSet != _lastSimRenderSet ||
++			    (g_movie && g_movie->isPlaying() && g_movie->isUpdateNeeded()) ||
++			    (_simRenderEvery > 0 && _simFrame % _simRenderEvery == 0)) {
++				_lastSimRenderMode = _mode;
++				_lastSimRenderSet = _currSet;
 +			} else {
 +				renderFrame = false;
 +			}
@@ -550,7 +658,7 @@ index 549a38870d2..92c8f2cb8e5 100644
  			// Draw the display scene before doing the luaUpdate.
  			// This give a large performance boost as OpenGL stores commands
  			// in a queue on the gpu to be rendered later. When doFlip is
-@@ -1162,9 +1273,14 @@ void GrimEngine::mainLoop() {
+@@ -1162,9 +1299,22 @@ void GrimEngine::mainLoop() {
  			// Now, it will queue all the OpenGL commands and draw them on the
  			// GPU while the CPU is busy updating the game world.
  			updateDisplayScene();
@@ -563,11 +671,97 @@ index 549a38870d2..92c8f2cb8e5 100644
 +			doFlip();
 +		else
 +			_frameCounter++;
++
++		// Start the script once the game is running in a set, which is also the case
++		// after loading a savegame with --save-slot
++		if (_autorunPending && _currSet && (_mode == NormalMode || _mode == SmushMode)) {
++			runAutorun();
++		}
++
++		pollRemoteLua();
  
  		// We do not want the scripts to update while a movie is playing in the PS2-version.
  		if (!(getGamePlatform() == Common::kPlatformPS2 && _mode == SmushMode)) {
+@@ -1306,6 +1456,12 @@ void GrimEngine::savegameRestore() {
+ 
+ 	debug(2, "GrimEngine::savegameRestore() finished.");
+ 
++	// An autorun script that loaded a game has to run again on the loaded state
++	if (ConfMan.hasKey("autorun")) {
++		_autorunPending = true;
++		_autorunLoaded = true;
++	}
++
+ 	_shortFrame = true;
+ 	clearEventQueue();
+ 	invalidateActiveActorsList();
+@@ -1722,6 +1878,64 @@ void GrimEngine::debugLua(const Common::String &str) {
+ 	lua_dostring(str.c_str());
+ }
+ 
++// Debug aid: with SCUMMVM_LUA_REMOTE=<dir> a file <dir>/cmd.lua is run as Lua when it appears (and
++// deleted), the global string R is then written to <dir>/cmd.out ("done" marks the end).
++void GrimEngine::pollRemoteLua() {
++	static const char *dir = getenv("SCUMMVM_LUA_REMOTE");
++	if (!dir)
++		return;
++	const uint32 now = g_system->getMillis();
++	if (now - _remotePoll < 100)
++		return;
++	_remotePoll = now;
++	Common::FSNode cmd(Common::Path(Common::String(dir) + "/cmd.lua"));
++	if (!cmd.exists())
++		return;
++	Common::SeekableReadStream *in = cmd.createReadStream();
++	if (!in)
++		return;
++	Common::String code = in->readString(0, in->size());
++	delete in;
++	remove((Common::String(dir) + "/cmd.lua").c_str());
++	lua_dostring("R = \"\"");
++	int status = lua_dostring(code.c_str());
++	lua_Object r = lua_getglobal("R");
++	Common::String out = lua_isstring(r) ? lua_getstring(r) : "";
++	if (status != 0)
++		out += " (error)";
++	Common::String tmp = Common::String(dir) + "/cmd.tmp";
++	FILE *f = fopen(tmp.c_str(), "wb");
++	if (f) {
++		fputs(out.c_str(), f);
++		fclose(f);
++		rename(tmp.c_str(), (Common::String(dir) + "/cmd.out").c_str());
++	}
++}
++
++void GrimEngine::runAutorun() {
++	_autorunPending = false;
++
++	const Common::Path path = ConfMan.getPath("autorun");
++	Common::FSNode node(path);
++	Common::SeekableReadStream *stream = node.createReadStream();
++	if (!stream) {
++		warning("Autorun: could not open '%s'", path.toString().c_str());
++		return;
++	}
++	Common::String script = stream->readString(0, stream->size());
++	delete stream;
++
++	// As a task the script can wait, for example for an actor to arrive
++	warning("Autorun: running '%s'", path.toString().c_str());
++	// A save made while the script was running holds that task, so stop an old one first
++	Common::String task = Common::String::format("%sif __autorun__ then stop_script(__autorun__) end\n__autorun__ = function()\n%s\nend\nstart_script(__autorun__)", _autorunLoaded ? "AR_LOADED = TRUE\n" : "", script.c_str());
++	if (lua_dostring(task.c_str()) != 0) {
++		// Nothing would ever run, so don't leave the game sitting there
++		warning("Autorun: '%s' failed to load", path.toString().c_str());
++		quitGame();
++	}
++}
++
+ Common::String GrimEngine::getLanguagePrefix() const {
+ 	switch (getLanguage()) {
+ 		case 0:
 diff --git a/engines/grim/grim.h b/engines/grim/grim.h
-index 793bd3a8606..9b65a97ba43 100644
+index 793bd3a8606..f255ab404cd 100644
 --- a/engines/grim/grim.h
 +++ b/engines/grim/grim.h
 @@ -89,6 +89,9 @@ public:
@@ -588,23 +782,41 @@ index 793bd3a8606..9b65a97ba43 100644
  
  	void savegameSave();
  	void saveGRIM();
-@@ -259,6 +263,14 @@ protected:
+@@ -231,9 +235,16 @@ protected:
+ 	void savegameRestore();
+ 	void restoreGRIM();
+ 
++	/** Runs the script given with --autorun, as a game script */
++	void runAutorun();
++
+ 	virtual void storeSaveGameMetadata(SaveGame *state);
+ 	virtual void storeSaveGameImage(SaveGame *savedState);
+ 
++	bool _autorunPending = false;
++	uint32 _remotePoll = 0;
++	void pollRemoteLua();
++	bool _autorunLoaded = false;
+ 	bool _savegameLoadRequest = false;
+ 	bool _savegameSaveRequest = false;
+ 	Common::String _savegameFileName;
+@@ -255,6 +266,15 @@ protected:
+ 	Common::String _movieSetup;
+ 
+ 	unsigned _frameStart = 0, _frameTime = 0, _movieTime = 0;
++	/** With --sim-fps the clock advances by a fixed time per frame instead of real time (0 = real time) */
++	unsigned _simFps = 0;
++	unsigned _simFrame = 0;
++	/** With sim_frame_ms in the configuration: the length of every simulated frame in milliseconds (0 = as many as sim-fps gives) */
++	unsigned _simMs = 0;
++	/** With --sim-fps: only one frame in this many is drawn (1 = every frame, 0 = only the frames that must be: sim_render_every) */
++	unsigned _simRenderEvery = 8;
++	EngineMode _lastSimRenderMode = NormalMode;
++	Set *_lastSimRenderSet = nullptr;
+ 	int _prevSmushFrame = 0;
  	unsigned int _frameCounter = 0;
  	unsigned int _lastFrameTime = 0;
- 	unsigned _speedLimitMs;
-+	/** Test data: the length of every frame in milliseconds (sim_frame_ms in the configuration; 0 = real time) */
-+	unsigned _testFrameMs = 0;
-+	/** With _testFrameMs: the game time in ms, the sum of the frames (the clock of the sound and the movies) */
-+	unsigned _testClockMs = 0;
-+	EngineMode _testLastMode = NormalMode;
-+	Set *_testLastSet = nullptr;
-+	/** Test data: one frame in this many is drawn (sim_render_every; 0 = only the frames that must be: a change of setup, mode or set) */
-+	int _testRenderEvery = 8;
- 	bool _showFps;
- 	bool _softRenderer;
- 
 diff --git a/engines/grim/imuse/imuse_engine.cpp b/engines/grim/imuse/imuse_engine.cpp
-index bb737bfdee0..21a4d5af969 100644
+index bb737bfdee0..b1273050487 100644
 --- a/engines/grim/imuse/imuse_engine.cpp
 +++ b/engines/grim/imuse/imuse_engine.cpp
 @@ -22,6 +22,8 @@
@@ -622,7 +834,7 @@ index bb737bfdee0..21a4d5af969 100644
  	int timerPeriodUsec = _remastered ? IMUSE_REMASTERED_TIMER_PERIOD_USEC : 1000000 / _callbackFps;
 -	g_system->getTimerManager()->installTimerProc(timer_handler, timerPeriodUsec, this, "IMuse");
 +	_timerPeriodUsec = timerPeriodUsec;
-+	// With game time (the mixer simulated, the test data's sim_frame_ms) the engine runs the heartbeats, see simulate()
++	// With game time (the mixer simulated: --sim-fps or sim_frame_ms) the engine runs the heartbeats, see simulate()
 +	if (!Audio::g_mixerSimulated)
 +		g_system->getTimerManager()->installTimerProc(timer_handler, timerPeriodUsec, this, "IMuse");
 +}
@@ -675,14 +887,14 @@ index bb737bfdee0..21a4d5af969 100644
  }
  
 diff --git a/engines/grim/imuse/imuse_engine.h b/engines/grim/imuse/imuse_engine.h
-index 772169a5ac3..1892ddd7c36 100644
+index 772169a5ac3..ee6b8e2f5dc 100644
 --- a/engines/grim/imuse/imuse_engine.h
 +++ b/engines/grim/imuse/imuse_engine.h
 @@ -66,6 +66,11 @@ private:
  
  	int _callbackFps;
  	static void timer_handler(void *refConf);
-+	// Game time (the test data's sim_frame_ms, Audio::g_mixerSimulated): no timer, the engine runs the heartbeats, see simulate()
++	// Game time (--sim-fps or sim_frame_ms, Audio::g_mixerSimulated): no timer, the engine runs the heartbeats, see simulate()
 +	int _timerPeriodUsec = 0;
 +	uint64 _simTicks = 0;        // heartbeats of the frames' game time
 +	uint64 _simExtraTicks = 0;   // heartbeats of the loops that wait for the music stream (soundsFloodMusicBuffer)
@@ -836,14 +1048,14 @@ index dfe6add4ee8..54da3d58cfc 100644
  	}
  
 diff --git a/engines/grim/movie/movie.h b/engines/grim/movie/movie.h
-index e7008516f58..65fe1448ba4 100644
+index e7008516f58..26012780da8 100644
 --- a/engines/grim/movie/movie.h
 +++ b/engines/grim/movie/movie.h
 @@ -91,6 +91,10 @@ public:
  	void saveState(SaveGame *state);
  	void restoreState(SaveGame *state);
  
-+	/** With game time (the test data's sim_frame_ms): the timer's work, the movie timer and the frames that are due; the engine
++	/** With game time (--sim-fps or sim_frame_ms): the timer's work, the movie timer and the frames that are due; the engine
 +	 * calls it each frame */
 +	void simulate();
 +
@@ -851,7 +1063,7 @@ index e7008516f58..65fe1448ba4 100644
  	static void timerCallback(void *ptr);
  	/**
 diff --git a/engines/grim/movie/smush_timer.cpp b/engines/grim/movie/smush_timer.cpp
-index 5a800fb3cf6..bf4373bc5b4 100644
+index 5a800fb3cf6..767b8e44434 100644
 --- a/engines/grim/movie/smush_timer.cpp
 +++ b/engines/grim/movie/smush_timer.cpp
 @@ -21,10 +21,17 @@
@@ -864,7 +1076,7 @@ index 5a800fb3cf6..bf4373bc5b4 100644
  
  namespace Grim {
  
-+// The clock of the movie timer: game time when the engine runs on it (the test data's sim_frame_ms), the host's otherwise
++// The clock of the movie timer: game time when the engine runs on it (--sim-fps or sim_frame_ms), the host's otherwise
 +static inline uint32 timerMillis() {
 +	return Video::g_videoSimulated ? Video::g_videoSimMillis : g_system->getMillis();
 +}
@@ -892,7 +1104,7 @@ index 5a800fb3cf6..bf4373bc5b4 100644
  
 -	int elapsed = now - _timerThreadLastTime;
 -	if (elapsed > 16) {
-+	// (the thread runs every few ms and ticks once each time; with game time it runs once a frame of 17 ms, so it ticks
++	// (the thread runs every few ms and ticks once each time; with game time it runs once a frame of 16 or 17 ms, so it ticks
 +	// as often as is due)
 +	while ((int)(now - _timerThreadLastTime) > 16) {
  		_timerThreadLastTime += 16;

@@ -35,7 +35,7 @@ section 2), so check git before you trust a status line.
 
 | What | Where |
 |---|---|
-| **Autorun engine (Grim and EMI)** | worktree `C:\msys64\home\Joel\scummvm-autorun`, branch `autorun` (grim-actor-fixes then cleanroom, linear on master; was `emi-autorun-latest`), build `build-opt` by `grim_tools/build_scummvm_autorun.sh`; `SVM_DIR` points a run elsewhere |
+| **Autorun engine (Grim and EMI)** | since 2026-11-23 worktree `C:\msys64\home\Joel\scummvm-patched` (upstream master + `scummvm/grim-tools.patch`, build `build-opt` by `scummvm/build.sh`, shared with the clean-room tests); before that worktree `C:\msys64\home\Joel\scummvm-autorun`, branch `autorun` (grim-actor-fixes then cleanroom, linear on master; was `emi-autorun-latest`), build `build-opt` by `grim_tools/build_scummvm_autorun.sh`; `SVM_DIR` points a run elsewhere |
 | ScummVM source (main worktree) | `C:\msys64\home\Joel\scummvm` (branch `grim-actor-fixes-split`) |
 | Other worktrees | `~/scummvm-split` (detached at the same commit), `~/scummvm-emi` (`grim-lua-validation`, has `build/` and `build-opt/`, used by EMI autorun) |
 | Tools (this repo, own git repo) | `C:\Users\Joel\grim_tools` |
@@ -215,7 +215,7 @@ Detailed docs: `autorun/PROGRESS.md` (chapter table), `TESTS.md`, `TEST_PLAN.md`
   Useful BPs: 4a8610 (walk state), 4a83ce/4a843e (turn in/out), 4912e4 (yaw vector).
 - Bit comparison: `tools/walk_exact.py`. The ScummVM log needs `DEBUGFLAGS=actors` for WALKSEC/UPDYAW/TURNH lines.
 - Frames: `tools/framecap.py` + `framediff.py`. Coverage: `tools/covreport.py` (the engine's C++); `tools/luacov.py` (the Lua that
-  ran: functions, lines, instructions; a ScummVM with `cleanroom/scummvm/lua-coverage.patch`, see cleanroom/README.md "Coverage of the Lua").
+  ran: functions, lines, instructions; a ScummVM with `scummvm/lua-coverage.patch`, see cleanroom/README.md "Coverage of the Lua").
 
 ### Bit-exact lesson
 The original keeps intermediate values unrounded on the x87 stack and rounds to float only at FSTP (often once
