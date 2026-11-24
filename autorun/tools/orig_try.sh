@@ -22,3 +22,6 @@ done
 echo "fps $fps $ch: $res after $(( $(date +%s) - start )) s"
 cp "$L" "$AR/logs/orig_try_${ch}_$fps.log"
 taskkill //F //IM GRIMFANDANGO.exe > /dev/null 2>&1
+# (the patch lab that resume_original.sh put into GRIMDATA)
+. "$AR/orig_patchlab.sh"
+patchlab_remove

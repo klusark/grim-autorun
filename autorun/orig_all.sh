@@ -7,6 +7,11 @@ AR=/c/Users/Joel/grim_tools/autorun
 L="/c/GOG Games/GRIMDATA/grimdebug.log"
 STORY="$AR/logs/orig_all.txt"
 say() { echo "$(date '+%m-%d %H:%M:%S') $*" | tee -a "$STORY"; }
+# the original plays ScummVM's script patches (orig_patchlab.sh): checked here, before the first start, so that a missing lab stops the run at
+# once and not in the background start; taken out of GRIMDATA when this script ends
+. "$AR/orig_patchlab.sh"
+patchlab_install
+trap 'taskkill //F //IM GRIMFANDANGO.exe > /dev/null 2>&1; patchlab_remove' EXIT
 
 start_game() {
 	# $1 = chapter prefix or empty for a new game

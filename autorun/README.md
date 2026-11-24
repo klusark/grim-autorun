@@ -27,6 +27,12 @@ differences, read [../HANDOFF.md](../HANDOFF.md).
   target. Each run copies that ini into `generated/` and changes the copy, so your own ini is never written.
 - For the original exe: the v1.01 install and `../launcher/grimlaunch.exe` (see `../README.md`). Start the
   original only through `grimlaunch`.
+- For the original exe, also the patch lab `patchlab/DATAUSR.LAB`: ScummVM's script patches (every `.patchr` of its
+  `grim-patch.lab`) applied to the game's files, so that the original plays the scripts ScummVM plays. Build it with
+  `python tools/mk_patchlab.py`, and again whenever ScummVM's `grim-patch.lab` changes. Every script that starts the original
+  (`orig_patchlab.sh`) stops with an error when the lab is missing or older than `grim-patch.lab`, puts it into GRIMDATA for the
+  run and takes it out afterwards. ScummVM loads every `*.lab` in GRIMDATA, so `run_all.sh` and `run_chapter.sh` refuse to
+  start while a `DATAUSR.LAB` is there.
 
 ## Running it
 
@@ -109,7 +115,7 @@ Two rules:
 |---|---|
 | `ar_lib.lua` | The core library: keys, verbs (`ar_do`), items (`ar_hold`), doors (`ar_go`), dialogs, cutscene skips, saves, logging, the watchdog |
 | `ar_nav.lua`, `nav_setfile.lua`, `ar_nav_known.lua`, `ar_nav_sets.lua` | Path planning over the set's sectors, with the walk links that scripts make |
-| `ar_helpers.lua`, `ar_rng.lua`, `ar_full.lua`, `ar_safe.lua` | Walks the planner needs help with, the game's random numbers predicted, shared helpers, the vault safe's tumblers |
+| `ar_helpers.lua`, `ar_rng.lua`, `ar_full.lua` | Walks the planner needs help with, the game's random numbers predicted, shared helpers |
 | `ar_tricks.lua`, `ar_blam_spots.lua`, `ar_blam_after.lua` | Speed-runner tricks and where they are used |
 | `ch01_*.lua` ... `ch65_*.lua` | The chapters; [PROGRESS.md](PROGRESS.md) says what each one does and which saves it loads and writes |
 | `ex00_*.lua` ... `ex06_*.lua` | Extras for the 100% modes: dialog sweeps, talkers, trips, doors |

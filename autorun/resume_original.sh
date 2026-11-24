@@ -8,6 +8,9 @@ L="$GD/grimdebug.log"
 slot=$1
 [ -n "$2" ] && sh "$AR/build_original.sh" "$2" > /dev/null
 taskkill //F //IM GRIMFANDANGO.exe 2>/dev/null
+# the original plays ScummVM's script patches (orig_patchlab.sh); the game outlives this script, so the lab stays until patchlab_remove
+. "$AR/orig_patchlab.sh"
+patchlab_install
 powershell -NoProfile -Command "Remove-Item 'HKCU:\Software\Classes\VirtualStore\MACHINE\SOFTWARE\WOW6432Node\LucasArts Entertainment Company LLC' -Recurse -Force -ErrorAction SilentlyContinue"
 : > "$L"
 cd /c/Users/Joel/grim_tools/crashdbg

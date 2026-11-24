@@ -10,6 +10,8 @@
 # Run it from an MSYS2 UCRT64 shell, scummvm is the one built in ~/scummvm-patched/build-opt by ../scummvm/build.sh (SVM_DIR).
 
 AR=/c/Users/Joel/grim_tools/autorun
+# (ScummVM loads every *.lab of GRIMDATA: the patch lab of the original's runs (orig_patchlab.sh) would be applied over its own patches)
+[ -e "/c/GOG Games/GRIMDATA/DATAUSR.LAB" ] && { echo "ERROR: GRIMDATA has a DATAUSR.LAB (a run of the original still going, or left behind): take it out before a ScummVM run" >&2; exit 1; }
 . "$AR/mode.sh" || exit 1
 # A small window and a frame drawn in 64 (not the whole window, a frame in 8): the same run, 12% less cpu time and a third less wall time. Not where frames are
 # captured (FRAMES) or the run is real (REAL), which want what a player sees; WIN= and RENDEREVERY= give the values.
