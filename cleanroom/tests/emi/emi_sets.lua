@@ -73,8 +73,8 @@ cr_t_es_active = function()
 end
 cr_scummvm_differs("es_active") cr_test("es_active", cr_t_es_active)
 
--- (in_off: e_off is on here because es_active left it on; ScummVM gets 3 only because it ignores whether a sector is on,
--- and forgets the switch after a change of set: emi_sector_lookup.lua's esl_after_set_change)
+-- (in_off: e_off is on here because es_active left it on. ScummVM forgets the switch after a change of set
+-- (emi_sector_lookup.lua's esl_after_set_change), and since master b8eb4946b27 (Nov 23: only sectors that are on) it gives nil)
 cr_t_es_point_in = function()
 	MakeCurrentSet("cr_edge.set")
 	cr_log("in_left", IsPointInSector(-1, 0, 0, "e_left"))
@@ -82,7 +82,7 @@ cr_t_es_point_in = function()
 	cr_log("in_unknown", IsPointInSector(-1, 0, 0, "no_such_sector"))
 	cr_log("in_off", IsPointInSector(0, 0, -3, "e_off"))
 end
-cr_test("es_point_in", cr_t_es_point_in)
+cr_scummvm_differs("es_point_in", "master: switched sectors are back as the set file has them after a change of set, so e_off is off") cr_test("es_point_in", cr_t_es_point_in)
 
 -- A floor in Grim's x-y plane: the original tests the x-z plane only
 cr_t_es_xy_floor = function()
