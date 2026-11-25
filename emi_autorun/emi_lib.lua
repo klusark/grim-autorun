@@ -112,8 +112,13 @@ ar_approach = function(obj)
 		return ar_fail(tostring(obj.name) .. " has no place and is not offered: " .. ar_why_not_offered(obj))
 	end
 	local o0x, o0z = o.x, o.z
-	-- (the use point of some objects is an offset from the actor and not a place of the set, far from the object: then the object's own place)
-	if obj.use_pnt_x and obj.use_pnt_z and abs(obj.use_pnt_x - o.x) < 30 and abs(obj.use_pnt_z - o.z) < 30 then
+	-- (the use point of some objects is an offset from the actor and not a place of the set, far from the object: then the object's own place.
+	-- Far but within the object's range it is a place: Ozzie's tower is built to the giant's size, the short tower's use point is 67 from
+	-- it (range 200) and the plank's 51 (range 80), and the short tower's own place is 13 m over any floor: three plans of 100000 cells
+	-- that found no way, 30 s of Guybrush standing still)
+	local ux = obj.use_pnt_x and abs(obj.use_pnt_x - o.x)
+	local uz = obj.use_pnt_z and abs(obj.use_pnt_z - o.z)
+	if ux and uz and ((ux < 30 and uz < 30) or (obj.range and ux * ux + uz * uz <= obj.range * obj.range)) then
 		tx, ty, tz = obj.use_pnt_x, obj.use_pnt_y, obj.use_pnt_z
 	else
 		tx, ty, tz = o.x, o.y, o.z
