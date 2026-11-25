@@ -1327,6 +1327,9 @@ ar_w_relax = function(nav, w, k, k2c, d, extra, link, thin)
 	if not c then
 		return
 	end
+	if AR_CORRIDOR and not AR_CORRIDOR[AR_W_E.si] then
+		return
+	end
 	local k2 = ar_w_node(w, k2c, AR_W_LVL)
 	if AR_CLOSED[k2] then
 		return
@@ -1426,7 +1429,8 @@ ar_w_rv_start = function(nav, w)
 	AR_RV_NOWAY = nil
 	AR_RV_N = 0
 	AR_RV = nil
-	if AR_PARTIAL_MODE or AR_NO_GOAL_SIDE then
+	-- (nor where the search from Manny keeps to the sectors of a way (AR_CORRIDOR): that the two do not meet says nothing then)
+	if AR_PARTIAL_MODE or AR_NO_GOAL_SIDE or AR_CORRIDOR then
 		return
 	end
 	-- (the links by the cell they land in, made once for the world)
@@ -1540,8 +1544,13 @@ ar_w_rv_seed = function(nav, w, c, h)
 	while g.e[i] do
 		local e = g.e[i]
 		if ar_nav_act_c(nav, e.si) and (not h or ar_w_rv_has(e.h, h)) then
-			local z = ar_w_rv_z(nav, e)
-			ar_w_rv_add(ar_w_node(w, c, i), e, z, ar_w_rv_kind(nav, w, e, z))
+			-- (or only the sectors of the goal, for the sector graph: ar_w_goal_sectors)
+			if AR_SEED_SECT then
+				AR_SEED_SECT[e.si] = TRUE
+			else
+				local z = ar_w_rv_z(nav, e)
+				ar_w_rv_add(ar_w_node(w, c, i), e, z, ar_w_rv_kind(nav, w, e, z))
+			end
 		end
 		i = i + 1
 	end
@@ -2037,6 +2046,314 @@ end
 
 -- Plans the way from where Manny stands to the point (x, y, z), or into a hot sector of the door (AR_GOAL_HOT set by the caller).
 -- Returns the way, or nil.
+-- The sector graph of a world, made once for it: for each walk sector, the sectors it touches at about its height (their outlines come
+-- within AR_SG_EPS (6 cm, more than half a cell: the search of cells steps over a gap that narrow) of each other or overlap, at points where
+-- the two are within 0.35 of the same height), each with the middle of the points where they meet, and the links that start in it, to the
+-- sector they land in. A stair or a curb is joined only by its links, as the search of cells walks it only along them.
+ar_w_sg = function(nav, w)
+	if w.sg then
+		return w.sg
+	end
+	local sg = { adj = { }, lk = { } }
+	local count = ar_nav_count(nav)
+	local eps = AR_SG_EPS or 0.06
+	local i = 1
+	while i <= count do
+		sg.adj[i] = { }
+		sg.lk[i] = { }
+		i = i + 1
+	end
+	i = 1
+	while i <= count do
+		if not w.cons[i] then
+			local j = i + 1
+			while j <= count do
+				if not w.cons[j] and nav.minx[i] <= nav.maxx[j] + eps and nav.minx[j] <= nav.maxx[i] + eps and nav.miny[i] <= nav.maxy[j] + eps and nav.miny[j] <= nav.maxy[i] + eps then
+					ar_w_sg_touch(nav, sg, i, j, eps)
+				end
+				j = j + 1
+			end
+		end
+		i = i + 1
+	end
+	local k, list = next(w.lk, nil)
+	while k do
+		local li = 1
+		while list[li] do
+			local l = list[li]
+			local a = ar_nav_find_any(nav, l.px, l.py, l.pz)
+			local b = ar_nav_find_any(nav, l.lx, l.ly, l.lz)
+			if a and b and a ~= b then
+				sg.lk[a][ar_nav_len(sg.lk[a]) + 1] = { j = b, l = l }
+			end
+			li = li + 1
+		end
+		k, list = next(w.lk, k)
+	end
+	w.sg = sg
+	return sg
+end
+
+-- whether the sectors i and j touch (ar_w_sg), and where
+ar_w_sg_touch = function(nav, sg, i, j, eps)
+	AR_SG_N = 0
+	AR_SG_X = 0
+	AR_SG_Y = 0
+	ar_w_sg_corners(nav, i, j, eps)
+	ar_w_sg_corners(nav, j, i, eps)
+	ar_w_sg_cross(nav, i, j)
+	if AR_SG_N > 0 then
+		local x = AR_SG_X / AR_SG_N
+		local y = AR_SG_Y / AR_SG_N
+		sg.adj[i][ar_nav_len(sg.adj[i]) + 1] = { j = j, x = x, y = y }
+		sg.adj[j][ar_nav_len(sg.adj[j]) + 1] = { j = i, x = x, y = y }
+	end
+end
+
+-- (x, y) as a point where the sectors i and j meet, if they are within 0.35 of the same height there
+ar_w_sg_point = function(nav, i, j, x, y)
+	if abs(ar_nav_z(nav, i, x, y) - ar_nav_z(nav, j, x, y)) < 0.35 then
+		AR_SG_N = AR_SG_N + 1
+		AR_SG_X = AR_SG_X + x
+		AR_SG_Y = AR_SG_Y + y
+	end
+end
+
+-- the corners of sector i that are within eps of the outline of sector j, or inside it
+ar_w_sg_corners = function(nav, i, j, eps)
+	local xs = nav.ex[i]
+	local ys = nav.ey[i]
+	local k = 1
+	while k <= nav.pn[i] do
+		local x = xs[k]
+		local y = ys[k]
+		if ar_w_sg_near(nav, j, x, y, eps) or ar_nav_inside(nav, j, x, y) then
+			ar_w_sg_point(nav, i, j, x, y)
+		end
+		k = k + 1
+	end
+end
+
+-- is (x, y) within eps of the outline of sector j
+ar_w_sg_near = function(nav, j, x, y, eps)
+	local xs = nav.ex[j]
+	local ys = nav.ey[j]
+	local n = nav.pn[j]
+	local ax = xs[n]
+	local ay = ys[n]
+	local k = 1
+	while k <= n do
+		local bx = xs[k]
+		local by = ys[k]
+		local dx = bx - ax
+		local dy = by - ay
+		local l2 = dx * dx + dy * dy
+		local t = 0
+		if l2 > 0 then
+			t = ((x - ax) * dx + (y - ay) * dy) / l2
+			if t < 0 then
+				t = 0
+			elseif t > 1 then
+				t = 1
+			end
+		end
+		local qx = ax + dx * t - x
+		local qy = ay + dy * t - y
+		if qx * qx + qy * qy < eps * eps then
+			return TRUE
+		end
+		ax = bx
+		ay = by
+		k = k + 1
+	end
+	return nil
+end
+
+-- the points where an edge of sector i crosses an edge of sector j (two sectors that overlap with no corner of one in the other)
+ar_w_sg_cross = function(nav, i, j)
+	local xs = nav.ex[i]
+	local ys = nav.ey[i]
+	local n = nav.pn[i]
+	local ax = xs[n]
+	local ay = ys[n]
+	local k = 1
+	while k <= n do
+		local bx = xs[k]
+		local by = ys[k]
+		local xt = nav.ex[j]
+		local yt = nav.ey[j]
+		local m = nav.pn[j]
+		local cx = xt[m]
+		local cy = yt[m]
+		local q = 1
+		while q <= m do
+			local dx = xt[q]
+			local dy = yt[q]
+			local den = (bx - ax) * (dy - cy) - (by - ay) * (dx - cx)
+			if den ~= 0 then
+				local t = ((cx - ax) * (dy - cy) - (cy - ay) * (dx - cx)) / den
+				local u = ((cx - ax) * (by - ay) - (cy - ay) * (bx - ax)) / den
+				if t > 0 and t < 1 and u > 0 and u < 1 then
+					ar_w_sg_point(nav, i, j, ax + (bx - ax) * t, ay + (by - ay) * t)
+				end
+			end
+			cx = dx
+			cy = dy
+			q = q + 1
+		end
+		ax = bx
+		ay = by
+		k = k + 1
+	end
+end
+
+-- The sectors the goal lies in (the floors of the goal's cells that are on, as the search from the goal's side starts from them)
+ar_w_goal_sectors = function(nav, w)
+	AR_SEED_SECT = { }
+	ar_w_rv_seed_all(nav, w, AR_GOAL_LINKS)
+	ar_w_rv_seed_all(nav, w, AR_GOAL_CELLS)
+	if AR_GOAL_K then
+		ar_w_rv_seed(nav, w, AR_GOAL_K, nil)
+	end
+	if AR_GOAL_HOT then
+		local hot = ar_nav_hotnav(nav)
+		local h = next(AR_GOAL_HOT, nil)
+		while h do
+			ar_w_rv_seed_hot(nav, w, hot.p[h], h)
+			h = next(AR_GOAL_HOT, h)
+		end
+	end
+	local s = AR_SEED_SECT
+	AR_SEED_SECT = nil
+	return s
+end
+
+-- The way over the sector graph from sector s0 (Manny at x, y) to a sector of the goal: the shortest from where he enters each sector
+-- (the middle of where it meets the one before, or where a link lands) to where he leaves it. Returns its sectors (with those they touch
+-- as well, when wide is given) and how many, or nil when it has less than three sectors (the search of cells is short there) or there is none
+ar_w_corridor = function(nav, w, s0, x, y, wide)
+	local sg = ar_w_sg(nav, w)
+	local goal = ar_w_goal_sectors(nav, w)
+	if goal[s0] then
+		return nil
+	end
+	AR_SGD = { }
+	AR_SGPX = { }
+	AR_SGPY = { }
+	AR_SGPREV = { }
+	local done = { }
+	local h = { n = 0, k = { }, f = { } }
+	AR_SGD[s0] = 0
+	AR_SGPX[s0] = x
+	AR_SGPY[s0] = y
+	ar_heap_push(h, s0, 0)
+	local found = nil
+	while h.n > 0 and not found do
+		local u = ar_heap_pop(h)
+		if not done[u] then
+			done[u] = TRUE
+			if goal[u] then
+				found = u
+			else
+				local a = sg.adj[u]
+				local i = 1
+				while a[i] do
+					if not done[a[i].j] and ar_nav_act_c(nav, a[i].j) then
+						ar_w_sg_relax(h, u, a[i].j, a[i].x, a[i].y, a[i].x, a[i].y, 0)
+					end
+					i = i + 1
+				end
+				a = sg.lk[u]
+				i = 1
+				while a[i] do
+					if not done[a[i].j] and ar_nav_act_c(nav, a[i].j) then
+						local l = a[i].l
+						ar_w_sg_relax(h, u, a[i].j, l.px, l.py, l.lx, l.ly, l.cost)
+					end
+					i = i + 1
+				end
+			end
+		end
+	end
+	if not found then
+		return nil
+	end
+	local c = { }
+	local n = 0
+	local v = found
+	while v do
+		c[v] = TRUE
+		n = n + 1
+		v = AR_SGPREV[v]
+	end
+	if n < 3 then
+		return nil
+	end
+	if wide then
+		local list = { }
+		v = next(c, nil)
+		while v do
+			list[ar_nav_len(list) + 1] = v
+			v = next(c, v)
+		end
+		local i = 1
+		while list[i] do
+			local a = sg.adj[list[i]]
+			local k = 1
+			while a[k] do
+				if not c[a[k].j] and ar_nav_act_c(nav, a[k].j) then
+					c[a[k].j] = TRUE
+					n = n + 1
+				end
+				k = k + 1
+			end
+			i = i + 1
+		end
+	end
+	return c, n
+end
+
+-- the sector v reached from u: over to (ox, oy) where u is left, plus extra, and on from (ix, iy)
+ar_w_sg_relax = function(h, u, v, ox, oy, ix, iy, extra)
+	local dx = ox - AR_SGPX[u]
+	local dy = oy - AR_SGPY[u]
+	local d = AR_SGD[u] + sqrt(dx * dx + dy * dy) + extra
+	if not AR_SGD[v] or d < AR_SGD[v] then
+		AR_SGD[v] = d
+		AR_SGPX[v] = ix
+		AR_SGPY[v] = iy
+		AR_SGPREV[v] = u
+		ar_heap_push(h, v, d)
+	end
+end
+
+-- The search of cells, first only through the sectors of the way over the sector graph and the sectors they touch (AR_CORRIDOR: the
+-- sectors of the way alone were too few for one search in three, the way crossing a strip beside them), then through all of them. Lucre
+-- town's way to the gate of the island map goes through a cheat box: the search of all the cells came to it after nearly every cell of
+-- the town, 79000, 10 s of Guybrush standing still, four times in a run. AR_NO_SECTOR_PLAN: all at once. Not for the partial plan, which
+-- wants the cells nearest the goal wherever they are.
+ar_w_search_planned = function(nav, w, sk, sz, mode)
+	AR_CORRIDOR = nil
+	local n = nil
+	if not AR_PARTIAL_MODE and not AR_NO_SECTOR_PLAN and ar_w_code(nav, w, sk, sz) then
+		AR_CORRIDOR, n = ar_w_corridor(nav, w, AR_W_E.si, AR_W_X, AR_W_Y, TRUE)
+	end
+	local found = nil
+	local t0 = nil
+	if AR_CORRIDOR then
+		t0 = ar_nav_ms()
+		found = ar_w_search(nav, w, sk, sz)
+		ar_log("nav: search (" .. mode .. ", " .. n .. " sectors of the way and those they touch): " .. ((found and "found") or "none") .. ", " .. ar_nav_cost(t0))
+		AR_CORRIDOR = nil
+	end
+	if not found then
+		t0 = ar_nav_ms()
+		found = ar_w_search(nav, w, sk, sz)
+		ar_log("nav: search (" .. mode .. "): " .. ((found and "found") or "none") .. ", " .. ar_nav_cost(t0))
+	end
+	return found
+end
+
 ar_w_plan1 = function(nav, w, x, y, z)
 	local mp = manny:getpos()
 	AR_NAV_GOAL_X = nil
@@ -2134,9 +2451,8 @@ ar_w_plan1 = function(nav, w, x, y, z)
 	AR_HX = gx
 	AR_HY = gy
 	local mode = (AR_PARTIAL_MODE and "partial") or (AR_OPTIMISTIC and "with sectors that are off") or "sectors that are on"
-	local t0 = ar_nav_ms()
-	local found = ar_w_search(nav, w, sk, sz)
-	ar_log("nav: search (" .. mode .. "): " .. ((found and "found") or "none") .. ", " .. ar_nav_cost(t0))
+	local found = ar_w_search_planned(nav, w, sk, sz, mode)
+	local t0 = nil
 	if not found and AR_GOAL_REGION and not AR_PARTIAL_MODE then
 		-- (the sector of the door lies over a stair: along the stair)
 		t0 = ar_nav_ms()
