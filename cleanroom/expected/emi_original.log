@@ -1,4 +1,4 @@
-START 2618 tests
+START 2623 tests
 BEGIN numbers
 V numbers|arith|3.500000 1024.000000 -2.333333 1.#INF00
 V numbers|tostring|"0.333333" "100" "1e+015" "-0.5"
@@ -1863,6 +1863,42 @@ V es_switch|edge|1.000000 "e_right" 4096.000000
 V es_switch|flat_again|0.000000 "floor" 4096.000000
 V es_switch|setup|0.000000
 END es_switch
+BEGIN es_no_walker
+V es_no_walker|default_type|"table"
+V es_no_walker|default|""
+V es_no_walker|turn_rate_type|"table"
+V es_no_walker|turn_rate|"a0 a45 a55 m45 m55 "
+END es_no_walker
+BEGIN es_fov
+V es_fov|fov120_type|"table"
+V es_fov|fov120|"a0 a45 a55 m45 m55 "
+V es_fov|fov160_type|"table"
+V es_fov|fov160|"a0 a45 a55 a65 a80 m45 m55 m65 "
+V es_fov|fov90_type|"table"
+V es_fov|fov90|"a0 a45 m45 "
+V es_fov|fov360_type|"table"
+V es_fov|fov360|"a0 a45 a55 a65 a80 a100 a180 m45 m55 m65 "
+V es_fov|fov0_type|"table"
+V es_fov|fov0|"a0 "
+END es_fov
+BEGIN es_turned
+V es_turned|yaw90_type|"table"
+V es_turned|yaw90|"a0 a45 a55 m45 m55 "
+V es_turned|moved_type|"table"
+V es_turned|moved|"a0 a45 a55 m45 m55 "
+END es_turned
+BEGIN es_sets
+V es_sets|ring_elsewhere_type|"table"
+V es_sets|ring_elsewhere|""
+V es_sets|viewer_not_current_type|"table"
+V es_sets|viewer_not_current|"a0 a45 a55 m45 m55 "
+V es_sets|viewer_out_type|"table"
+V es_sets|viewer_out|""
+END es_sets
+BEGIN es_height
+V es_height|fov120|"high "
+V es_height|fov360|"high over "
+END es_height
 BEGIN emi_smv_sub
 V emi_smv_sub|start|1.000000
 V emi_smv_sub|playing_at_once|1.000000
@@ -9579,4 +9615,4 @@ V lex_binary|short|nil
 ERROR lex_binary binary file cr_bin_old.lua too old: version=0x30; expected at least 0x31
 V lex_binary|old|nil
 END lex_binary
-SUMMARY 2618 tests, 247 failed
+SUMMARY 2623 tests, 247 failed

@@ -7,7 +7,8 @@ One patch on upstream ScummVM master, and the scripts that apply it and build it
 |---|---|
 | `grim-tools.patch` | Everything the tools need from the engine (below). Made on master 026c00f44cf. |
 | `lua-coverage.patch` | Optional, on top of it: which functions, lines and instructions of the Lua ran (`GRIM_LUA_COVERAGE`). |
-| `prepare.sh` | Applies the patch(es) to a checkout (`--lua-coverage`; `--no-patch` applies nothing). Safe to run again. |
+| `emi-walk.patch` | Optional, on top of it: EMI's walker as Monkey4.exe's (Walk2: the floor test of a sector, the way out of it and the next one; not upstream yet). The EMI whole run (`emi_autorun/run_single.sh`) passes with it. Made on master e869b314978. |
+| `prepare.sh` | Applies the patch(es) to a checkout (`--lua-coverage`, `--emi-walk`; `--no-patch` applies nothing). Safe to run again. |
 | `configure.sh` | `configure.sh release\|gcov [build folder]`: the one configure line of every build (Grim and EMI only, ccache). |
 | `build.sh` | The local build: worktree `~/scummvm-patched` (made on origin/master the first time), `prepare.sh`, `configure.sh`, make. |
 
@@ -19,6 +20,7 @@ From an MSYS2 UCRT64 login shell:
 bash scummvm/build.sh                 # ~/scummvm-patched/build-opt/scummvm.exe (release)
 bash scummvm/build.sh --gcov          # ~/scummvm-patched/build-cov (gcov, -DCR_GCOV), for cleanroom/tools/parallel.sh --coverage
 bash scummvm/build.sh --lua-coverage ~/scummvm-luacov   # with lua-coverage.patch, in a worktree of its own
+bash scummvm/build.sh --emi-walk ~/scummvm-emiwalk      # with emi-walk.patch, for the EMI whole run (SVM_DIR=~/scummvm-emiwalk/build-opt)
 ```
 
 To move to a newer master: `git worktree remove ~/scummvm-patched`, then `build.sh` again. When the patch stops applying,
