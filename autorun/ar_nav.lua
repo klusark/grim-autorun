@@ -1374,6 +1374,10 @@ ar_w_relax = function(nav, w, k, k2c, d, extra, link, thin)
 		AR_PY[k2] = y2
 		AR_PSI[k2] = si2
 		AR_PPART[k2] = part2
+		-- (a cell the search from the goal's side has reached: the two have met, and that side has nothing more to tell)
+		if AR_RV_LIVE and AR_RV[k2] then
+			ar_w_rv_stop()
+		end
 		local hx = x2 - AR_HX
 		local hy = y2 - AR_HY
 		ar_heap_push(AR_HEAP, k2, t + AR_HW * sqrt(hx * hx + hy * hy))
@@ -1393,11 +1397,321 @@ end
 -- the cost of the search just done, for the log: cells, frames it was spread over, and ms since t0 (where there is a clock)
 ar_nav_cost = function(t0)
 	local s = AR_SEARCH_STEPS .. " cells, " .. AR_SEARCH_SLICES .. " frames"
+	if AR_RV_N and AR_RV_N > 0 then
+		s = s .. ", " .. AR_RV_N .. " from the goal"
+		if AR_RV_NOWAY then
+			s = s .. " (all of them: the goal is cut off)"
+		end
+	end
 	local t1 = ar_nav_ms()
 	if t0 and t1 then
 		s = s .. ", " .. format("%.0f", t1 - t0) .. " ms"
 	end
 	return s
+end
+
+-- The search from the goal's side. Cell by cell out from the goal, at the pace of the search from Manny, by the rules of that search
+-- turned round: a step from a neighbour at about the height (within 0.35) onto a floor that may be stepped on (plain floor or a door;
+-- a cheat box or a stair only where a link lands), with floor at the middle of the step where it goes from one sector to another, and
+-- back over the links to where they start. It leaves out what only takes steps away (corners, the slivers of a diagonal step, which of
+-- two floors of a cell at about the same height), so it takes every step that search can take and some more: when it has run out of
+-- cells without coming to one that search reached, the goal cannot be walked to, and the search from Manny ends. A goal on a floor of its
+-- own (Santiago at the chess table of Lucre town, on sector18, 0.3 from the floor of the square) was a search of the whole set, 80000
+-- cells, once over the sectors that are on and once more over all of them, Guybrush standing still 10 s each time. Where it comes to a
+-- cell of that search it stops: there may be a way, and the search from Manny goes on alone, so a way that is found is the same as
+-- without it. Not for the partial plan, which wants the cells Manny can reach. AR_NO_GOAL_SIDE: off. AR_GOAL_SIDE_RATE: its cells for
+-- each of the search from Manny (1).
+ar_w_rv_start = function(nav, w)
+	AR_RV_LIVE = nil
+	AR_RV_NOWAY = nil
+	AR_RV_N = 0
+	AR_RV = nil
+	if AR_PARTIAL_MODE or AR_NO_GOAL_SIDE then
+		return
+	end
+	-- (the links by the cell they land in, made once for the world)
+	if not w.rlk then
+		w.rlk = { }
+		local k, list = next(w.lk, nil)
+		while k do
+			local i = 1
+			while list[i] do
+				local tk = list[i].tk
+				if not w.rlk[tk] then
+					w.rlk[tk] = { }
+				end
+				w.rlk[tk][ar_nav_len(w.rlk[tk]) + 1] = list[i]
+				i = i + 1
+			end
+			k, list = next(w.lk, k)
+		end
+	end
+	AR_RV = { }
+	AR_RVE = { }
+	AR_RVZ = { }
+	AR_RVK = { }
+	AR_RQ = { }
+	AR_RQH = 1
+	AR_RQT = 0
+	AR_RV_LIVE = TRUE
+	-- (the goal's cells: of the point and round it, of the walks along a stair that pass it, of the sectors of a door)
+	ar_w_rv_seed_all(nav, w, AR_GOAL_LINKS)
+	ar_w_rv_seed_all(nav, w, AR_GOAL_CELLS)
+	if AR_GOAL_K then
+		ar_w_rv_seed(nav, w, AR_GOAL_K, nil)
+	end
+	if AR_GOAL_HOT then
+		local hot = ar_nav_hotnav(nav)
+		local h = next(AR_GOAL_HOT, nil)
+		while h do
+			ar_w_rv_seed_hot(nav, w, hot.p[h], h)
+			h = next(AR_GOAL_HOT, h)
+		end
+	end
+end
+
+-- the cells that are the keys of the table t (nil: none) as goals of the search from the goal's side
+ar_w_rv_seed_all = function(nav, w, t)
+	if not t then
+		return
+	end
+	local c = next(t, nil)
+	while c do
+		ar_w_rv_seed(nav, w, c, nil)
+		c = next(t, c)
+	end
+end
+
+-- the cells of the box round the hot sector h (its corners p) whose floor lies in it, as goals
+ar_w_rv_seed_hot = function(nav, w, p, h)
+	local x0 = 1000000
+	local x1 = -1000000
+	local y0 = 1000000
+	local y1 = -1000000
+	local k = 1
+	while p[k] do
+		if p[k] < x0 then
+			x0 = p[k]
+		end
+		if p[k] > x1 then
+			x1 = p[k]
+		end
+		if p[k + 1] < y0 then
+			y0 = p[k + 1]
+		end
+		if p[k + 1] > y1 then
+			y1 = p[k + 1]
+		end
+		k = k + 3
+	end
+	local ix0 = floor((x0 - w.x0) / AR_CS)
+	local ix1 = floor((x1 - w.x0) / AR_CS) + 1
+	local iy = floor((y0 - w.y0) / AR_CS)
+	local iy1 = floor((y1 - w.y0) / AR_CS) + 1
+	if ix0 < 0 then
+		ix0 = 0
+	end
+	if ix1 > w.nx - 1 then
+		ix1 = w.nx - 1
+	end
+	if iy < 0 then
+		iy = 0
+	end
+	if iy1 > w.ny - 1 then
+		iy1 = w.ny - 1
+	end
+	while iy <= iy1 do
+		local ix = ix0
+		while ix <= ix1 do
+			ar_w_rv_seed(nav, w, iy * w.nx + ix + 1, h)
+			ix = ix + 1
+		end
+		iy = iy + 1
+	end
+end
+
+-- the floors of the cell c that are on (and lie in the hot sector h, when it is given) as goals
+ar_w_rv_seed = function(nav, w, c, h)
+	local g = ar_w_geo(nav, w, c)
+	if not g then
+		return
+	end
+	local i = 1
+	while g.e[i] do
+		local e = g.e[i]
+		if ar_nav_act_c(nav, e.si) and (not h or ar_w_rv_has(e.h, h)) then
+			local z = ar_w_rv_z(nav, e)
+			ar_w_rv_add(ar_w_node(w, c, i), e, z, ar_w_rv_kind(nav, w, e, z))
+		end
+		i = i + 1
+	end
+end
+
+-- is h in the list l
+ar_w_rv_has = function(l, h)
+	local i = 1
+	while l[i] do
+		if l[i] == h then
+			return TRUE
+		end
+		i = i + 1
+	end
+	return nil
+end
+
+-- the height of the floor e of a cell (worked out once, as ar_w_code does)
+ar_w_rv_z = function(nav, e)
+	local z = e.z
+	if not z then
+		z = ar_nav_z(nav, e.si, e.x, e.y)
+		e.z = z
+	end
+	return z
+end
+
+-- what the floor e of a cell is at the height z, as ar_w_code tells it: 1 floor, 2 a stair or curb, 3 a cheat box, 4 a door or trigger
+ar_w_rv_kind = function(nav, w, e, z)
+	if w.cons[e.si] then
+		return 2
+	end
+	local hot = ar_nav_hotnav(nav)
+	local code = 1
+	local i = 1
+	while e.h[i] do
+		local h = e.h[i]
+		if ar_nav_act_c(hot, h) and ar_w_hot_zok(nav, h, z) then
+			if w.hcons[h] then
+				return 2
+			elseif w.cheat[h] then
+				code = 3
+			elseif w.door[h] and code == 1 then
+				code = 4
+			end
+		end
+		i = i + 1
+	end
+	return code
+end
+
+-- the node n (the floor e of its cell, at the height z, of the kind k) to the goal's side; a node the search from Manny has reached ends
+-- the search from the goal's side
+ar_w_rv_add = function(n, e, z, k)
+	if not AR_RV_LIVE or AR_RV[n] then
+		return
+	end
+	if AR_G[n] then
+		AR_RV_LIVE = nil
+		return
+	end
+	AR_RV[n] = TRUE
+	AR_RVE[n] = e
+	AR_RVZ[n] = z
+	AR_RVK[n] = k
+	AR_RQT = AR_RQT + 1
+	AR_RQ[AR_RQT] = n
+	AR_RV_N = AR_RV_N + 1
+end
+
+-- The floors of the cell c, within 0.35 of the height z, that a step of the search from Manny could start from: on, and a floor he can
+-- stand on (a cheat box or a stair only where a link lands, unless that search has been there). eb: the floor the step goes onto, nil
+-- for the start of a link (no floor needed at the middle)
+ar_w_rv_cell = function(nav, w, c, z, eb)
+	local g = ar_w_geo(nav, w, c)
+	if not g then
+		return
+	end
+	local i = 1
+	while g.e[i] and AR_RV_LIVE do
+		local e = g.e[i]
+		local a = ar_w_node(w, c, i)
+		if not AR_RV[a] and ar_nav_act_c(nav, e.si) then
+			local ez = ar_w_rv_z(nav, e)
+			if abs(ez - z) < 0.35 then
+				local k = ar_w_rv_kind(nav, w, e, ez)
+				local ok = AR_G[a] or k == 1 or k == 4 or w.rlk[c]
+				if ok and eb and (e.part or eb.part or e.si ~= eb.si) then
+					ok = ar_nav_find_z(nav, (e.x + eb.x) / 2, (e.y + eb.y) / 2, (ez + z) / 2, 0.35)
+				end
+				if ok then
+					ar_w_rv_add(a, e, ez, k)
+				end
+			end
+		end
+		i = i + 1
+	end
+end
+
+-- n cells of the search from the goal's side. None left, and it never came to a cell of the search from Manny: AR_RV_NOWAY
+ar_w_rv_steps = function(nav, w, n)
+	local nx = w.nx
+	while n > 0 and AR_RV_LIVE do
+		if AR_RQH > AR_RQT then
+			AR_RV_NOWAY = TRUE
+			AR_RV_LIVE = nil
+		else
+			local b = AR_RQ[AR_RQH]
+			AR_RQ[AR_RQH] = nil
+			AR_RQH = AR_RQH + 1
+			local z = AR_RVZ[b]
+			local cb = ar_w_cell(w, b)
+			-- (onto a cheat box or a stair the search from Manny only comes over a link)
+			if AR_RVK[b] == 1 or AR_RVK[b] == 4 then
+				local eb = AR_RVE[b]
+				local ix = (cb - 1) - nx * floor((cb - 1) / nx)
+				local iy = floor((cb - 1) / nx)
+				local dy = -1
+				while dy <= 1 do
+					local dx = -1
+					while dx <= 1 do
+						if (dx ~= 0 or dy ~= 0) and ix + dx >= 0 and ix + dx < nx and iy + dy >= 0 and iy + dy < w.ny then
+							ar_w_rv_cell(nav, w, (iy + dy) * nx + ix + dx + 1, z, eb)
+						end
+						dx = dx + 1
+					end
+					dy = dy + 1
+				end
+			end
+			-- (back over a link that lands here: to the floor it starts from)
+			local r = w.rlk[cb]
+			local i = 1
+			while r and r[i] do
+				if abs(r[i].lz - z) < 0.35 then
+					ar_w_rv_cell(nav, w, r[i].fk, r[i].pz, nil)
+				end
+				i = i + 1
+			end
+		end
+		n = n - 1
+	end
+	if not AR_RV_LIVE then
+		ar_w_rv_stop()
+	end
+end
+
+-- the search from the goal's side is over (its cells are let go)
+ar_w_rv_stop = function()
+	AR_RV_LIVE = nil
+	AR_RV = nil
+	AR_RVE = nil
+	AR_RVZ = nil
+	AR_RVK = nil
+	AR_RQ = nil
+end
+
+-- The partial plan (as near to a goal that cannot be reached as the floor goes) ends AR_PARTIAL_MORE (1000) cells after the first one
+-- within AR_PARTIAL_NEAR (0.4, a unit of EMI's: inside the range of most objects and people) of the goal, with the nearest it has by
+-- then; before, it searched every cell Manny could reach for the nearest one (Lucre town's 80000 cells for the chess players)
+ar_w_partial_near = function(k)
+	if AR_PARTIAL_LEFT then
+		AR_PARTIAL_LEFT = AR_PARTIAL_LEFT - 1
+		return
+	end
+	local r = AR_PARTIAL_NEAR or 0.4
+	local dx = AR_PX[k] - AR_HX
+	local dy = AR_PY[k] - AR_HY
+	if dx * dx + dy * dy < r * r then
+		AR_PARTIAL_LEFT = AR_PARTIAL_MORE or 1000
+	end
 end
 
 ar_w_search = function(nav, w, sk, sz)
@@ -1414,6 +1728,8 @@ ar_w_search = function(nav, w, sk, sz)
 	AR_PPART = { }
 	AR_PEN = { }
 	AR_HEAP = { n = 0, k = { }, f = { } }
+	AR_RV_N = 0
+	AR_RV_NOWAY = nil
 	if not ar_w_code(nav, w, sk, sz) then
 		return nil
 	end
@@ -1426,14 +1742,19 @@ ar_w_search = function(nav, w, sk, sz)
 	AR_PSI[sk] = AR_W_E.si
 	AR_PPART[sk] = AR_W_E.part
 	ar_heap_push(AR_HEAP, sk, 0)
+	ar_w_rv_start(nav, w)
 	local nx = w.nx
 	local found = nil
 	local steps = 0
-	while AR_HEAP.n > 0 and not found and steps < 100000 do
+	AR_PARTIAL_LEFT = nil
+	while AR_HEAP.n > 0 and not found and steps < 100000 and not AR_RV_NOWAY and AR_PARTIAL_LEFT ~= 0 do
 		local k = ar_heap_pop(AR_HEAP)
 		if not AR_CLOSED[k] then
 			AR_CLOSED[k] = TRUE
 			steps = steps + 1
+			if AR_PARTIAL_MODE then
+				ar_w_partial_near(k)
+			end
 			-- (a big search is spread over frames in the game, not done in one)
 			if AR_SLICE and mod(steps, 300) == 0 then
 				AR_SEARCH_SLICES = AR_SEARCH_SLICES + 1
@@ -1473,6 +1794,9 @@ ar_w_search = function(nav, w, sk, sz)
 						ar_w_relax(nav, w, k, l[li].tk, 0, l[li].cost, l[li])
 					end
 					li = li + 1
+				end
+				if AR_RV_LIVE then
+					ar_w_rv_steps(nav, w, AR_GOAL_SIDE_RATE or 1)
 				end
 			end
 		end
