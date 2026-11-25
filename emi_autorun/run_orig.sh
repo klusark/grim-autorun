@@ -16,6 +16,7 @@ python "$EM/emi_nav_gen.py" "$EM/generated/emi_nav_planner_orig.lua" || exit 1
 {
 	[ -n "$WALKTRACE" ] && echo "AR_WALK_TRACE = TRUE"
 	echo "AR_CHAPTER = \"$name\""
+	echo "AR_ORIGINAL = TRUE"
 	# (STAGE lines: the original prints no traceback for a Lua error, only the message; they also cut the run into parts)
 	for f in "$EM/emi_prelude.lua" "${ARLIB:-$AR/ar_lib.lua}" "$EM/emi_floors.lua" "$EM/emi_floors_fn.lua" "$EM/generated/emi_nav_planner_orig.lua" "$EM/emi_nav_data.lua" "$EM/emi_nav.lua" "$EM/emi_lib.lua"; do
 		echo "PrintDebug(\"STAGE $(basename $f)\")"; cat "$f"; echo

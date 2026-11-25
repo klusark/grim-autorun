@@ -299,12 +299,13 @@ ar_skipper = function()
 		end
 		-- a line that never ends (a voice that does not finish) is skipped like a player does, with the
 		-- key that expires the text
-		-- Every other line is skipped too once it has been up for AR_LINE_MS (1.5 s), as a player who has read it presses the key: with the
-		-- speech muted each line stays up for its whole text time, and Guybrush stood through minutes of conversation (the SCUMM Bar's
-		-- arm wrestling 230 s, Carla and Otis 316 s). AR_REAL or AR_KEEP_LINES: the lines run their course.
+		-- Every other line is skipped too once it has been up for AR_LINE_MS (0.2 s), as a speed-running player presses the key as soon as a
+		-- line shows: with the speech muted each line stays up for its whole text time, and Guybrush stood through minutes of conversation
+		-- (the SCUMM Bar's arm wrestling 230 s, Carla and Otis 316 s; at 1.5 s a line the whole game still spent most of its time in
+		-- conversations). AR_REAL or AR_KEEP_LINES: the lines run their course.
 		if IsMessageGoing() then
 			AR_MSG_TIME = (AR_MSG_TIME or 0) + 100
-			if not AR_REAL and not AR_KEEP_LINES and AR_MSG_TIME > (AR_LINE_MS or 1500) then
+			if not AR_REAL and not AR_KEEP_LINES and AR_MSG_TIME > (AR_LINE_MS or 200) then
 				-- (pressed again every AR_LINE_MS while lines are up, the next line of the conversation included)
 				ar_press_key(ar_real_key("EXPIRE_TEXT"))
 				AR_MSG_TIME = 0
@@ -1942,6 +1943,27 @@ ar_exhaust_stop = function()
 	return nil
 end
 
+-- The choices of a dialog said in this order, each once it is offered: the way through that a player who knows the game takes,
+-- for the one flag the story needs (an ar_exhaust of the whole dialog says every line). A choice that is not offered when its turn
+-- comes is logged and passed over; the chapter checks the flag and can fall back to ar_exhaust.
+ar_route = function(name, lines)
+	local i = 1
+	while lines[i] do
+		local d = ar_dlg_choice(name, "line " .. tostring(lines[i]))
+		if not d then
+			return nil
+		end
+		local v = d[lines[i]]
+		if v and v[d.node] and not v.off then
+			ar_pick(d, lines[i])
+		else
+			ar_log("route " .. name .. ": line " .. tostring(lines[i]) .. " is not offered at node " .. tostring(d.node))
+		end
+		i = i + 1
+	end
+	return TRUE
+end
+
 ar_exhaust = function(name, stop_when, max_picks)
 	local used = { }
 	local picks = 0
@@ -2018,8 +2040,12 @@ ar_checkpoint = function(slot)
 	sleep_for(1500)
 	ar_log("saved checkpoint grim" .. format("%02d", slot) .. ".gsv")
 	-- (the original brings the task that made a save back with it: a resume (run_orig.sh) loads the save and runs the new script at
-	-- once, which stops this task; it waits here meanwhile, 20 s of game time. The same on both engines)
-	sleep_for(20000)
+	-- once (F11), which stops this task; it waits here meanwhile, 20 s of game time. ScummVM stops it itself before the script runs
+	-- again on the loaded state (grim-tools.patch: stop_script(__autorun__)), and a ScummVM checkpoint is only loaded by ScummVM, so
+	-- there is no wait there: with 64 checkpoints it was 1400 s of a whole run's 10800)
+	if AR_ORIGINAL then
+		sleep_for(20000)
+	end
 	if not AR_CONTINUE then
 		-- one chapter run: the save is the result
 		ar_finish()

@@ -12,9 +12,14 @@ ar_check(ar_set_name() == "melee town", "in Melee town")
 ar_talk(mel.carlaotis_obj)
 ar_dlg("carlo")
 sleep_for(1500)
-AR_EXH_REPEAT = 3
-ar_exhaust("carlo", ar_knows_contracts, 80)
-AR_EXH_REPEAT = nil
+-- (the way to the contracts: the crew asked for (100: they look familiar), recognised (330: the cruise to Monkey Island, which opens
+-- 116), asked again for old time's sake (116), bribed with cushy government jobs (235: knows_to_get_contracts))
+ar_route("carlo", { 100, 330, 116, 235 })
+if not ar_knows_contracts() then
+	AR_EXH_REPEAT = 3
+	ar_exhaust("carlo", ar_knows_contracts, 80)
+	AR_EXH_REPEAT = nil
+end
 ar_log("knows_to_get_contracts=" .. tostring(glob.knows_to_get_contracts))
 if getglobal("carlo") and carlo.running then
 	ar_say_exit("carlo")

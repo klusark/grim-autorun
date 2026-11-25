@@ -9,7 +9,11 @@ ar_put_away()
 ar_talk(ban.teller_obj)
 ar_dlg("bt1")
 sleep_for(1500)
-ar_exhaust("bt1", nil, 30)
+-- (the safe deposit box (90, offered once Marley's letter was read) sends the teller to the vault: the robbery)
+ar_route("bt1", { 90 })
+if not ban.go_to_vault then
+	ar_exhaust("bt1", nil, 30)
+end
 if getglobal("bt1") and bt1.running then
 	ar_say_exit("bt1")
 end

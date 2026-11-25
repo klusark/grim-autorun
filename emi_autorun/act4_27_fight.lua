@@ -19,6 +19,12 @@ ar_wait_for(ar_dlg_ended, 60000, "the dialog fini to end")
 ar_state("after the dialog")
 ar_a4_credits(120000)
 ar_state("credits")
+-- (a player skips the credits with the override key: the credits menu's handler stops them and runs end_credits_hook, the game's end.
+-- AR_REAL or AR_NO_SKIP: they run their course)
+if ar_a4_credits_up() and not AR_REAL and not AR_NO_SKIP then
+	sleep_for(1000)
+	ar_press_key(ar_real_key("OVERRIDE"))
+end
 ar_try_wait(ar_a4_credits_over, 600000)
 ar_log("the credits are over: active=" .. tostring(credits_menu and credits_menu.is_active) .. " set=" .. tostring(ar_set_name()))
 ar_check(glob.won_the_game or TRUE, "the game is won: the credits ran")
