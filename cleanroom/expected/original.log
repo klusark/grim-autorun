@@ -1,4 +1,4 @@
-START 5735 tests
+START 5742 tests
 BEGIN boot_state
 V boot_state|movie_playing|nil
 V boot_state|fullscreen_movie_playing|nil
@@ -4930,6 +4930,54 @@ V sight_turn|point_rot|0.000000 180.014709 0.000000
 V sight_turn|point_actor_rot|0.000000 44.988007 0.000000
 V sight_turn|yaw_to_point|-90.000008
 END sight_turn
+BEGIN sight_head_roll
+V sight_head_roll|no_head|""
+V sight_head_roll|r165|"a0 a45 a80 m45 m80 "
+V sight_head_roll|r90|"a0 a45 m45 "
+V sight_head_roll|r_neg165|"a0 a45 a80 m45 m80 "
+V sight_head_roll|r200|"a0 a45 a80 a85 m45 m80 m85 "
+V sight_head_roll|r360|"a0 a45 a80 a85 a100 a180 m45 m80 m85 m100 "
+V sight_head_roll|r165_no_pitch_yaw|"a0 a45 a80 m45 m80 "
+END sight_head_roll
+BEGIN sight_head_turned
+V sight_head_turned|yaw90|"a0 a45 a80 m45 m80 "
+V sight_head_turned|yaw_m135|"a0 a45 a80 m45 m80 "
+V sight_head_turned|moved|"a0 a45 a80 m45 m80 "
+END sight_head_turned
+BEGIN sight_head_joint
+V sight_head_joint|from_head|"near far "
+V sight_head_joint|from_arm|"near "
+V sight_head_joint|from_arm_turned|"near "
+V sight_head_joint|from_body|"near far "
+END sight_head_joint
+BEGIN sight_head_pitch_roll
+V sight_head_pitch_roll|pitch60|"a0 a45 a80 a85 a100 m45 m80 m85 m100 "
+V sight_head_pitch_roll|pitch_m60|"a0 "
+V sight_head_pitch_roll|roll60|"a0 a45 a80 a85 m45 "
+V sight_head_pitch_roll|pitch85|""
+V sight_head_pitch_roll|pitch120|"a180 "
+END sight_head_pitch_roll
+BEGIN sight_head_costumes
+V sight_head_costumes|pushed_same_model|"a0 a45 a80 m45 m80 "
+V sight_head_costumes|pushed_own_head|"a0 a45 m45 "
+V sight_head_costumes|pushed_other_model|""
+V sight_head_costumes|other_model_own_head|"a0 a45 a80 a85 a100 a180 m45 m80 m85 m100 "
+V sight_head_costumes|popped_once|"a0 a45 m45 "
+V sight_head_costumes|popped_twice|"a0 a45 a80 m45 m80 "
+V sight_head_costumes|set_costume|""
+V sight_head_costumes|no_costume|""
+END sight_head_costumes
+BEGIN sight_head_sets
+V sight_head_sets|ring_elsewhere|""
+V sight_head_sets|ring_upper_case|"a0 a45 a80 m45 m80 "
+V sight_head_sets|viewer_not_current|"a0 a45 a80 m45 m80 "
+V sight_head_sets|viewer_out|""
+V sight_head_sets|selected_nil_arg|"a0 a45 a80 m45 m80 "
+END sight_head_sets
+BEGIN sight_head_height
+V sight_head_height|r165|"high "
+V sight_head_height|r360|"high over "
+END sight_head_height
 BEGIN sound_play
 V sound_play|before|"0 0 -4 -4 -4 -4"
 V sound_play|id|"number"
@@ -21563,4 +21611,4 @@ END zbuffer_post
 BEGIN zbuffer_bar
 V zbuffer_bar|bar_box|458.000000 207.000000 571.000000 267.000000 6601.000000
 END zbuffer_bar
-SUMMARY 5735 tests, 257 failed
+SUMMARY 5742 tests, 257 failed

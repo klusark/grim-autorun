@@ -364,3 +364,18 @@ Grim v1.01 for comparison (already named): sputLua_MakeSectorActiveL 0x49eeb0 ch
 number is a name; sputLua_GetSectorOppositeEdge 0x49ed90 -> sputActor_LeaveSector 0x4931f0 -> WalkPlane_JumpOut 0x4a7390: the far point
 clipped back onto each edge it is outside of (WalkPlane_Intersection 0x4a6d10, no move when it is inside the sector), the actor moved,
 nothing returned. Cleanroom sector_opposite.lua, emi_sector_opposite.lua.
+
+## Added 2026-11-24 (what an actor sees: GetVisibleThings, Monkey4.exe)
+
+| Address | Name | What it does |
+|---|---|---|
+| 0x415c80 | Lua_GetVisibleThings | the other actors of the viewer's set it sees (skips itself; none when viewer +0x124 bit 1) |
+| 0x428070 | Actor_CanSeeActor | both in the same set (exact name compare), then Actor_CanSeePoint at the other's world position |
+| 0x427eb0 | Actor_CanSeePoint | needs the walker (+0x1a0); forward (x-z, normalized) . way to the point (normalized, y dropped, normalized) >= walker+0x8c |
+| 0x412ff0 | Lua_SetActorFOV | creates the walker if missing, walker+0x8c = cos(fov/2) |
+
+Grim v1.01 (already named): sputLua_GetVisibleThingsL 0x49b9e0, sputActor_CanActorSeeActor 0x48fb80 (stricmp of the set names),
+sputActor_CanActorSeePoint 0x48fa60 (from head joint 0 of the top costume, forward row of the orient matrix not renormalized,
+>= costume flViewCos), sputActor_SetActorHead 0x48f9d0 (flViewCos = cos(|maxRoll|/2)), Costume_InitRecord 0x494fb0 (joints -1,
+flViewCos -0.35), sputCostume_PushCostume 0x494e80 (copies the head of the costume below when the main model is the same).
+ScummVM: Actor::canSee / canSeePoint. Cleanroom grim/sight.lua (sight_head_*), emi/emi_sight.lua.
