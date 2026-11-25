@@ -1,16 +1,24 @@
 diff --git a/engines/grim/actor.cpp b/engines/grim/actor.cpp
-index 096ba67f74d..75a9b7f986d 100644
+index 096ba67f74d..7c9f1008664 100644
 --- a/engines/grim/actor.cpp
 +++ b/engines/grim/actor.cpp
-@@ -516,6 +516,7 @@ void Actor::setRot(const Math::Angle &pitchParam, const Math::Angle &yawParam, c
+@@ -283,6 +283,7 @@ bool Actor::restoreState(SaveGame *savedState) {
+ 	// load actor name
+ 	_name = savedState->readString();
+ 	_setName = savedState->readString();
++	_emiWalkSectorId = -1;
+ 
+ 	_talkColor = savedState->readColor();
+ 
+@@ -516,6 +517,7 @@ void Actor::setRot(const Math::Angle &pitchParam, const Math::Angle &yawParam, c
  void Actor::setPos(const Math::Vector3d &position) {
  	_walking = false;
  	_pos = position;
-+	_emiWalkSector = nullptr;
++	_emiWalkSectorId = -1;
  
  	// Don't allow positions outside the sectors.
  	// This is necessary after solving the tree pump puzzle, when the bone
-@@ -808,6 +809,84 @@ void Actor::moveTo(const Math::Vector3d &pos) {
+@@ -808,6 +810,83 @@ void Actor::moveTo(const Math::Vector3d &pos) {
  	_pos += moveVec;
  }
  
@@ -18,17 +26,17 @@ index 096ba67f74d..75a9b7f986d 100644
 +	const float samePlace = 0.0001f;
 +	if (!set)
 +		return nullptr;
-+	if (_emiWalkSector && _emiWalkSet == set && (_pos - _emiWalkPos).getMagnitude() < samePlace) {
++	if (_emiWalkSectorId >= 0 && (_pos - _emiWalkPos).getMagnitude() < samePlace) {
 +		for (int i = 0; i < set->getSectorCount(); i++) {
-+			if (set->getSectorBase(i) == _emiWalkSector)
-+				return _emiWalkSector;
++			Sector *sector = set->getSectorBase(i);
++			if ((sector->getType() & Sector::WalkType) && sector->getSectorId() == _emiWalkSectorId)
++				return sector;
 +		}
 +	}
 +	Sector *sector = set->findPointSectorEMI(_pos, Sector::WalkType, Common::Array<const Sector *>());
 +	if (!sector)
 +		set->findClosestSector(_pos, &sector, &_pos);
-+	_emiWalkSector = sector;
-+	_emiWalkSet = set;
++	_emiWalkSectorId = sector ? sector->getSectorId() : -1;
 +	_emiWalkPos = _pos;
 +	return sector;
 +}
@@ -87,8 +95,7 @@ index 096ba67f74d..75a9b7f986d 100644
 +		if (turn != 0.f)
 +			turnTo(0, _moveYaw.getDegrees() + turn, 0, true);
 +	}
-+	_emiWalkSector = sector;
-+	_emiWalkSet = set;
++	_emiWalkSectorId = sector ? sector->getSectorId() : -1;
 +	_emiWalkPos = _pos;
 +}
 +
@@ -107,8 +114,85 @@ index 096ba67f74d..75a9b7f986d 100644
  	bool backwards = false;
  	if (dist < 0) {
  		dist = -dist;
+@@ -857,13 +941,6 @@ void Actor::walkForward() {
+ 			Math::Vector3d forwardVec(-_moveYaw.getSine(),
+ 			                           _moveYaw.getCosine(), 0);
+ 
+-			// EMI: Y is up-down, actors use an X-Z plane for movement
+-			if (g_grim->getGameType() == GType_MONKEY4) {
+-				forwardVec.x() = -forwardVec.x();
+-				forwardVec.z() = forwardVec.y();
+-				forwardVec.y() = 0;
+-			}
+-
+ 			if (backwards)
+ 				forwardVec = -forwardVec;
+ 
+@@ -878,23 +955,13 @@ void Actor::walkForward() {
+ 			prevSector = currSector;
+ 			Math::Vector3d forwardVec;
+ 			const Math::Vector3d &normal = currSector->getNormal();
+-			if (g_grim->getGameType() == GType_GRIM) {
+-				Math::Angle ax = Math::Vector2d(normal.x(), normal.z()).getAngle();
+-				Math::Angle ay = Math::Vector2d(normal.y(), normal.z()).getAngle();
+-
+-				float z1 = -_moveYaw.getCosine() * ay.getCosine();
+-				float z2 = _moveYaw.getSine() * ax.getCosine();
+-				forwardVec = Math::Vector3d(-_moveYaw.getSine() * ax.getSine(),
+-				                             _moveYaw.getCosine() * ay.getSine(), z1 + z2);
+-			} else {
+-				Math::Angle ax = Math::Vector2d(normal.x(), normal.y()).getAngle();
+-				Math::Angle az = Math::Vector2d(normal.z(), normal.y()).getAngle();
++			Math::Angle ax = Math::Vector2d(normal.x(), normal.z()).getAngle();
++			Math::Angle ay = Math::Vector2d(normal.y(), normal.z()).getAngle();
+ 
+-				float y1 = _moveYaw.getCosine() * az.getCosine();
+-				float y2 = _moveYaw.getSine() * ax.getCosine();
+-				forwardVec = Math::Vector3d(-_moveYaw.getSine() * ax.getSine(), y1 + y2,
+-				                            -_moveYaw.getCosine() * az.getSine());
+-			}
++			float z1 = -_moveYaw.getCosine() * ay.getCosine();
++			float z2 = _moveYaw.getSine() * ax.getCosine();
++			forwardVec = Math::Vector3d(-_moveYaw.getSine() * ax.getSine(),
++			                             _moveYaw.getCosine() * ay.getSine(), z1 + z2);
+ 
+ 			if (backwards)
+ 				forwardVec = -forwardVec;
+@@ -917,13 +984,6 @@ void Actor::walkForward() {
+ 			// the path
+ 			currSector = g_grim->getCurrSet()->findPointSector(ei.exitPoint + (float)0.0001 * puckVec, Sector::WalkType);
+ 
+-			// EMI: some sectors are significantly higher/lower than others.
+-			if (currSector && g_grim->getGameType() == GType_MONKEY4) {
+-				float planeDist = currSector->distanceToPoint(_pos);
+-				if (fabs(planeDist) < 1.f)
+-					_pos -= planeDist * currSector->getNormal();
+-			}
+-
+ 			if (currSector == prevSector || currSector == startSector)
+ 				break;
+ 		}
+@@ -939,9 +999,6 @@ void Actor::walkForward() {
+ 
+ 		ei.angleWithEdge += (float)1.0f;
+ 
+-		if (g_grim->getGameType() == GType_MONKEY4) {
+-			ei.angleWithEdge = -ei.angleWithEdge;
+-		}
+ 		turnTo(0, _moveYaw + ei.angleWithEdge * turnDir, 0, true);
+ 
+ 		if (oldDist <= dist + 0.001f) {
+@@ -1995,6 +2052,8 @@ void Actor::putInSet(const Common::String &set) {
+ 		}
+ 	}
+ 	_fakeUnbound = false;
++	if (set != _setName)
++		_emiWalkSectorId = -1;
+ 	// The set should change immediately, otherwise a very rapid set change
+ 	// for an actor will be recognized incorrectly and the actor will be lost.
+ 	_setName = set;
 diff --git a/engines/grim/actor.h b/engines/grim/actor.h
-index 96a992cf27f..62533723e05 100644
+index 96a992cf27f..8369c3856dd 100644
 --- a/engines/grim/actor.h
 +++ b/engines/grim/actor.h
 @@ -419,6 +419,8 @@ public:
@@ -120,12 +204,11 @@ index 96a992cf27f..62533723e05 100644
  	void moveTo(const Math::Vector3d &pos);
  	/**
  	 * Used to tell the actor if it is running or not.
-@@ -638,6 +640,9 @@ private:
+@@ -638,6 +640,8 @@ private:
  	// turning animation while still allowing the actor to move in a
  	// new direction immediately after reflecting off a wall.
  	Math::Angle _moveYaw;
-+	Sector *_emiWalkSector = nullptr;
-+	Set *_emiWalkSet = nullptr;
++	int _emiWalkSectorId = -1;
 +	Math::Vector3d _emiWalkPos;
  	Math::Angle _movePitch;
  	Math::Angle _moveRoll;

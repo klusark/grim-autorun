@@ -145,3 +145,9 @@ end)
 cr_scummvm_differs("es_no_walker", "no walker in ScummVM", "emi")
 -- (ScummVM before Actor::canSee: only a viewer in the current set saw anything)
 cr_scummvm_differs("es_sets", "", "emi")
+-- (ScummVM's GetVisibleThings, lua_v1_actor.cpp: getYawTo(a) < fov / 2. An actor on the edge of the view is not seen, nor the one
+-- straight ahead at fov 0; the original's test is forward . way >= cos(fov / 2), 0x427eb0)
+cr_scummvm_differs("es_fov", "getYawTo(a) < fov / 2 leaves out an actor on the edge of the view (the original: >= cos(fov / 2))", "emi")
+-- (ScummVM's getYawTo is 0 for an actor straight above: seen at any fov. The original's way on the floor is nothing then, its product
+-- with the forward way 0: seen only from fov 180 on)
+cr_scummvm_differs("es_height", "getYawTo gives 0 for an actor straight above: seen at fov 120 (the original: from fov 180 on)", "emi")
