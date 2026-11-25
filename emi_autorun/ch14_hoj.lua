@@ -1,9 +1,12 @@
--- EMI chapter 14: the Hall o' Justice, explored by the poker
+-- EMI chapter 14: the Hall o' Justice: the tin of chicken grease (Pegnose Pete's welcome mat, ch25)
 ar_load(13)
 ar_log("=== EMI ch14 hoj ===")
 ar_wait_for_control()
 ar_state("hoj")
-ar_survey()
-ar_poke_room(5)
+-- (only the grease: the poker's survey of the room (ar_survey, ar_poke_room: every verb on everything) changed nothing else the
+-- story uses)
+ar_do("pickUp", hoj.grease)
+ar_wait_for_control()
+ar_check(props.grease.state == PROP_INV, "the tin of chicken grease")
 ar_state("end")
 ar_checkpoint(14)

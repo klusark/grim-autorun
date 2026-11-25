@@ -18,8 +18,14 @@ while glob.monkey_kombat_level < 4 and tries < 30 do
 		-- (the set tables are built while the set is entered: the name is there before the monkey object is)
 		ar_try_wait(function() return jun and jun.MImonkey_obj and cutSceneLevel == 0 end, 15000)
 	end
-	if ar_set_name() == A3_SET_JUN and jun and jun.MImonkey_obj then
-		ar_log("a monkey in the jungle, try " .. tries .. ", level " .. glob.monkey_kombat_level)
+	-- (a wild monkey's level is the player's one less, the same or one more (_actorsmonkey.lua: level_offset), and a win raises the
+	-- player's level only to one above the monkey's (monkey_kombat2.lua): a monkey below it teaches nothing. A player who knows the
+	-- monkeys by their names walks past it and meets another one)
+	if ar_set_name() == A3_SET_JUN and jun and jun.MImonkey_obj and glob.level_offset and glob.level_offset < glob.monkey_kombat_level then
+		ar_log("a level " .. glob.level_offset .. " monkey in the jungle, try " .. tries .. ": walked past at level " .. glob.monkey_kombat_level)
+		a3_to_map()
+	elseif ar_set_name() == A3_SET_JUN and jun and jun.MImonkey_obj then
+		ar_log("a level " .. tostring(glob.level_offset) .. " monkey in the jungle, try " .. tries .. ", level " .. glob.monkey_kombat_level)
 		AR_KEEP_GOING = TRUE
 		ar_do("use", jun.MImonkey_obj)
 		AR_KEEP_GOING = FALSE

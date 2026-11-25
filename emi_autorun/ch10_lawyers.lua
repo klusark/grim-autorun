@@ -1,18 +1,10 @@
--- EMI chapter 10: the lawyers: Marley's letter read, then everything the lawyers have to say
+-- EMI chapter 10: the law offices: Marley's letter read (the lawyers themselves are not needed)
 ar_load(9)
 ar_log("=== EMI ch10 lawyers ===")
 ar_wait_for_control()
 ar_look_item(props.herman_letter or Inventory.ordered_inventory_table[1])
 ar_put_away()
-ar_talk(law.lawyers_obj)
-ar_dlg("dlg_law")
-sleep_for(1500)
-AR_EXH_REPEAT = 2
-ar_exhaust("dlg_law", nil, 40)
-AR_EXH_REPEAT = nil
-if getglobal("dlg_law") and dlg_law.running then
-	ar_say_exit("dlg_law")
-end
-ar_dlg_done("dlg_law")
-ar_log("flags: read=" .. tostring(glob.guybrush_read_marley_letter) .. " deed=" .. tostring(glob.dlaw_talked_deed) .. " bank=" .. tostring(glob.dlaw_talked_bank))
+-- (the lawyers are not talked to: what they say sets only their own dialog's flags (dlaw_talked_*). The bank teller's safe deposit
+-- box line (ch12) wants guybrush_read_marley_letter, which reading the letter sets)
+ar_check(glob.guybrush_read_marley_letter, "Marley's letter read")
 ar_checkpoint(10)

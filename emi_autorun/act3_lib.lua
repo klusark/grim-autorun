@@ -427,10 +427,17 @@ end
 -- Talks to an object until the named conversation is running (the walk up to a moving person can be cut short)
 a3_talk = function(obj, dlg)
 	local tries = 0
+	-- (a talk that is not offered is tried again, not the end of the run: the priest of the church floats about after he has been met,
+	-- and can be out of his range of Guybrush when Guybrush gets to his use point)
+	local failed = AR_FAILED
+	local keep = AR_KEEP_GOING
 	while tries < 5 do
+		AR_KEEP_GOING = TRUE
 		ar_talk(obj)
+		AR_KEEP_GOING = keep
 		local d = a3_dlg_running(dlg, 6000)
 		if d then
+			AR_FAILED = failed
 			return d
 		end
 		tries = tries + 1
