@@ -1256,3 +1256,109 @@ index 00f4591d2f6..fc4a3ee3916 100644
  class VideoDecoder {
  public:
  	VideoDecoder();
+diff --git a/engines/grim/lua/lobject.cpp b/engines/grim/lua/lobject.cpp
+index d158cc51eb2..01a38820dae 100644
+--- a/engines/grim/lua/lobject.cpp
++++ b/engines/grim/lua/lobject.cpp
+@@ -74,10 +74,13 @@ int luaO_findstring(const char *name, const char *list[]) {
+ 	return -1;  // name not found
+ }
+ 
++uint32 luaO_gcseq = 0;
++
+ void luaO_insertlist(GCnode *root, GCnode *node) {
+ 	node->next = root->next;
+ 	root->next = node;
+ 	node->marked = 0;
++	node->seq = ++luaO_gcseq;
+ }
+ 
+ } // end of namespace Grim
+diff --git a/engines/grim/lua/lobject.h b/engines/grim/lua/lobject.h
+index 4261ffced2b..a50d9b5347e 100644
+--- a/engines/grim/lua/lobject.h
++++ b/engines/grim/lua/lobject.h
+@@ -73,8 +73,13 @@ typedef struct TObject {
+ typedef struct GCnode {
+ 	struct GCnode *next;
+ 	int32 marked;
++	uint32 seq;  // creation number: tables hash tables, closures and prototypes by it, not by their address
+ } GCnode;
+ 
++// The creation number the next object linked into a GC list gets (luaO_insertlist); 0 again when the state is
++// made anew (lua_open, lua_Restore), so that the order next() walks a table in is the same in every run
++extern uint32 luaO_gcseq;
++
+ /*
+ ** String headers for string table
+ */
+diff --git a/engines/grim/lua/lrestore.cpp b/engines/grim/lua/lrestore.cpp
+index 7810b79c05f..179ae95e8e8 100644
+--- a/engines/grim/lua/lrestore.cpp
++++ b/engines/grim/lua/lrestore.cpp
+@@ -209,6 +209,7 @@ void lua_Restore(SaveGame *savedState) {
+ 	savedState->beginSection('LUAS');
+ 
+ 	lua_close();
++	luaO_gcseq = 0;
+ 	lua_rootState = lua_state = luaM_new(LState);
+ 	lua_stateinit(lua_state);
+ 	lua_resetglobals();
+diff --git a/engines/grim/lua/lstate.cpp b/engines/grim/lua/lstate.cpp
+index 8a801725d4d..396543f0481 100644
+--- a/engines/grim/lua/lstate.cpp
++++ b/engines/grim/lua/lstate.cpp
+@@ -207,6 +207,7 @@ void callHook(lua_Function func, const char *filename, int32 line) {
+ void lua_open() {
+ 	if (lua_state)
+ 		return;
++	luaO_gcseq = 0;
+ 	lua_rootState = lua_state = luaM_new(LState);
+ 	lua_stateinit(lua_state);
+ 	lua_resetglobals();
+diff --git a/engines/grim/lua/lstring.cpp b/engines/grim/lua/lstring.cpp
+index f226f6d8ab8..b603601c861 100644
+--- a/engines/grim/lua/lstring.cpp
++++ b/engines/grim/lua/lstring.cpp
+@@ -19,7 +19,7 @@ namespace Grim {
+ 
+ #define gcsizestring(l)      (1 + (l / 64))  // "weight" for a string with length 'l'
+ 
+-TaggedString EMPTY = {{nullptr, 2}, 0, 0L, {LUA_T_NIL, {nullptr}}, {0}};
++TaggedString EMPTY = {{nullptr, 2, 0}, 0, 0L, {LUA_T_NIL, {nullptr}}, {0}};
+ 
+ void luaS_init() {
+ 	int32 i;
+diff --git a/engines/grim/lua/ltable.cpp b/engines/grim/lua/ltable.cpp
+index a2377ccd944..082a5c0046a 100644
+--- a/engines/grim/lua/ltable.cpp
++++ b/engines/grim/lua/ltable.cpp
+@@ -31,20 +31,23 @@ static intptr hashindex(TObject *ref) {
+ 	case LUA_T_USERDATA:
+ 		h = (intptr)ref->value.ud.id;
+ 		break;
++	// (not the address of the object: it changes from run to run and build to build, and with it the order next() gives,
++	// which the scripts depend on. Strings by the hash of their text, the other objects by their creation number, a C
++	// function all the same: the table keeps them in the order they went in)
+ 	case LUA_T_STRING:
+-		h = (intptr)tsvalue(ref);
++		h = (intptr)tsvalue(ref)->hash;
+ 		break;
+ 	case LUA_T_ARRAY:
+-		h = (intptr)avalue(ref);
++		h = (intptr)avalue(ref)->head.seq;
+ 		break;
+ 	case LUA_T_PROTO:
+-		h = (intptr)tfvalue(ref);
++		h = (intptr)tfvalue(ref)->head.seq;
+ 		break;
+ 	case LUA_T_CPROTO:
+-		h = (intptr)fvalue(ref);
++		h = 0;
+ 		break;
+ 	case LUA_T_CLOSURE:
+-		h = (intptr)clvalue(ref);
++		h = (intptr)clvalue(ref)->head.seq;
+ 		break;
+ 	case LUA_T_TASK:
+ 		h = (intptr)nvalue(ref);

@@ -46,3 +46,7 @@ Who uses the build:
   loose files and the folder's own archives, no update or patch archive, no md5 check or music-table dialog, `error()` exits
   at once, minidumps of crashes, `PrintDebug("CRSNAP:<file>")` screenshots, `PrintDebug("CRGCOV")` coverage dumps, no logo.
 - `antialiasing=0` in the ini skips the SDL backend's anti-aliasing probe (a faster start).
+- The same table order in every run: Lua tables hash strings by their text's hash and tables, closures and prototypes by
+  a creation number (`GCnode::seq`, counted from 0 again at `lua_open` and `lua_Restore`), not by their address, so
+  `next()` walks a table in the same order from run to run and build to build (the EMI poker's object order changed
+  between runs). C functions as keys all hash the same and keep their insertion order.

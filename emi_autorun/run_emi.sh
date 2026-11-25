@@ -59,7 +59,9 @@ last=-1; quiet=0
 while kill -0 $pid 2>/dev/null; do
 	sleep 1
 	now=$(date +%s)
-	cur=$(grep -a "AUTORUN" "$log" | grep -a -v "Starting wait\|Waited" | sed "s/(Manny at [^)]*)//" | sort -u | wc -l)
+	# (LC_ALL=C for sort: the log has Latin-1 text, "Melee Island" with its accents, on which sort in a UTF-8 locale fails and
+	# counts nothing; every run was then taken for stuck NOLOG seconds after the first such line)
+	cur=$(grep -a "AUTORUN" "$log" | grep -a -v "Starting wait\|Waited" | sed "s/(Manny at [^)]*)//" | LC_ALL=C sort -u | wc -l)
 	echo "$((now - start)) $cur" >> "$log.times"
 	if [ "$cur" != "$last" ]; then last=$cur; quiet=0; else quiet=$((quiet + 1)); fi
 	if [ $quiet -ge $nolog ]; then echo "NOLOG: no progress line for $nolog s, stopping" >> "$log"; kill $pid; sleep 1; kill -9 $pid 2>/dev/null; break; fi

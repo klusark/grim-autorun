@@ -381,7 +381,6 @@ ar_look_doors = function(set)
 					AR_OBJ = o
 					ar_face(o)
 					ar_wait_turn()
-					ar_fix_head()
 					ar_wait_offered(800)
 					if not ar_offered() and system.currentSet == set then
 						-- (from the use point, the stick toward the door until the game offers it: 21 doors were not offered there. A step into its

@@ -83,7 +83,7 @@ What the suite does not test today, in the order of what has bitten:
    trigger (wiggle timing), the sewer ladders (sh, at, th), the plunge trigger (re), doors whose scene sends Manny
    back (`waits >= 3`). A case each, walk tier, both engines.
 5. **Carried state.** Shrunk boxes with each shrinkable set, running vs walking, holding an item through a door
-   (`ar_hold` then `ar_go`), the head joints after a scene (`ar_fix_head`).
+   (`ar_hold` then `ar_go`), Manny's costume stack after a scene.
 6. **Teleports.** The learned links (`PutActorAt` hook): a case that walks into a cheat box, is teleported, and plans
    the rest from the landing; the cheat boxes of every set (from `AR_SETS`) as generated cases.
 7. **Negative cases.** Walks that must fail cleanly: a goal off the floor by more than 1.5 m, a door whose sectors are

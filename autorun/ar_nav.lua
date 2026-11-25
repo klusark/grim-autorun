@@ -2222,10 +2222,8 @@ ar_follow = function(nav, w, path, stop_when, budget)
 			tt = tt + system.frameTime
 		end
 		ar_log("nav: on a stair, turned toward the way for " .. floor(tt) .. " ms, facing " .. format("%.0f", manny:getrot().y))
-		-- (the line of a stair is made when stairman switches the constraint on, as Manny steps onto the stair; during a walk, the walk out of a door that ends on a
-		-- stair, the engines do nothing, and he is on the stair with no line and walks where he is steered, over its wall. The same call again, now that he faces the
-		-- way: the line is the one he faces along)
-		SetActorConstrain(manny.hActor, TRUE)
+		-- (the line of a stair is made when stairman switches the constraint on, as Manny steps onto the stair. No call of our own here
+		-- to make it again from the way he now faces: a player cannot do that)
 	end
 	local last = manny:getpos()
 	AR_FOLLOW_SPENT = 0

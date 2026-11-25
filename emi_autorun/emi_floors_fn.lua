@@ -3,6 +3,60 @@
 -- port's Sector::containsXZ, on the sectors of emi_floors.lua (gen_floors.py, from the set files). Whether a sector is active is
 -- asked of the game (IsSectorActive, the original's own). AR_LUA_FLOORS: the Lua one in ScummVM too; AR_FLOORS_CHECK: both, and a
 -- line for every difference.
+
+-- is the walk sector with this name switched on? IsSectorActive is Monkey4.exe's own builtin; upstream ScummVM has none, so there
+-- IsPointInSector answers, which in Monkey4 takes the FIRST sector of that name (getSectorByName) and answers only when it is on and
+-- holds the point. Some sets have two sectors of one name (gme: foobydooby), so the point asked is always inside the first one of the
+-- set's file: the middle of its first three corners, on its plane (AR_FLOORS, emi_floors.lua)
+AR_SECTOR_PROBE = { }
+ar_emi_sector_probe = function(key, name)
+	local id = key .. "/" .. name
+	if AR_SECTOR_PROBE[id] then
+		return AR_SECTOR_PROBE[id]
+	end
+	local secs = AR_FLOORS[key]
+	local i = 1
+	while secs and secs[i] do
+		local s = secs[i]
+		if s[1] == name then
+			local x = (s[7] + s[9] + s[11]) / 3
+			local z = (s[8] + s[10] + s[12]) / 3
+			local p = { x = x, y = s[6] - (s[3] * (x - s[7]) + s[5] * (z - s[8])) / s[4], z = z }
+			AR_SECTOR_PROBE[id] = p
+			return p
+		end
+		i = i + 1
+	end
+	AR_SECTOR_PROBE[id] = "none"
+	return "none"
+end
+-- (nav: the planner's list the sector is in, for a sector that is not a walk sector (a hot one): the middle of the first three
+-- corners of the first sector of that name in it, in EMI's axes (the planner's x, y, z are EMI's x, z, y))
+ar_emi_sector_on = function(name, nav)
+	if IsSectorActive then
+		return IsSectorActive(name)
+	end
+	local key = ar_floor_key()
+	if not key then
+		return nil
+	end
+	local p = ar_emi_sector_probe(key, name)
+	if p == "none" and nav then
+		local i = 1
+		while nav.n[i] and nav.n[i] ~= name do
+			i = i + 1
+		end
+		if nav.n[i] then
+			local x, y, z = ar_nav_probe(nav, i)
+			p = { x = x * AR_NAV_S, y = z * AR_NAV_S, z = y * AR_NAV_S }
+		end
+	end
+	if p == "none" then
+		return nil
+	end
+	return IsPointInSector(p.x, p.y, p.z, name)
+end
+
 AR_FLOOR_CELL = 4
 AR_FLOOR_IDX = { }
 ar_floor_index = function(key)
@@ -102,7 +156,7 @@ ar_lua_floor_heights = function(x, z, margin)
 	while i <= cell.n do
 		local s = secs[cell[i]]
 		local y = ar_floor_contains(s, x, z, margin or 0)
-		if y and IsSectorActive(s[1]) then
+		if y and ar_emi_sector_on(s[1]) then
 			n = n + 1
 			out[n] = y
 		end
