@@ -75,6 +75,17 @@ ar_obj_offered = function()
 	local l = ar_offer_list()
 	return l and AR_OBJ and l[AR_OBJ]
 end
+-- offered, and still offered a moment later: the list can hold an object for a single rebuild. On the field of lava (act3_07)
+-- the lone palm tree is within its range of Guybrush at the end of the ribbon walk while it still stands where camera setup 0
+-- has it; the camera change to setup 3 moves it 1.6 m away. Which of the game's two scripts runs first is a matter of the
+-- frame, on both engines; taken as offered, the verb then found nothing to give it to
+ar_obj_offered_steady = function()
+	if not ar_obj_offered() then
+		return nil
+	end
+	sleep_for(300)
+	return ar_obj_offered()
+end
 
 
 ar_approach = function(obj)
@@ -83,7 +94,7 @@ ar_approach = function(obj)
 	AR_WHERE = "approach to " .. tostring(obj.name)
 	-- (the list is rebuilt every few frames, and not at all in a cutscene)
 	ar_try_wait(ar_obj_offered, 600)
-	if ar_obj_offered() then
+	if ar_obj_offered_steady() then
 		return TRUE
 	end
 	-- (on a map, Guybrush is a marker that walks over it like anywhere else; a place is offered when he is within its range)
@@ -180,6 +191,21 @@ ar_wait_for_control = function()
 		end
 	elseif cutSceneLevel > 0 then
 		ar_log("control: a conversation is waiting for a choice (cutscene level " .. tostring(cutSceneLevel) .. ")")
+	end
+end
+
+-- The keys of the autorun call the game's button handler from the autorun's own task (ar_press_key), so an error of Lua in the handler
+-- ends the run, where for a player it only cuts that one key press short. change_hot_object (_system.lua, a CHANGE_HOT key or the walk
+-- keys with Alt) compares with sentence_lines._order.numitems first of all, and the builder of the sentence lines does not set it on
+-- every way (in the lagoon of ch26, on both engines: "unexpected type in comparison"). Then it does nothing, as the game's own call
+-- would stop there. (made again at every load, the game's own function kept from the first)
+if TRUE then
+	AR_CHO_GAME = AR_CHO_GAME or change_hot_object
+	change_hot_object = function(a)
+		if sentence_lines and sentence_lines._order and not sentence_lines._order.numitems then
+			return
+		end
+		return AR_CHO_GAME(a)
 	end
 end
 
@@ -396,11 +422,31 @@ AR_TURN_SIGN = -1
 -- The heading toward a floor point in the frame of getrot().y: yaw 0 walks +z, yaw 90 walks +x (measured: yaw 270 walked -x).
 -- Monkey4.exe's GetActorYawToPoint gives the TURN from the actor's heading to the point (-180..180), not the heading (measured on the
 -- original, Nov 11: at yaw 110, +x gives -20, +z -110); ScummVM gave the heading until its fix of that day. The heading is the yaw plus
--- the turn. (Lua 3.1 here has no atan2)
+-- the turn. (Lua 3.1 here has no atan2) Upstream ScummVM still gives the heading, so the answer for a point 1 m along +x (heading 90)
+-- is asked too: the heading toward (x, y, z) is t - tx + 90 either way, and the turn is that less the yaw
+ar_norm180 = function(d)
+	while d > 180 do
+		d = d - 360
+	end
+	while d <= -180 do
+		d = d + 360
+	end
+	return d
+end
 ar_yaw_turn = function(actor, x, y, z)
 	local t = nil
 	if x and y and z then
 		t = GetActorYawToPoint(actor.hActor, x, y, z)
+	end
+	if t then
+		local p = actor:getpos()
+		local tx = nil
+		if p.x and p.y and p.z then
+			tx = GetActorYawToPoint(actor.hActor, p.x + 1, p.y, p.z)
+		end
+		if tx then
+			return ar_norm180(t - tx + 90 - actor:getrot().y)
+		end
 	end
 	-- (no answer: on the original, for the place of the other Guybrush at the gate of the Mysts o' Tyme (mot.guybrush2_obj, Nov 11),
 	-- and the yaw plus nothing was an error that ended the run. No turn then)
@@ -1948,6 +1994,20 @@ end
 
 ar_checkpoint_ready = function()
 	return cutSceneLevel == 0 and ar_handler_normal() and not find_script(Sentence) and not IsMessageGoing()
+end
+
+-- ar_lib's ar_load, as the game's own load menu does it (_menu.lua: UndimAll, then Load): the screen's dim level is not in
+-- a save, and a checkpoint loaded during the boot's logos, under their DimScreen(1), drew nothing but the text
+ar_load = function(slot)
+	if AR_LOADED or AR_CONTINUE then
+		return
+	end
+	ar_log("loading the checkpoint grim" .. format("%02d", slot) .. ".gsv")
+	UndimAll()
+	Load(format("grim%02d.gsv", slot))
+	while TRUE do
+		sleep_for(1000)
+	end
 end
 
 ar_checkpoint = function(slot)

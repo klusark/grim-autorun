@@ -1052,19 +1052,6 @@ ar_wait_offered = function(max_ms)
 	return ar_offered()
 end
 
--- After some scenes (the jump off the conveyor of the Lamancha) the original keeps Manny's costume without its head
--- joints, so that its test of what he can see finds nothing and no object is ever offered. The game sets them with
--- manny:set_head whenever it makes Manny up (manny.default); here, when nothing at all is seen, the same call.
-ar_fix_head = function()
-	if GetVisibleThings then
-		local seen = GetVisibleThings()
-		if not seen or not next(seen, nil) then
-			ar_log("nothing is seen: Manny's head joints are set again")
-			manny:set_head(3, 4, 5, 165, 28, 80)
-		end
-	end
-end
-
 -- The handler of the keys when nothing special is going on: the idle handlers take its place while Manny stands about
 ar_handler_normal = function()
 	local h = system.buttonHandler
@@ -1232,7 +1219,6 @@ ar_approach = function(obj)
 	if obj.obj_x and not ar_offered() and (AR_SCAN_FAR or not obj.use_pnt_x or (ar_dist2d(obj.use_pnt_x, obj.use_pnt_y) < 1.0 and (AR_SCAN_ALWAYS or not obj.range or not obj.obj_y or ar_dist2d(obj.obj_x, obj.obj_y) < obj.range + 0.2))) then
 		ar_face(obj)
 		ar_wait_turn()
-		ar_fix_head()
 		ar_wait_offered(1200)
 		-- (a player looks around if it is not there)
 		if not ar_offered() and not ar_set_changed() then
@@ -1307,7 +1293,6 @@ ar_approach = function(obj)
 		-- the walk ends where the original's walk boxes end, which can be just out of range of the object: a player
 		-- pushes the stick toward it, which also goes through a door
 		if AR_TRACE then ar_state("approach faced") end
-		ar_fix_head()
 		ar_wait_offered(1000)
 		if AR_TRACE then ar_state("approach not offered") end
 		if not ar_offered() and not ar_set_changed() then

@@ -45,12 +45,28 @@ ar_np_ok = function()
 	return p.x and p.y and p.z
 end
 
+-- An actor that the game frees (Actor:free calls UnloadActor, then forgets hActor) leaves the lists of the planner, which hold
+-- handles (AR_COLL from the collision hook, ar_nav.lua): the planner never asks where a freed actor is. Upstream ScummVM's
+-- GetActorPos dereferences the freed actor and crashes (the other dart player of the SCUMM bar, ch02); Monkey4.exe gives nothing
+if UnloadActor and not AR_UNLOAD_HOOKED then
+	AR_UNLOAD_HOOKED = TRUE
+	AR_UNLOAD_ORIG = UnloadActor
+	UnloadActor = function(h)
+		if h then
+			AR_COLL[h] = nil
+			AR_OBST[h] = nil
+			AR_ACT_SET[h] = nil
+		end
+		return AR_UNLOAD_ORIG(h)
+	end
+end
+
 -- where another actor is, in the planner's axes
 ar_nap = function(h)
 	local x, y, z = GetActorPos(h)
 	if not x then
-		-- (an actor that has been freed, whose handle the collision hook still holds: GetActorPos gives nothing (Monkey4.exe 0x4161a0).
-		-- Far away, so that it is in no one's way: the obstacle list of the planner does not ask)
+		-- (no place, as Monkey4.exe's GetActorPos (0x4161a0) gives for a handle that names no actor any more: far away, so that it
+		-- is in no one's way. The UnloadActor hook above keeps freed actors out of the planner's lists, so this should not happen)
 		return 1000000, 1000000, 1000000
 	end
 	return x / AR_NAV_S, z / AR_NAV_S, y / AR_NAV_S
@@ -106,9 +122,6 @@ ar_nrun = function(on)
 	else
 		AR_NAV_SLOW = TRUE
 	end
-end
-
-ar_nconstrain = function(h, on)
 end
 
 -- the place a script puts Guybrush (the PutActorAt hook), in the planner's axes. Only three numbers: the hook runs inside every script
@@ -168,12 +181,12 @@ if ar_nav_why ~= AR_NWHY_W then
 	ar_nav_why = AR_NWHY_W
 end
 
--- is sector i on: Monkey4's own IsSectorActive, by its name
+-- is sector i on: by its name, ar_emi_sector_on (emi_floors_fn.lua)
 ar_nav_active = function(nav, i)
 	if AR_OPTIMISTIC and not nav.hot then
 		return TRUE
 	end
-	return IsSectorActive(nav.n[i])
+	return ar_emi_sector_on(nav.n[i], nav)
 end
 
 -- the planner's lists of a set: from emi_nav_data.lua, scaled into the planner's units; kept by the set file

@@ -87,7 +87,7 @@ last=-1; quiet=0
 while [ -n "$(mine)" ]; do
 	sleep 1
 	now=$(date +%s)
-	cur=$(grep -a "AUTORUN" grimdebug.log | grep -a -v "Starting wait\|Waited" | sort -u | wc -l)
+	cur=$(grep -a "AUTORUN" grimdebug.log | grep -a -v "Starting wait\|Waited" | LC_ALL=C sort -u | wc -l)
 	if [ "$cur" != "$last" ]; then last=$cur; quiet=0; else quiet=$((quiet + 1)); fi
 	if [ $quiet -ge $nolog ]; then echo "NOLOG: no progress line for $nolog s, stopping" >> grimdebug.log; break; fi
 	if [ $((now - start)) -ge $limit ]; then echo "TIMEOUT: $limit s, stopping" >> grimdebug.log; break; fi

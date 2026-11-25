@@ -30,8 +30,6 @@ subs = [
     ('manny:get_costume()', 'manny.costume_name', 's'),
     # the turn keys toward a point
     ('ar_steer(', 'ar_nsteer(', 'w'),
-    # (EMI's stairman only changes the walk chore: no constraint)
-    ('SetActorConstrain(', 'ar_nconstrain(', 's'),
     # (the place a script puts Guybrush, in the planner's axes)
     ('\t\t\tar_tele_note(x, y, z)\n', '\t\t\tar_ntele(x, y, z)\n', 's'),
     # (no stair or curb constrains Guybrush: EMI's stairman only changes his walk chore, and curbman is in no set. The test is off, so that

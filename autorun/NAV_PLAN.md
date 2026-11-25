@@ -48,7 +48,6 @@ What the run uses today that this rule removes (found by grep on 2026-10-24):
 | `ar_routes_original.lua` 57, 79-85 | waits on `IsSectorActive("hl_elev")`, `("hl_door_psg1")` | the file goes; a wait that is still needed uses the probe |
 | `ch38_chepito.lua` 61, 67 | `SetImmediateTasks(TRUE)`/`(nil)` round the Pearl cutscene (a ScummVM scheduling knob; a no-op stub on the original) | an engine difference: ScummVM must start a new task the way the original does without a switch (E4); the calls go |
 | `ar_lib.lua` 429 | skip a line that never ends, original only | the same code on both (a line that never ends is skipped on either) or none |
-| `ar_lib.lua` 827 `ar_fix_head` | reset the head joints when nothing is seen, original only | the same on both, or the cause (why nothing is seen) fixed |
 | `ar_lib.lua` 959 `ar_approach` | push toward the object when the walk ends out of range, original only | the planner's goal snapping (3.5) ends the walk in range on both; branch goes |
 | `ar_lib.lua` 1282 `ar_checkpoint` | the original saves from the menu render mode, ScummVM from the normal state | the menu's save sequence on both engines (one code path; the user asked for the menu's method anyway) |
 | `ar_lib.lua` 1727 `ar_drive_to` | the original's wagon stops dead at the road edge, ScummVM's slides along it | an engine difference: fix the edge behaviour in ScummVM (E5); branch goes |
