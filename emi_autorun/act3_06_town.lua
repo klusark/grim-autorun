@@ -1,7 +1,9 @@
--- Act 3 chapter 6: Monkey Town: Jojo Jr. (asked everything, Monkey Kombat explained), the cymbals for the musical monkey, the accordion
+-- Act 3 chapter 6: Monkey Town: Jojo Jr. (Monkey Kombat explained), the cymbals for the musical monkey, the accordion
+-- (Jojo is asked only the way to disc_kombat, as the speed runners do: the hat (80), the Hat of Honor (310), what Monkey Kombat is (500),
+-- how it works (510); his other lessons teach nothing the fights read: a monkey's phrases are rolled for each fight, monkey_kombat2.lua)
 ar_log("=== ACT3 ch06 town ===")
 ar_wait_for_control()
-a3_dialog("jj1", { [120] = 1, [125] = 1 })
+a3_dialog_lines("jj1", { 80, 310, 500, 510 })
 a3_goto("monkey town")
 a3_dlg_done("jj1")
 ar_wait_for_control()

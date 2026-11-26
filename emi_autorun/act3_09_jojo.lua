@@ -1,6 +1,7 @@
--- Act 3 chapter 9: Jojo Jr. in Monkey Kombat: the bronze hat
+-- Act 3 chapter 9: Jojo Jr. in Monkey Kombat: the bronze hat (the fight thrown down to the last blow: A3_KOMBAT_THROW, act3_lib.lua)
 ar_log("=== ACT3 ch09 jojo ===")
 ar_wait_for_control()
+A3_KOMBAT_THROW = TRUE
 local bot = start_script(a3_kombat_bot)
 a3_goto("monkey town")
 local tries = 0
@@ -17,5 +18,6 @@ while props.jojo_hat.state == PROP_INITIAL and tries < 6 do
 	ar_state("after the fight " .. tries)
 end
 stop_script(bot)
+A3_KOMBAT_THROW = nil
 ar_check(props.jojo_hat.state ~= PROP_INITIAL, "the bronze hat")
 ar_checkpoint(309)

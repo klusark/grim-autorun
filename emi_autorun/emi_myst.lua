@@ -491,15 +491,32 @@ ar_raft_exit = function(dir)
 	end
 	ar_log("RAFT to " .. tostring(AR_TRIGGER_NAMES[dir] or dir) .. " at " .. bx .. " " .. bz .. " (screen " .. tostring(before) .. ")")
 	AR_RAFT_STOP = nil
-	if before == 6 and (AR_TRIGGER_NAMES[dir] or dir) == "down_trigger" and mot.opened_gate then
-		start_script(ar_raft_gate_south)
+	local south = before == 6 and (AR_TRIGGER_NAMES[dir] or dir) == "down_trigger" and mot.opened_gate
+	-- (not the gate's trigger: the raft stays on that screen by design while the conversation and the gate go on)
+	local again = (AR_TRIGGER_NAMES[dir] or dir) ~= "gate_trigger"
+	local task
+	if south then
+		task = start_script(ar_raft_gate_south)
 	else
-		start_script(ar_raft_walk, bx, bz)
+		task = start_script(ar_raft_walk, bx, bz)
 	end
 	local waited = 0
 	while mot.cur_setup_id == before and mot.map_step == step and waited < 90000 do
 		sleep_for(300)
 		waited = waited + 300
+		-- (a drive that gave up without leaving the screen is started again: at the gate the other Guybrush's raft is in the way until
+		-- he has poled off, and the run stood still for the rest of the 90 s after it, 66 s, Nov 25)
+		if again and not find_script(task) and mot.cur_setup_id == before and mot.map_step == step and cutSceneLevel == 0 then
+			sleep_for(1000)
+			waited = waited + 1000
+			ar_log("RAFT the drive ended on screen " .. tostring(before) .. ", again")
+			bx, bz = ar_raft_cells(dir)
+			if south then
+				task = start_script(ar_raft_gate_south)
+			elseif bx then
+				task = start_script(ar_raft_walk, bx, bz)
+			end
+		end
 	end
 	AR_RAFT_STOP = TRUE
 	-- (the new screen: on as soon as the raft can be steered there again, not a fixed 1.5 s at every exit)

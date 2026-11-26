@@ -284,8 +284,15 @@ a3_lines_task = function()
 		end
 		i = i + 1
 	end
-	if d and d.running then
-		ar_pick_exit(d)
+	-- (the exit line of each node down to the first: a list that ends in an inner node leaves by two)
+	local exits = 0
+	while d and d.running and exits < 4 do
+		exits = exits + 1
+		ar_dialog_ready(d, 30000)
+		if d.running then
+			ar_pick_exit(d)
+			sleep_for(600)
+		end
 	end
 end
 a3_dialog_lines = function(name, lines)
@@ -377,6 +384,10 @@ a3_ride_bot = function()
 			local n = flume.guyboat.at_node
 			if n ~= last then
 				last = n
+				-- (the laps: a ride that comes round to the start again without the bottle is given up, act3_04)
+				if n.name == "root" then
+					A3_RIDE_LAPS = (A3_RIDE_LAPS or 0) + 1
+				end
 				local tname = "9"
 				if glob.flume_puzzle == 2 then tname = "12" end
 				if props.milk_bottle.state ~= PROP_INITIAL or A3_RIDE_ABORT then tname = "dookie" end
@@ -782,6 +793,12 @@ a3_kombat_bot = function()
 			if target == g or mk.what_beats_me[m][2] == g then
 				target = g
 			end
+			-- (A3_KOMBAT_THROW, for Jojo Jr.: the level 5 monkey throws the fight once Guybrush is down to his last blow
+			-- (monkey_kombat2.lua final_blows: his next loss leaves him 1, his next win leaves Jojo 1, and Jojo then ties). As the speed
+			-- runners do, Guybrush keeps his stance, loses until his meter is that low, then wins twice: 5 or 6 rounds instead of 10)
+			if A3_KOMBAT_THROW and mk.guybrush_health > mk.base_damage then
+				target = g
+			end
 			local words
 			if target == g then
 				words = { 1, 1, 1 }
@@ -815,7 +832,7 @@ a3_kombat_bot = function()
 				sleep_for(100)
 				waited = waited + 100
 			end
-			sleep_for(1500)
+			sleep_for(A3_KOMBAT_PAUSE or 300)
 		end
 		sleep_for(100)
 	end
