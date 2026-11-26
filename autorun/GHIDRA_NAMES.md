@@ -379,3 +379,10 @@ sputActor_CanActorSeePoint 0x48fa60 (from head joint 0 of the top costume, forwa
 >= costume flViewCos), sputActor_SetActorHead 0x48f9d0 (flViewCos = cos(|maxRoll|/2)), Costume_InitRecord 0x494fb0 (joints -1,
 flViewCos -0.35), sputCostume_PushCostume 0x494e80 (copies the head of the costume below when the main model is the same).
 ScummVM: Actor::canSee / canSeePoint. Cleanroom grim/sight.lua (sight_head_*), emi/emi_sight.lua.
+
+## Monkey4.exe (/emi/Monkey4.exe), 2026-11-26: the walk step's exit point (precision)
+
+| Address | Name | What |
+| --- | --- | --- |
+| 0x004440c0 | Segment2D_Intersect | x-z crossing of the step with an edge (vertex i -> i-1); x87: edge difference unrounded, step and start-vertex stored as floats, denominator (step x edge) computed in extended and stored as a float, t rounded to float, u kept in extended; 0 <= t, u <= 1 |
+| 0x004441a0 | Sector_FindStepExit | last crossing (t > best, best starts -1; a later t == 0 tie sets the angle to 0); angle = acos(float dot of the normalized step and edge, clamped) * rad2deg (0x4d8dd0, set at run time); exit = (end-start)*t + start in extended; returns angle + 0.1f or -(180.2f - angle) over 90 (float constants), raw angle and exit = start when best <= 0. ScummVM Sector::getExitInfo(Line3d) |
