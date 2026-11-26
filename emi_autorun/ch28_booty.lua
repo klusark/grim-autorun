@@ -20,9 +20,18 @@ sleep_for(2500)
 ar_wait_for_control()
 ar_state("ulg")
 -- The glowing fishies: the baited ScupperWare is used in the hand, as the speed runners do, as soon as one of them swims within 10 of
--- Guybrush (the game's own test, ulg.capture_fishy: the nearest one then comes to the bait, wherever he faces). Until then he swims
--- towards the nearest one. (The school object's verb is offered only within its range of 6 and while Guybrush faces it: chasing it for
--- that took 50 to 250 s)
+-- Guybrush (the game's own test, ulg.capture_fishy: the nearest one then comes to the bait, wherever he faces). (The school object's
+-- verb is offered only within its range of 6 and while Guybrush faces it: chasing it for that took 50 to 250 s.)
+-- Until then he waits where the schools come by: each school (ulg.start_fish, ulg.move_fish) swims from a point of
+-- ulg.outskirts_waypoints through one of the four ulg.center_waypoints to another outskirts point, and then the next one starts.
+-- (1.43, -15.65) on sector85 is the point of the floor nearest all four centre points (6.6 at most, the fishies' height included), so
+-- every school passes within the 8.5 below, and it is 0.5 outside the range of every other object of the lagoon. (Chasing the
+-- nearest one instead could end at the floor's north edge with the school out over the open water, out of reach: Nov 26 the strokes
+-- ran out at z -19.4, the lagoon stayed dark and unc_path, the way into the cavern, stayed off.)
+-- The USE key with the ScupperWare in the hand uses it on the hot object when there is another one (_controls.lua; the held
+-- ScupperWare itself is the hot object otherwise): only the school (use_ScupperWare_with_bait_in_it) then catches; the rock beside the
+-- place of the dive does not (Nov 26: eight tries from there with a fishy 3 to 8 away, all "I've got a ScupperWare in my hand!").
+-- So the walk to the waiting place comes first.
 c28_fish = function()
 	local best = nil
 	local bx = nil
@@ -45,24 +54,25 @@ c28_fish_close = function()
 	local d = c28_fish()
 	return d and d < 8.5
 end
+c28_fish_ready = function()
+	return c28_fish_close() and cutSceneLevel == 0 and (not hot_object or hot_object == props.scupperware or hot_object == ulg.fishschool)
+end
 C28_TRIES = 0
-C28_STROKES = 0
-while props.scupperware.state ~= PROP_LOC2 and C28_TRIES < 8 and C28_STROKES < 120 do
+C28_WAITS = 0
+ar_hold(props.scupperware)
+ar_walk_to(1.43, nil, -15.65, c28_fish_ready, 20000)
+while props.scupperware.state ~= PROP_LOC2 and C28_TRIES < 8 and C28_WAITS < 3 do
 	ar_hold(props.scupperware)
-	if c28_fish_close() and cutSceneLevel == 0 then
+	if c28_fish_ready() then
 		C28_TRIES = C28_TRIES + 1
 		ar_log("fishy try " .. C28_TRIES .. format(", the nearest at %.1f", c28_fish()))
 		ar_do("use", props.scupperware)
 		sleep_for(1000)
 		ar_try_wait(function() return cutSceneLevel == 0 end, 20000)
 	else
-		C28_STROKES = C28_STROKES + 1
-		C28_D, C28_X, C28_Z = c28_fish()
-		if C28_X then
-			ar_walk_direct(C28_X, manny:getpos().y, C28_Z, c28_fish_close, 1500)
-		else
-			sleep_for(500)
-		end
+		C28_WAITS = C28_WAITS + 1
+		ar_log("fishy: waiting for the next school")
+		ar_try_wait(c28_fish_ready, 240000)
 	end
 end
 ar_log("scupperware state " .. tostring(props.scupperware.state))

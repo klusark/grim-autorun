@@ -13,6 +13,10 @@ ar_wait_for_control()
 ar_do("pickUp", props.coconut)
 ar_do("pickUp", props.ht_note2)
 a3_quick_dialog("ht2")
+-- (Herman's idles walk him between (-7.31, -18.88) and (-8.04, -17) (toc.enter). The approach stops where the game first offers him, which
+-- with him at the near spot can be 3.9 from him, and his next idle took him to 5.7, out of his range of 4.3, before the coconut was used
+-- (Nov 26). His use point is within the range of both spots (2.8 and 3.5), so Guybrush walks all the way to it first.)
+ar_walk_to(toc.herman_obj.use_pnt_x, toc.herman_obj.use_pnt_y, toc.herman_obj.use_pnt_z)
 ar_do("use", toc.herman_obj, props.coconut)
 ar_wait_for(function() return glob.herman_talk_status >= 2 end, 60000, "the coconut bonk")
 a3_dlg_done("ht2")
