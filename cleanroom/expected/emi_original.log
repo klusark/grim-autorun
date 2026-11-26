@@ -1,4 +1,4 @@
-START 2630 tests
+START 2634 tests
 BEGIN numbers
 V numbers|arith|3.500000 1024.000000 -2.333333 1.#INF00
 V numbers|tostring|"0.333333" "100" "1e+015" "-0.5"
@@ -613,6 +613,49 @@ V awk_e_turning|yaw|0.000000
 V awk_e_turning|turning_next|1.000000
 V awk_e_turning|turning_stopped|1.000000
 END awk_e_turning
+BEGIN awk_e_stop_moving
+V awk_e_stop_moving|moving|1.000000
+V awk_e_stop_moving|moving_stopped|nil
+V awk_e_stop_moving|resting_stopped|nil
+V awk_e_stop_moving|moving_next|nil
+V awk_e_stop_moving|resting_next|1.000000
+END awk_e_stop_moving
+BEGIN awk_e_stop_moving_set
+V awk_e_stop_moving_set|moving_stopped|nil
+V awk_e_stop_moving_set|moving_after_5|nil
+END awk_e_stop_moving_set
+BEGIN awk_e_fwd_moving
+V awk_e_fwd_moving|moving_same|nil
+V awk_e_fwd_moving|moving_walking|nil
+V awk_e_fwd_moving|moving_next|nil
+V awk_e_fwd_moving|moving_after|nil
+END awk_e_fwd_moving
+BEGIN awk_e_arrive
+V awk_e_arrive|moving0|1.000000
+V awk_e_arrive|resting0|1.000000
+V awk_e_arrive|moving1|1.000000
+V awk_e_arrive|resting1|nil
+V awk_e_arrive|moving2|nil
+V awk_e_arrive|resting2|1.000000
+V awk_e_arrive|moving3|nil
+V awk_e_arrive|resting3|1.000000
+V awk_e_arrive|moving4|nil
+V awk_e_arrive|resting4|1.000000
+V awk_e_arrive|moving5|nil
+V awk_e_arrive|resting5|1.000000
+V awk_e_arrive|moving6|nil
+V awk_e_arrive|resting6|1.000000
+V awk_e_arrive|moving7|nil
+V awk_e_arrive|resting7|1.000000
+V awk_e_arrive|moving8|nil
+V awk_e_arrive|resting8|1.000000
+V awk_e_arrive|moving9|nil
+V awk_e_arrive|resting9|1.000000
+V awk_e_arrive|moving10|nil
+V awk_e_arrive|resting10|1.000000
+V awk_e_arrive|moving11|nil
+V awk_e_arrive|resting11|1.000000
+END awk_e_arrive
 BEGIN ea_place
 V ea_place|type|"actor"
 V ea_place|start|0.000000 0.000000 0.000000
@@ -9645,4 +9688,4 @@ V lex_binary|short|nil
 ERROR lex_binary binary file cr_bin_old.lua too old: version=0x30; expected at least 0x31
 V lex_binary|old|nil
 END lex_binary
-SUMMARY 2630 tests, 247 failed
+SUMMARY 2634 tests, 247 failed

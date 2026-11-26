@@ -1,4 +1,4 @@
-START 5742 tests
+START 5744 tests
 BEGIN boot_state
 V boot_state|movie_playing|nil
 V boot_state|fullscreen_movie_playing|nil
@@ -1089,6 +1089,8 @@ V builtins|fn_atk_pair|"function"
 V builtins|fn_atk_pair_done|"function"
 V builtins|fn_atk_talker|"function"
 V builtins|fn_awk_actor|"function"
+V builtins|fn_awk_chore_actor|"function"
+V builtins|fn_awk_chore_state|"function"
 V builtins|fn_awk_chores|"function"
 V builtins|fn_awk_edge|"function"
 V builtins|fn_awk_forward|"function"
@@ -6683,6 +6685,13 @@ V awk_puck_orient|walk4|-0.000000 -0.150000 0.000000
 V awk_puck_orient|walk_rot4|0.000000 -0.021942 0.000000
 V awk_puck_orient|off|0.000000 -0.021942 0.000000
 END awk_puck_orient
+BEGIN awk_walk_chore_key
+V awk_walk_chore_key|walking|"nil/nil/nil/1 nil/nil/1/nil nil/nil/1/nil nil/nil/1/nil nil/nil/1/nil nil/nil/1/nil nil/nil/1/nil nil/nil/1/nil nil/nil/1/nil nil/nil/1/nil "
+V awk_walk_chore_key|after|"nil/nil/1/nil nil/nil/nil/1 nil/nil/nil/1 nil/nil/nil/1 nil/nil/nil/1 nil/nil/nil/1 nil/nil/nil/1 nil/nil/nil/1 "
+END awk_walk_chore_key
+BEGIN awk_walk_chore_path
+V awk_walk_chore_path|trace|"1/nil/nil/1 1/nil/1/nil 1/nil/1/nil 1/nil/1/nil 1/nil/1/nil 1/nil/1/nil 1/nil/1/nil 1/nil/1/nil 1/nil/1/nil 1/nil/1/nil 1/nil/1/nil 1/nil/1/nil 1/nil/1/nil 1/nil/1/nil 1/nil/1/nil 1/nil/1/nil 1/nil/1/nil 1/nil/1/nil nil/nil/nil/1 nil/nil/nil/1 nil/nil/nil/1 nil/nil/nil/1 nil/nil/nil/1 nil/nil/nil/1 nil/nil/nil/1 nil/nil/nil/1 nil/nil/nil/1 nil/nil/nil/1 nil/nil/nil/1 nil/nil/nil/1 "
+END awk_walk_chore_path
 BEGIN args_setup
 V args_setup|actor|"actor"
 END args_setup
@@ -21611,4 +21620,4 @@ END zbuffer_post
 BEGIN zbuffer_bar
 V zbuffer_bar|bar_box|458.000000 207.000000 571.000000 267.000000 6601.000000
 END zbuffer_bar
-SUMMARY 5742 tests, 257 failed
+SUMMARY 5744 tests, 257 failed

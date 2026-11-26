@@ -355,3 +355,59 @@ cr_t_awk_puck_orient = function()
 	PutActorInSet(a, nil)
 end
 cr_scummvm_differs("awk_puck_orient", "ActorPuckOrient on a ramp: other pitch and roll (ScummVM: setPuckOrient not implemented, actor.cpp:981)") cr_test("awk_puck_orient", cr_t_awk_puck_orient)
+
+-- (the walk chore as _manny.lua's idle check sees it, Actor.is_walking = IsActorChoring(walk chore, TRUE, costume): every frame of a
+-- key walk of 10 frames and the 8 frames after it, IsActorMoving / IsActorChoring looping / IsActorChoring / IsActorResting)
+awk_chore_state = function(a)
+	return tostring(IsActorMoving(a)) .. "/" .. tostring(IsActorChoring(a, 1, TRUE, "awk_turn.cos")) .. "/" ..
+		tostring(IsActorChoring(a, 1, FALSE, "awk_turn.cos")) .. "/" .. tostring(IsActorResting(a))
+end
+
+awk_chore_actor = function()
+	local a = awk_actor("awk_one.set", 0, 0, 0)
+	SetActorCostume(a, "awk_turn.cos")
+	SetActorWalkChore(a, 1, "awk_turn.cos")
+	SetActorRestChore(a, 0, "awk_turn.cos")
+	SetActorWalkRate(a, 1)
+	cr_frames(2)
+	return a
+end
+
+cr_t_awk_walk_chore_key = function()
+	local a = awk_chore_actor()
+	local s = ""
+	local i = 0
+	while i < 10 do
+		WalkActorForward(a)
+		s = s .. awk_chore_state(a) .. " "
+		break_here()
+		i = i + 1
+	end
+	cr_log("walking", s)
+	s = ""
+	i = 0
+	while i < 8 do
+		s = s .. awk_chore_state(a) .. " "
+		break_here()
+		i = i + 1
+	end
+	cr_log("after", s)
+	PutActorInSet(a, nil)
+end
+cr_scummvm_differs("awk_walk_chore_key", "IsActorMoving is true during a key walk and in the frame after it (the original: the path walk flag only, dwMoveFlags & 1); IsActorResting in the first frame") cr_test("awk_walk_chore_key", cr_t_awk_walk_chore_key)
+
+-- (the same for a path walk of about 0.3 m: every frame from WalkActorTo until 8 frames after it ended)
+cr_t_awk_walk_chore_path = function()
+	local a = awk_chore_actor()
+	WalkActorTo(a, 0, 0.3, 0)
+	local s = ""
+	local i = 0
+	while i < 30 do
+		s = s .. awk_chore_state(a) .. " "
+		break_here()
+		i = i + 1
+	end
+	cr_log("trace", s)
+	PutActorInSet(a, nil)
+end
+cr_scummvm_differs("awk_walk_chore_path", "IsActorResting is 1 in the frame of WalkActorTo on the original") cr_test("awk_walk_chore_path", cr_t_awk_walk_chore_path)
