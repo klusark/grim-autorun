@@ -5,7 +5,9 @@ a3_to_map()
 a3_go(mom.col_door, "field of lava")
 ar_do("use", lav.col_door)
 ar_wait_for_control()
-a3_dialog("lp1", { [56] = 1, [57] = 1, [58] = 1 })
+-- (only the way to the lava plunge, as the speed runners ask: the river of lava (50), any of its ceremonies (200), the wedding ceremonies
+-- (55) open line 56; the conversation sets nothing else the game reads but met_priest)
+a3_dialog_lines("lp1", { 50, 200, 55 })
 -- (into the ghost's trigger box, a diagonal strip of the floor about x -1.2..0.4, z -4..-1: walking on into it brings the priest)
 ar_walk_to(-0.4, 0, -3.6, function() return glob.met_priest end)
 ar_wait_for(function() return glob.met_priest end, 60000, "priest")
@@ -25,14 +27,21 @@ while props.milk_bottle.state == PROP_INITIAL and rides < 8 do
 	a3_talk(col.priest_obj, "lp1")
 	a3_wait(a3_riding, 200000, "the ride")
 	ar_log("RIDING puzzle " .. tostring(glob.flume_puzzle) .. ", ride " .. rides)
+	A3_RIDE_LAPS = 0
 	local bot = start_script(a3_ride_bot)
 	A3_RIDE_ABORT = nil
 	AR_KEEP_GOING = TRUE
-	a3_wait(function() return a3_bottle_hot() or not a3_riding() end, 200000, "the bottle or the end of the ride")
+	-- (a ride that has come round twice without the bottle is given up: the bumper boats of puzzle 2 bounced the boat round the same
+	-- loop seven times, 213 s, Nov 25; the next ride had it at once. The way out can still pass the bottle: it is watched for till the end)
+	a3_wait(function() return a3_bottle_hot() or not a3_riding() or A3_RIDE_LAPS >= 3 end, 200000, "the bottle or the end of the ride")
 	AR_KEEP_GOING = FALSE
 	if not a3_bottle_hot() and a3_riding() then
 		ar_log("no luck with the bumper boats this ride, leaving by the end of the flume")
 		A3_RIDE_ABORT = TRUE
+		AR_FAILED = FALSE
+		AR_KEEP_GOING = TRUE
+		a3_wait(function() return a3_bottle_hot() or not a3_riding() end, 200000, "the bottle on the way out or the end of the ride")
+		AR_KEEP_GOING = FALSE
 		AR_FAILED = FALSE
 	end
 	if a3_bottle_hot() then

@@ -253,7 +253,8 @@ ar_skipper = function()
 		-- a movie: the game's own loop (RunFullscreenMovie) ends it when the OVERRIDE control reads as held, so Escape is held down the
 		-- way a player holds it, and let go when the movie is over. A movie that does not end is tried again as a player does: the key
 		-- let go and pressed again.
-		if IsMoviePlaying() and not AR_NO_SKIP and not AR_REAL then
+		-- (AR_SKIP_MOVIES: movies are skipped even where AR_NO_SKIP keeps the cutscenes)
+		if IsMoviePlaying() and (not AR_NO_SKIP or AR_SKIP_MOVIES) and not AR_REAL then
 			AR_MOVIE_LOOKS = (AR_MOVIE_LOOKS or 0) + 1
 			if AR_MOVIE_LOOKS == 1 then
 				ar_log("skipping a movie")
@@ -1519,6 +1520,12 @@ ar_door_left = function()
 end
 
 ar_do = function(verb, noun1, noun2)
+	-- (the set's own way out is taken with the exit key, not walked to: ar_hot_out. AR_NO_HOT_OUT walks)
+	if verb == "use" and not noun2 and noun1.walkOut and not AR_NO_HOT_OUT and system.currentSet and system.currentSet.hot_out_door == noun1 then
+		if ar_hot_out() then
+			return TRUE
+		end
+	end
 	AR_DOOR_SET = system.currentSet
 	if verb == "use" and noun1.walkOut then
 		AR_IN_DOOR = TRUE
@@ -1904,6 +1911,23 @@ ar_key_for = function(verb)
 		map = control_map.DEFAULT_ACT
 	end
 	return next(map, nil)
+end
+
+-- The game's exit key (OUT, the O key): the set's way out (Set.HotOut runs hot_out_door.walkOut at once, wherever Guybrush stands), as
+-- the speed runners leave a place: Lucre town's map door is a 20 to 37 s walk from the shops. Only where the set names its way out (its
+-- hot_out_door is a door); TRUE when the set has changed (to `want`, when given)
+ar_hot_out = function(want)
+	ar_wait_for_control()
+	local s = system.currentSet
+	local d = s and s.hot_out_door
+	if type(d) ~= "table" or not d.walkOut then
+		return nil
+	end
+	ar_log("out: the exit key, through " .. tostring(d.name))
+	ar_press_key(ar_real_key("OUT"))
+	ar_try_wait(function() return system.currentSet ~= %s end, 15000)
+	ar_settled()
+	return system.currentSet ~= s and (not want or ar_set_name() == want)
 end
 
 -- Talking: the conversation runs inside the verb's script until it is over, so (unlike the other verbs) this returns as soon as the

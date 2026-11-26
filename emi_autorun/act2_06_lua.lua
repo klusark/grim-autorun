@@ -135,11 +135,14 @@ end
 ar_state("kitchen?")
 ar_log("clock " .. tostring(AR_CLOCK) .. " kitchen time limit " .. tostring(kit.timelimit) .. " ms, lead " .. tostring(lua.lead))
 ar_check(ar_set_name() == "kitchen", "in the kitchen")
--- (the pour is a cutscene that ends with the flame stopped: not skipped)
+-- (the pour is a cutscene that ends with the flame stopped: not skipped. The movie of the melting wax after it is, as a player does: the
+-- puzzle is solved before it starts (lua.finish_puzzle), 26 s)
 AR_NO_SKIP = TRUE
+AR_SKIP_MOVIES = TRUE
 ar_do("use", kit.boiler, props.grogcan)
 ar_wait_for_control()
 AR_NO_SKIP = nil
+AR_SKIP_MOVIES = nil
 sleep_for(3000)
 ar_wait_for_control()
 ar_state("after boiler")

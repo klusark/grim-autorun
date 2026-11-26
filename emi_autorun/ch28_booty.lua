@@ -19,27 +19,50 @@ ar_wait_for(function() return ar_set_name() == "underwater lagoon" end, 20000, "
 sleep_for(2500)
 ar_wait_for_control()
 ar_state("ulg")
-local tries = 0
-while props.scupperware.state ~= PROP_LOC2 and tries < 8 do
-	tries = tries + 1
-	ar_log("fishy try " .. tries)
-	-- (the ScupperWare is in the hand before the fishies come by: they are only in reach for a moment)
+-- The glowing fishies: the baited ScupperWare is used in the hand, as the speed runners do, as soon as one of them swims within 10 of
+-- Guybrush (the game's own test, ulg.capture_fishy: the nearest one then comes to the bait, wherever he faces). Until then he swims
+-- towards the nearest one. (The school object's verb is offered only within its range of 6 and while Guybrush faces it: chasing it for
+-- that took 50 to 250 s)
+c28_fish = function()
+	local best = nil
+	local bx = nil
+	local bz = nil
+	local g = manny:getpos()
+	local i = 1
+	while ulg and ulg.fish and i <= (ulg.current_fish_count or 0) do
+		local p = ulg.fish[i]:getpos()
+		local d = sqrt((p.x - g.x) * (p.x - g.x) + (p.y - g.y) * (p.y - g.y) + (p.z - g.z) * (p.z - g.z))
+		if not best or d < best then
+			best = d
+			bx = p.x
+			bz = p.z
+		end
+		i = i + 1
+	end
+	return best, bx, bz
+end
+c28_fish_close = function()
+	local d = c28_fish()
+	return d and d < 8.5
+end
+C28_TRIES = 0
+C28_STROKES = 0
+while props.scupperware.state ~= PROP_LOC2 and C28_TRIES < 8 and C28_STROKES < 120 do
 	ar_hold(props.scupperware)
-	-- (the school swims about: the verb is given the moment the game offers it, with the ScupperWare in hand; walking up to it by the
-	-- verb sends Guybrush after a school that has moved on)
-	ar_chase_offered(ulg.fishschool, 90000)
-	AR_CODE = props.scupperware.use
-	AR_KEEP_GOING = TRUE
-	ar_send_verb("use", ulg.fishschool, "the fishies")
-	AR_KEEP_GOING = FALSE
-	AR_FAILED = FALSE
-	sleep_for(1000)
-	ar_try_wait(function() return cutSceneLevel == 0 end, 20000)
-	if props.scupperware.state ~= PROP_LOC2 then
+	if c28_fish_close() and cutSceneLevel == 0 then
+		C28_TRIES = C28_TRIES + 1
+		ar_log("fishy try " .. C28_TRIES .. format(", the nearest at %.1f", c28_fish()))
 		ar_do("use", props.scupperware)
 		sleep_for(1000)
 		ar_try_wait(function() return cutSceneLevel == 0 end, 20000)
-		sleep_for(2000)
+	else
+		C28_STROKES = C28_STROKES + 1
+		C28_D, C28_X, C28_Z = c28_fish()
+		if C28_X then
+			ar_walk_direct(C28_X, manny:getpos().y, C28_Z, c28_fish_close, 1500)
+		else
+			sleep_for(500)
+		end
 	end
 end
 ar_log("scupperware state " .. tostring(props.scupperware.state))

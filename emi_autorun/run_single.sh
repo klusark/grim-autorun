@@ -7,7 +7,7 @@
 #   run_single.sh [timeout seconds]
 #   RESUME="<slot> <first file>" run_single.sh   continues from a checkpoint of the last run's saves, with the files from <first file> on
 # Checkpoints go to ./saves_single, the log is logs/single.log.
-EM=/c/Users/Joel/grim_tools/emi_autorun
+EM=$(cd "$(dirname "$0")" && pwd)
 python "$EM/emi_nav_gen.py" "$EM/generated/emi_nav_planner.lua" || exit 1
 # the list: "file" lines are chapters, "lib" lines are libraries put into the run
 LIST=""
