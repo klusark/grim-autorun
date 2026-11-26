@@ -1,4 +1,4 @@
-START 2623 tests
+START 2630 tests
 BEGIN numbers
 V numbers|arith|3.500000 1024.000000 -2.333333 1.#INF00
 V numbers|tostring|"0.333333" "100" "1e+015" "-0.5"
@@ -388,6 +388,8 @@ V builtins|fn_ess_seq|"function"
 V builtins|fn_ess_setups|"function"
 V builtins|fn_ess_walk|"function"
 V builtins|fn_ess_walk_track|"function"
+V builtins|fn_ewc_actor|"function"
+V builtins|fn_ewc_walk|"function"
 V builtins|fn_execute|"function"
 V builtins|fn_exit|"function"
 V builtins|fn_exp|"function"
@@ -2565,6 +2567,34 @@ BEGIN ets_one_h100_default
 V ets_one_h100_default|going|1.000000
 V ets_one_h100_default|text|11.000000 17.000000 100.000000 38.000000
 END ets_one_h100_default
+BEGIN ewc_melee
+V ewc_melee|end|17.789307 0.580000 2.195675
+V ewc_melee|yaw|182.292969
+END ewc_melee
+BEGIN ewc_slide
+V ewc_slide|end|17.827801 0.580000 3.157290
+V ewc_slide|yaw|81.120728
+END ewc_slide
+BEGIN ewc_slide_slow
+V ewc_slide_slow|end|17.827801 0.580000 3.157290
+V ewc_slide_slow|yaw|81.120667
+END ewc_slide_slow
+BEGIN ewc_on_corner_north
+V ewc_on_corner_north|end|17.787655 0.580000 2.154413
+V ewc_on_corner_north|yaw|182.292847
+END ewc_on_corner_north
+BEGIN ewc_on_corner_east
+V ewc_on_corner_east|end|17.827801 0.580000 3.157290
+V ewc_on_corner_east|yaw|90.000000
+END ewc_on_corner_east
+BEGIN ewc_on_corner_ne
+V ewc_on_corner_ne|end|17.787655 0.580000 2.154413
+V ewc_on_corner_ne|yaw|182.292603
+END ewc_on_corner_ne
+BEGIN ewc_on_corner_back
+V ewc_on_corner_back|end|16.901896 0.580000 2.044796
+V ewc_on_corner_back|yaw|264.803955
+END ewc_on_corner_back
 BEGIN fp_exact_self
 V fp_exact_self|one|"8388608p-23"
 V fp_exact_self|half|"8388608p-24"
@@ -9615,4 +9645,4 @@ V lex_binary|short|nil
 ERROR lex_binary binary file cr_bin_old.lua too old: version=0x30; expected at least 0x31
 V lex_binary|old|nil
 END lex_binary
-SUMMARY 2623 tests, 247 failed
+SUMMARY 2630 tests, 247 failed
