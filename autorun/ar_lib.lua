@@ -271,8 +271,13 @@ end
 -- A turn on the spot with the run key held, as a player holds it: the game's run sets the turn rate to 140 degrees a second, the walk to 85 (manny.set_run), so
 -- the turns that stand Manny still take 0.6 of the time. Only standing: a run is not started by it (the follower decides walk or run for the step itself, a run with
 -- the heading far off swings him wide). AR_NO_RUN_TURN = TRUE for the old turn at the walk's rate
+-- (Manny walks: a path walk, or a key walk, which IsActorMoving does not count on the original; AR_MOVED is set by the frame loop)
+ar_manny_moving = function()
+	return manny:is_moving() or AR_MOVED
+end
+
 ar_turn_run = function()
-	if not AR_WALK and not AR_NO_RUN_TURN and not manny.is_running and not manny.is_backward and not manny:is_moving() then
+	if not AR_WALK and not AR_NO_RUN_TURN and not manny.is_running and not manny.is_backward and not ar_manny_moving() then
 		manny:set_run(TRUE)
 	end
 end
@@ -1043,7 +1048,7 @@ ar_wait_offered = function(max_ms)
 	while not ar_offered() and t < max_ms and still < 6 do
 		break_here()
 		t = t + system.frameTime
-		if manny:is_turning() or manny:is_moving() or cutSceneLevel > 0 then
+		if manny:is_turning() or ar_manny_moving() or cutSceneLevel > 0 then
 			still = 0
 		else
 			still = still + 1
@@ -1944,7 +1949,7 @@ ar_wait_idle = function(max_ms)
 		if cutSceneLevel > 0 then
 			return TRUE
 		end
-		if find_script(Sentence) or IsMessageGoing() or manny:is_moving() or manny:is_turning() then
+		if find_script(Sentence) or IsMessageGoing() or ar_manny_moving() or manny:is_turning() then
 			calm = 0
 		else
 			calm = calm + 1
@@ -2539,6 +2544,9 @@ end
 ar_override_clock = function()
 	while TRUE do
 		AR_FRAME = AR_FRAME + 1
+		local mp = manny:getpos()
+		AR_MOVED = AR_MOVED_POS and abs(mp.x - AR_MOVED_POS.x) + abs(mp.y - AR_MOVED_POS.y) > 0.0001
+		AR_MOVED_POS = mp
 		-- (the frames in which the autorun has the control: no cutscene, the game does not move Manny by a script; the frames to cut by tuning the run)
 		if cutSceneLevel == 0 then
 			AR_FRAME_CTL = (AR_FRAME_CTL or 0) + 1
@@ -2549,7 +2557,7 @@ ar_override_clock = function()
 			manny.stop_idle = TRUE
 		end
 		-- Manny runs, as a player holding the run key does. Every walk to an object turns running off again, so it is switched on whenever he is walking.
-		if not AR_WALK and not AR_NEAR_SLOW and not manny.is_running and not manny.is_backward and manny:is_moving() then
+		if not AR_WALK and not AR_NEAR_SLOW and not manny.is_running and not manny.is_backward and ar_manny_moving() then
 			manny:set_run(TRUE)
 		end
 		if system.override and system.override.is_active then
