@@ -27,7 +27,9 @@ kill_run() {
 	# line appended here while it ran, and two stalls in the vault safe of chapter 45 looked like an engine killed from outside)
 	echo "Debug: AUTORUN STALL: $1, scummvm killed" >> "${log%.log}.stall"
 	# (only the engine of this run, found by its ini _scummvm_<parent>.ini: an EMI run or a clean-room run going on at the same time is left alone)
-	if [ -n "$parent" ]; then
+	if [ -n "$WSL" ]; then
+		pkill -9 -f "_scummvm_${parent:-}.*ini" > /dev/null 2>&1
+	elif [ -n "$parent" ]; then
 		powershell.exe -NoProfile -Command "Get-CimInstance Win32_Process -Filter \"Name='scummvm.exe'\" | Where-Object { \$_.CommandLine -like '*_scummvm_${parent}.ini*' } | ForEach-Object { Stop-Process -Id \$_.ProcessId -Force }" > /dev/null 2>&1
 	else
 		taskkill //F //IM scummvm.exe > /dev/null 2>&1

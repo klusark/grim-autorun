@@ -2,6 +2,15 @@
 # The scummvm.exe of the autorun's build (SVM_DIR, as run_all.sh/run_chapter.sh set it), not any other scummvm.exe that runs at the same time (another build, a worktree):
 #   sh tools/svm_ps.sh pid    the process id
 #   sh tools/svm_ps.sh cpu    the cpu time so far as h:mm:ss
+if [ -n "$WSL" ]; then
+	p=$(pgrep -f "^(valgrind .*)?\./scummvm .*--autorun" | head -1)
+	[ -z "$p" ] && exit 0
+	case "$1" in
+		cpu) ps -o cputime= -p "$p" | tr -d ' ';;
+		*) echo "$p";;
+	esac
+	exit 0
+fi
 SVM_PAT="$(cygpath -w "${SVM_DIR:-/home/Joel/scummvm-patched/${SVM_BUILD:-build-opt}}")\\*"
 export SVM_PAT
 case "$1" in

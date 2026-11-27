@@ -7,6 +7,8 @@
 #   worktree        default ~/scummvm-patched; made from ~/scummvm-autorun's repository (SVM_REPO) on REF when it does not
 #                   exist (default origin/master, fetched first), then prepare.sh (grim-tools.patch)
 #   --gcov          the coverage build, build-cov (configure.sh gcov); otherwise build-opt (configure.sh release)
+#   --asan          the AddressSanitizer build, build-asan (configure.sh asan; Linux/WSL, worktree ~/scummvm-wsl there)
+#   --valgrind      the build for valgrind, build-vg (configure.sh valgrind; Linux/WSL)
 #   --lua-coverage  lua-coverage.patch too (a worktree of its own is best: the patch stays in the worktree)
 #   --ref REF       the commit a new worktree starts from
 # To build on a newer master: remove the worktree (git worktree remove ~/scummvm-patched) and run this again.
@@ -19,6 +21,8 @@ W=
 while [ $# -gt 0 ]; do
 	case $1 in
 		--gcov) MODE=gcov ;;
+		--asan) MODE=asan ;;
+		--valgrind) MODE=valgrind ;;
 		--lua-coverage) PREP+=(--lua-coverage) ;;
 		--ref) REF=$2; shift ;;
 		*) W=$1 ;;
@@ -32,10 +36,10 @@ if [ ! -d "$W" ]; then
 	git -C "$REPO" worktree add --detach "$W" "$REF"
 fi
 bash "$HERE/prepare.sh" "${PREP[@]}" "$W"
-BUILD=$W/$([ "$MODE" = gcov ] && echo build-cov || echo build-opt)
+case $MODE in gcov) BUILD=$W/build-cov ;; asan) BUILD=$W/build-asan ;; valgrind) BUILD=$W/build-vg ;; *) BUILD=$W/build-opt ;; esac
 cd "$W"
 [ -f "$BUILD/config.mk" ] || bash "$HERE/configure.sh" "$MODE" "$BUILD"
 cd "$BUILD"
 make -j"${JOBS:-$(nproc)}" 2>&1 | grep -E 'error:|Error [0-9]' | head -20 || true
 make -j"${JOBS:-$(nproc)}" 2>&1 | tail -2
-ls -la "$BUILD/scummvm.exe"
+ls -la "$BUILD"/scummvm "$BUILD"/scummvm.exe 2>/dev/null || true
