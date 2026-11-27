@@ -9,6 +9,20 @@
 # end the run: it is stuck. Only this run's own scummvm.exe is ever killed (the grim runs are going on).
 EM=$(cd "$(dirname "$0")" && pwd)
 AR=$(cd "$EM/../autorun" && pwd)
+INI_SRC="$APPDATA/ScummVM/scummvm.ini"
+SVM_DEFAULT=/home/Joel/scummvm-patched/build-opt
+SVM_EXE=./scummvm.exe
+# (run from WSL: the Linux engine of ~/scummvm-wsl-emi (grim-tools.patch), ASAN=1 its build-asan, VALGRIND=1 its build-vg)
+if grep -qi microsoft /proc/version 2>/dev/null; then
+	WSL=1
+	INI_SRC=/mnt/c/Users/Joel/AppData/Roaming/ScummVM/scummvm.ini
+	SVM_DEFAULT=$HOME/scummvm-wsl-emi/$([ -n "$ASAN" ] && echo build-asan || ([ -n "$VALGRIND" ] && echo build-vg || echo build-opt))
+	SVM_EXE=./scummvm
+	# (VALGRIND=1: under valgrind's memcheck, its report in logs/<log>.vg; VGOPTS its options)
+	[ -n "$VALGRIND" ] && SVM_EXE="valgrind ${VGOPTS:---leak-check=full --num-callers=30} --log-file=$EM/logs/${LOG:-$(basename "$1" .lua)}.vg ./scummvm"
+	cygpath() { echo "$2"; }
+	python() { python3 "$@"; }
+fi
 script="$1"; limit="${2:-600}"
 [ $# -ge 2 ] && shift 2 || shift $#
 name=$(basename "$script" .lua)
@@ -38,7 +52,15 @@ python "$EM/emi_nav_gen.py" "$EM/generated/emi_nav_planner_$id.lua" || exit 1
 	echo "ar_finish()"
 } > "$EM/generated/${name}_$id.lua"
 
-cp "$APPDATA/ScummVM/scummvm.ini" "$EM/generated/_scummvm_$id.ini"
+cp "$INI_SRC" "$EM/generated/_scummvm_$id.ini"
+# (a Linux build has no shaders or engine data built in: the shaders come from the game's extrapath, monkey4-patch.m4b from the
+# extrapath of [scummvm], both in the engine's source)
+if [ -n "$WSL" ]; then
+	src=$(dirname "${SVM_DIR:-$SVM_DEFAULT}")
+	sed -i "/^\[monkey4-win\]/{n;:a;/^\(path\|extrapath\)=/d;n;/^\[/!ba}" "$EM/generated/_scummvm_$id.ini"
+	sed -i "/^\[monkey4-win\]/a path=/mnt/c/GOG Games/Escape from Monkey Island/\nextrapath=$src/engines/grim" "$EM/generated/_scummvm_$id.ini"
+	sed -i "/^\[scummvm\]/a extrapath=$src/dists/engine-data" "$EM/generated/_scummvm_$id.ini"
+fi
 sed -i '/^\[monkey4-win\]/a speech_mute=true\nsubtitles=true\nfullscreen=false' "$EM/generated/_scummvm_$id.ini"
 sed -i '/^\[scummvm\]/a enable_unsupported_game_warning=false' "$EM/generated/_scummvm_$id.ini"
 [ -n "$DUMPDIR" ] && sed -i "/^\[monkey4-win\]/a dump_frames_dir=$DUMPDIR" "$EM/generated/_scummvm_$id.ini"
@@ -47,15 +69,15 @@ sed -i '/^\[scummvm\]/a enable_unsupported_game_warning=false' "$EM/generated/_s
 
 log="$EM/logs/${LOG:-$name}.log"
 : > "$log"; : > "$log.times"
-cd "${SVM_DIR:-/home/Joel/scummvm-patched/build-opt}" || exit 1
+cd "${SVM_DIR:-$SVM_DEFAULT}" || exit 1
 start=$(date +%s)
 # (GDB=1: under gdb, which prints the stack of a crash into the log: the rare crash with exit status 127, a division by zero in
 # Audio::Timestamp::msecs, Nov 10)
 svm() {
 	if [ -n "$GDB" ]; then
-		exec gdb -batch ${GDBCMDS:+-x "$GDBCMDS"} -ex "set pagination off" -ex "set print thread-events off" -ex run -ex "thread apply all bt 25" --args ./scummvm.exe "$@"
+		exec gdb -batch ${GDBCMDS:+-x "$GDBCMDS"} -ex "set pagination off" -ex "set print thread-events off" -ex run -ex "thread apply all bt 25" --args $SVM_EXE "$@"
 	fi
-	exec ./scummvm.exe "$@"
+	exec $SVM_EXE "$@"
 }
 svm --config="$(cygpath -w "$EM/generated/_scummvm_$id.ini")" --savepath="$(cygpath -w "${SAVES:-$EM/saves}")" \
 	--autorun="$(cygpath -w "$EM/generated/${name}_$id.lua")" --debugflags=scripts \

@@ -8,6 +8,11 @@
 #   RESUME="<slot> <first file>" run_single.sh   continues from a checkpoint of the last run's saves, with the files from <first file> on
 # Checkpoints go to ./saves_single, the log is logs/single.log.
 EM=$(cd "$(dirname "$0")" && pwd)
+# (run from WSL: run_emi.sh picks the Linux engine)
+if grep -qi microsoft /proc/version 2>/dev/null; then
+	WSL=1
+	python() { python3 "$@"; }
+fi
 python "$EM/emi_nav_gen.py" "$EM/generated/emi_nav_planner.lua" || exit 1
 # the list: "file" lines are chapters, "lib" lines are libraries put into the run
 LIST=""
@@ -59,7 +64,8 @@ fi
 export SAVES="$EM/saves_single${TAG:+_$TAG}"
 mkdir -p "$SAVES"
 export EXTRA="emi_poke.lua emi_myst.lua"
-export NOLOG=${NOLOG:-90}
+# (in WSL the credits play for more than 90 s of real time without a new line)
+export NOLOG=${NOLOG:-$([ -n "$WSL" ] && echo 300 || echo 90)}
 # ORIG=1: on the original Monkey4.exe (run_orig.sh) instead of ScummVM
 if [ -n "$ORIG" ]; then
 	LOG=${LOGNAME_OVERRIDE:-single_orig${TAG:+_$TAG}} "$EM/run_orig.sh" "$EM/generated/all_single${ORIG:+_orig}${TAG:+_$TAG}.lua" ${1:-20000}
