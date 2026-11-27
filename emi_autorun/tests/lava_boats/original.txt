@@ -1,0 +1,12 @@
+LB rest 1 node 8 yaw -3.34189 start yaw 0 off -3.34189
+LB rest 2 node 5 yaw 58.3183 start yaw 0 off 58.3183
+LB rest 3 node 9 yaw 47.6698 start yaw 0 off 47.6698
+LB rest 4 node 3r yaw 84.4097 start yaw 0 off 84.4097
+LB rest 5 node 5 yaw 58.3183 start yaw 0 off 58.3183
+LB rest 6 node 8 yaw -3.34189 start yaw 0 off -3.34189
+LB rest 7 node 3r yaw 84.4097 start yaw 0 off 84.4097
+LB rest 8 node 9 yaw 47.6698 start yaw 0 off 47.6698
+LB rest 6 node 8 yaw -143.611 start yaw 140.079 off 76.3093
+LB rest 8 node 9 yaw -172.29 start yaw -140.23 off -32.06
+LB rest 5 node 5 yaw -146.743 start yaw -155.129 off 8.38609
+LB done

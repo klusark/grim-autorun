@@ -1,0 +1,6 @@
+OW walk 1 starts at -5.05294 4.06933
+OW walk 1 ends at -3.68692 1.96574 strays 0.0572793
+OW walk 2 starts at -3.68692 1.96574
+OW walk 2 ends at 1.03 3.11 strays 6.53306e-006
+OW walk 3 starts at 1.03 3.11
+OW walk 3 ends at -9.76966 4.40473 strays 1.33186

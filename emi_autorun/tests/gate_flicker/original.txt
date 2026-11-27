@@ -1,0 +1,25 @@
+GW 170883 raft2 0 mot_bank guy2 0 gate nil at 0 0
+GW 212706 raft2 25 sector388 guy2 25 gate nil at 394.4 1.68
+GW 212761 raft2 25 gate_block guy2 25 gate nil at 396.658 1.65419
+GW 212836 raft2 25 gate_top_trigger guy2 25 gate nil at 399.793 1.61836
+GW 215421 raft2 25 sector511 guy2 25 gate nil at 401.35 3.55651
+GW 215514 raft2 25 sector511 guy2 25 gate 1 at 401.29 5.88928
+GW 215777 raft2 25 gate_top_trigger guy2 25 gate 1 at 401.35 3.54813
+GW 216753 raft2 25 gate_path2 guy2 25 gate 1 at 400.982 1.59109
+GW 216782 raft2 0 gate_path2 guy2 0 gate 1 at 399.807 1.53684
+GW 216797 raft2 0 sector387 guy2 0 gate 1 at 400.112 1.25121
+GW 216799 raft2 25 sector387 guy2 25 gate 1 at 400.154 1.16922
+GW 216814 raft2 0 sector386 guy2 0 gate 1 at 400.141 0.530548
+GW 216858 raft2 0 gate_path1 guy2 0 gate 1 at 400.188 -1.30894
+GW 216871 raft2 5 gate_trigger guy2 5 gate 1 at 400.202 -1.85242
+GW 216918 raft2 5 sector517 guy2 5 gate 1 at 400.252 -3.81732
+GW 216964 raft2 5 sector220 guy2 5 gate 1 at 400.311 -5.74024
+GW 217040 raft2 0 sector220 guy2 0 gate 1 at 401.179 -8.80636
+GW 218450 raft2 5 sector517 guy2 5 gate 1 at 400.3 -5.7
+GW 218497 raft2 5 gate_trigger guy2 5 gate 1 at 400.278 -3.77641
+GW 221131 raft2 5 gate_path1 guy2 5 gate 1 at 400.253 -1.71241
+GW 222285 raft2 0 gate_path1 guy2 0 gate 1 at 399.852 -1.7096
+GW 222308 raft2 15 gate_trigger guy2 15 gate 1 at 399.316 -1.82087
+GW 222339 raft2 15 sector200 guy2 15 gate 1 at 398.717 -2.31742
+GW 222625 raft2 0 sector200 guy2 0 gate 1 at 397.682 -2.6765
+GW done

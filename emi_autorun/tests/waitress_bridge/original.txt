@@ -1,0 +1,12 @@
+WB bump 1 guybrush -0.215873 0.968737 waitress 0.527956 0.415566
+WB bump 2 guybrush 1.46204 1.67497 waitress 2.25531 1.25904
+WB bump 3 guybrush 1.46204 1.67497 waitress 2.24492 1.2411
+WB bump 4 guybrush 1.2625 1.01672 waitress 2.15877 1.15994
+WB bump 5 guybrush -0.931402 0.683311 waitress -0.215326 0.415566
+WB bump 6 guybrush -0.544224 0.609947 waitress -1.40787 0.747932
+WB bump 7 guybrush 1.34364 1.30731 waitress 0.615213 0.786397
+WB bump 8 guybrush 1.39727 1.26185 waitress 0.634389 0.792395
+WB bump 9 guybrush 0.85008 0.73518 waitress -0.0239983 0.580617
+WB bump 10 guybrush 1.12013 0.978139 waitress 2.00732 1.06398
+WB bump 11 guybrush -0.993466 0.68311 waitress -0.262537 0.415566
+WB done: 11 bumps, 0 stuck

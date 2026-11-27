@@ -1,0 +1,81 @@
+TT target 90 start yaw 0 yawToPoint 90
+TT target 90 call 1 1 yaw 6.12
+TT target 90 call 2 1 yaw 12.24
+TT target 90 call 3 1 yaw 18.36
+TT target 90 call 4 1 yaw 24.48
+TT target 90 call 5 1 yaw 30.6
+TT target 90 call 6 1 yaw 36.72
+TT target 90 call 7 1 yaw 42.84
+TT target 90 call 8 1 yaw 48.96
+TT target 90 call 9 1 yaw 55.08
+TT target 90 call 10 1 yaw 61.2
+TT target 90 call 11 1 yaw 67.32
+TT target 90 call 12 1 yaw 73.44
+TT target 90 call 13 1 yaw 79.56
+TT target 90 call 14 1 yaw 85.68
+TT target 90 call 15 nil yaw 90
+TT target 90 after 1 yaw 90
+TT target -90 start yaw -7.62939e-006 yawToPoint -90
+TT target -90 call 1 1 yaw -14.508
+TT target -90 call 2 nil yaw -27.5652
+TT target -90 after 1 yaw -39.3167
+TT target -90 after 2 yaw -49.893
+TT target -90 after 3 yaw -59.4117
+TT target -90 after 4 yaw -67.9785
+TT target -90 after 5 yaw -75.6887
+TT target -90 after 6 yaw -82.6278
+TT target -90 after 7 yaw -88.873
+TT target -90 after 8 yaw -90
+TT target 170 start yaw 0 yawToPoint 170
+TT target 170 call 1 1 yaw 6.12
+TT target 170 call 2 1 yaw 12.24
+TT target 170 call 3 1 yaw 18.36
+TT target 170 call 4 1 yaw 24.48
+TT target 170 call 5 1 yaw 30.6
+TT target 170 call 6 1 yaw 36.72
+TT target 170 call 7 1 yaw 42.84
+TT target 170 call 8 1 yaw 48.96
+TT target 170 call 9 1 yaw 55.08
+TT target 170 call 10 1 yaw 61.2
+TT target 170 call 11 1 yaw 67.32
+TT target 170 call 12 1 yaw 73.44
+TT target 170 call 13 1 yaw 79.56
+TT target 170 call 14 1 yaw 85.68
+TT target 170 call 15 1 yaw 91.8
+TT target 170 call 16 1 yaw 97.92
+TT target 170 call 17 1 yaw 104.04
+TT target 170 call 18 1 yaw 110.16
+TT target 170 call 19 1 yaw 116.28
+TT target 170 call 20 1 yaw 122.4
+TT target 170 call 21 1 yaw 128.52
+TT target 170 call 22 1 yaw 134.64
+TT target 170 call 23 1 yaw 140.76
+TT target 170 call 24 1 yaw 146.88
+TT target 170 call 25 1 yaw 153
+TT target 170 call 26 1 yaw 159.12
+TT target 170 call 27 1 yaw 165.24
+TT target 170 call 28 nil yaw 170
+TT target 170 after 1 yaw 170
+TT target -170 start yaw 0 yawToPoint -170
+TT target -170 call 1 1 yaw -22.508
+TT target -170 call 2 nil yaw -42.7652
+TT target -170 after 1 yaw -60.9967
+TT target -170 after 2 yaw -77.405
+TT target -170 after 3 yaw -92.1725
+TT target -170 after 4 yaw -105.463
+TT target -170 after 5 yaw -117.425
+TT target -170 after 6 yaw -128.19
+TT target -170 after 7 yaw -137.879
+TT target -170 after 8 yaw -146.599
+TT target -170 after 9 yaw -154.448
+TT target -170 after 10 yaw -161.511
+TT target -170 after 11 yaw -167.868
+TT target -170 after 12 yaw -170
+TT target 30 start yaw 0 yawToPoint 30
+TT target 30 call 1 1 yaw 6.12
+TT target 30 call 2 1 yaw 12.24
+TT target 30 call 3 1 yaw 18.36
+TT target 30 call 4 1 yaw 24.48
+TT target 30 call 5 nil yaw 30
+TT target 30 after 1 yaw 30
+TT done

@@ -1,0 +1,23 @@
+-- ScummVM #11814: the diving judges' score cards show through their desk. From the game's jump to the diving contest (270), each judge
+-- shows a card (pla.show_card, as the contest's scoring does: after it the card rests behind the desk), then the judges' setups are
+-- held for window captures: JC READY 2 (pla_judges), then JC READY 9 (pla_judges_close).
+ar_log("=== cards_snap ===")
+ar_wait_for_control()
+dofile("_jumpscripts.lua")
+start_script(jump_script, "270")
+ar_wait_for(function() return system.currentSet == pla end, 30000, "the diving contest")
+ar_wait_for_control()
+sleep_for(2000)
+JC_A = start_script(pla.show_card, pla, judge_kahuna, 7)
+JC_B = start_script(pla.show_card, pla, judge_tripps, 3)
+JC_C = start_script(pla.show_card, pla, judge_edd, 10)
+ar_wait_for(function() return not find_script(JC_A) and not find_script(JC_B) and not find_script(JC_C) end, 30000, "the cards")
+pla:current_setup(pla_judges)
+sleep_for(3000)
+ar_log("JC READY 2")
+sleep_for(20000)
+pla:current_setup(pla_judges_close)
+sleep_for(3000)
+ar_log("JC READY 9")
+sleep_for(20000)
+ar_log("=== cards_snap done ===")

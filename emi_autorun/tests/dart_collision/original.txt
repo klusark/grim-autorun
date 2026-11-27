@@ -1,0 +1,16 @@
+T87 trial 1 closest: george 0.773026 ned 2.24483
+T87 trial 2 closest: george 0.773244 ned 2.24483
+T87 trial 3 closest: george 2.24483 ned 0.871698
+T87 trial 4 closest: george 0.8704 ned 2.28751
+T87 trial 5 closest: george 0.772998 ned 2.24483
+T87 trial 6 closest: george 2.24483 ned 0.871723
+T87 trial 7 closest: george 2.24483 ned 0.871698
+T87 trial 8 closest: george 0.773244 ned 2.24483
+T87 trial 9 closest: george 2.24483 ned 0.871723
+T87 trial 10 closest: george 2.0823 ned 2.1855
+T87 trial 11 closest: george 0.773244 ned 2.24483
+T87 trial 12 closest: george 2.14232 ned 0.871698
+T87 trial 13 closest: george 0.773244 ned 2.29644
+T87 trial 14 closest: george 2.0823 ned 1.1023
+T87 trial 15 closest: george 0.788078 ned 2.10054
+T87 trial 16 closest: george 2.0823 ned 2.1855
