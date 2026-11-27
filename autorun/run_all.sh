@@ -9,8 +9,18 @@
 # The log goes to ./logs/all.log.
 
 AR=/c/Users/Joel/grim_tools/autorun
+GRIMDATA="/c/GOG Games/GRIMDATA"
+# (run from WSL: the same folders through /mnt/c, the Linux engine of ~/scummvm-wsl, built by ../scummvm/build.sh in WSL; ASAN=1 its build-asan)
+if grep -qi microsoft /proc/version 2>/dev/null; then
+	WSL=1
+	AR=/mnt/c/Users/Joel/grim_tools/autorun
+	GRIMDATA="/mnt/c/GOG Games/GRIMDATA"
+	cygpath() { echo "$2"; }
+	python() { python3 "$@"; }
+	export WSL
+fi
 # (ScummVM loads every *.lab of GRIMDATA: the patch lab of the original's runs (orig_patchlab.sh) would be applied over its own patches)
-[ -e "/c/GOG Games/GRIMDATA/DATAUSR.LAB" ] && { echo "ERROR: GRIMDATA has a DATAUSR.LAB (a run of the original still going, or left behind): take it out before a ScummVM run" >&2; exit 1; }
+[ -e "$GRIMDATA/DATAUSR.LAB" ] && { echo "ERROR: GRIMDATA has a DATAUSR.LAB (a run of the original still going, or left behind): take it out before a ScummVM run" >&2; exit 1; }
 . "$AR/mode.sh" || exit 1
 # A small window and a frame drawn in 64 (not the whole window, a frame in 8): the same run, 12% less cpu time and a third less wall time. Not where frames are
 # captured (FRAMES) or the run is real (REAL), which want what a player sees; WIN= and RENDEREVERY= give the values.
@@ -74,7 +84,16 @@ mkdir -p "$AR/logs" "$AR/saves_new" "${SAVES:-$AR/saves}"
 } > "$AR/generated/all_$$.lua"
 
 INI="$AR/generated/_scummvm_$$.ini"
-cp "$APPDATA/ScummVM/scummvm.ini" "$INI"
+if [ -n "$WSL" ]; then
+	cp "/mnt/c/Users/Joel/AppData/Roaming/ScummVM/scummvm.ini" "$INI"
+	ini_set "$INI" path "$GRIMDATA/"
+	# (a Linux build has no shaders or engine data built in: the shaders come from the game's extrapath, grim-patch.lab from the
+	# extrapath of [scummvm], both in the engine's source)
+	ini_set "$INI" extrapath "${SVM_SRC:-$HOME/scummvm-wsl}/engines/grim"
+	sed -i "/^\[scummvm\]/a extrapath=${SVM_SRC:-$HOME/scummvm-wsl}/dists/engine-data" "$INI"
+else
+	cp "$APPDATA/ScummVM/scummvm.ini" "$INI"
+fi
 if [ -z "$REAL" ]; then
 	ini_set "$INI" speech_mute true; ini_set "$INI" subtitles true; ini_set "$INI" talkspeed 179
 else
@@ -112,7 +131,15 @@ fi
 # The engine: SVM_DIR, default the build-opt of the worktree ~/scummvm-patched (upstream master + ../scummvm/grim-tools.patch, built by
 # ../scummvm/build.sh: the one engine of the Grim and EMI autoruns and the clean-room tests; the old branch autorun is SVM_DIR=/home/Joel/scummvm-autorun/build-opt;
 # SVM_BUILD=build-cov or another build folder of that worktree)
-export SVM_DIR="${SVM_DIR:-/home/Joel/scummvm-patched/${SVM_BUILD:-build-opt}}"
+if [ -n "$WSL" ]; then
+	export SVM_DIR="${SVM_DIR:-$HOME/scummvm-wsl/${SVM_BUILD:-$([ -n "$ASAN" ] && echo build-asan || ([ -n "$VALGRIND" ] && echo build-vg || echo build-opt))}}"
+	SVM_EXE=./scummvm
+	# (VALGRIND=1: under valgrind's memcheck, its report in logs/<LOG>.vg; VGOPTS its options)
+	[ -n "$VALGRIND" ] && SVM_EXE="valgrind ${VGOPTS:---leak-check=full --num-callers=30} --log-file=$AR/logs/${LOG:-all}.vg ./scummvm"
+else
+	export SVM_DIR="${SVM_DIR:-/home/Joel/scummvm-patched/${SVM_BUILD:-build-opt}}"
+	SVM_EXE=./scummvm.exe
+fi
 cd "$SVM_DIR" || exit 1
 # STALL=<seconds>: a run that logs nothing of the autorun for that long is killed (default 90; 0 = never)
 # CHSTALL=<seconds>: a chapter that takes longer than that is killed (default 120 in speed100, where a chapter takes 32 s at most; 0 = never)
@@ -123,7 +150,7 @@ rm -f "$AR/logs/${LOG:-all}.stall"
 sh "$AR/stall_watch.sh" "$AR/logs/${LOG:-all}.log" "${STALL:-$([ -n "$REALTIME" ] && echo 0 || ([ -n "$REAL" ] && echo 90 || ([ -n "$FULL" ] && echo 30 || echo 15)))}" $$ "${CHSTALL:-$([ -n "$FULL" ] && [ -z "$REAL" ] && echo 120 || echo 0)}" &
 stallpid=$!
 start=$(date +%s)
-timeout "$limit" ./scummvm.exe --config="$(cygpath -w "$AR/generated/_scummvm_$$.ini")" --savepath="$(cygpath -w "${SAVES:-$AR/saves}")" \
+timeout "$limit" $SVM_EXE --config="$(cygpath -w "$AR/generated/_scummvm_$$.ini")" --savepath="$(cygpath -w "${SAVES:-$AR/saves}")" \
 	--autorun="$(cygpath -w "$AR/generated/all_$$.lua")" --debugflags="${DEBUGFLAGS:-scripts}" \
 	$([ -z "$REALTIME" ] && echo "--engine-speed=${ES:-0} --sim-fps=${SIMFPS:-60}") $([ -z "$NOFPS" ] && echo --show-fps) "$@" grim-win 2>&1 	| python "$AR/tools/logts.py" "$AR/logs/${LOG:-all}.ts" | awk -v out="$AR/logs/${LOG:-all}.log" -v times="$AR/logs/${LOG:-all}_times.txt" -v t0="$start" '{ print > out; if (/=== chapter/) { n = systime() - t0; print n, $0 > times; fflush(times) } fflush(out) }'
 code=$?
