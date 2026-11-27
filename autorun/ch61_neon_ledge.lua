@@ -17,7 +17,11 @@ if AR_FULL then
 	ar_walk_to(-3.0, 6.0, 3.71, function() return nl:current_setup() == nl_neoha end, 30000)
 	ar_log("on the roof: setup " .. tostring(nl:current_setup()))
 end
-ar_walk_to(-7.5, 2.3, 3.71)
+-- (the hop onto the border can come on the way there: the hot sector at the edge is along it, and a turn at the edge can take Manny
+-- into it; the walk below is done then)
+ar_walk_to(-7.5, 2.3, 3.71, function() return cutSceneLevel > 0 or manny:getpos().z > 4 end)
+ar_wait_idle(200)
+ar_wait_for_control()
 -- the hot sector at the edge is where Manny hops on to the border by the neon hand
 ar_walk_to(-7.5, 1.85, 3.71, function() return cutSceneLevel > 0 or manny:getpos().z > 4 end)
 ar_wait_idle(200)
