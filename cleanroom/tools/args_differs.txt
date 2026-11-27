@@ -201,6 +201,7 @@ args_GetActorScale_none
 args_GetActorScale_num
 args_GetActorScale_str
 args_GetActorScale_tab
+args_GetActorSector_p0
 args_GetActorTurnRate_a
 args_GetActorTurnRate_a_nil
 args_GetActorTurnRate_a_num
@@ -339,6 +340,13 @@ args_GetPhysicalBytes_none
 args_GetPhysicalBytes_num
 args_GetPhysicalBytes_str
 args_GetPhysicalBytes_tab
+args_GetPointSector_p0
+args_GetPointSector_p1_neg
+args_GetPointSector_p1_num
+args_GetPointSector_p2_neg
+args_GetPointSector_p2_num
+args_GetPointSector_p4_str
+args_GetPointSector_p4_tab
 args_GetSectorVertices_e
 args_GetSectorVertices_e_nil
 args_GetSectorVertices_e_num

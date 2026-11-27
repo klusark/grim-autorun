@@ -83,7 +83,7 @@ cr_t_walk_outside = function()
 	cr_log("frames", f)
 	cr_pos("end", a)
 end
-cr_scummvm_differs("walk_outside") cr_test("walk_outside", cr_t_walk_outside)
+cr_test("walk_outside", cr_t_walk_outside)
 
 -- (one walk in cr_edge from (x0, y0) to (x1, y1))
 cr_walk_case = function(key, x0, y0, x1, y1)
