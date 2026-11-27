@@ -315,7 +315,6 @@ end)
 
 -- (ScummVM before Actor::canSee: a 90 degree half angle from the root whatever the head, the actor itself seen)
 cr_scummvm_differs("sight_head_roll")
-cr_scummvm_differs("sight_head_turned")
 cr_scummvm_differs("sight_head_joint")
 cr_scummvm_differs("sight_head_pitch_roll")
 cr_scummvm_differs("sight_head_costumes")

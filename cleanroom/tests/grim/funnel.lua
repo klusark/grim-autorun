@@ -81,7 +81,7 @@ cr_t_funnel_off = function()
 	cr_fn_walk("off", 0, -1, 0, 1.5)
 	MakeSectorActive("fn_rect", TRUE)
 end
-cr_scummvm_differs("funnel_off") cr_test("funnel_off", cr_t_funnel_off)
+cr_test("funnel_off", cr_t_funnel_off)
 
 -- walking with the keys (WalkActorForward in a direction) into the funnel at an angle
 cr_t_funnel_forward = function()
