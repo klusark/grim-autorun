@@ -1,0 +1,12 @@
+GW 1372 raft2 0 nil guy2 0 gate nil at 0 0
+GW 3353 raft2 25 nil guy2 25 gate nil at 394.442 1.67952
+GW 6021 raft2 25 nil guy2 25 gate 1 at 401.29 5.87896
+GW 7308 raft2 0 nil guy2 0 gate 1 at 400.948 1.58885
+GW 7333 raft2 25 nil guy2 25 gate 1 at 400.083 1.23464
+GW 7352 raft2 0 nil guy2 0 gate 1 at 400.093 0.498349
+GW 7412 raft2 5 nil guy2 5 gate 1 at 400.174 -1.92271
+GW 14147 raft2 15 nil guy2 15 gate 1 at 400.274 -3.48615
+GW 14157 raft2 5 nil guy2 5 gate 1 at 400.269 -3.07536
+GW 16606 raft2 0 nil guy2 0 gate 1 at 400.253 -1.71241
+GW 17804 raft2 15 nil guy2 15 gate 1 at 399.292 -1.84072
+GW 18101 raft2 0 nil guy2 0 gate 1 at 397.666 -2.67352

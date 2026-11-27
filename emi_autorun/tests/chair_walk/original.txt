@@ -1,0 +1,2 @@
+RW walk 7 ends at -14.522 -4.983 closest chair2 0.682797 yangja 0.924589
+RW walk 8 ends at -12.13 -2.721 closest chair2 0.682827 yangja 0.866863

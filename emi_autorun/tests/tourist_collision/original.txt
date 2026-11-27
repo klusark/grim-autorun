@@ -1,0 +1,11 @@
+TM trial 1 closest: monty 0.752554
+TM trial 2 closest: monty 0.752267
+TM trial 3 closest: monty 0.788858
+TM trial 4 closest: monty 0.766979
+TM trial 4 STUCK
+TM trial 5 closest: monty 0.752621
+TM trial 6 closest: monty 1.08434
+TM trial 7 closest: monty 0.93939
+TM trial 8 closest: monty 0.825747
+TM trial 9 closest: monty 0.772052
+TM trial 10 closest: monty 0.751722

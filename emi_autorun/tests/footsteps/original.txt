@@ -1,0 +1,7 @@
+FSG multiple_footstep_sounds 1
+FSG town (sector137q): sector footstep_flagstone id 822, override flagstone, default sand
+FSG pier (sector75): sector footstep_dock id 821, override dock, default sand
+FSG pier end (sector72): sector footstep_dock id 820, override dock, default sand
+FSG beach (sector76): sector nil id nil, override nil, default sand
+FSG beach far (sector86): sector nil id nil, override nil, default sand
+FSG done

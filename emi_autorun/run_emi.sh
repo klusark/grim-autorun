@@ -5,7 +5,7 @@
 #
 #   run_emi.sh <script.lua> [timeout seconds] [extra scummvm options]
 #
-# Simulated clock (SIMFPS frames a second, flat out). NOLOG seconds (default 30, real time) without a new line in the log
+# Simulated clock (SIMFPS frames a second, flat out; SIMMS: every frame that many milliseconds). NOLOG seconds (default 30, real time) without a new line in the log
 # end the run: it is stuck. Only this run's own scummvm.exe is ever killed (the grim runs are going on).
 EM=$(cd "$(dirname "$0")" && pwd)
 AR=$(cd "$EM/../autorun" && pwd)
@@ -42,6 +42,8 @@ cp "$APPDATA/ScummVM/scummvm.ini" "$EM/generated/_scummvm_$id.ini"
 sed -i '/^\[monkey4-win\]/a speech_mute=true\nsubtitles=true\nfullscreen=false' "$EM/generated/_scummvm_$id.ini"
 sed -i '/^\[scummvm\]/a enable_unsupported_game_warning=false' "$EM/generated/_scummvm_$id.ini"
 [ -n "$DUMPDIR" ] && sed -i "/^\[monkey4-win\]/a dump_frames_dir=$DUMPDIR" "$EM/generated/_scummvm_$id.ini"
+# (SIMMS: every simulated frame that many milliseconds, sim_frame_ms; 17 = the original under simtime)
+[ -n "$SIMMS" ] && sed -i "/^\[monkey4-win\]/a sim_frame_ms=$SIMMS" "$EM/generated/_scummvm_$id.ini"
 
 log="$EM/logs/${LOG:-$name}.log"
 : > "$log"; : > "$log.times"
